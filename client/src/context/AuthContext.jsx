@@ -201,7 +201,7 @@ export const AuthProvider = ({ children }) => {
         });
 
         // Run auto-seeder on boot
-        seedDefaultUsers();
+        // seedDefaultUsers();
 
         return () => unsubscribe();
     }, []);
