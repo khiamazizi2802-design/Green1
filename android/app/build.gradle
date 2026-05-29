@@ -4,7 +4,7 @@ android {
     namespace = "com.green.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.green.app"
+        applicationId "com.green-nightlife.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
