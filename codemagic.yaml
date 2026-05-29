@@ -36,6 +36,8 @@ workflows:
     integrations:
       app_store_connect: Codemagic
     environment:
+      groups:
+        - ios-signing
       node: latest
       vars:
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
