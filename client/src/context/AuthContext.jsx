@@ -200,8 +200,8 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         });
 
-        // Run auto-seeder on boot (disabled since accounts are already successfully seeded in the live Firebase project)
-        // seedDefaultUsers();
+        // Run auto-seeder on boot
+        seedDefaultUsers();
 
         return () => unsubscribe();
     }, []);
