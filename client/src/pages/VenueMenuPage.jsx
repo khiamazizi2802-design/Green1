@@ -682,7 +682,7 @@ const VenueMenuPage = () => {
     const totalCost = cart.reduce((sum, item) => sum + item.price, 0);
 
     return (
-        <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative pb-32">
+        <div className="h-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative pb-32">
             <AnimatePresence>
                 {showToast && (
                     <motion.div 
@@ -709,7 +709,7 @@ const VenueMenuPage = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            <header className="sticky top-0 z-40 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-white/5 p-6 flex items-center justify-between">
+            <header className="sticky top-0 z-40 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-white/5 px-6 pb-6 flex items-center justify-between safe-top-padding">
                 <button onClick={() => navigate(-1)} className="w-12 h-12 bg-[var(--bg-secondary)] rounded-2xl flex items-center justify-center text-[var(--text-primary)] border border-[var(--border-main)]"><ArrowLeft size={24} /></button>
                 <div className="text-center">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter text-[var(--text-primary)]">{venueName}</h1>
@@ -785,7 +785,7 @@ const VenueMenuPage = () => {
             </main>
 
             {cart.length > 0 && (
-                <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/90 to-transparent z-50">
+                <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/90 to-transparent z-50 safe-bottom-padding">
                     <div className="max-w-lg mx-auto flex gap-4">
                         <button onClick={() => setCart([])} className="px-6 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[2rem] text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all">Cancel</button>
                         <button onClick={handleCheckout} className="flex-1 py-6 bg-[var(--text-primary)] text-[var(--bg-primary)] border border-[var(--border-main)] rounded-[2rem] flex items-center justify-between px-8 group transition-all shadow-[0_20px_50px_-10px_rgba(0,0,0,0.2)]">

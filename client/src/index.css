@@ -3,6 +3,11 @@
 /* ── Google Font: Outfit ─────────────────────────────────────── */
 
 :root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+
     font-family: 'Plus Jakarta Sans', 'Outfit', system-ui, sans-serif;
     line-height: 1.5;
     font-weight: 400;
@@ -69,6 +74,14 @@
     --brand-mid: #0A0A0A;
     --brand-end: #1A1A1A;
 }
+html, body, #root, .app-content-wrapper {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+}
 
 body {
     background-color: var(--bg-primary);
@@ -76,7 +89,6 @@ body {
     font-family: 'Inter', sans-serif;
     transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
                 color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -85,6 +97,20 @@ body {
 .app-content-wrapper {
     position: relative;
     z-index: 10;
+}
+
+/* Safe Area Utility Overlays */
+.safe-top-padding {
+    padding-top: calc(var(--safe-top) + 0.5rem) !important;
+}
+.safe-bottom-padding {
+    padding-bottom: calc(var(--safe-bottom) + 0.5rem) !important;
+}
+.safe-bottom-margin {
+    margin-bottom: var(--safe-bottom) !important;
+}
+.safe-bottom-inset {
+    bottom: calc(var(--safe-bottom) + 1.25rem) !important;
 }
 
 @keyframes cyber-grid {

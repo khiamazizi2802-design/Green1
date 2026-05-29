@@ -281,14 +281,14 @@ const GreenSPage = () => {
     const embeddedContainerRef = React.useRef(null);
 
     return (
-        <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative overflow-x-hidden">
+        <div className="h-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative overflow-x-hidden">
             {/* Background Decor */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand/5 blur-[100px] rounded-full pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" />
 
-            <div className="relative z-10 p-6 pb-24 max-w-lg mx-auto h-screen overflow-y-auto no-scrollbar">
+            <div className="relative z-10 p-6 pb-24 max-w-lg mx-auto h-full overflow-y-auto no-scrollbar">
                 {/* Header */}
-                <header className="flex items-center justify-between mb-8 pt-8">
+                <header className="flex items-center justify-between mb-8 safe-top-padding">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => navigate('/home')}

@@ -233,7 +233,7 @@ const Home = () => {
     const { isFTDOnly, setIsFTDOnly } = useRide();
 
     return (
-        <div className="relative h-screen font-sans text-[var(--text-primary)] overflow-hidden flex flex-col bg-[var(--bg-primary)]">
+        <div className="relative h-full font-sans text-[var(--text-primary)] overflow-hidden flex flex-col bg-[var(--bg-primary)]">
             <input
                 type="file"
                 ref={fileInputRef}
@@ -253,7 +253,7 @@ const Home = () => {
             </div>
 
             {/* UI Overlay - Top Column */}
-            <header className="relative z-10 p-8 flex justify-between items-start pt-12">
+            <header className="relative z-10 px-8 pb-8 flex justify-between items-start safe-top-padding">
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => setActiveSheet('profile')}
@@ -328,7 +328,7 @@ const Home = () => {
             </main>
 
 
-            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-sm">
+            <div className="fixed safe-bottom-inset left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-sm">
                 <nav className="backdrop-blur-3xl px-10 py-5 flex justify-between items-center rounded-[2.5rem] shadow-[0_30px_60px_-12px_rgba(0,0,0,0.15)] border-2"
                     style={{ background: 'var(--glass-bg)', borderColor: 'var(--glass-border)', backdropFilter: 'blur(40px)' }}>
                     {navItems.map(item => (

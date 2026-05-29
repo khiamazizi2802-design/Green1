@@ -1325,7 +1325,7 @@ const GreenRidePage = () => {
     const frankfurtCenter = [50.1109, 8.6821];
 
     return (
-        <div className="relative h-screen overflow-hidden text-[var(--text-primary)] font-sans" style={{ background: 'var(--bg-primary)' }}>
+        <div className="relative h-full overflow-hidden text-[var(--text-primary)] font-sans" style={{ background: 'var(--bg-primary)' }}>
             
             {/* Alive Infrastructure — Frankfurt Real-Time Grid */}
             <div className="absolute inset-0 z-0">
@@ -1455,7 +1455,7 @@ const GreenRidePage = () => {
             `}</style>
 
             {/* Top Navigation - Compact HUD Overlay */}
-            <header className="absolute top-0 left-0 right-0 z-20 p-4 pt-4 flex items-center justify-between pointer-events-none">
+            <header className="absolute top-0 left-0 right-0 z-20 p-4 flex items-center justify-between pointer-events-none safe-top-padding">
                 <button
                     onClick={() => {
                         if (showChat) {
@@ -1868,7 +1868,7 @@ const GreenRidePage = () => {
                     }
                     setSheetY(0);
                 }}
-                className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-10"
+                className="fixed bottom-0 left-0 right-0 z-40 p-4 safe-bottom-padding"
                 style={{ touchAction: 'none' }}
             >
                 <motion.div 
