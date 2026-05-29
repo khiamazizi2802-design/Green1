@@ -1,0 +1,29 @@
+workflows:
+  android-workflow:
+    name: Green Android Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      node: latest
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+    scripts:
+      - name: Install npm dependencies
+        script: |
+          npm install --prefix client
+          npm install
+      - name: Build React Client
+        script: |
+          npm run build --prefix client
+      - name: Sync Capacitor Android
+        script: |
+          npx cap sync android
+      - name: Build Android Package (Debug APK)
+        script: |
+          cd android
+          ./gradlew assembleDebug
+    artifacts:
+      - android/app/build/outputs/apk/**/*.apk
