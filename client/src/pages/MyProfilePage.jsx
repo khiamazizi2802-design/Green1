@@ -1,0 +1,316 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+    ArrowLeft, Settings, Heart, Share2, MoreHorizontal, 
+    Sparkles, Zap, Shield, Camera, Edit3, Star, LayoutGrid, Image as ImageIcon, Video, Plus,
+    ShieldAlert, Flag, Handshake, Users, Bell, UserPlus, Check, Trash2, X as CloseIcon
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useRide } from '../context/RideContext';
+import { triggerNotification } from '../components/NotificationToast';
+
+const MyProfilePage = () => {
+    const navigate = useNavigate();
+    
+    const { user } = useAuth();
+    
+    const [mockComplaints, setMockComplaints] = useState([
+        { id: 'GRN-421', business: 'Skyline Bar', reason: 'Unsafe Driving Report', date: '02.05.2026', status: 'Active' },
+    ]);
+
+    const [activeTab, setActiveTab] = useState('posts');
+    const [showRequests, setShowRequests] = useState(false);
+    
+    const { incomingRequests, setIncomingRequests, setMutualFriends } = useRide();
+
+    const myPosts = [
+        { 
+            id: 1, 
+            type: 'image',
+            img: "https://images.unsplash.com/photo-1574096079513-d8259312b785?w=800&q=80", 
+            caption: "Nothing beats the atmosphere at Green Underground tonight. ⚡", 
+            likes: 124, 
+            comments: 18,
+            time: "1h ago"
+        },
+        { 
+            id: 2, 
+            type: 'video',
+            img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&q=80", 
+            caption: "Testing the new 'Midnight Neon' cocktail. Pure art. 🍸", 
+            likes: 215, 
+            comments: 42,
+            time: "Yesterday"
+        }
+    ];
+
+    return (
+        <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans selection:bg-brand/30 transition-colors duration-300">
+            {/* Header / Cover */}
+            <div className="relative h-56 w-full bg-[var(--bg-secondary)] overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1550966841-3ee7adac1af0?w=1200&q=80" className="w-full h-full object-cover opacity-20" alt="Cover" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[var(--bg-primary)]" />
+                
+                <button 
+                    onClick={() => navigate('/home')}
+                    className="absolute top-12 left-6 w-12 h-12 bg-[var(--bg-primary)]/80 backdrop-blur-md border border-[var(--border-main)] rounded-2xl flex items-center justify-center text-brand z-20 shadow-xl"
+                >
+                    <ArrowLeft size={24} />
+                </button>
+                
+                {/* Social Requests Button - Top Right */}
+                <button 
+                    onClick={() => setShowRequests(true)}
+                    className="absolute top-12 right-6 w-12 h-12 bg-[var(--bg-primary)]/80 backdrop-blur-md border border-[var(--border-main)] rounded-2xl flex items-center justify-center text-black z-20 shadow-xl group transition-all active:scale-95"
+                >
+                    <Users size={22} className="group-hover:text-brand transition-colors" />
+                    {incomingRequests.length > 0 && (
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[var(--bg-primary)] shadow-[0_0_12px_#ef4444] animate-pulse" />
+                    )}
+                </button>
+
+            </div>
+
+            <div className="relative z-10 px-6 -mt-20 pb-32 max-w-lg mx-auto">
+                {/* Profile Info */}
+                <div className="flex flex-col items-center text-center">
+                    <div className="relative mb-6">
+                        <div className="w-40 h-40 rounded-[3rem] p-1.5 bg-gradient-to-tr from-brand via-brand-end to-brand shadow-[0_0_50px_rgba(52,211,153,0.3)]">
+                            <img src={user.avatar} alt={user.name} className="w-full h-full rounded-[2.8rem] bg-[var(--bg-secondary)] border-8 border-[var(--bg-primary)] shadow-inner" />
+                        </div>
+
+                    </div>
+
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-center gap-3">
+                            <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none">{user.name}</h1>
+                            <div className="w-6 h-6 bg-brand rounded-full flex items-center justify-center text-dark-900">
+                                <Star size={14} fill="currentColor" />
+                            </div>
+                        </div>
+                        <p className="text-brand font-black uppercase tracking-[0.3em] text-xs italic">{user.username}</p>
+                    </div>
+
+                    <div className="flex gap-4 mt-8 w-full">
+                        <div className="flex-1 px-4 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[2.5rem] text-center shadow-sm">
+                            <span className="block text-4xl font-black italic text-brand leading-none drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">{user?.greenFlags || 0}</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black/60 mt-1">Green Flags</span>
+                        </div>
+                        {user?.redFlags > 0 && (
+                            <div className="flex-1 px-4 py-4 bg-red-500/5 border border-red-500/20 rounded-[2rem] text-center">
+                                <span className="block text-2xl font-black italic text-red-500">{user.redFlags}</span>
+                                <span className="text-[7px] font-black uppercase tracking-widest text-red-500">Red Flags</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Hidden Inputs */}
+                    <input type="file" id="profile-pic-input" className="hidden" accept="image/*" onChange={(e) => alert('Profile Picture Updated from Gallery/Camera')} />
+                    <input type="file" id="cover-pic-input" className="hidden" accept="image/*" onChange={(e) => alert('Cover Photo Updated from Gallery/Camera')} />
+
+                    {/* Identity Upload Center - Hardened High Contrast */}
+                    <div className="w-full mt-10 p-1.5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[3rem] flex gap-2 shadow-2xl">
+                        <button 
+                            onClick={() => document.getElementById('profile-pic-input').click()}
+                            className="flex-1 py-5 bg-[#1A1A1A] text-white border border-white/10 rounded-[2.5rem] font-black uppercase tracking-[0.2em] italic text-[10px] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
+                        >
+                            <Camera size={16} /> Update Avatar
+                        </button>
+                        <button 
+                            onClick={() => document.getElementById('cover-pic-input').click()}
+                            className="flex-1 py-5 bg-[#1A1A1A] text-white border border-white/10 rounded-[2.5rem] font-black uppercase tracking-[0.2em] italic text-[10px] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
+                        >
+                            <ImageIcon size={16} /> Update Cover
+                        </button>
+                    </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex justify-between border-b border-white/5 mt-16 mb-8 px-6">
+                    {[
+                        { id: 'posts', label: 'Timeline', icon: LayoutGrid },
+                        { id: 'reels', label: 'My Reels', icon: Video },
+                        { id: 'complaints', label: 'Complaints', icon: ShieldAlert }
+                    ].map(tab => (
+                        <button 
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex flex-col items-center gap-2 pb-4 text-[10px] font-black uppercase tracking-[0.2em] italic transition-all relative ${activeTab === tab.id ? 'text-brand' : 'text-gray-900 opacity-60 hover:opacity-100'}`}
+                        >
+                            <tab.icon size={20} />
+                            {tab.label}
+                            {activeTab === tab.id && (
+                                <motion.div layoutId="my-tab-active" className="absolute bottom-0 left-0 right-0 h-1 bg-brand rounded-t-full shadow-[0_0_10px_var(--brand-glow)]" />
+                            )}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Grid Content */}
+                <div className="w-full">
+                    <AnimatePresence mode="wait">
+                        {activeTab === 'complaints' ? (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="space-y-4"
+                            >
+                                {mockComplaints.length > 0 ? (
+                                    mockComplaints.map(c => (
+                                        <div key={c.id} className="p-6 bg-white/5 rounded-[2rem] border border-white/5 flex items-center justify-between group">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500"><Flag size={20} /></div>
+                                                <div>
+                                                    <p className="text-sm font-black italic uppercase text-white">{c.business}</p>
+                                                    <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">{c.reason}</p>
+                                                </div>
+                                            </div>
+                                            <button 
+                                                onClick={() => setMockComplaints(prev => prev.filter(i => i.id !== c.id))}
+                                                className="px-4 py-2 bg-brand/10 border border-brand/20 text-brand rounded-xl text-[8px] font-black uppercase tracking-widest hover:bg-brand hover:text-dark-900 transition-all flex items-center gap-2"
+                                            >
+                                                <Handshake size={12} /> Revoke Flag
+                                            </button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="p-12 text-center space-y-4">
+                                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-gray-600 mx-auto"><ShieldCheck size={32} /></div>
+                                        <p className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">All accounts are in good standing.</p>
+                                    </div>
+                                )}
+                            </motion.div>
+                        ) : (
+                            <div className="grid grid-cols-2 gap-4">
+                                {myPosts.map((post) => (
+                                    <motion.div 
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        key={post.id} 
+                                        className="aspect-[3/4] bg-dark-900 border border-white/5 rounded-[2.5rem] overflow-hidden relative group"
+                                    >
+                                        <img src={post.img} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                                            <div className="flex items-center gap-1.5">
+                                                <Heart size={12} className="text-brand fill-brand" />
+                                                <span className="text-[10px] font-black">{post.likes}</span>
+                                            </div>
+                                            <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
+                                                <MoreHorizontal size={14} />
+                                            </div>
+                                        </div>
+                                        {post.type === 'video' && (
+                                            <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center">
+                                                <Video size={14} className="text-white" />
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                ))}
+                                {/* Add Post Placeholder */}
+                                <motion.button 
+                                    whileHover={{ scale: 1.02 }}
+                                    className="aspect-[3/4] border-2 border-dashed border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 text-gray-600 hover:text-brand hover:border-brand/40 transition-all bg-white/5"
+                                >
+                                    <div className="w-12 h-12 rounded-full bg-dark-950 border border-white/10 flex items-center justify-center">
+                                        <Plus size={24} />
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest">New Moment</span>
+                                </motion.button>
+                            </div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </div>
+
+            {/* Social Signals Overlay */}
+            <AnimatePresence>
+                {showRequests && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/80 backdrop-blur-md"
+                        onClick={() => setShowRequests(false)}
+                    >
+                        <motion.div 
+                            initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="w-full max-w-lg bg-[var(--bg-primary)] rounded-t-[3rem] sm:rounded-[3.5rem] p-8 border-t sm:border border-[var(--border-main)] shadow-2xl space-y-8"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <h2 className="text-2xl font-black italic uppercase text-white tracking-tighter">Social Signals</h2>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand">Incoming Connections</p>
+                                </div>
+                                <button 
+                                    onClick={() => setShowRequests(false)}
+                                    className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10"
+                                >
+                                    <CloseIcon size={20} />
+                                </button>
+                            </div>
+
+                            <div className="space-y-4 max-h-[50vh] overflow-y-auto no-scrollbar pr-2">
+                                {incomingRequests.length > 0 ? (
+                                    incomingRequests.map((req) => (
+                                        <div key={req.id} className="p-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[2.5rem] flex items-center justify-between group hover:border-brand/30 transition-all">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-14 h-14 rounded-[1.2rem] border-2 border-brand/20 p-1">
+                                                    <img src={req.image} alt="" className="w-full h-full rounded-[0.8rem] object-cover" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-black italic uppercase text-black tracking-tight">{req.name}</p>
+                                                    <p className="text-[8px] font-bold text-brand uppercase tracking-widest mt-0.5 flex items-center gap-1.5">
+                                                        <Sparkles size={10} /> Secure Signal Sent
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button 
+                                                    onClick={() => {
+                                                        setIncomingRequests(prev => prev.filter(r => r.id !== req.id));
+                                                        setMutualFriends(prev => [...prev, req]);
+                                                        triggerNotification("CONNECTION ESTABLISHED", "SUCCESS");
+                                                    }}
+                                                    className="w-12 h-12 rounded-2xl bg-brand flex items-center justify-center text-dark-900 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand/20"
+                                                >
+                                                    <Check size={20} />
+                                                </button>
+                                                <button 
+                                                    onClick={() => {
+                                                        setIncomingRequests(prev => prev.filter(r => r.id !== req.id));
+                                                        triggerNotification("SIGNAL PURGED", "INFO");
+                                                    }}
+                                                    className="w-12 h-12 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-center text-black/40 hover:text-red-400 hover:border-red-400/30 transition-all"
+                                                >
+                                                    <Trash2 size={20} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="p-12 text-center space-y-4 bg-white/5 rounded-[3rem] border border-dashed border-white/10">
+                                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-gray-700 mx-auto">
+                                            <Bell size={32} />
+                                        </div>
+                                        <p className="text-[10px] font-black uppercase text-gray-600 tracking-[0.2em]">No pending social signals.</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <button 
+                                onClick={() => setShowRequests(false)}
+                                className="w-full py-5 bg-white/5 border border-white/10 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-all"
+                            >
+                                Dismiss All
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
+
+export default MyProfilePage;

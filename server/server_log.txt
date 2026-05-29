@@ -1,0 +1,83 @@
+Green Dispatch Server running on port 3001
+Client connected: c--c67TgPeWd1mmVAAAC
+Client connected: BXVFVbtdRgX34YNrAAAF
+Client connected: g8jD3qqtYL7MXBroAAAI
+Client connected: 9sItR1-em2mxGVbSAAAL
+Client disconnected
+Client connected: gTDkDjWwz5XjnyFqAAAO
+Client disconnected
+Client connected: Sj-FxeWsZLy-AYK1AAAR
+Client disconnected
+Client connected: h2iWUd9iFNy2RKD_AAAU
+Client disconnected
+Client connected: B8NMFYOoCZdhH9nLAAAX
+Client disconnected
+Client connected: mzEY3LWnE78XfavxAAAa
+Client disconnected
+Client connected: QJHVjRSoLMfNWao6AAAd
+Client disconnected
+Client connected: twCGrOsPUODnX-JSAAAg
+Client disconnected
+Client connected: h_N2asdc8ijZFEkYAAAj
+Client disconnected
+Client connected: alUB1Q0FIJdUMmb0AAAm
+Client disconnected
+Client connected: ow-_MGP3dJTI5_swAAAp
+Client disconnected
+Client connected: lthzVVmf8k6sGubyAAAs
+Client disconnected
+Client connected: 46S10xHA64JCptHvAAAv
+Client disconnected
+Client connected: p2deGDIi7e3gwqp5AAAy
+Client disconnected
+Client connected: 1nVW7V0cDH1TC0GXAAA1
+Client disconnected
+Client connected: S8N79BxyMTaB6Pr0AAA4
+Client disconnected
+Client disconnected
+Client connected: Vd17uMhvPlnVpPZ-AAA7
+Client disconnected
+Client connected: 8Q1T69rkUSQ1i5siAAA-
+Client disconnected
+Client connected: s0R_AsoEoT0mK3v0AABB
+Client connected: kiUP-hWgcK303E5cAABE
+Client disconnected
+Client connected: B4fzyxesHtzZB83qAABH
+Client disconnected
+Client connected: frmQcFallD9tIepLAABK
+Client disconnected
+Client connected: Lgfyy2n2pX8MZQXNAABN
+Client disconnected
+Client connected: FUi_C5REQmGEbTuWAABQ
+Client disconnected
+Client connected: a76oQ2Z6lY1YwQ_KAABT
+Client disconnected
+Client connected: -R3NNTmh_3ue2gT0AABW
+Client disconnected
+Client connected: SsjzTS86aJcgRepxAABZ
+Client disconnected
+Client connected: qni5GJOpHpUSBD_AAABc
+Client disconnected
+Client connected: TW4L_owgNSaFp5mbAABf
+Client disconnected
+Client connected: hFezr-IKvWCADcsKAABi
+Client disconnected
+Client connected: U0mJfsPKNsntgEF3AABl
+Client disconnected
+Client connected: 09yKavoUlhfsOvovAABo
+Cash payment requested for table: 6
+Client disconnected
+Client connected: TFWFHBSUKXZtPfPxAABr
+Client connected: Q3AE5TKKstP8ELiWAABy
+Client connected: H00tk_C5Uhyyng7xAABz
+Client connected: XDMOCghdXVJuI70VAAB0
+Client disconnected
+Client connected: Zwf0J0CAQ1DxTVpqAAB3
+Client disconnected
+Client disconnected
+Client disconnected
+Client disconnected
+Client connected: OYfi_7rZWlS8UVPwAAB6
+Client connected: PugWprVqPldPfu6-AACB
+Client connected: q40LrkDQNuK2INswAACC
+Client connected: 8oR321qiTbNsuSYcAACD

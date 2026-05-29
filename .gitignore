@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+client/dist/
+server/node_modules/
+client/node_modules/
+electron/dist/
+electron/out/
+*.env

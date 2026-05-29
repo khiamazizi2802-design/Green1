@@ -1,0 +1,26 @@
+{
+  "name": "green-native",
+  "version": "1.0.0",
+  "main": "electron/main.js",
+  "scripts": {
+    "electron:dev": "concurrently \"npm run dev --prefix client\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:build": "npm run build --prefix client && electron-builder",
+    "mobile:ios": "npm run build --prefix client && npx cap copy ios && npx cap open ios",
+    "mobile:android": "npm run build --prefix client && npx cap copy android && npx cap open android",
+    "mobile:sync": "npm run build --prefix client && npx cap sync"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/cli": "^8.3.1",
+    "@capacitor/core": "^8.3.1",
+    "@capacitor/ios": "^8.3.1",
+    "cross-env": "^10.1.0",
+    "electron": "^41.3.0",
+    "electron-is-dev": "^3.0.1",
+    "wait-on": "^9.0.5"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "electron-builder": "^26.8.1"
+  }
+}
