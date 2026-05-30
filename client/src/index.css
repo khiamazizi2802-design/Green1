@@ -74,12 +74,12 @@
     --brand-mid: #0A0A0A;
     --brand-end: #1A1A1A;
 }
-html, body, #root, .app-content-wrapper {
-    height: 100%;
+html, body, #root {
     width: 100%;
+    min-height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow-x: hidden;
     position: relative;
 }
 
@@ -91,12 +91,19 @@ body {
                 color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* ── Global Layering ───────────────────────────────── */
 .app-content-wrapper {
     position: relative;
     z-index: 10;
+    width: 100%;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Safe Area Utility Overlays */

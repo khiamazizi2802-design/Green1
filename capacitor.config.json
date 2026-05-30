@@ -1,8 +1,5 @@
 {
   "appId": "com.green-nightlife.app",
   "appName": "Green",
-  "webDir": "client/dist",
-  "ios": {
-    "scrollEnabled": false
-  }
+  "webDir": "client/dist"
 }
