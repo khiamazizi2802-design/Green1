@@ -263,8 +263,9 @@ const Home = () => {
                     </button>
 
                     <div>
-
-                        <h1 className="text-2xl font-black italic tracking-tighter text-black uppercase">{userInfo.firstName}</h1>
+                        <h1 className="text-2xl font-black italic tracking-tighter text-[var(--text-primary)] uppercase">
+                            {user?.name ? user.name.split(' ')[0] : userInfo.firstName}
+                        </h1>
                     </div>
                 </div>
                 
