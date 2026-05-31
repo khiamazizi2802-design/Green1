@@ -682,7 +682,7 @@ const VenueMenuPage = () => {
     const totalCost = cart.reduce((sum, item) => sum + item.price, 0);
 
     return (
-        <div className="min-h-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative pb-32">
+        <div className="min-h-[100dvh] bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative pb-32">
             <AnimatePresence>
                 {showToast && (
                     <motion.div 

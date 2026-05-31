@@ -367,7 +367,7 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error('Firebase Auth sign up failed:', error);
             setLoading(false);
-            let message = 'Secure registration gateway offline.';
+            let message = `Secure registration gateway offline: ${error.message || error.code || error}`;
             if (error.code === 'auth/email-already-in-use') {
                 message = 'Email signature already registered in network.';
             } else if (error.code === 'auth/weak-password') {

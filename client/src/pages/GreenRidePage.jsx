@@ -1325,7 +1325,7 @@ const GreenRidePage = () => {
     const frankfurtCenter = [50.1109, 8.6821];
 
     return (
-        <div className="relative min-h-full overflow-y-auto text-[var(--text-primary)] font-sans" style={{ background: 'var(--bg-primary)' }}>
+        <div className="relative min-h-[100dvh] overflow-y-auto text-[var(--text-primary)] font-sans" style={{ background: 'var(--bg-primary)' }}>
             
             {/* Alive Infrastructure — Frankfurt Real-Time Grid */}
             <div className="absolute inset-0 z-0">
