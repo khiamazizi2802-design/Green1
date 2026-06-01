@@ -256,6 +256,33 @@ const Home = () => {
         { id: 3, date: '14 Feb, 09:30', destination: 'Uplink Tower', driver: 'Marcus V.', service: 'Classic', price: '€ 8.90', icon: Clock }
     ]);
 
+    const [favoriteDrivers, setFavoriteDrivers] = useState([
+        { name: "Sergei K.", rating: 5.0, trips: 124, vehicle: "Tesla Model S - Black", status: "Available", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sergei" },
+        { name: "Elena R.", rating: 4.9, trips: 89, vehicle: "Mercedes EQE", status: "In Ride", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena" },
+        { name: "Marcus V.", rating: 5.0, trips: 256, vehicle: "Audi e-tron GT", status: "Available", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus" }
+    ]);
+
+    const removeDriver = (name) => {
+        setFavoriteDrivers(prev => prev.filter(d => d.name !== name));
+    };
+
+    const addDriverFromHistory = () => {
+        const pool = [
+            { name: "Sergei K.", rating: 5.0, trips: 124, vehicle: "Tesla Model S - Black", status: "Available", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sergei" },
+            { name: "Elena R.", rating: 4.9, trips: 89, vehicle: "Mercedes EQE", status: "In Ride", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena" },
+            { name: "Marcus V.", rating: 5.0, trips: 256, vehicle: "Audi e-tron GT", status: "Available", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus" }
+        ];
+        
+        const currentNames = favoriteDrivers.map(d => d.name);
+        const candidates = pool.filter(d => !currentNames.includes(d.name));
+        
+        if (candidates.length > 0) {
+            setFavoriteDrivers(prev => [...prev, candidates[0]]);
+        } else {
+            alert("All drivers from history are already in your favorites list!");
+        }
+    };
+
     // Mock distance for sharing trigger
     const distanceToNearestOrder = 0.8;
 
@@ -662,11 +689,7 @@ const Home = () => {
 
                             {/* Driver List */}
                             <div className="space-y-4">
-                                {[
-                                    { name: "Sergei K.", rating: 5.0, trips: 124, vehicle: "Tesla Model S - Black", status: "Available", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sergei" },
-                                    { name: "Elena R.", rating: 4.9, trips: 89, vehicle: "Mercedes EQE", status: "In Ride", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena" },
-                                    { name: "Marcus V.", rating: 5.0, trips: 256, vehicle: "Audi e-tron GT", status: "Available", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus" }
-                                ].map((driver, i) => (
+                                {favoriteDrivers.map((driver, i) => (
                                     <div key={i} className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-5 rounded-[2.5rem] group hover:border-danger/20 transition-all">
                                         <div className="flex justify-between items-start mb-4">
                                             <div className="flex items-center gap-4">
@@ -682,8 +705,17 @@ const Home = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${driver.status === 'Available' ? 'bg-brand/10 text-brand border border-brand/20' : 'bg-white/5 text-gray-500 border border-white/10'}`}>
-                                                {driver.status}
+                                            <div className="flex items-center gap-2">
+                                                <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${driver.status === 'Available' ? 'bg-brand/10 text-brand border border-brand/20' : 'bg-white/5 text-gray-500 border border-white/10'}`}>
+                                                    {driver.status}
+                                                </div>
+                                                <button
+                                                    onClick={() => removeDriver(driver.name)}
+                                                    className="w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 hover:bg-red-505/20 hover:bg-red-500 hover:text-white hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
+                                                    title="Remove Driver"
+                                                >
+                                                    <Trash2 size={13} />
+                                                </button>
                                             </div>
                                         </div>
                                         <div className="bg-white/5 p-4 rounded-2xl flex justify-between items-center border border-white/5 group-hover:border-danger/10 transition-all">
@@ -699,7 +731,10 @@ const Home = () => {
                                 ))}
                             </div>
 
-                            <button className="w-full py-5 border border-dashed border-[var(--border-main)] text-[var(--text-secondary)] font-black uppercase tracking-widest text-[10px] rounded-[2rem] hover:border-danger/30 hover:text-danger transition-all">
+                            <button 
+                                onClick={addDriverFromHistory}
+                                className="w-full py-5 border border-dashed border-[var(--border-main)] text-[var(--text-secondary)] font-black uppercase tracking-widest text-[10px] rounded-[2rem] hover:border-danger/30 hover:text-danger transition-all cursor-pointer"
+                            >
                                 + Add New Favorite from History
                             </button>
                         </div>
