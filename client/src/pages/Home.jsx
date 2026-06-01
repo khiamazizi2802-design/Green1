@@ -94,6 +94,39 @@ const Home = () => {
     const [activeSheet, setActiveSheet] = useState(null);
     const [profileSubView, setProfileSubView] = useState(null); // null, 'account', 'history', 'help'
     const [helpSubView, setHelpSubView] = useState(null); // null, 'chat', 'dsgvo', 'app', 'email'
+    const [chatMessages, setChatMessages] = useState([
+        { sender: 'ai', text: `Hello! How can I assist you with your active tickets, trips, or venue orders today?` }
+    ]);
+    const [chatInput, setChatInput] = useState('');
+    const [isAiTyping, setIsAiTyping] = useState(false);
+
+    const handleSendChatMessage = () => {
+        if (!chatInput.trim()) return;
+
+        const userMsg = chatInput.trim();
+        const updatedMessages = [...chatMessages, { sender: 'user', text: userMsg }];
+        setChatMessages(updatedMessages);
+        setChatInput('');
+        setIsAiTyping(true);
+
+        setTimeout(() => {
+            let aiText = "I can help you retrieve information regarding your active tickets, trips, or order statuses. For any modifications, cancellations, or refund requests, please note that our support team's processing window is always 3 working days (3 Werktage).";
+            
+            const lowerMsg = userMsg.toLowerCase();
+            if (lowerMsg.includes('ticket') || lowerMsg.includes('karte') || lowerMsg.includes('pass') || lowerMsg.includes('karten') || lowerMsg.includes('eintritt')) {
+                aiText = "Your active venue and stadium tickets are safely listed in your personal hub. If you want to modify a booking, request a refund, or cancel a ticket, please note that our standard processing time is always 3 working days (3 Werktage).";
+            } else if (lowerMsg.includes('trip') || lowerMsg.includes('ride') || lowerMsg.includes('fahrt') || lowerMsg.includes('dispat') || lowerMsg.includes('fahrten') || lowerMsg.includes('route')) {
+                aiText = "All information regarding active rides or historic trip receipts can be found in your Ride History. For claims regarding lost items or fare adjustments, please note that our support team will process your request within 3 working days (3 Werktage).";
+            } else if (lowerMsg.includes('order') || lowerMsg.includes('bestellung') || lowerMsg.includes('essen') || lowerMsg.includes('drink') || lowerMsg.includes('getränk') || lowerMsg.includes('bestellungen')) {
+                aiText = "Your catering and venue orders are sent in real-time to the merchant. For order refunds, payment settlements, or dispute tickets, our secure merchant clearing cycle takes exactly 3 working days (3 Werktage).";
+            } else if (lowerMsg.includes('zeit') || lowerMsg.includes('dauer') || lowerMsg.includes('tage') || lowerMsg.includes('werktage') || lowerMsg.includes('lange') || lowerMsg.includes('support') || lowerMsg.includes('bearbeit')) {
+                aiText = "The standard processing period for all customer claims, ticket cancellations, and support inquiries is strictly 3 working days (3 Werktage). We process every request in the order it was received.";
+            }
+
+            setChatMessages(prev => [...prev, { sender: 'ai', text: aiText }]);
+            setIsAiTyping(false);
+        }, 1200);
+    };
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [paymentMethods, setPaymentMethods] = useState([
         { id: 1, type: 'Credit Card', provider: 'Mastercard', last4: '4242 4242 4242 4242', icon: CreditCard, name: 'Alex Passenger', expiry: '12/26', cvv: '123', status: 'Active' },
@@ -1069,21 +1102,49 @@ const Home = () => {
                                 </>
                             ) : helpSubView === 'chat' ? (
                                 <div className="space-y-4 h-[50vh] flex flex-col">
-                                    <div className="flex-1 bg-dark-950/50 rounded-[2rem] p-4 overflow-y-auto space-y-4 border border-white/5">
-                                        <div className="flex gap-3 max-w-[80%]">
-                                            <div className="w-8 h-8 rounded-full bg-brand/20 flex items-center justify-center shrink-0">
-                                                <Zap size={14} className="text-brand" />
-                                            </div>
-                                            <div className="bg-[var(--bg-secondary)] p-3 rounded-2xl rounded-tl-none border border-white/5">
-                                                <p className="text-xs text-brand uppercase font-black tracking-widest mb-1">Green AI</p>
-                                                <p className="text-xs italic text-gray-300 leading-relaxed">Hello Alex! How can I assist you with your ride today?</p>
-                                            </div>
+                                    <div className="flex-1 bg-[var(--bg-secondary)]/50 rounded-[2rem] p-4 overflow-y-auto space-y-4 border border-[var(--border-main)] flex flex-col">
+                                        <div className="space-y-4 flex-1">
+                                            {chatMessages.map((msg, index) => (
+                                                <div key={index} className={`flex gap-3 max-w-[85%] ${msg.sender === 'user' ? 'ml-auto flex-row-reverse' : ''}`}>
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.sender === 'user' ? 'bg-brand text-dark-900' : 'bg-brand/20 text-brand'}`}>
+                                                        {msg.sender === 'user' ? <User size={14} /> : <Zap size={14} />}
+                                                    </div>
+                                                    <div className={`p-3 rounded-2xl border border-[var(--border-main)] ${msg.sender === 'user' ? 'bg-brand text-dark-950 rounded-tr-none' : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-tl-none'}`}>
+                                                        <p className={`text-[8px] uppercase font-black tracking-widest mb-1 ${msg.sender === 'user' ? 'text-dark-900/60' : 'text-brand'}`}>
+                                                            {msg.sender === 'user' ? 'You' : 'Green AI'}
+                                                        </p>
+                                                        <p className="text-xs font-bold leading-relaxed">{msg.text}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {isAiTyping && (
+                                                <div className="flex gap-3 max-w-[80%] animate-pulse">
+                                                    <div className="w-8 h-8 rounded-full bg-brand/20 flex items-center justify-center shrink-0">
+                                                        <Zap size={14} className="text-brand" />
+                                                    </div>
+                                                    <div className="bg-[var(--bg-secondary)] p-3 rounded-2xl rounded-tl-none border border-[var(--border-main)] text-[var(--text-muted)] text-xs italic">
+                                                        Green AI is typing...
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className="bg-dark-900 p-2 rounded-3xl border border-white/10 flex items-center gap-2">
-                                        <button className="p-3 text-gray-500 hover:text-brand transition-colors"><Paperclip size={20} /></button>
-                                        <input type="text" placeholder="Describe your issue..." className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-black italic text-white placeholder:text-gray-600 px-2" />
-                                        <button className="p-3 bg-brand text-dark-900 rounded-2xl hover:scale-105 active:scale-95 transition-all"><Send size={20} /></button>
+                                    <div className="bg-[var(--bg-secondary)] p-2 rounded-3xl border border-[var(--border-main)] flex items-center gap-2">
+                                        <button className="p-3 text-[var(--text-muted)] hover:text-brand transition-colors"><Paperclip size={20} /></button>
+                                        <input 
+                                            type="text" 
+                                            value={chatInput}
+                                            onChange={(e) => setChatInput(e.target.value)}
+                                            onKeyDown={(e) => e.key === 'Enter' && handleSendChatMessage()}
+                                            placeholder="Describe your issue..." 
+                                            className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-black italic text-[var(--text-primary)] placeholder:text-gray-500/60 px-2 outline-none" 
+                                        />
+                                        <button 
+                                            onClick={handleSendChatMessage}
+                                            className="p-3 bg-brand text-dark-900 rounded-2xl hover:scale-105 active:scale-95 transition-all"
+                                        >
+                                            <Send size={20} />
+                                        </button>
                                     </div>
                                 </div>
                             ) : helpSubView === 'dsgvo' ? (
