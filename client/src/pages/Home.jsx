@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Globe,
+    Smartphone,
+    X,
     Search,
     Zap,
     Share2,
@@ -69,6 +71,23 @@ const Home = () => {
     const { logout, login, user } = useAuth();
     const navigate = useNavigate();
     const { t, setLang, lang, dir } = useLanguage();
+    
+    // NOTCH & SAFE AREA INTEGRATION
+    const [useSafeArea, setUseSafeArea] = useState(() => {
+        return localStorage.getItem('green_manager_use_safe_area') !== 'false';
+    });
+    const [notchAdjustment, setNotchAdjustment] = useState(() => {
+        return parseInt(localStorage.getItem('green_manager_notch_adjustment') || (window.innerWidth < 768 ? '16' : '0'), 10);
+    });
+    const [isNotchPanelOpen, setIsNotchPanelOpen] = useState(false);
+
+    useEffect(() => {
+        localStorage.setItem('green_manager_use_safe_area', useSafeArea ? 'true' : 'false');
+    }, [useSafeArea]);
+
+    useEffect(() => {
+        localStorage.setItem('green_manager_notch_adjustment', notchAdjustment.toString());
+    }, [notchAdjustment]);
     
     const [nearbyVenue, setNearbyVenue] = useState(null);
 
@@ -378,7 +397,13 @@ const Home = () => {
     const { isFTDOnly, setIsFTDOnly } = useRide();
 
     return (
-        <div className="relative h-full font-sans text-[var(--text-primary)] overflow-hidden flex flex-col bg-[var(--bg-primary)]">
+        <div 
+            className="absolute left-0 right-0 bottom-0 overflow-hidden font-sans text-[var(--text-primary)] flex flex-col bg-[var(--bg-primary)] transition-all duration-300"
+            style={{
+                top: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`,
+                height: `calc(100% - (${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px))`
+            }}
+        >
             {/* Account Deletion Protocol Grace Period Lockdown Screen */}
             <AnimatePresence>
                 {deletionProtocolActive && (
@@ -467,7 +492,12 @@ const Home = () => {
             </div>
 
             {/* UI Overlay - Top Column */}
-            <header className="relative z-10 px-8 pb-8 flex justify-between items-start safe-top-padding">
+            <header 
+                className="relative z-10 px-8 pb-8 flex justify-between items-start"
+                style={{
+                    paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px + 1.25rem)`
+                }}
+            >
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => setActiveSheet('profile')}
@@ -484,6 +514,108 @@ const Home = () => {
                 </div>
                 
                 <div className="flex items-center gap-3">
+                    {/* Notch / Header Height Fit Controller */}
+                    <div className="relative z-50">
+                        <button 
+                            onClick={() => setIsNotchPanelOpen(!isNotchPanelOpen)}
+                            className={`w-12 h-12 rounded-2xl bg-[var(--bg-secondary)] border flex items-center justify-center relative shadow-lg hover:scale-105 active:scale-95 transition-all ${notchAdjustment > 0 || useSafeArea ? 'border-brand/40 text-brand shadow-[0_0_15px_rgba(52,211,153,0.1)]' : 'border-[var(--border-main)] text-[var(--accent-primary)]'}`}
+                            title="Notch & Safe Area Alignment"
+                        >
+                            <Smartphone size={20} className={notchAdjustment > 0 ? 'text-brand animate-pulse' : ''} />
+                        </button>
+                        
+                        <AnimatePresence>
+                            {isNotchPanelOpen && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    className="absolute right-0 mt-3 w-72 bg-[#0B121E]/95 backdrop-blur-2xl border border-brand/20 rounded-3xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.6)] z-[999]"
+                                >
+                                    <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <Smartphone size={14} className="text-brand" />
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand">Notch & Safe-Fit</span>
+                                        </div>
+                                        <button onClick={() => setIsNotchPanelOpen(false)} className="text-secondary hover:text-primary">
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="space-y-4 text-left">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[9px] font-black uppercase text-secondary">Auto Safe Area</span>
+                                            <button 
+                                                onClick={() => setUseSafeArea(!useSafeArea)}
+                                                className={`w-9 h-5 rounded-full transition-colors relative flex items-center p-0.5 ${useSafeArea ? 'bg-brand' : 'bg-white/10'}`}
+                                            >
+                                                <div className={`w-4 h-4 bg-dark-950 rounded-full transition-transform ${useSafeArea ? 'translate-x-4' : 'translate-x-0'}`} />
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="space-y-1.5">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[9px] font-black uppercase text-secondary">Custom Offset</span>
+                                                <span className="text-xs font-black text-brand italic">{notchAdjustment}px</span>
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-3">
+                                                <button 
+                                                    onClick={() => setNotchAdjustment(Math.max(0, notchAdjustment - 2))}
+                                                    className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-primary font-black"
+                                                >
+                                                    -
+                                                </button>
+                                                <input 
+                                                    type="range" 
+                                                    min="0" 
+                                                    max="60" 
+                                                    value={notchAdjustment}
+                                                    onChange={(e) => setNotchAdjustment(parseInt(e.target.value, 10))}
+                                                    className="flex-1 accent-brand h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                                                />
+                                                <button 
+                                                    onClick={() => setNotchAdjustment(Math.min(60, notchAdjustment + 2))}
+                                                    className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-primary font-black"
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-3 gap-2 pt-2">
+                                            <button 
+                                                onClick={() => setNotchAdjustment(0)}
+                                                className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 0 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
+                                            >
+                                                0px
+                                                <span className="block text-[6px] opacity-40">Desktop</span>
+                                            </button>
+                                            <button 
+                                                onClick={() => setNotchAdjustment(20)}
+                                                className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 20 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
+                                            >
+                                                20px
+                                                <span className="block text-[6px] opacity-40">Compact</span>
+                                            </button>
+                                            <button 
+                                                onClick={() => setNotchAdjustment(44)}
+                                                className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 44 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
+                                            >
+                                                44px
+                                                <span className="block text-[6px] opacity-40">Sim Notch</span>
+                                            </button>
+                                        </div>
+                                        
+                                        <p className="text-[7px] text-gray-500 leading-normal uppercase tracking-wider">
+                                            Fits UI automatically to notches, status bars, and custom cases. Live syncing active.
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
                     {/* Inbox / Messages Button */}
                     <button
                         onClick={() => navigate('/messages')}

@@ -1,18 +1,52 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Search, UserPlus, ChevronRight, Heart, MessageCircle, Share2, Play, Plus, Zap, MapPin, Flag } from 'lucide-react';
-// eslint-disable-next-line no-unused-vars
+import { X, Search, UserPlus, ChevronRight, Heart, MessageCircle, Share2, Plus, Zap, MapPin, Flag, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PostsFeed = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
+    
+    // Notch State from LocalStorage
+    const useSafeArea = localStorage.getItem('green_manager_use_safe_area') !== 'false';
+    const notchAdjustment = parseInt(localStorage.getItem('green_manager_notch_adjustment') || (window.innerWidth < 768 ? '16' : '0'), 10);
+
     const [isCreating, setIsCreating] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
 
+    // Like system state
+    const [likedPosts, setLikedPosts] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('green_posts_likes') || '{}');
+        } catch {
+            return {};
+        }
+    });
+
+    // Custom comment system state
+    const [postsComments, setPostsComments] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('green_posts_comments') || '{}');
+        } catch {
+            return {};
+        }
+    });
+    const [showCommentsForPost, setShowCommentsForPost] = useState(null);
+    const [newCommentText, setNewCommentText] = useState('');
+
+    // Share system state
+    const [showShareForPost, setShowShareForPost] = useState(null);
+    const [selectedShareFriends, setSelectedShareFriends] = useState([]);
+
+    // Create post state
+    const [captionText, setCaptionText] = useState('');
+    const [selectedMedia, setSelectedMedia] = useState('https://images.unsplash.com/photo-1549239120-0a4c321d1bc1?q=80&w=600&auto=format&fit=crop');
+
     const mockFriends = [
         { id: 'u1', name: 'Alex Night', handle: '@night_hawk', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex' },
-        { id: 'u2', name: 'Sara Luxe', handle: '@sara_zenith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sara' }
+        { id: 'u2', name: 'Sara Luxe', handle: '@sara_zenith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sara' },
+        { id: 'u3', name: 'Mick Driver', handle: '@mick_green', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mick' },
+        { id: 'u4', name: 'Lukas Manager', handle: '@lukas_mgr', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lukas' }
     ];
 
     const [localPosts, setLocalPosts] = useState([]);
@@ -23,12 +57,123 @@ const PostsFeed = ({ isOpen, onClose }) => {
     }, [isOpen]);
 
     const defaultPosts = [
-        { id: 1, type: 'video', url: 'https://assets.mixkit.co/videos/preview/mixkit-city-traffic-at-night-1002-large.mp4', user: 'StreetVibes', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Street', likes: '12K', greenFlags: 842, caption: 'Cyber city vibes tonight. ⚡ #NeonRide' },
-        { id: 101, type: 'video', url: 'https://assets.mixkit.co/videos/preview/mixkit-bartender-pouring-a-drink-into-a-glass-42544-large.mp4', user: 'SkylineBar', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Skyline', likes: '840', greenFlags: 2150, caption: 'New Summer Cocktails are here! 🍹 #SkylineVibes', isBusiness: true },
-        { id: 2, type: 'photo', url: 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?q=80&w=1080&auto=format&fit=crop', user: 'ParisLover', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Paris', likes: '8.4K', greenFlags: 124, caption: 'Destination reached. The future is Green. 🗼' },
+        { id: 1, type: 'video', url: 'https://assets.mixkit.co/videos/preview/mixkit-city-traffic-at-night-1002-large.mp4', user: 'StreetVibes', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Street', likesCount: 12400, greenFlags: 842, caption: 'Cyber city vibes tonight. ⚡ #NeonRide' },
+        { id: 101, type: 'video', url: 'https://assets.mixkit.co/videos/preview/mixkit-bartender-pouring-a-drink-into-a-glass-42544-large.mp4', user: 'SkylineBar', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Skyline', likesCount: 840, greenFlags: 2150, caption: 'New Summer Cocktails are here! 🍹 #SkylineVibes', isBusiness: true },
+        { id: 2, type: 'photo', url: 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?q=80&w=1080&auto=format&fit=crop', user: 'ParisLover', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Paris', likesCount: 8420, greenFlags: 124, caption: 'Destination reached. The future is Green. 🗼' },
     ];
 
     const posts = [...localPosts, ...defaultPosts];
+
+    // Toggle Like
+    const handleLikeToggle = (postId) => {
+        const updated = { ...likedPosts, [postId]: !likedPosts[postId] };
+        setLikedPosts(updated);
+        localStorage.setItem('green_posts_likes', JSON.stringify(updated));
+    };
+
+    // Format like count beautifully
+    const getLikesDisplay = (post) => {
+        const isLiked = likedPosts[post.id];
+        let baseCount = post.likesCount || 0;
+        if (isLiked) {
+            baseCount += 1;
+        }
+        if (baseCount >= 1000) {
+            return (baseCount / 1000).toFixed(1) + 'K';
+        }
+        return baseCount.toString();
+    };
+
+    // Comments System Handlers
+    const handleOpenComments = (postId) => {
+        setShowCommentsForPost(postId);
+        setNewCommentText('');
+    };
+
+    const getCommentsForPost = (postId) => {
+        const comments = postsComments[postId] || [];
+        if (comments.length === 0) {
+            // Return some initial mock comments for visualization
+            return [
+                { user: 'night_hawk', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex', text: 'Stunning capture! Let’s meet up tonight ⚡', time: '2h ago' },
+                { user: 'sara_zenith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sara', text: 'This looks so premium! 🌱💚', time: '1h ago' }
+            ];
+        }
+        return comments;
+    };
+
+    const handleAddComment = () => {
+        if (!newCommentText.trim() || showCommentsForPost === null) return;
+        const currentComments = postsComments[showCommentsForPost] || [
+            { user: 'night_hawk', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex', text: 'Stunning capture! Let’s meet up tonight ⚡', time: '2h ago' },
+            { user: 'sara_zenith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sara', text: 'This looks so premium! 🌱💚', time: '1h ago' }
+        ];
+
+        const newComment = {
+            user: 'You',
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=You`,
+            text: newCommentText.trim(),
+            time: 'Just now'
+        };
+
+        const updated = {
+            ...postsComments,
+            [showCommentsForPost]: [...currentComments, newComment]
+        };
+
+        setPostsComments(updated);
+        localStorage.setItem('green_posts_comments', JSON.stringify(updated));
+        setNewCommentText('');
+    };
+
+    // Share System Handlers
+    const handleOpenShare = (postId) => {
+        setShowShareForPost(postId);
+        setSelectedShareFriends([]);
+    };
+
+    const toggleSelectShareFriend = (friendId) => {
+        if (selectedShareFriends.includes(friendId)) {
+            setSelectedShareFriends(prev => prev.filter(id => id !== friendId));
+        } else {
+            setSelectedShareFriends(prev => [...prev, friendId]);
+        }
+    };
+
+    const handleShareSubmit = () => {
+        if (selectedShareFriends.length === 0) return;
+        alert(`✈️ Shared post successfully with ${selectedShareFriends.length} friends!`);
+        setShowShareForPost(null);
+    };
+
+    // Upload Post Handler
+    const handleUploadPost = () => {
+        if (!captionText.trim()) {
+            alert('Please add a caption to your post!');
+            return;
+        }
+
+        const newPost = {
+            id: Date.now(),
+            type: 'photo',
+            url: selectedMedia,
+            user: 'You',
+            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=You',
+            likesCount: 0,
+            greenFlags: 1,
+            caption: captionText.trim()
+        };
+
+        const storedPosts = JSON.parse(localStorage.getItem('green_global_posts') || '[]');
+        const updated = [newPost, ...storedPosts];
+        localStorage.setItem('green_global_posts', JSON.stringify(updated));
+        setLocalPosts(updated);
+
+        // Reset state
+        setCaptionText('');
+        setIsCreating(false);
+        alert('🎉 Post successfully uploaded to Green Feed!');
+    };
 
     return (
         <AnimatePresence>
@@ -40,7 +185,10 @@ const PostsFeed = ({ isOpen, onClose }) => {
                     className="fixed inset-0 z-[60] bg-black flex flex-col"
                 >
                     {/* Top Controls */}
-                    <header className="absolute top-0 left-0 right-0 pb-6 px-6 grid grid-cols-3 items-center z-[70] bg-gradient-to-b from-black/80 to-transparent" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)' }}>
+                    <header 
+                        className="absolute top-0 left-0 right-0 pb-6 px-6 grid grid-cols-3 items-center z-[70] bg-gradient-to-b from-black/80 to-transparent transition-all duration-300" 
+                        style={{ paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px + 1.25rem)` }}
+                    >
                         {/* Left: Search Bar */}
                         <div className="relative group">
                             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${isSearching ? 'text-brand' : 'text-gray-500'}`} size={16} />
@@ -102,79 +250,197 @@ const PostsFeed = ({ isOpen, onClose }) => {
 
                         {/* Right: Close Button */}
                         <div className="flex justify-end">
-                            <button onClick={onClose} className="w-10 h-10 bg-dark-900/50 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/10 hover:border-brand/40 transition-all">
+                            <button onClick={onClose} className="w-10 h-10 bg-dark-900/50 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/10 hover:border-brand/40 transition-all active:scale-90">
                                 <X size={20} />
                             </button>
                         </div>
                     </header>
 
                     <div onClick={() => setIsSearching(false)} className="flex-1 overflow-y-scroll snap-y snap-mandatory no-scrollbar">
-                        {posts.map((post) => (
-                            <div key={post.id} className="relative h-screen w-full snap-start">
-                                {post.type === 'video' ? (
-                                    <video
-                                        src={post.url}
-                                        className="w-full h-full object-cover"
-                                        autoPlay
-                                        loop
-                                        muted
-                                        playsInline
-                                    />
-                                ) : (
-                                    <img src={post.url} alt="Post" className="w-full h-full object-cover" />
-                                )}
+                        {posts.map((post) => {
+                            const isLiked = likedPosts[post.id];
+                            return (
+                                <div key={post.id} className="relative h-screen w-full snap-start overflow-hidden">
+                                    {post.type === 'video' ? (
+                                        <video
+                                            src={post.url}
+                                            className="w-full h-full object-cover"
+                                            autoPlay
+                                            loop
+                                            muted
+                                            playsInline
+                                        />
+                                    ) : (
+                                        <img src={post.url} alt="Post" className="w-full h-full object-cover" />
+                                    )}
 
-                                {/* Interaction Sidebar (Neon Wireframes) */}
-                                <div className="absolute right-4 bottom-32 flex flex-col gap-6 items-center z-[70]">
-                                    <button
-                                        onClick={() => setIsCreating(true)}
-                                        className="w-12 h-12 bg-brand rounded-full flex items-center justify-center text-dark-950 shadow-[0_0_20px_var(--brand-glow)] mb-4 animate-bounce"
-                                    >
-                                        <Plus size={28} />
-                                    </button>
-                                    <div className="flex flex-col items-center group">
-                                        <div className="w-12 h-12 bg-black/60 backdrop-blur-md border border-brand/50 rounded-full flex items-center justify-center text-brand shadow-[0_0_15px_rgba(52,211,153,0.3)]">
-                                            <Heart size={24} className="group-hover:fill-brand transition-all" />
-                                        </div>
-                                        <span className="text-[11px] font-black text-white mt-1.5 drop-shadow-lg">{post.likes}</span>
-                                    </div>
-                                    <div className="flex flex-col items-center group">
-                                        <div className="w-12 h-12 bg-black/60 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center text-white shadow-lg">
-                                            <MessageCircle size={24} />
-                                        </div>
-                                        <span className="text-[11px] font-black text-white mt-1.5 drop-shadow-lg">1.2K</span>
-                                    </div>
-                                    <div className="flex flex-col items-center group">
-                                        <div className="w-12 h-12 bg-black/60 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center text-white shadow-lg">
-                                            <Share2 size={24} />
-                                        </div>
-                                    </div>
-                                </div>
+                                    {/* Interaction Sidebar (Neon Wireframes) */}
+                                    <div className="absolute right-4 bottom-32 flex flex-col gap-6 items-center z-[70]">
+                                        <button
+                                            onClick={() => setIsCreating(true)}
+                                            className="w-12 h-12 bg-brand rounded-full flex items-center justify-center text-dark-950 shadow-[0_0_20px_rgba(52,211,153,0.5)] mb-4 animate-bounce hover:scale-110 active:scale-95 transition-transform"
+                                        >
+                                            <Plus size={28} />
+                                        </button>
+                                        
+                                        {/* LIKE BUTTON */}
+                                        <button 
+                                            onClick={() => handleLikeToggle(post.id)}
+                                            className="flex flex-col items-center group active:scale-90 transition-transform"
+                                        >
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all ${isLiked ? 'bg-brand text-dark-950 border-brand shadow-[0_0_20px_rgba(52,211,153,0.5)]' : 'bg-black/60 backdrop-blur-md border-brand/50 text-brand shadow-[0_0_15px_rgba(52,211,153,0.3)] hover:bg-brand/10'}`}>
+                                                <Heart size={24} fill={isLiked ? "currentColor" : "none"} className="transition-all" />
+                                            </div>
+                                            <span className="text-[11px] font-black text-white mt-1.5 drop-shadow-lg">{getLikesDisplay(post)}</span>
+                                        </button>
 
-                                {/* Content Overlay */}
-                                <div className="absolute bottom-0 left-0 right-0 p-8 pt-20 bg-gradient-to-t from-black via-black/50 to-transparent z-[65]">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="w-10 h-10 rounded-xl border border-brand p-0.5 bg-dark-900">
-                                            <img src={post.avatar} alt="User" className="w-full h-full rounded-lg" />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="font-black italic tracking-tighter text-white">@{post.user}</span>
-                                            <div className="flex items-center gap-3 mt-0.5">
-                                                <span className={`text-[8px] ${post.isBusiness ? 'text-violet-400' : 'text-brand'} font-black uppercase tracking-widest flex items-center gap-1`}>
-                                                    <div className={`w-1 h-1 ${post.isBusiness ? 'bg-violet-400' : 'bg-brand'} rounded-full animate-pulse`} /> {post.isBusiness ? 'Business Partner' : 'Official Pilot'}
-                                                </span>
-                                                <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20 shadow-[0_0_10px_rgba(52,211,153,0.1)]">
-                                                    <Flag size={8} className="text-emerald-500" fill="currentColor" />
-                                                    <span className="text-[8px] font-black text-emerald-500">{post.greenFlags}</span>
+                                        {/* COMMENT BUTTON */}
+                                        <button 
+                                            onClick={() => handleOpenComments(post.id)}
+                                            className="flex flex-col items-center group active:scale-90 transition-transform"
+                                        >
+                                            <div className="w-12 h-12 bg-black/60 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-white/10 transition-colors">
+                                                <MessageCircle size={24} />
+                                            </div>
+                                            <span className="text-[11px] font-black text-white mt-1.5 drop-shadow-lg">
+                                                {getCommentsForPost(post.id).length}
+                                            </span>
+                                        </button>
+
+                                        {/* SHARE BUTTON */}
+                                        <button 
+                                            onClick={() => handleOpenShare(post.id)}
+                                            className="flex flex-col items-center group active:scale-90 transition-transform"
+                                        >
+                                            <div className="w-12 h-12 bg-black/60 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-white/10 transition-colors">
+                                                <Share2 size={24} />
+                                            </div>
+                                            <span className="text-[9px] font-bold text-gray-400 mt-1 uppercase tracking-wider">Share</span>
+                                        </button>
+                                    </div>
+
+                                    {/* Content Overlay */}
+                                    <div className="absolute bottom-0 left-0 right-0 p-8 pt-20 bg-gradient-to-t from-black via-black/50 to-transparent z-[65]">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className="w-10 h-10 rounded-xl border border-brand p-0.5 bg-dark-900">
+                                                <img src={post.avatar} alt="User" className="w-full h-full rounded-lg" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="font-black italic tracking-tighter text-white">@{post.user}</span>
+                                                <div className="flex items-center gap-3 mt-0.5">
+                                                    <span className={`text-[8px] ${post.isBusiness ? 'text-violet-400' : 'text-brand'} font-black uppercase tracking-widest flex items-center gap-1`}>
+                                                        <div className={`w-1 h-1 ${post.isBusiness ? 'bg-violet-400' : 'bg-brand'} rounded-full animate-pulse`} /> {post.isBusiness ? 'Business Partner' : 'Official Pilot'}
+                                                    </span>
+                                                    <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20 shadow-[0_0_10px_rgba(52,211,153,0.1)]">
+                                                        <Flag size={8} className="text-emerald-500" fill="currentColor" />
+                                                        <span className="text-[8px] font-black text-emerald-500">{post.greenFlags}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <p className="text-sm text-gray-200 font-medium leading-relaxed max-w-[80%]">{post.caption}</p>
                                     </div>
-                                    <p className="text-sm text-gray-200 font-medium leading-relaxed max-w-[80%]">{post.caption}</p>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
+
+                    {/* Interactive Comments Drawer */}
+                    <AnimatePresence>
+                        {showCommentsForPost !== null && (
+                            <motion.div
+                                initial={{ y: '100%' }}
+                                animate={{ y: 0 }}
+                                exit={{ y: '100%' }}
+                                className="absolute bottom-0 left-0 right-0 h-[60vh] bg-[#0A111E]/95 backdrop-blur-2xl border-t border-brand/20 rounded-t-[2rem] flex flex-col z-[90] p-6 shadow-2xl"
+                            >
+                                <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-4 cursor-pointer" onClick={() => setShowCommentsForPost(null)} />
+                                <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-4">
+                                    <span className="text-xs font-black uppercase tracking-widest text-brand">Comments ({getCommentsForPost(showCommentsForPost).length})</span>
+                                    <button onClick={() => setShowCommentsForPost(null)} className="text-secondary hover:text-primary active:scale-90">
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                                <div className="flex-1 overflow-y-auto space-y-4 no-scrollbar pb-4">
+                                    {getCommentsForPost(showCommentsForPost).map((c, i) => (
+                                        <div key={i} className="flex gap-3 items-start animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                            <img src={c.avatar} className="w-8 h-8 rounded-lg border border-white/10 shrink-0" alt="Avatar" />
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] font-black italic text-brand">@{c.user}</span>
+                                                    <span className="text-[7px] text-gray-500 uppercase tracking-widest">{c.time}</span>
+                                                </div>
+                                                <p className="text-xs text-primary font-medium mt-1">{c.text}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="pt-4 border-t border-white/5 flex gap-2">
+                                    <input
+                                        type="text"
+                                        placeholder="Write a comment..."
+                                        value={newCommentText}
+                                        onChange={(e) => setNewCommentText(e.target.value)}
+                                        onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(); }}
+                                        className="flex-1 bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs outline-none text-primary focus:border-brand/40 transition-colors"
+                                    />
+                                    <button
+                                        onClick={handleAddComment}
+                                        className="px-4 bg-brand text-dark-900 rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                                    >
+                                        <Send size={12} />
+                                        <span>Post</span>
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Interactive Share Sheet */}
+                    <AnimatePresence>
+                        {showShareForPost !== null && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="absolute inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-6 z-[95]"
+                            >
+                                <div className="w-full max-w-[360px] bg-dark-900 border border-brand/20 rounded-[2rem] p-6 shadow-2xl space-y-6">
+                                    <div className="flex justify-between items-center pb-3 border-b border-white/5">
+                                        <span className="text-xs font-black uppercase tracking-widest text-brand">Share with friends</span>
+                                        <button onClick={() => setShowShareForPost(null)} className="text-secondary hover:text-primary active:scale-90">
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto no-scrollbar">
+                                        {mockFriends.map(f => {
+                                            const isSelected = selectedShareFriends.includes(f.id);
+                                            return (
+                                                <div 
+                                                    key={f.id} 
+                                                    onClick={() => toggleSelectShareFriend(f.id)}
+                                                    className={`p-3 rounded-2xl border cursor-pointer transition-all flex flex-col items-center text-center gap-2 ${isSelected ? 'bg-brand/10 border-brand text-brand' : 'bg-dark-950 border-white/5 text-secondary hover:border-white/10'}`}
+                                                >
+                                                    <img src={f.avatar} className="w-12 h-12 rounded-xl border border-white/10" alt="Friend" />
+                                                    <div>
+                                                        <p className="text-[10px] font-black italic text-primary">{f.name}</p>
+                                                        <p className="text-[8px] opacity-40 font-bold uppercase mt-0.5">{f.handle}</p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    <button
+                                        onClick={handleShareSubmit}
+                                        disabled={selectedShareFriends.length === 0}
+                                        className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${selectedShareFriends.length > 0 ? 'bg-brand text-dark-900 shadow-lg shadow-brand/20 active:scale-95' : 'bg-btn-sec text-muted cursor-not-allowed'}`}
+                                    >
+                                        Share Now ({selectedShareFriends.length})
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Post Creation Modal */}
                     <AnimatePresence>
@@ -186,39 +452,69 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                                 className="absolute inset-0 z-[80] bg-[var(--bg-primary)] flex flex-col"
                             >
-                                <header className="pb-6 px-6 flex justify-between items-center border-b border-white/5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)' }}>
-                                    <button onClick={() => setIsCreating(false)} className="text-[var(--text-primary)] font-black uppercase text-xs tracking-widest">Cancel</button>
+                                <header 
+                                    className="pb-6 px-6 flex justify-between items-center border-b border-white/5 bg-gradient-to-b from-black/20 to-transparent transition-all duration-300" 
+                                    style={{ paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px + 1.25rem)` }}
+                                >
+                                    <button onClick={() => setIsCreating(false)} className="text-[var(--text-primary)] font-black uppercase text-xs tracking-widest active:scale-90 transition-transform">Cancel</button>
                                     <h3 className="font-black italic text-brand tracking-tighter uppercase">New Green Post</h3>
-                                    <button disabled className="text-gray-600 font-black uppercase text-xs tracking-widest">Share</button>
+                                    <button 
+                                        onClick={handleUploadPost} 
+                                        disabled={!captionText.trim()} 
+                                        className={`font-black uppercase text-xs tracking-widest transition-colors ${captionText.trim() ? 'text-brand active:scale-90 transition-transform' : 'text-gray-600 cursor-not-allowed'}`}
+                                    >
+                                        Share
+                                    </button>
                                 </header>
 
-                                <div className="flex-1 p-8 flex flex-col items-center justify-center gap-8">
-                                    <div className="w-full aspect-square rounded-[2rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-gray-500 hover:border-brand/40 hover:text-brand transition-all cursor-pointer group">
-                                        <div className="w-20 h-20 rounded-full bg-dark-900 border border-white/5 flex items-center justify-center text-gray-400 mb-4 group-hover:scale-110 transition-transform">
-                                            <Zap size={40} />
+                                <div className="flex-1 p-8 flex flex-col items-center justify-center gap-8 overflow-y-auto no-scrollbar">
+                                    <div 
+                                        onClick={() => {
+                                            // Cycle through some high-quality mock media options for sandbox testing
+                                            const options = [
+                                                'https://images.unsplash.com/photo-1549239120-0a4c321d1bc1?q=80&w=600&auto=format&fit=crop',
+                                                'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=600&auto=format&fit=crop',
+                                                'https://images.unsplash.com/photo-1533045607062-a5e2f75a74e5?q=80&w=600&auto=format&fit=crop'
+                                            ];
+                                            const nextIdx = (options.indexOf(selectedMedia) + 1) % options.length;
+                                            setSelectedMedia(options[nextIdx]);
+                                        }}
+                                        className="w-full aspect-square rounded-[2rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-gray-500 hover:border-brand/40 hover:text-brand transition-all cursor-pointer group relative overflow-hidden"
+                                    >
+                                        <img src={selectedMedia} className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity" alt="Post preview" />
+                                        <div className="relative z-10 w-16 h-16 rounded-full bg-dark-900 border border-white/5 flex items-center justify-center text-gray-400 mb-2 group-hover:scale-110 transition-transform shadow-lg">
+                                            <Plus size={30} className="text-brand" />
                                         </div>
-                                        <p className="font-black uppercase tracking-widest text-xs">Upload Photo or Video</p>
+                                        <p className="relative z-10 font-black uppercase tracking-widest text-[9px] text-white">Tap to change mock image</p>
                                     </div>
 
                                     <textarea
                                         placeholder="Add a caption to your mission..."
-                                        className="w-full bg-transparent border-none focus:ring-0 text-lg font-medium text-[var(--text-primary)] resize-none h-32"
+                                        value={captionText}
+                                        onChange={(e) => setCaptionText(e.target.value)}
+                                        className="w-full bg-transparent border-none focus:ring-0 text-lg font-medium text-[var(--text-primary)] outline-none resize-none h-24"
                                     />
 
                                     <div className="w-full flex gap-4">
-                                        <div className="flex-1 p-4 bg-[var(--bg-secondary)] rounded-2xl border border-white/5 flex items-center gap-3">
+                                        <div 
+                                            onClick={() => alert("Mock: Picked Current Location!")}
+                                            className="flex-1 p-4 bg-[var(--bg-secondary)] rounded-2xl border border-white/5 flex items-center gap-3 cursor-pointer hover:border-brand/20 active:scale-95 transition-transform"
+                                        >
                                             <MapPin size={20} className="text-brand" />
                                             <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Add Location</span>
                                         </div>
                                         <div className="p-4 bg-[var(--bg-secondary)] rounded-2xl border border-white/5">
-                                            <Zap size={20} className="text-brand" />
+                                            <Zap size={20} className="text-brand animate-pulse" />
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="p-8">
-                                    <button className="w-full py-6 bg-brand text-dark-950 rounded-3xl font-black uppercase tracking-[0.4em] italic text-sm shadow-[0_0_30px_rgba(50,205,50,0.3)]">
-                                        Blast to Green
+                                    <button 
+                                        onClick={handleUploadPost}
+                                        className="w-full py-5 bg-brand text-dark-950 rounded-3xl font-black uppercase tracking-[0.4em] italic text-xs shadow-[0_0_30px_rgba(52,211,153,0.3)] active:scale-95 transition-transform"
+                                    >
+                                        Upload
                                     </button>
                                 </div>
                             </motion.div>
@@ -231,6 +527,3 @@ const PostsFeed = ({ isOpen, onClose }) => {
 };
 
 export default PostsFeed;
-
-
-
