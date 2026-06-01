@@ -2193,7 +2193,7 @@ const ManagerDashboard = () => {
                                                                     )}
                                                                 </div>
                                                             ) : (
-                                                                <div className="flex gap-3 overflow-x-auto no-scrollbar py-2 px-2 bg-dark-950/40 rounded-2xl border border-main min-h-[110px] items-start">
+                                                                <div className="flex gap-4 overflow-x-auto no-scrollbar py-3 px-3 bg-dark-950/40 rounded-2xl border border-main min-h-[115px] items-start">
                                                                     {order.items.map((item, idx) => {
                                                                         const itemNameClean = item.replace(/\(\d+x\)/, '').trim();
                                                                         const itemInfo = getItemInfo(itemNameClean);
@@ -2212,7 +2212,7 @@ const ManagerDashboard = () => {
                                                                                     {qty}
                                                                                 </div>
                                                                                 {/* Item Name */}
-                                                                                <span className="text-[8px] font-bold text-secondary text-center leading-tight max-w-[80px] truncate">{itemNameClean}</span>
+                                                                                <span className="text-[10px] font-bold text-secondary text-center leading-tight max-w-[80px] truncate">{itemNameClean}</span>
                                                                             </div>
                                                                         );
                                                                     })}
