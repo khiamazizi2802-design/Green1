@@ -201,40 +201,103 @@ const AccountHub = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-1 p-8 bg-white border border-black/5 rounded-[2.5rem] shadow-sm">
                                     <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">First Name</p>
-                                    <p className="text-base font-black italic text-black">{profile.firstName}</p>
+                                    {isEditing ? (
+                                        <input 
+                                            type="text"
+                                            value={profile.firstName}
+                                            onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                                            className="w-full bg-transparent border-none p-0 text-base font-black italic text-black focus:ring-0 outline-none"
+                                        />
+                                    ) : (
+                                        <p className="text-base font-black italic text-black">{profile.firstName}</p>
+                                    )}
                                 </div>
                                 <div className="col-span-1 p-8 bg-white border border-black/5 rounded-[2.5rem] shadow-sm">
                                     <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Last Name</p>
-                                    <p className="text-base font-black italic text-black">{profile.lastName}</p>
+                                    {isEditing ? (
+                                        <input 
+                                            type="text"
+                                            value={profile.lastName}
+                                            onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                                            className="w-full bg-transparent border-none p-0 text-base font-black italic text-black focus:ring-0 outline-none"
+                                        />
+                                    ) : (
+                                        <p className="text-base font-black italic text-black">{profile.lastName}</p>
+                                    )}
                                 </div>
                                 <div className="col-span-2 p-8 bg-white border border-black/5 rounded-[2.5rem] shadow-sm flex items-center justify-between">
-                                    <div>
+                                    <div className="flex-1">
                                         <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Address</p>
-                                        <p className="text-base font-black italic text-black">{profile.address}</p>
+                                        {isEditing ? (
+                                            <input 
+                                                type="text"
+                                                value={profile.address}
+                                                onChange={(e) => setProfile({ ...profile, address: e.target.value })}
+                                                className="w-full bg-transparent border-none p-0 text-base font-black italic text-black focus:ring-0 outline-none"
+                                            />
+                                        ) : (
+                                            <p className="text-base font-black italic text-black">{profile.address}</p>
+                                        )}
                                     </div>
-                                    <MapPin size={18} className="text-gray-300" />
+                                    <MapPin size={18} className="text-gray-300 ml-4 shrink-0" />
                                 </div>
                                 <div className="col-span-1 p-8 bg-white border border-black/5 rounded-[2.5rem] shadow-sm">
                                     <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Zip Code</p>
-                                    <p className="text-base font-black italic text-black">{profile.zip}</p>
+                                    {isEditing ? (
+                                        <input 
+                                            type="text"
+                                            value={profile.zip}
+                                            onChange={(e) => setProfile({ ...profile, zip: e.target.value })}
+                                            className="w-full bg-transparent border-none p-0 text-base font-black italic text-black focus:ring-0 outline-none"
+                                        />
+                                    ) : (
+                                        <p className="text-base font-black italic text-black">{profile.zip}</p>
+                                    )}
                                 </div>
                                 <div className="col-span-1 p-8 bg-white border border-black/5 rounded-[2.5rem] shadow-sm">
                                     <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">City</p>
-                                    <p className="text-base font-black italic text-black">{profile.city}</p>
+                                    {isEditing ? (
+                                        <input 
+                                            type="text"
+                                            value={profile.city}
+                                            onChange={(e) => setProfile({ ...profile, city: e.target.value })}
+                                            className="w-full bg-transparent border-none p-0 text-base font-black italic text-black focus:ring-0 outline-none"
+                                        />
+                                    ) : (
+                                        <p className="text-base font-black italic text-black">{profile.city}</p>
+                                    )}
                                 </div>
                                 <div className="col-span-2 p-8 bg-white border border-black/5 rounded-[2.5rem] shadow-sm flex items-center justify-between">
-                                    <div>
+                                    <div className="flex-1">
                                         <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Email Address</p>
-                                        <p className="text-base font-black italic text-black">{profile.email}</p>
+                                        {isEditing ? (
+                                            <input 
+                                                type="email"
+                                                value={profile.email}
+                                                onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                                                className="w-full bg-transparent border-none p-0 text-base font-black italic text-black focus:ring-0 outline-none"
+                                            />
+                                        ) : (
+                                            <p className="text-base font-black italic text-black">{profile.email}</p>
+                                        )}
                                     </div>
-                                    <Mail size={18} className="text-gray-300" />
+                                    <Mail size={18} className="text-gray-300 ml-4 shrink-0" />
                                 </div>
                                 <div className="col-span-2 p-8 bg-white border border-black/5 rounded-[2.5rem] shadow-sm flex items-center justify-between">
-                                    <div>
+                                    <div className="flex-1">
                                         <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Phone Number</p>
-                                        <p className="text-base font-black italic text-black">{profile.phone}</p>
+                                        {isEditing ? (
+                                            <input 
+                                                type="tel"
+                                                value={profile.phone}
+                                                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                                className="w-full bg-transparent border-none p-0 text-base font-black italic text-black focus:ring-0 outline-none"
+                                            />
+                                        ) : (
+                                            <p className="text-base font-black italic text-black">{profile.phone}</p>
+                                        )}
                                     </div>
-                                    <Phone size={18} className="text-gray-300" />
+                                    <Phone size={18} className="text-gray-300 ml-4 shrink-0" />
                                 </div>
                             </div>
                         </section>
