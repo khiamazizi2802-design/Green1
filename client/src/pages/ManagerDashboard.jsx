@@ -1506,9 +1506,10 @@ const ManagerDashboard = () => {
 
     return (
         <div 
-            className="relative w-full h-full overflow-hidden bg-dark-950 font-sans text-primary flex flex-row transition-all duration-300"
+            className="absolute left-0 right-0 bottom-0 overflow-hidden bg-dark-950 font-sans text-primary flex flex-row transition-all duration-300"
             style={{
-                paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`
+                top: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`,
+                height: `calc(100% - (${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px))`
             }}
         >
             {/* Mobile Sidebar Overlay Backdrop */}

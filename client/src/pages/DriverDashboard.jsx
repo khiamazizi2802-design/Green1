@@ -820,9 +820,10 @@ const DriverDashboard = () => {
 
     return (
         <div 
-            className="relative w-full h-full overflow-hidden bg-dark-950 font-sans text-primary flex flex-col items-center transition-all duration-300"
+            className="absolute left-0 right-0 bottom-0 overflow-hidden bg-dark-950 font-sans text-primary flex flex-col items-center transition-all duration-300"
             style={{
-                paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`
+                top: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`,
+                height: `calc(100% - (${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px))`
             }}
         >
             {/* Arrival Notification Top Sheet */}
@@ -1057,7 +1058,7 @@ const DriverDashboard = () => {
                             exit={{ opacity: 0, x: -30 }}
                             className="flex-1 w-full flex flex-col pt-24 px-6 pb-20 overflow-y-auto no-scrollbar"
                         >
-                            <div className="fixed top-8 left-6 right-6 z-[100] flex justify-between items-center pointer-events-none">
+                            <div className="absolute top-8 left-6 right-6 z-[100] flex justify-between items-center pointer-events-none">
                                 <div className="flex gap-4 pointer-events-auto">
                                     <button 
                                         onClick={() => setIsSidebarOpen(true)}

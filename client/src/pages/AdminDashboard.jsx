@@ -1328,9 +1328,10 @@ billing payouts are required.
 
     return (
         <div 
-            className={`relative w-full h-screen overflow-hidden font-sans text-primary flex flex-row selection:bg-brand selection:text-dark-900 transition-colors duration-1000 transition-all duration-300 ${systemLockdown ? 'bg-red-950/20' : 'bg-dark-950'}`}
+            className={`absolute left-0 right-0 bottom-0 overflow-hidden font-sans text-primary flex flex-row selection:bg-brand selection:text-dark-900 transition-colors duration-1000 transition-all duration-300 ${systemLockdown ? 'bg-red-950/20' : 'bg-dark-950'}`}
             style={{
-                paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`
+                top: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`,
+                height: `calc(100% - (${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px))`
             }}
         >
             {/* SECURITY SCANNER OVERLAY */}
