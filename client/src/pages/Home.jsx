@@ -1248,7 +1248,7 @@ const Home = () => {
                                                         <p className="text-[var(--text-primary)]">🛡️ Käuferschutz</p>
                                                         <p className="text-[10px] pl-6 font-normal">Sichere Ticketstornierungen und Erstattungen werden garantiert in 3 Werktagen geprüft.</p>
                                                     </div>
-                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/stadium'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
                                                         Tickets Entdecken
                                                     </button>
                                                 </>
@@ -1282,7 +1282,7 @@ const Home = () => {
                                                         <p className="text-[var(--text-primary)]">🔐 Abrechnungsgarantie</p>
                                                         <p className="text-[10px] pl-6 font-normal">Storno- und Rückerstattungsanträge werden lückenlos innerhalb von 3 Werktagen abgewickelt.</p>
                                                     </div>
-                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/venue/menu'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
                                                         Karte Ansehen
                                                     </button>
                                                 </>
@@ -1299,7 +1299,7 @@ const Home = () => {
                                                         <p className="text-[var(--text-primary)]">🛡️ Qualitätssicherung</p>
                                                         <p className="text-[10px] pl-6 font-normal">Unsere Partnergarantie verspricht stets erstklassige Betreuung. Reklamationsprüfungen in 3 Werktagen.</p>
                                                     </div>
-                                                    <button onClick={() => { triggerNotification("VIP TABLE SERVICE NOTIFIED", "SUCCESS"); setActiveSheet(null); setServiceDetailView(null); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
                                                         Kellner Rufen
                                                     </button>
                                                 </>
