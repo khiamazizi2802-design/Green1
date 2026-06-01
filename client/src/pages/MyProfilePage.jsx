@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-    ArrowLeft, Settings, Heart, Share2, MoreHorizontal, 
-    Sparkles, Zap, Shield, Camera, Edit3, Star, LayoutGrid, Image as ImageIcon, Video, Plus,
+    ArrowLeft, Settings, Heart, MessageSquare, Share2, MoreHorizontal, 
+    Sparkles, Zap, Shield, ShieldCheck, Camera, Edit3, Star, LayoutGrid, Image as ImageIcon, Video, Plus,
     ShieldAlert, Flag, Handshake, Users, Bell, UserPlus, Check, Trash2, X as CloseIcon
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -24,15 +24,23 @@ const MyProfilePage = () => {
     
     const { incomingRequests, setIncomingRequests, setMutualFriends } = useRide();
 
-    const myPosts = [
+    const [selectedPostId, setSelectedPostId] = useState(null);
+    const [newCommentText, setNewCommentText] = useState("");
+
+    const [myPosts, setMyPosts] = useState([
         { 
             id: 1, 
             type: 'image',
             img: "https://images.unsplash.com/photo-1574096079513-d8259312b785?w=800&q=80", 
             caption: "Nothing beats the atmosphere at Green Underground tonight. ⚡", 
             likes: 124, 
-            comments: 18,
-            time: "1h ago"
+            comments: 2,
+            time: "1h ago",
+            liked: false,
+            commentsList: [
+                { id: 1, author: "Alex S.", text: "This looks absolutely incredible! 🔥", time: "30m ago" },
+                { id: 2, author: "Sofia M.", text: "Best vibe in town!", time: "10m ago" }
+            ]
         },
         { 
             id: 2, 
@@ -40,10 +48,54 @@ const MyProfilePage = () => {
             img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&q=80", 
             caption: "Testing the new 'Midnight Neon' cocktail. Pure art. 🍸", 
             likes: 215, 
-            comments: 42,
-            time: "Yesterday"
+            comments: 1,
+            time: "Yesterday",
+            liked: false,
+            commentsList: [
+                { id: 1, author: "Elena R.", text: "That cocktail is a masterpiece! 🍸", time: "4h ago" }
+            ]
         }
-    ];
+    ]);
+
+    const selectedPost = myPosts.find(p => p.id === selectedPostId);
+
+    const toggleLike = (postId) => {
+        setMyPosts(prevPosts => prevPosts.map(p => {
+            if (p.id === postId) {
+                const liked = !p.liked;
+                return {
+                    ...p,
+                    liked,
+                    likes: liked ? p.likes + 1 : p.likes - 1
+                };
+            }
+            return p;
+        }));
+    };
+
+    const handleAddComment = (postId) => {
+        if (!newCommentText.trim()) return;
+        setMyPosts(prevPosts => prevPosts.map(p => {
+            if (p.id === postId) {
+                return {
+                    ...p,
+                    comments: p.comments + 1,
+                    commentsList: [
+                        ...p.commentsList,
+                        {
+                            id: Date.now(),
+                            author: user.name || "Alex",
+                            text: newCommentText,
+                            time: "Just now"
+                        }
+                    ]
+                };
+            }
+            return p;
+        }));
+        setNewCommentText("");
+        triggerNotification("COMMENT SECURELY POSTED", "SUCCESS");
+    };
 
     return (
         <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans selection:bg-brand/30 transition-colors duration-300">
@@ -187,14 +239,16 @@ const MyProfilePage = () => {
                                     <motion.div 
                                         initial={{ opacity: 0, scale: 0.9 }}
                                         animate={{ opacity: 1, scale: 1 }}
+                                        whileTap={{ scale: 0.97 }}
                                         key={post.id} 
-                                        className="aspect-[3/4] bg-dark-900 border border-white/5 rounded-[2.5rem] overflow-hidden relative group"
+                                        onClick={() => setSelectedPostId(post.id)}
+                                        className="aspect-[3/4] bg-dark-900 border border-white/5 rounded-[2.5rem] overflow-hidden relative group cursor-pointer"
                                     >
                                         <img src={post.img} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                         <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
                                             <div className="flex items-center gap-1.5">
-                                                <Heart size={12} className="text-brand fill-brand" />
+                                                <Heart size={12} className={`transition-colors ${post.liked ? 'text-red-500 fill-red-500' : 'text-brand fill-brand'}`} />
                                                 <span className="text-[10px] font-black">{post.likes}</span>
                                             </div>
                                             <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
@@ -305,6 +359,157 @@ const MyProfilePage = () => {
                             >
                                 Dismiss All
                             </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Immersive Lightbox Modal */}
+            <AnimatePresence>
+                {selectedPostId !== null && selectedPost && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[2000] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
+                        onClick={() => setSelectedPostId(null)}
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.95, y: 30, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            exit={{ scale: 0.95, y: 30, opacity: 0 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+                            className="w-full max-w-md bg-[var(--bg-primary)] border border-[var(--border-main)] rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl relative"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Top Media Bar */}
+                            <div className="relative aspect-[4/5] w-full bg-black flex items-center justify-center overflow-hidden">
+                                {selectedPost.type === 'video' ? (
+                                    <div className="w-full h-full relative">
+                                        <img 
+                                            src={selectedPost.img} 
+                                            alt="" 
+                                            className="w-full h-full object-cover opacity-80" 
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                            <div className="w-16 h-16 rounded-full bg-brand/90 flex items-center justify-center text-dark-900 shadow-[0_0_30px_rgba(52,211,153,0.5)] animate-pulse cursor-pointer">
+                                                <Video size={32} className="ml-1" fill="currentColor" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <img 
+                                        src={selectedPost.img} 
+                                        alt="" 
+                                        className="w-full h-full object-cover" 
+                                    />
+                                )}
+                                
+                                {/* Transparent Glass Header Overlay */}
+                                <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-center z-10">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full border border-brand/40 p-0.5 bg-black/50">
+                                            <img src={user.avatar} alt="" className="w-full h-full rounded-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-black italic uppercase text-white leading-none tracking-tight">{user.name}</p>
+                                            <p className="text-[9px] font-black uppercase text-brand tracking-widest mt-1">{selectedPost.time}</p>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => setSelectedPostId(null)}
+                                        className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-black/60 hover:scale-105 active:scale-95 transition-all shadow-lg"
+                                    >
+                                        <CloseIcon size={20} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Details Panel */}
+                            <div className="p-6 flex flex-col flex-1 space-y-4 max-h-[45vh] overflow-y-auto no-scrollbar">
+                                {/* Caption */}
+                                <p className="text-sm text-[var(--text-primary)] font-semibold tracking-tight leading-relaxed">
+                                    {selectedPost.caption}
+                                </p>
+
+                                {/* Action bar */}
+                                <div className="flex items-center justify-between border-y border-[var(--border-main)] py-3">
+                                    <div className="flex items-center gap-6">
+                                        <button 
+                                            onClick={() => toggleLike(selectedPost.id)}
+                                            className="flex items-center gap-2 group"
+                                        >
+                                            <Heart 
+                                                size={20} 
+                                                className={`transition-all duration-300 ${
+                                                    selectedPost.liked 
+                                                        ? 'text-red-500 fill-red-500 scale-110' 
+                                                        : 'text-[var(--text-primary)] opacity-70 group-hover:opacity-100 group-hover:scale-110'
+                                                }`} 
+                                            />
+                                            <span className="text-xs font-black italic uppercase tracking-wider">
+                                                {selectedPost.likes} <span className="text-[10px] font-medium tracking-normal lowercase text-[var(--text-secondary)]">likes</span>
+                                            </span>
+                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <MessageSquare size={20} className="text-[var(--text-primary)] opacity-70" />
+                                            <span className="text-xs font-black italic uppercase tracking-wider">
+                                                {selectedPost.comments} <span className="text-[10px] font-medium tracking-normal lowercase text-[var(--text-secondary)]">comments</span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(window.location.href);
+                                            triggerNotification("LINK COPIED TO CLIPBOARD", "SUCCESS");
+                                        }}
+                                        className="w-8 h-8 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-main)] flex items-center justify-center hover:bg-brand/10 hover:text-brand hover:scale-105 active:scale-95 transition-all text-[var(--text-primary)] opacity-70 hover:opacity-100"
+                                    >
+                                        <Share2 size={14} />
+                                    </button>
+                                </div>
+
+                                {/* Comments List */}
+                                <div className="space-y-3">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand">Secure Comments</h4>
+                                    <div className="space-y-2">
+                                        {selectedPost.commentsList && selectedPost.commentsList.length > 0 ? (
+                                            selectedPost.commentsList.map(comment => (
+                                                <div key={comment.id} className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl flex flex-col gap-1">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-xs font-black italic uppercase text-brand tracking-tight">{comment.author}</span>
+                                                        <span className="text-[8px] font-bold text-black/40 uppercase tracking-widest">{comment.time}</span>
+                                                    </div>
+                                                    <p className="text-xs text-[var(--text-primary)]/80 leading-snug">{comment.text}</p>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-[10px] text-black/40 font-bold uppercase tracking-widest py-2">No comments yet. Secure line active.</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Add comment input */}
+                                <div className="flex gap-2 pt-2">
+                                    <input 
+                                        type="text" 
+                                        value={newCommentText}
+                                        onChange={(e) => setNewCommentText(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleAddComment(selectedPost.id);
+                                        }}
+                                        placeholder="Add secure comment..." 
+                                        className="flex-1 px-4 py-3 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl text-xs placeholder:text-black/30 focus:outline-none focus:border-brand/40"
+                                    />
+                                    <button 
+                                        onClick={() => handleAddComment(selectedPost.id)}
+                                        className="px-4 bg-brand text-dark-900 rounded-xl text-[10px] font-black uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md shadow-brand/10"
+                                    >
+                                        Send
+                                    </button>
+                                </div>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}
