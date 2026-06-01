@@ -517,6 +517,7 @@ const GreenRidePage = () => {
                 console.log('GPS: Success', position);
                 const { latitude, longitude } = position.coords;
                 setPickup(`Current Location (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`);
+                setPickupCoords([latitude, longitude]);
                 // In a real app, we would reverse geocode here
             },
             (error) => {
@@ -1345,7 +1346,7 @@ const GreenRidePage = () => {
                     />
 
                     <MapController 
-                        center={frankfurtCenter} 
+                        center={pickupCoords} 
                         rideActive={rideStatus !== 'idle'}
                         driverPos={driverInfo ? [driverInfo.lat, driverInfo.lng] : null}
                         pickupPos={pickupCoords}
