@@ -1962,7 +1962,7 @@ const ManagerDashboard = () => {
                                                                 <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                                                 <span className="text-[7px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">TABLE</span>
                                                                 <span className="text-[6px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">NUMBER</span>
-                                                                <span className="text-base font-black italic text-brand leading-none">{order.table || order.room || order.id.replace('#', '')}</span>
+                                                                <span className="text-base font-black italic text-brand leading-none">{order.table || order.room || order.id?.toString()?.replace('#', '') || ''}</span>
                                                                 <div className={`absolute bottom-0 left-0 right-0 h-1 ${order.status === 'Served' ? 'bg-brand' : 'bg-brand/20'}`} />
                                                             </div>
                                                             
@@ -4856,7 +4856,7 @@ const ManagerDashboard = () => {
                                                         <span className="text-[9px] font-black text-secondary uppercase tracking-widest">Table / Unit</span>
                                                         <ShoppingBag size={14} className="text-brand" />
                                                     </div>
-                                                    <p className="text-2xl font-black italic text-brand">Table {selectedGuest.table || selectedGuest.room || selectedGuest.id.replace('#', '')}</p>
+                                                    <p className="text-2xl font-black italic text-brand">Table {selectedGuest.table || selectedGuest.room || selectedGuest.id?.toString()?.replace('#', '') || ''}</p>
                                                 </div>
                                                 <div className="p-6 bg-white/5 border border-white/10 rounded-3xl space-y-2">
                                                     <div className="flex justify-between items-center">
@@ -5196,7 +5196,7 @@ const ManagerDashboard = () => {
                                                 Message to {messageOrder.guest}
                                             </h2>
                                             <p className="text-[10px] font-bold text-secondary uppercase tracking-widest mt-1 opacity-60">
-                                                Table {messageOrder.table || messageOrder.room || messageOrder.id.replace('#', '')} • {messageOrder.id}
+                                                Table {messageOrder.table || messageOrder.room || messageOrder.id?.toString()?.replace('#', '') || ''} • {messageOrder.id}
                                             </p>
                                         </div>
                                     </div>
@@ -5215,7 +5215,7 @@ const ManagerDashboard = () => {
                                                 
                                                 (messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket')
                                                 ? `📧 Bitte überprüfen Sie auch Ihren Spam-Ordner für die Bestätigungs-E-Mail (E-Mail 1)!`
-                                                : `🍟 Ihre ${messageOrder.items ? messageOrder.items.map(i => i.split(' ').slice(1).join(' ')).join(', ') : 'Bestellung'} ist auf dem Weg zu Tisch ${messageOrder.table || messageOrder.room || messageOrder.id.replace('#', '')}!`,
+                                                : `🍟 Ihre ${messageOrder.items ? messageOrder.items.map(i => i.split(' ').slice(1).join(' ')).join(', ') : 'Bestellung'} ist auf dem Weg zu Tisch ${messageOrder.table || messageOrder.room || messageOrder.id?.toString()?.replace('#', '') || ''}!`,
                                                 
                                                 (messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket')
                                                 ? `⏱️ Einlass für ${messageOrder.items ? messageOrder.items.join(', ') : 'Ihr Event'} hat begonnen. Wir freuen uns auf Sie!`
@@ -5265,11 +5265,11 @@ const ManagerDashboard = () => {
                                                     socket.emit('send-guest-message', {
                                                         orderId: messageOrder.id,
                                                         guest: messageOrder.guest,
-                                                        table: messageOrder.table || messageOrder.room || messageOrder.id.replace('#', ''),
+                                                        table: messageOrder.table || messageOrder.room || messageOrder.id?.toString()?.replace('#', '') || '',
                                                         message: customMessage
                                                     });
                                                 }
-                                                alert(`MESSAGE DISPATCHED\n------------------\nTo: ${messageOrder.guest} (Table ${messageOrder.table || messageOrder.room || messageOrder.id.replace('#', '')})\nMessage: "${customMessage}"\n\nStatus: Sent & Synced.`);
+                                                alert(`MESSAGE DISPATCHED\n------------------\nTo: ${messageOrder.guest} (Table ${messageOrder.table || messageOrder.room || messageOrder.id?.toString()?.replace('#', '') || ''})\nMessage: "${customMessage}"\n\nStatus: Sent & Synced.`);
                                                 setMessageOrder(null);
                                             }}
                                             disabled={!customMessage.trim()}
