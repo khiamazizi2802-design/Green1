@@ -513,7 +513,7 @@
           <div class="phone-shell" style="border-color:#34d399;">
             <div class="phone-notch-bar"><div class="dynamic-island"></div></div>
             <div class="phone-screen">
-              <iframe src="http://localhost:5173/?role=passenger" id="iframe-cockpit-passenger" title="Passenger Cockpit Phone"></iframe>
+              <iframe src="http://localhost:5173/?role=passenger" id="iframe-cockpit-passenger" title="Passenger Cockpit Phone" scrolling="no"></iframe>
             </div>
             <div class="phone-home-bar"><div class="home-indicator"></div></div>
           </div>
@@ -581,7 +581,7 @@
           <div class="phone-shell">
             <div class="phone-notch-bar"><div class="dynamic-island"></div></div>
             <div class="phone-screen">
-              <iframe src="http://localhost:5173/?role=passenger" id="iframe-passenger-phone" title="Passenger Phone"></iframe>
+              <iframe src="http://localhost:5173/?role=passenger" id="iframe-passenger-phone" title="Passenger Phone" scrolling="no"></iframe>
             </div>
             <div class="phone-home-bar"><div class="home-indicator"></div></div>
           </div>
@@ -988,6 +988,19 @@
         });
       });
     });
+
+    // Prevent iframes from auto-scrolling or showing scrollbars dynamically
+    const lockIframes = () => {
+      document.querySelectorAll('iframe').forEach(iframe => {
+        if (iframe.getAttribute('scrolling') !== 'no') {
+          iframe.setAttribute('scrolling', 'no');
+          iframe.style.overflow = 'hidden';
+        }
+      });
+    };
+    lockIframes();
+    // Run periodically to catch dynamically added/changed iframes
+    setInterval(lockIframes, 500);
 
     // Initialize Cockpit on load
     showCockpit();
