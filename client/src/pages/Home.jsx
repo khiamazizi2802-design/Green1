@@ -267,7 +267,7 @@ const Home = () => {
     const { isFTDOnly, setIsFTDOnly } = useRide();
 
     return (
-        <div className="relative min-h-[100dvh] font-sans text-[var(--text-primary)] overflow-y-auto flex flex-col bg-[var(--bg-primary)]">
+        <div className="relative min-h-screen min-h-[100dvh] font-sans text-[var(--text-primary)] overflow-y-auto flex flex-col bg-[var(--bg-primary)]">
             <input
                 type="file"
                 ref={fileInputRef}
