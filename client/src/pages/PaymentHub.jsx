@@ -313,7 +313,7 @@ const PaymentHub = () => {
 
     return (
         <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative pb-32 transition-colors duration-300">
-            <header className="sticky top-0 z-50 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-[var(--border-main)] p-6 flex items-center justify-between">
+            <header className="sticky top-0 z-50 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-[var(--border-main)] pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-6 px-6 flex items-center justify-between">
                 <button 
                     onClick={handleGoBack}
                     className="w-12 h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl flex items-center justify-center text-[var(--text-primary)] shadow-sm active:scale-95 transition-all"
@@ -321,7 +321,7 @@ const PaymentHub = () => {
                     <ArrowLeft size={24} />
                 </button>
                 <div className="text-center">
-                    <h1 className="text-xl font-black italic tracking-tighter uppercase text-[var(--text-primary)]">Payment Methods</h1>
+                    <h1 className="text-xl font-black italic tracking-tighter uppercase text-[var(--text-primary)]">Bank Hub</h1>
                     <p className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500 mt-0.5">Secure Transaction Network</p>
                 </div>
                 <div className="w-12 h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl flex items-center justify-center text-[var(--text-primary)]">
@@ -662,10 +662,10 @@ const PaymentHub = () => {
                 </section>
             </main>
 
-            <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/90 to-transparent z-40">
+            <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/90 to-transparent z-40">
                 <button 
                     onClick={handleGoBack}
-                    className="w-full py-6 bg-[var(--text-primary)] text-[var(--bg-primary)] border border-[var(--border-main)] rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all font-sans"
+                    className="w-full py-6 bg-[var(--text-primary)] text-[var(--bg-primary)] border border-[var(--border-main)] rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-0.98 transition-all font-sans"
                 >
                     Confirm & Return to Mission
                 </button>

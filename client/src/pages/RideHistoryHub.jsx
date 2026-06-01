@@ -17,7 +17,7 @@ const RideHistoryHub = () => {
 
     return (
         <div className="min-h-screen bg-[#F8F9FA] text-[#1A1A1A] font-sans relative pb-32 transition-colors duration-300">
-            <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-black/5 p-6 flex items-center justify-between">
+            <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-black/5 pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-6 px-6 flex items-center justify-between">
                 <button 
                     onClick={() => navigate(-1)}
                     className="w-12 h-12 bg-white border border-black/5 rounded-2xl flex items-center justify-center text-black shadow-sm active:scale-95 transition-all"
@@ -99,10 +99,10 @@ const RideHistoryHub = () => {
                 </section>
             </main>
 
-            <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#F8F9FA] via-[#F8F9FA]/90 to-transparent">
+            <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] bg-gradient-to-t from-[#F8F9FA] via-[#F8F9FA]/90 to-transparent">
                 <button 
                     onClick={() => navigate(-1)}
-                    className="w-full py-6 bg-black text-white rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="w-full py-6 bg-black text-white rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-0.98 transition-all"
                 >
                     Return to Mission Hub
                 </button>

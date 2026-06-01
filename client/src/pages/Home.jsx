@@ -487,7 +487,7 @@ const Home = () => {
                                         <div className="p-3 rounded-2xl group-hover:rotate-12 transition-transform bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-main)]">
                                             <Wallet size={24} />
                                         </div>
-                                        <h4 className="text-xl font-black italic tracking-tighter text-[var(--text-primary)] uppercase">Secure Bank Hub</h4>
+                                        <h4 className="text-xl font-black italic tracking-tighter text-[var(--text-primary)] uppercase">Bank Hub</h4>
                                     </div>
                                 </div>
                             </button>
