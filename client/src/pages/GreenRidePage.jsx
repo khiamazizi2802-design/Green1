@@ -808,7 +808,7 @@ const GreenRidePage = () => {
                                 finalPrice = (parseFloat(finalPrice) * 1.5).toFixed(2);
                             }
                             
-                            const displayPrice = destination ? `€${finalPrice}` : (type.id === 'max' ? '€3.75/km' : '€2.50/km');
+                            const displayPrice = destination ? `€${finalPrice}` : (type.id === 'shared' ? '-20%' : '');
  
                             return (
                                 <button
