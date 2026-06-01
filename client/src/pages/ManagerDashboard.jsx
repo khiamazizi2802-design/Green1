@@ -2027,7 +2027,7 @@ const ManagerDashboard = () => {
                                                                             {managerContext === 'HM' && (order.type === 'Takeaway' || order.type === 'Stay Booking') ? 'Room Only' : order.type}
                                                                         </span>
                                                                     </div>
-                                                                    <div className={`px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase border leading-none shrink-0 ${order.payment === 'Cash' ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' : 'bg-brand/10 border-brand/20 text-brand'}`}>
+                                                                    <div className="px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase border leading-none shrink-0 bg-brand/10 border-brand/20 text-brand">
                                                                         {order.payment}
                                                                     </div>
                                                                     {order.plate && <span className="px-1.5 py-0.5 bg-brand/10 border border-brand/20 rounded-full text-[7px] font-black text-brand tracking-widest leading-none shrink-0">{order.plate}</span>}
@@ -2048,22 +2048,7 @@ const ManagerDashboard = () => {
                                                                 )}
                                                             </div>
 
-                                                            {order.payment === 'Cash' && order.status !== 'Paid' ? (
-                                                                <button 
-                                                                    onClick={() => {
-                                                                        if (socket) {
-                                                                            socket.emit('confirm-cash-payment', { orderId: order.id.replace('#', ''), tableId: order.table });
-                                                                        }
-                                                                        updateOrderStatus(order.id, 'Paid');
-                                                                        setOrders(prev => prev.map(o => o.id === order.id ? { ...o, payment: 'Cash (Verified)', status: 'Paid' } : o));
-                                                                        alert(`CASH VERIFIED\n----------------\nTransaction ID: ${order.id}\nStatus: Verified & Synced\nCustomer has been notified via the Green Social Hub.`);
-                                                                    }}
-                                                                    className="h-9 px-4 bg-amber-500 text-dark-900 rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md shadow-amber-500/20 flex items-center gap-1.5 shrink-0"
-                                                                >
-                                                                    <CheckCircle2 size={12} />
-                                                                    Verify Cash
-                                                                </button>
-                                                                                                                        ) : (
+                                                            {(
                                                                 <div className="flex gap-2">
                                                                     {order.type === 'Stadium E-Ticket' || order.type === 'Club Event Ticket' ? (
                                                                         <button 
@@ -2208,14 +2193,14 @@ const ManagerDashboard = () => {
                                                                     )}
                                                                 </div>
                                                             ) : (
-                                                                <div className="flex gap-2 overflow-x-auto no-scrollbar py-1.5 px-2 bg-dark-950/40 rounded-2xl border border-main min-h-[58px] items-center">
+                                                                <div className="flex gap-3 overflow-x-auto no-scrollbar py-2 px-2 bg-dark-950/40 rounded-2xl border border-main min-h-[90px] items-start">
                                                                     {order.items.map((item, idx) => {
                                                                         const itemNameClean = item.replace(/\(\d+x\)/, '').trim();
                                                                         const itemInfo = getItemInfo(itemNameClean);
                                                                         const qty = item.match(/\((\d+)x\)/) ? item.match(/\((\d+)x\)/)[1] : '1';
                                                                         return (
-                                                                            <div key={idx} className="relative group/img shrink-0 hover:scale-105 transition-transform duration-300">
-                                                                                <div className="w-10 h-10 rounded-xl overflow-hidden border border-main bg-dark-900 shadow-md">
+                                                                            <div key={idx} className="relative shrink-0 flex flex-col items-center gap-1 hover:scale-105 transition-transform duration-300">
+                                                                                <div className="w-16 h-16 rounded-xl overflow-hidden border border-main bg-dark-900 shadow-md">
                                                                                     <img 
                                                                                         src={itemInfo.image} 
                                                                                         alt={itemNameClean} 
@@ -2223,9 +2208,11 @@ const ManagerDashboard = () => {
                                                                                     />
                                                                                 </div>
                                                                                 {/* Qty Badge */}
-                                                                                <div className="absolute -top-1.5 -right-1.5 bg-brand text-dark-900 font-extrabold text-[8px] w-4.5 h-4.5 rounded-full border border-main shadow-lg flex items-center justify-center">
+                                                                                <div className="absolute -top-1.5 -right-1.5 bg-brand text-dark-900 font-extrabold text-[9px] w-5 h-5 rounded-full border border-main shadow-lg flex items-center justify-center">
                                                                                     {qty}
                                                                                 </div>
+                                                                                {/* Item Name */}
+                                                                                <span className="text-[8px] font-bold text-secondary text-center leading-tight max-w-[64px] truncate">{itemNameClean}</span>
                                                                             </div>
                                                                         );
                                                                     })}

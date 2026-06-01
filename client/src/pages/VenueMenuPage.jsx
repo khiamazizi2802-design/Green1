@@ -582,13 +582,11 @@ const VenueMenuPage = () => {
     const activePaymentMethods = (isHotel ? [
         { id: 'room_charge', label: 'Charge to Room (Folio)', icon: BedDouble },
         { id: 'external', label: 'External Card', icon: CreditCard },
-        ...getPaymentMethods(),
-        { id: 'cash', label: 'Cash (Pay at Door)', icon: ShoppingBag }
+        ...getPaymentMethods()
     ] : [
         ...getPaymentMethods()
     ]).filter(m => {
-        if ((isStadium || isParking || isClub) && m.id === 'cash') return false;
-        if (isBooking && (m.id === 'room_charge' || m.id === 'cash')) return false;
+        if (isBooking && m.id === 'room_charge') return false;
         return true;
     });
 
@@ -660,7 +658,6 @@ const VenueMenuPage = () => {
         
         // Simulation delay
         setTimeout(() => {
-            const isCash = String(paymentMethod) === 'cash';
             const isRoomCharge = String(paymentMethod) === 'room_charge';
             
             let paymentMethodName = paymentMethod;
@@ -683,7 +680,7 @@ const VenueMenuPage = () => {
                 items: [...cart],
                 total: totalCost,
                 paymentMethod: isGroupActive ? 'group_tab' : (paymentMethod === 'external' ? externalMethod : paymentMethodName),
-                paymentStatus: isGroupActive ? 'UNPAID' : ((isRoomCharge || !isCash) ? 'PAID' : 'PENDING'),
+                paymentStatus: isGroupActive ? 'UNPAID' : 'PAID',
                 orderStatus: hasTicketsInCart ? 'PENDING' : (isGroupActive ? 'GROUP ORDER' : ((isStadium || isClub) ? 'DISPATCHED' : 'PENDING')),
                 timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
@@ -728,8 +725,7 @@ const VenueMenuPage = () => {
 
                 // Map payment display
                 let paymentDisplay = 'Online';
-                if (isCash) paymentDisplay = 'Cash';
-                else if (paymentMethod === 'room_charge') paymentDisplay = 'Room Charge';
+                if (isRoomCharge) paymentDisplay = 'Room Charge';
                 // Map type display
                 let typeDisplay = 'Dine-In';
                 if (isBooking) typeDisplay = 'Stay Booking';
