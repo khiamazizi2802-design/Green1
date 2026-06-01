@@ -745,7 +745,7 @@ const VenueMenuPage = () => {
                 </div>
             </header>
 
-            <main className="p-6 max-w-lg mx-auto space-y-12">
+            <main className="p-6 max-w-lg mx-auto space-y-8">
                 {/* Tactical Ordering Protocol Information Card */}
                 <div className="bg-[var(--bg-secondary)] border border-[var(--border-main)]/10 p-5 rounded-[2.5rem] flex gap-4 text-left relative overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
                     <div className="w-10 h-10 rounded-2xl bg-brand/10 text-brand flex items-center justify-center flex-shrink-0">
@@ -758,24 +758,47 @@ const VenueMenuPage = () => {
                         </p>
                     </div>
                 </div>
+
+                {/* Kategorie-Schnellwahl-Leiste (Wischbares Menü oben) */}
+                <div className="flex gap-2.5 overflow-x-auto no-scrollbar py-2 px-1 mb-2 snap-x">
+                    {menuCategories.map((cat, idx) => (
+                        <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                                const element = document.getElementById(`cat-section-${idx}`);
+                                if (element) {
+                                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                            }}
+                            className="px-4 py-2.5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-main)]/30 hover:border-brand/40 text-[10px] font-black uppercase tracking-widest text-white whitespace-nowrap active:scale-95 transition-all shadow-md snap-start"
+                        >
+                            {cat.name}
+                        </button>
+                    ))}
+                </div>
+
                 {menuCategories.map((cat, idx) => (
-                    <section key={idx} className="space-y-6">
+                    <section key={idx} id={`cat-section-${idx}`} className="space-y-4 pt-2">
                         <div className="flex items-center gap-4">
-                            <h2 className="text-xl font-black italic uppercase tracking-tighter text-[var(--text-primary)]">{cat.name}</h2>
+                            <h2 className="text-base font-black italic uppercase tracking-tighter text-[var(--text-primary)]">{cat.name}</h2>
                             <div className="h-[2px] flex-1 bg-gradient-to-r from-brand/20 to-transparent" />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        
+                        {/* Horizontale Wischbahn (Lane) */}
+                        <div className="flex overflow-x-auto no-scrollbar gap-5 py-2 px-1 snap-x snap-mandatory">
                             {cat.items.map((item) => (
-                                <div key={item.id} className="bg-[var(--bg-secondary)]/50 border border-white/5 rounded-[2.5rem] p-4 flex flex-col hover:border-brand/30 transition-all group">
-                                    <div className="relative h-40 w-full rounded-[2rem] overflow-hidden mb-4">
+                                <div key={item.id} className="bg-[var(--bg-secondary)]/55 border border-white/5 rounded-[2.5rem] p-4 flex flex-col hover:border-brand/30 transition-all group w-[220px] sm:w-[240px] flex-shrink-0 snap-start relative overflow-hidden"
+                                     style={{ background: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 255, 255, 0.05)' }}>
+                                    <div className="relative h-28 w-full rounded-[2rem] overflow-hidden mb-3">
                                         <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent opacity-60" />
                                     </div>
-                                    <h3 className="text-sm font-black italic uppercase text-[var(--text-primary)] mb-1">{item.name}</h3>
-                                    <p className="text-[10px] text-[var(--text-primary)] opacity-60 font-black uppercase tracking-widest line-clamp-2 mb-4 h-8">{item.desc}</p>
+                                    <h3 className="text-[11px] font-black italic uppercase text-[var(--text-primary)] mb-1 leading-snug truncate" title={item.name}>{item.name}</h3>
+                                    <p className="text-[9px] text-[var(--text-primary)] opacity-50 font-medium uppercase tracking-tight line-clamp-2 mb-4 h-6 leading-tight">{item.desc}</p>
                                     <div className="flex justify-between items-center mt-auto">
-                                        <span className="text-lg font-black italic text-brand">€{item.price.toFixed(2)}</span>
-                                        <button onClick={() => handleOrder(item)} className="w-10 h-10 bg-brand text-dark-900 rounded-xl flex items-center justify-center shadow-lg shadow-brand/20 active:scale-90 transition-transform"><Plus size={20} /></button>
+                                        <span className="text-xs font-black italic text-brand">€{item.price.toFixed(2)}</span>
+                                        <button onClick={() => handleOrder(item)} className="w-8 h-8 bg-brand text-dark-900 rounded-lg flex items-center justify-center shadow-lg shadow-brand/20 active:scale-90 transition-transform"><Plus size={16} /></button>
                                     </div>
                                 </div>
                             ))}
