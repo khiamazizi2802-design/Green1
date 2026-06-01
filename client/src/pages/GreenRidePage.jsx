@@ -193,6 +193,7 @@ const GreenRidePage = () => {
     const [showDriverProfile, setShowDriverProfile] = useState(null); // Holds the driver object
     const [targetDriver, setTargetDriver] = useState(null); // The locked driver for the next whistle
     const [showWhistleConfirm, setShowWhistleConfirm] = useState(null);
+    const [poolPassengers, setPoolPassengers] = useState(3); // Default to 3, range 2-5
     
     // Live Location State
     const [pickupCoords, setPickupCoords] = useState([50.1109, 8.6821]); // Frankfurt Center
@@ -442,6 +443,14 @@ const GreenRidePage = () => {
     React.useEffect(() => {
         if (rideStatus === 'searching' && socket) {
             console.log('Emitting ride-request via sockets for Alex Passenger');
+            
+            const activeDistance = destinationCoords ? liveDistance : 8.4;
+            const currentPricing = calculatePrice(activeDistance, serviceType === 'shared' ? poolPassengers : 1);
+            let finalBookingPrice = currentPricing.discountedPrice;
+            if (serviceType === 'max') {
+                finalBookingPrice = (parseFloat(finalBookingPrice) * 1.5).toFixed(2);
+            }
+            
             socket.emit('ride-request', {
                 passengerId: 'alex-passenger-id',
                 passengerName: 'Alex Passenger',
@@ -449,12 +458,12 @@ const GreenRidePage = () => {
                 destination: destination || 'Mainzer Landstraße 123',
                 coords: { lat: pickupCoords[0], lng: pickupCoords[1] },
                 rideType: serviceType,
-                capacity: serviceType === 'max' ? 6 : 3,
-                price: 24.50,
+                capacity: serviceType === 'max' ? 6 : (serviceType === 'shared' ? poolPassengers : 3),
+                price: parseFloat(finalBookingPrice),
                 paymentType: selectedPayment.name
             });
         }
-    }, [rideStatus, socket, pickup, destination, pickupCoords, serviceType, selectedPayment]);
+    }, [rideStatus, socket, pickup, destination, pickupCoords, serviceType, selectedPayment, poolPassengers, liveDistance, destinationCoords]);
     
     // Ensure we always have drivers on the map even if socket is quiet
     const [demoDrivers] = useState([
@@ -474,13 +483,20 @@ const GreenRidePage = () => {
         
         setIsProcessing(true);
         
+        const activeDistance = destinationCoords ? liveDistance : 8.4;
+        const currentPricing = calculatePrice(activeDistance, isPoolingEnabled ? poolPassengers : 1);
+        let finalBookingPrice = currentPricing.discountedPrice;
+        if (serviceType === 'max') {
+            finalBookingPrice = (parseFloat(finalBookingPrice) * 1.5).toFixed(2);
+        }
+        
         // STAGE 1: Payment Processing
         setTimeout(() => {
             setIsProcessing(false);
             setPaymentConfirmed(true);
             const paymentMsg = selectedPayment.id === 'cash' 
-                ? 'Payment set to Cash. Please pay €24.50 at destination.' 
-                : `€24.50 has been authorized via ${selectedPayment.name} (${selectedPayment.label})`;
+                ? `Payment set to Cash. Please pay €${finalBookingPrice} at destination.` 
+                : `€${finalBookingPrice} has been authorized via ${selectedPayment.name} (${selectedPayment.label})`;
             triggerNotification('payment', selectedPayment.id === 'cash' ? 'Cash Selected' : 'Payment Secured', paymentMsg);
             
             // STAGE 2: Payment Confirmed -> Search
@@ -800,7 +816,7 @@ const GreenRidePage = () => {
                             const isLocked = type.locked;
                             
                             const mockDistance = destinationCoords ? liveDistance : 8.4; 
-                            const pricing = calculatePrice(destination ? mockDistance : 0, type.id === 'shared' ? 2 : 1);
+                            const pricing = calculatePrice(destination ? mockDistance : 0, type.id === 'shared' ? poolPassengers : 1);
                             
                             // Adjust price for Max
                             let finalPrice = pricing.discountedPrice;
@@ -808,7 +824,7 @@ const GreenRidePage = () => {
                                 finalPrice = (parseFloat(finalPrice) * 1.5).toFixed(2);
                             }
                             
-                            const displayPrice = destination ? `€${finalPrice}` : (type.id === 'shared' ? '-20%' : '');
+                            const displayPrice = destination ? `€${finalPrice}` : (type.id === 'shared' ? `-${pricing.discountPercent}%` : '');
  
                             return (
                                 <button
@@ -849,6 +865,45 @@ const GreenRidePage = () => {
                             );
                         })}
                     </div>
+
+                    {/* Dynamischer Mitfahrer-Wähler bei Shared */}
+                    {serviceType === 'shared' && (
+                        <div className="p-3.5 rounded-2xl border mb-3 flex flex-col gap-2 animate-[fadeIn_0.25s_ease]"
+                             style={{ 
+                                 background: '#1A1A1A', 
+                                 borderColor: 'rgba(255,255,255,0.1)',
+                                 boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
+                             }}>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-white/50 text-center">
+                                Geteilte Passagiere (Mitfahrer-Pool)
+                            </p>
+                            <div className="flex gap-2">
+                                {[2, 3, 4, 5].map((count) => {
+                                    const discounts = { 2: '25%', 3: '37.5%', 4: '43.75%', 5: '50%' };
+                                    const driverBonuses = { 2: '125%', 3: '150%', 4: '175%', 5: '200%' };
+                                    const isActive = poolPassengers === count;
+                                    return (
+                                        <button
+                                            key={count}
+                                            type="button"
+                                            onClick={() => setPoolPassengers(count)}
+                                            className={`flex-1 py-2 rounded-xl border flex flex-col items-center gap-0.5 transition-all hover:scale-105 active:scale-95 ${
+                                                isActive 
+                                                ? 'bg-[#00A2FF] border-transparent text-white shadow-lg shadow-[#00A2FF]/20' 
+                                                : 'bg-black/35 border-white/5 text-white/50 hover:border-white/10 hover:text-white'
+                                            }`}
+                                        >
+                                            <span className="text-[10px] font-black">{count} Pers.</span>
+                                            <span className="text-[7px] font-bold opacity-80">-{discounts[count]}</span>
+                                            <span className={`text-[6px] font-black uppercase tracking-tighter mt-0.5 ${isActive ? 'text-yellow-300' : 'text-yellow-500/70'}`}>
+                                                Fahrer: {driverBonuses[count]}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Minimalist Actions Hub */}
                     <div className="flex items-center gap-3">
@@ -968,7 +1023,7 @@ const GreenRidePage = () => {
                                             <span className="text-[var(--text-secondary)] opacity-30 text-[8px] line-through font-black">€{(parseFloat(calculatePrice(liveDistance, 1).discountedPrice) * (serviceType === 'max' ? 1.5 : 1)).toFixed(2)}</span>
                                         )}
                                         <span className="text-[10px] font-black" style={{ color: 'var(--accent-primary)' }}>
-                                            €{(parseFloat(calculatePrice(liveDistance, isPoolingEnabled ? 2 : 1).discountedPrice) * (serviceType === 'max' ? 1.5 : 1)).toFixed(2)}
+                                            €{(parseFloat(calculatePrice(liveDistance, isPoolingEnabled ? poolPassengers : 1).discountedPrice) * (serviceType === 'max' ? 1.5 : 1)).toFixed(2)}
                                         </span>
                                     </div>
                                 </div>

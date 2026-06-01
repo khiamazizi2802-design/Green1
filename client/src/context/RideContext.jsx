@@ -110,21 +110,36 @@ export const RideProvider = ({ children }) => {
     const calculatePrice = (distance, passengerCount) => {
         const originalPrice = BASE_FARE + (distance * PER_KM_RATE);
         let discount = 0;
+        let driverMultiplier = 1.0;
 
         if (passengerCount === 2) {
-            discount = 0.20; // 20% discount
-        } else if (passengerCount >= 3) {
-            discount = 0.40; // 40% discount
+            discount = 0.25;       // 25% Rabatt (jeder zahlt €15 statt €20)
+            driverMultiplier = 1.25; // Fahrer erhält 125%
+        } else if (passengerCount === 3) {
+            discount = 0.375;      // 37.5% Rabatt (jeder zahlt €12.50 statt €20)
+            driverMultiplier = 1.50; // Fahrer erhält 150%
+        } else if (passengerCount === 4) {
+            discount = 0.4375;     // 43.75% Rabatt (jeder zahlt €11.25 statt €20)
+            driverMultiplier = 1.75; // Fahrer erhält 175%
+        } else if (passengerCount >= 5) {
+            discount = 0.50;       // 50% Rabatt (jeder zahlt €10 statt €20)
+            driverMultiplier = 2.00; // Fahrer erhält 200%
         }
 
         const discountedPrice = originalPrice * (1 - discount);
         const savings = originalPrice - discountedPrice;
+        const totalCollected = discountedPrice * passengerCount;
+        const driverPayout = originalPrice * driverMultiplier;
+        const platformShare = totalCollected - driverPayout;
 
         return {
             originalPrice: originalPrice.toFixed(2),
             discountedPrice: discountedPrice.toFixed(2),
             savings: savings.toFixed(2),
-            discountPercent: (discount * 100).toFixed(0)
+            discountPercent: String(discount * 100).replace(/\.0$/, ''),
+            driverPayout: driverPayout.toFixed(2),
+            platformShare: platformShare.toFixed(2),
+            driverPercent: (driverMultiplier * 100).toFixed(0)
         };
     };
 
