@@ -281,7 +281,7 @@ const GreenSPage = () => {
     const embeddedContainerRef = React.useRef(null);
 
     return (
-        <div className="min-h-[100dvh] bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative overflow-x-hidden">
+        <div className="min-h-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative overflow-x-hidden">
             {/* Background Decor */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand/5 blur-[100px] rounded-full pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" />

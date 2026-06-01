@@ -1484,7 +1484,7 @@ const ManagerDashboard = () => {
     );
 
     return (
-        <div className="relative w-full h-screen overflow-hidden bg-dark-950 font-sans text-primary flex flex-row">
+        <div className="relative w-full h-full overflow-hidden bg-dark-950 font-sans text-primary flex flex-row">
             {/* Mobile Sidebar Overlay Backdrop */}
             {isMobile && isMobileSidebarOpen && (
                 <div 

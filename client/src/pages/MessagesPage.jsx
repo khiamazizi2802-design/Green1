@@ -266,7 +266,7 @@ const MessagesPage = () => {
     };
 
     return (
-        <div className="min-h-[100dvh] bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative pb-32 overflow-y-auto no-scrollbar">
+        <div className="min-h-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative pb-32 overflow-y-auto no-scrollbar">
             {/* Ambient Background Glows */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-brand/5 blur-[80px] rounded-full pointer-events-none" />
             <div className="absolute bottom-24 left-0 w-80 h-80 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
@@ -440,7 +440,7 @@ const MessagesPage = () => {
                 </>
             ) : (
                 /* Fully Interactive Chat Thread View Window */
-                <div className="min-h-[100dvh] flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] relative">
+                <div className="min-h-full flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] relative">
                     {/* Sticky Chat Header */}
                     <header className="sticky top-0 z-40 bg-[var(--bg-primary)]/90 backdrop-blur-xl border-b border-[var(--border-main)] p-6 flex items-center gap-4">
                         <button 
