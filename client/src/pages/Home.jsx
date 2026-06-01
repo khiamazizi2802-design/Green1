@@ -1038,7 +1038,15 @@ const Home = () => {
                             {/* Help & Support Header */}
                             <div className="flex items-center gap-4 mb-2">
                                 <button
-                                    onClick={() => helpSubView ? setHelpSubView(null) : setProfileSubView(null)}
+                                    onClick={() => {
+                                        if (serviceDetailView) {
+                                            setServiceDetailView(null);
+                                        } else if (helpSubView) {
+                                            setHelpSubView(null);
+                                        } else {
+                                            setProfileSubView(null);
+                                        }
+                                    }}
                                     className="p-2 bg-[var(--bg-secondary)] rounded-xl text-brand hover:scale-110 transition-all"
                                 >
                                     <ArrowLeft size={20} />
@@ -1046,7 +1054,13 @@ const Home = () => {
                                 <h3 className="text-xl font-black italic tracking-tighter uppercase text-brand">
                                     {helpSubView === 'chat' ? 'AI Assistant' :
                                         helpSubView === 'dsgvo' ? 'Privacy Policy' :
-                                            helpSubView === 'app' ? 'Our Services' :
+                                            helpSubView === 'app' ? (
+                                                serviceDetailView === 'trips' ? 'Premium Trips' :
+                                                serviceDetailView === 'tickets' ? 'VIP Tickets' :
+                                                serviceDetailView === 'rooms' ? 'Luxury Rooms' :
+                                                serviceDetailView === 'order' ? 'Pre-Orders' :
+                                                serviceDetailView === 'waiter' ? 'VIP Waiter' : 'Our Services'
+                                            ) :
                                                 helpSubView === 'email' ? 'Contact Us' : 'Help & Support'}
                                 </h3>
                             </div>
@@ -1163,34 +1177,141 @@ const Home = () => {
                                 </div>
                             ) : helpSubView === 'app' ? (
                                 <div className="space-y-4">
-                                    <div className="bg-[var(--bg-secondary)]/50 p-6 rounded-[2rem] border border-[var(--border-main)]">
-                                        <div className="flex items-center gap-4 mb-4">
-                                            <div className="p-3 bg-brand/20 rounded-2xl text-brand"><Zap size={24} /></div>
-                                            <div>
-                                                <h4 className="text-sm font-black italic uppercase">Green App v1.1</h4>
-                                                <p className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">Premium Transport Network</p>
+                                    {!serviceDetailView ? (
+                                        <div className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-6 rounded-[2rem] space-y-4">
+                                            <div className="flex items-center gap-4 mb-2">
+                                                <div className="p-3 bg-brand/20 rounded-2xl text-brand"><Zap size={24} /></div>
+                                                <div>
+                                                    <h4 className="text-sm font-black italic uppercase">Green Services v1.2</h4>
+                                                    <p className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">Premium Core Network</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="space-y-3">
-                                            <p className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest leading-relaxed">
-                                                We offer three tiers of exceptional transport services across major European hubs:
+                                            <p className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest leading-relaxed mb-4">
+                                                Explore our five specialized premium lifestyle & transport service hubs:
                                             </p>
-                                            <div className="space-y-2">
-                                                <div className="flex justify-between items-center bg-[var(--bg-primary)] p-3 rounded-xl border border-[var(--border-main)]">
-                                                    <span className="text-xs font-black italic text-brand">CYBERDISPATCH</span>
-                                                    <span className="text-[8px] bg-brand text-dark-900 px-2 py-0.5 rounded-full font-black">ULTRA FAST</span>
-                                                </div>
-                                                <div className="flex justify-between items-center bg-[var(--bg-primary)] p-3 rounded-xl border border-[var(--border-main)]">
-                                                    <span className="text-xs font-black italic text-[var(--text-primary)]">PREMIUM RIDE</span>
-                                                    <span className="text-[8px] text-[var(--text-muted)] font-black">LUXURY COMFORT</span>
-                                                </div>
-                                                <div className="flex justify-between items-center bg-[var(--bg-primary)] p-3 rounded-xl border border-[var(--border-main)]">
-                                                    <span className="text-xs font-black italic text-[var(--text-muted)]">CLASSIC</span>
-                                                    <span className="text-[8px] text-[var(--text-muted)] font-black">RELIABLE BASIC</span>
-                                                </div>
+                                            <div className="space-y-3">
+                                                {[
+                                                    { id: 'trips', label: 'Premium Trips', desc: 'State-of-the-art electric & hybrid rides', icon: Car },
+                                                    { id: 'tickets', label: 'VIP Tickets', desc: 'Access to clubs, bars & concert events', icon: Trophy },
+                                                    { id: 'rooms', label: 'Luxury Rooms', desc: 'Direct booking of first-class hotel suites', icon: BedDouble },
+                                                    { id: 'order', label: 'Pre-Orders', desc: 'Pre-order food & drinks directly in-app', icon: Utensils },
+                                                    { id: 'waiter', label: 'VIP Waiter Call', desc: 'Call host directly to your table', icon: Bell }
+                                                ].map(service => (
+                                                    <button 
+                                                        key={service.id}
+                                                        onClick={() => setServiceDetailView(service.id)}
+                                                        className="w-full flex items-center justify-between bg-[var(--bg-primary)] p-4 rounded-2xl border border-[var(--border-main)] hover:border-brand/40 transition-all group hover:scale-[1.02] active:scale-[0.98] text-left"
+                                                    >
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="p-3 bg-brand/10 group-hover:bg-brand/20 rounded-xl text-brand transition-colors">
+                                                                <service.icon size={20} />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-xs font-black italic uppercase text-[var(--text-primary)]">{service.label}</p>
+                                                                <p className="text-[8px] text-[var(--text-muted)] font-black uppercase tracking-widest mt-1">{service.desc}</p>
+                                                            </div>
+                                                        </div>
+                                                        <ChevronRight size={16} className="text-[var(--text-muted)] group-hover:translate-x-1 transition-transform" />
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <div className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-8 rounded-[3rem] text-center space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                                            {serviceDetailView === 'trips' && (
+                                                <>
+                                                    <div className="w-20 h-20 bg-brand/10 rounded-[2rem] mx-auto flex items-center justify-center text-brand"><Car size={40} /></div>
+                                                    <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">Premium Trips</h4>
+                                                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
+                                                        <p className="text-[var(--text-primary)]">🚗 Chauffeur-Service</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Fahrten in modernsten Elektro- und Hybridfahrzeugen mit professionellen Fahrern.</p>
+                                                        <p className="text-[var(--text-primary)]">📶 Premium Ausstattung</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Kostenfreies WLAN, Erfrischungsgetränke und Ambientelicht an Bord jeder Fahrt.</p>
+                                                        <p className="text-[var(--text-primary)]">🕒 24/7 Support</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Immer für dich erreichbar. Bearbeitungszeit für Rückfragen stets innerhalb von 3 Werktagen.</p>
+                                                    </div>
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/green-ride'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                        Fahrt Buchen
+                                                    </button>
+                                                </>
+                                            )}
+                                            {serviceDetailView === 'tickets' && (
+                                                <>
+                                                    <div className="w-20 h-20 bg-brand/10 rounded-[2rem] mx-auto flex items-center justify-center text-brand"><Trophy size={40} /></div>
+                                                    <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">VIP Tickets</h4>
+                                                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
+                                                        <p className="text-[var(--text-primary)]">🎟️ Fast-Lane Einlass</p>
+                                                        <p className="text-[10px] pl-6 font-normal">VIP-Zugang zu exklusiven Konzert-Events, Bars und erstklassigen Partner-Clubs.</p>
+                                                        <p className="text-[var(--text-primary)]">🎫 Digitale Wallet</p>
+                                                        <p className="text-[10px] pl-6 font-normal">E-Tickets werden sofort personalisiert und sicher in deiner Green Wallet hinterlegt.</p>
+                                                        <p className="text-[var(--text-primary)]">🛡️ Käuferschutz</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Sichere Ticketstornierungen und Erstattungen werden garantiert in 3 Werktagen geprüft.</p>
+                                                    </div>
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/stadium'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                        Tickets Entdecken
+                                                    </button>
+                                                </>
+                                            )}
+                                            {serviceDetailView === 'rooms' && (
+                                                <>
+                                                    <div className="w-20 h-20 bg-brand/10 rounded-[2rem] mx-auto flex items-center justify-center text-brand"><BedDouble size={40} /></div>
+                                                    <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">Luxury Rooms</h4>
+                                                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
+                                                        <p className="text-[var(--text-primary)]">🏨 Erstklassige Hotels</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Direkte Reservierung erstklassiger Partner-Hotelzimmer und Luxus-Suiten.</p>
+                                                        <p className="text-[var(--text-primary)]">🥞 VIP Privilegien</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Late Check-out, exklusiver Spa-Zugang und kostenloses Premium-Frühstück.</p>
+                                                        <p className="text-[var(--text-primary)]">💰 Club Rabatte</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Sonderkonditionen und Storno-Garantie (Bearbeitungsdauer maximal 3 Werktage).</p>
+                                                    </div>
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                        Hotel Suchen
+                                                    </button>
+                                                </>
+                                            )}
+                                            {serviceDetailView === 'order' && (
+                                                <>
+                                                    <div className="w-20 h-20 bg-brand/10 rounded-[2rem] mx-auto flex items-center justify-center text-brand"><Utensils size={40} /></div>
+                                                    <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">Pre-Orders</h4>
+                                                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
+                                                        <p className="text-[var(--text-primary)]">🍸 Keine Warteschlangen</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Speisen und Getränke vorab im Club oder direkt am Stadionplatz bestellen und bezahlen.</p>
+                                                        <p className="text-[var(--text-primary)]">⚡ Express Abholung</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Schnelle Zubereitung an reservierten Terminals ohne Barzahlungs-Stress.</p>
+                                                        <p className="text-[var(--text-primary)]">🔐 Abrechnungsgarantie</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Storno- und Rückerstattungsanträge werden lückenlos innerhalb von 3 Werktagen abgewickelt.</p>
+                                                    </div>
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/venue/menu'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                        Karte Ansehen
+                                                    </button>
+                                                </>
+                                            )}
+                                            {serviceDetailView === 'waiter' && (
+                                                <>
+                                                    <div className="w-20 h-20 bg-brand/10 rounded-[2rem] mx-auto flex items-center justify-center text-brand"><Bell size={40} /></div>
+                                                    <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">VIP Waiter Call</h4>
+                                                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
+                                                        <p className="text-[var(--text-primary)]">🛎️ Kellner Rufen</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Rufe den Tischservice in erstklassigen Partner-Venues mit nur einem Klick zu deinem Tisch.</p>
+                                                        <p className="text-[var(--text-primary)]">🤵 Sofortiger Service</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Kein Suchen oder Warten – schnelle Orderübermittlung direkt an das Serviceteam.</p>
+                                                        <p className="text-[var(--text-primary)]">🛡️ Qualitätssicherung</p>
+                                                        <p className="text-[10px] pl-6 font-normal">Unsere Partnergarantie verspricht stets erstklassige Betreuung. Reklamationsprüfungen in 3 Werktagen.</p>
+                                                    </div>
+                                                    <button onClick={() => { triggerNotification("VIP TABLE SERVICE NOTIFIED", "SUCCESS"); setActiveSheet(null); setServiceDetailView(null); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                        Kellner Rufen
+                                                    </button>
+                                                </>
+                                            )}
+                                            
+                                            <button 
+                                                onClick={() => setServiceDetailView(null)}
+                                                className="w-full py-4 bg-white/5 border border-white/10 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] hover:bg-white/10 transition-all"
+                                            >
+                                                Zurück zur Übersicht
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-8 rounded-[3rem] text-center space-y-6">
