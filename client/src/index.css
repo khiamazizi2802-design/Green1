@@ -755,6 +755,8 @@ h1, h2, h3, h4, h5, h6, strong, b {
 .no-scrollbar {
     -ms-overflow-style: none !important;  /* IE and Edge */
     scrollbar-width: none !important;  /* Firefox */
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
 }
 
 /* ── Tactical High Contrast Visibility Hardening for GreenS Ledger Cards ── */
