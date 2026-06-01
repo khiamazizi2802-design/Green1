@@ -312,47 +312,47 @@ const PaymentHub = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative pb-32 transition-colors duration-300">
-            <header className="sticky top-0 z-50 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-[var(--border-main)] pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-6 px-6 flex items-center justify-between">
+        <div className="min-h-screen bg-dark-950 text-primary font-sans relative pb-32 transition-colors duration-300">
+            <header className="sticky top-0 z-50 backdrop-blur-xl border-b border-main pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-6 px-6 flex items-center justify-between" style={{ backgroundColor: 'var(--bg-primary)' }}>
                 <button 
                     onClick={handleGoBack}
-                    className="w-12 h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl flex items-center justify-center text-[var(--text-primary)] shadow-sm active:scale-95 transition-all"
+                    className="w-12 h-12 bg-dark-900 border border-main rounded-2xl flex items-center justify-center text-primary shadow-sm active:scale-95 transition-all"
                 >
                     <ArrowLeft size={24} />
                 </button>
                 <div className="text-center">
-                    <h1 className="text-xl font-black italic tracking-tighter uppercase text-[var(--text-primary)]">Bank Hub</h1>
-                    <p className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500 mt-0.5">Secure Transaction Network</p>
+                    <h1 className="text-xl font-black italic tracking-tighter uppercase text-primary">Bank Hub</h1>
+                    <p className="text-[8px] font-black uppercase tracking-[0.3em] text-secondary mt-0.5">Secure Transaction Network</p>
                 </div>
-                <div className="w-12 h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl flex items-center justify-center text-[var(--text-primary)]">
+                <div className="w-12 h-12 bg-dark-900 border border-main rounded-2xl flex items-center justify-center text-primary">
                     <ShieldCheck size={24} />
                 </div>
             </header>
 
             <main className="p-6 max-w-lg mx-auto space-y-10 pt-8">
                 {/* Security Status Card */}
-                <section className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-8 rounded-[3rem] space-y-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative overflow-hidden group">
+                <section className="bg-dark-900 border border-main p-8 rounded-[3rem] space-y-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform">
-                        <ShieldCheck size={120} className="text-[var(--text-primary)]" />
+                        <ShieldCheck size={120} className="text-primary" />
                     </div>
                     <div className="flex justify-between items-center relative z-10">
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Secure Channel</p>
-                            <h4 className="text-3xl font-black italic tracking-tighter text-[var(--text-primary)] uppercase">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary">Secure Channel</p>
+                            <h4 className="text-3xl font-black italic tracking-tighter text-primary uppercase">
                                 {activeMethod.type === 'Credit Card' ? 'Card Secured' : activeMethod.type === 'Bank Account' ? 'Bank Verified' : 'Session Active'}
                             </h4>
                         </div>
                     </div>
-                    <div className="pt-6 border-t border-[var(--border-main)] flex justify-between items-center relative z-10">
+                    <div className="pt-6 border-t border-main flex justify-between items-center relative z-10">
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-[var(--text-primary)] animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary">
                                 {activeMethod.type === 'PayPal' ? 'Authorized Gateway' : 'Encrypted Flow Active'}
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
-                            {React.createElement(activeMethod.icon || Landmark, { size: 14, className: "text-[var(--text-primary)]" })}
-                            <span className="text-xs font-black italic text-[var(--text-primary)]">
+                            {React.createElement(activeMethod.icon || Landmark, { size: 14, className: "text-primary" })}
+                            <span className="text-xs font-black italic text-primary">
                                 {activeMethod.type === 'Credit Card' 
                                     ? `•••• •••• •••• ${activeMethod.last4 ? activeMethod.last4.slice(-4) : '4242'}`
                                     : activeMethod.type === 'Bank Account'
@@ -366,8 +366,8 @@ const PaymentHub = () => {
                 {/* Active Channels List */}
                 <section className="space-y-4">
                     <div className="flex items-center justify-between px-2">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Active Channels</h3>
-                        <span className="text-[8px] font-black text-[var(--bg-primary)] bg-[var(--text-primary)] px-2 py-0.5 rounded-full">{paymentMethods.length} Total</span>
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-secondary italic">Active Channels</h3>
+                        <span className="text-[8px] font-black px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>{paymentMethods.length} Total</span>
                     </div>
                     
                     <div className="space-y-5">
@@ -391,7 +391,7 @@ const PaymentHub = () => {
                                         className={`relative p-6 rounded-[2.5rem] border transition-all duration-300 cursor-pointer overflow-hidden shadow-2xl min-h-[235px] flex flex-col justify-between group/item ${
                                             isActive 
                                                 ? 'ring-2 ring-[var(--brand-accent,#ffffff)] border-[var(--brand-accent,#ffffff)] shadow-[0_0_35px_rgba(255,255,255,0.25)] z-20 scale-[1.02]' 
-                                                : 'border-[var(--border-main)] hover:border-white/40 hover:scale-[1.01] opacity-80 hover:opacity-100'
+                                                : 'border-main hover:border-white/40 hover:scale-[1.01] opacity-80 hover:opacity-100'
                                         } ${
                                             method.type === 'Credit Card' 
                                                 ? 'bg-gradient-to-br from-neutral-900 via-neutral-850 to-neutral-950 text-white' 
@@ -650,22 +650,23 @@ const PaymentHub = () => {
                             <button
                                 key={type.id}
                                 onClick={() => handleAddPaymentClick(type.type)}
-                                className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-6 rounded-[2.5rem] flex flex-col items-center gap-3 group hover:border-[var(--text-primary)] hover:scale-[1.02] transition-all shadow-[0_5px_15px_rgba(0,0,0,0.02)]"
+                                className="bg-dark-900 border border-main p-6 rounded-[2.5rem] flex flex-col items-center gap-3 group hover:border-primary hover:scale-[1.02] transition-all shadow-[0_5px_15px_rgba(0,0,0,0.02)]"
                             >
-                                <div className="p-4 bg-[var(--bg-primary)] rounded-2xl text-[var(--text-secondary)]/60 group-hover:text-[var(--text-primary)] group-hover:bg-[var(--text-primary)]/5 transition-all">
+                                <div className="p-4 bg-dark-950 rounded-2xl text-secondary group-hover:text-primary group-hover:bg-primary/5 transition-all">
                                     <type.icon size={24} />
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)]/60 group-hover:text-[var(--text-primary)] transition-colors">{type.label}</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-secondary group-hover:text-primary transition-colors">{type.label}</span>
                             </button>
                         ))}
                     </div>
                 </section>
             </main>
 
-            <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/90 to-transparent z-40">
+            <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] bg-gradient-to-t from-dark-950 via-dark-950/90 to-transparent z-40">
                 <button 
                     onClick={handleGoBack}
-                    className="w-full py-6 bg-[var(--text-primary)] text-[var(--bg-primary)] border border-[var(--border-main)] rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-0.98 transition-all font-sans"
+                    className="w-full py-6 border border-main rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-0.98 transition-all font-sans"
+                    style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                 >
                     Confirm & Return to Mission
                 </button>
