@@ -76,11 +76,11 @@
 }
 html, body, #root {
     width: 100%;
-    min-height: 100vh !important;
-    min-height: 100dvh !important;
+    height: 100vh !important;
+    height: 100dvh !important;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
 }
 
@@ -92,8 +92,7 @@ body {
                 color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
 }
 
 /* ── Global Layering ───────────────────────────────── */
@@ -101,8 +100,8 @@ body {
     position: relative;
     z-index: 10;
     width: 100%;
-    min-height: 100vh;
-    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
