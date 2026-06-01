@@ -40,7 +40,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                     className="fixed inset-0 z-[60] bg-black flex flex-col"
                 >
                     {/* Top Controls */}
-                    <header className="absolute top-0 left-0 right-0 p-6 grid grid-cols-3 items-center z-[70] bg-gradient-to-b from-black/80 to-transparent">
+                    <header className="absolute top-0 left-0 right-0 pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-6 px-6 grid grid-cols-3 items-center z-[70] bg-gradient-to-b from-black/80 to-transparent">
                         {/* Left: Search Bar */}
                         <div className="relative group">
                             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${isSearching ? 'text-brand' : 'text-gray-500'}`} size={16} />
@@ -186,7 +186,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                                 className="absolute inset-0 z-[80] bg-[var(--bg-primary)] flex flex-col"
                             >
-                                <header className="p-6 flex justify-between items-center border-b border-white/5">
+                                <header className="pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-6 px-6 flex justify-between items-center border-b border-white/5">
                                     <button onClick={() => setIsCreating(false)} className="text-[var(--text-primary)] font-black uppercase text-xs tracking-widest">Cancel</button>
                                     <h3 className="font-black italic text-brand tracking-tighter uppercase">New Green Post</h3>
                                     <button disabled className="text-gray-600 font-black uppercase text-xs tracking-widest">Share</button>
