@@ -144,7 +144,8 @@ const MenuManagement = () => {
             reader.onload = async (event) => {
                 try {
                     const base64Content = event.target.result.split(',')[1];
-                    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+                    const wsUrl = import.meta.env.VITE_WS_URL || 'http://localhost:3001';
+                    const backendUrl = wsUrl.replace(/^ws/, 'http');
                     const response = await fetch(`${backendUrl}/api/ai/scan-menu`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -179,7 +180,8 @@ const MenuManagement = () => {
                 setStep('processing');
                 
                 try {
-                    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+                    const wsUrl = import.meta.env.VITE_WS_URL || 'http://localhost:3001';
+                    const backendUrl = wsUrl.replace(/^ws/, 'http');
                     const response = await fetch(`${backendUrl}/api/ai/scan-menu`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
