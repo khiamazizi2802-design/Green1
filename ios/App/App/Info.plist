@@ -47,5 +47,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Wir benötigen Zugriff auf deine Kamera, um ein Selfie für dein Profilbild aufzunehmen.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Wir benötigen Zugriff auf deine Galerie, um ein Profilbild hochzuladen.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Wir benötigen Zugriff auf deine Galerie, um Fotos zu speichern.</string>
 </dict>
 </plist>
