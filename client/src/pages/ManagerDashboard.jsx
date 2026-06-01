@@ -2193,14 +2193,14 @@ const ManagerDashboard = () => {
                                                                     )}
                                                                 </div>
                                                             ) : (
-                                                                <div className="flex gap-3 overflow-x-auto no-scrollbar py-2 px-2 bg-dark-950/40 rounded-2xl border border-main min-h-[90px] items-start">
+                                                                <div className="flex gap-3 overflow-x-auto no-scrollbar py-2 px-2 bg-dark-950/40 rounded-2xl border border-main min-h-[110px] items-start">
                                                                     {order.items.map((item, idx) => {
                                                                         const itemNameClean = item.replace(/\(\d+x\)/, '').trim();
                                                                         const itemInfo = getItemInfo(itemNameClean);
                                                                         const qty = item.match(/\((\d+)x\)/) ? item.match(/\((\d+)x\)/)[1] : '1';
                                                                         return (
                                                                             <div key={idx} className="relative shrink-0 flex flex-col items-center gap-1 hover:scale-105 transition-transform duration-300">
-                                                                                <div className="w-16 h-16 rounded-xl overflow-hidden border border-main bg-dark-900 shadow-md">
+                                                                                <div className="w-20 h-20 rounded-xl overflow-hidden border border-main bg-dark-900 shadow-md">
                                                                                     <img 
                                                                                         src={itemInfo.image} 
                                                                                         alt={itemNameClean} 
@@ -2212,7 +2212,7 @@ const ManagerDashboard = () => {
                                                                                     {qty}
                                                                                 </div>
                                                                                 {/* Item Name */}
-                                                                                <span className="text-[8px] font-bold text-secondary text-center leading-tight max-w-[64px] truncate">{itemNameClean}</span>
+                                                                                <span className="text-[8px] font-bold text-secondary text-center leading-tight max-w-[80px] truncate">{itemNameClean}</span>
                                                                             </div>
                                                                         );
                                                                     })}
