@@ -40,7 +40,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                     className="fixed inset-0 z-[60] bg-black flex flex-col"
                 >
                     {/* Top Controls */}
-                    <header className="absolute top-0 left-0 right-0 pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-6 px-6 grid grid-cols-3 items-center z-[70] bg-gradient-to-b from-black/80 to-transparent">
+                    <header className="absolute top-0 left-0 right-0 pb-6 px-6 grid grid-cols-3 items-center z-[70] bg-gradient-to-b from-black/80 to-transparent" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)' }}>
                         {/* Left: Search Bar */}
                         <div className="relative group">
                             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${isSearching ? 'text-brand' : 'text-gray-500'}`} size={16} />
@@ -60,7 +60,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
-                                        className="absolute top-full left-0 right-0 mt-2 bg-dark-950 border border-white/10 rounded-2xl p-2 shadow-2xl z-[80]"
+                                        className="absolute top-full left-0 mt-2 bg-dark-950/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-2.5 shadow-2xl z-[80] w-[280px] sm:w-[320px]"
                                     >
                                         {mockFriends.map(f => (
                                             <div key={f.id} className="p-3 flex items-center justify-between hover:bg-white/5 rounded-xl transition-all group">
@@ -186,7 +186,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                                 className="absolute inset-0 z-[80] bg-[var(--bg-primary)] flex flex-col"
                             >
-                                <header className="pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-6 px-6 flex justify-between items-center border-b border-white/5">
+                                <header className="pb-6 px-6 flex justify-between items-center border-b border-white/5" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)' }}>
                                     <button onClick={() => setIsCreating(false)} className="text-[var(--text-primary)] font-black uppercase text-xs tracking-widest">Cancel</button>
                                     <h3 className="font-black italic text-brand tracking-tighter uppercase">New Green Post</h3>
                                     <button disabled className="text-gray-600 font-black uppercase text-xs tracking-widest">Share</button>
