@@ -94,6 +94,7 @@ const Home = () => {
     const [activeSheet, setActiveSheet] = useState(null);
     const [profileSubView, setProfileSubView] = useState(null); // null, 'account', 'history', 'help'
     const [helpSubView, setHelpSubView] = useState(null); // null, 'chat', 'dsgvo', 'app', 'email'
+    const [serviceDetailView, setServiceDetailView] = useState(null); // null, 'trips', 'tickets', 'rooms', 'order', 'waiter'
     const [chatMessages, setChatMessages] = useState([
         { sender: 'ai', text: `Hello! How can I assist you with your active tickets, trips, or venue orders today?` }
     ]);
@@ -418,7 +419,7 @@ const Home = () => {
                 </div>
             </Sheet>
 
-            <Sheet isOpen={activeSheet === 'profile'} onClose={() => { setActiveSheet(null); setProfileSubView(null); setHelpSubView(null); setIsEditingProfile(false); setEditingPaymentId(null); }} className="rounded-t-[3rem]">
+            <Sheet isOpen={activeSheet === 'profile'} onClose={() => { setActiveSheet(null); setProfileSubView(null); setHelpSubView(null); setServiceDetailView(null); setIsEditingProfile(false); setEditingPaymentId(null); }} className="rounded-t-[3rem]">
                 <div className="space-y-6 pb-12 px-2 overflow-y-auto max-h-[85vh]">
                     {!profileSubView ? (
                         <>
