@@ -1913,7 +1913,11 @@ const ManagerDashboard = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                                    {/* Swipe hint */}
+                                    <div className="flex items-center gap-2 text-secondary text-[10px] font-bold uppercase tracking-widest opacity-50 pb-1">
+                                        <span>⟵</span><span>Swipe to browse orders</span><span>⟶</span>
+                                    </div>
+                                    <div className="flex gap-5 overflow-x-auto pb-6 snap-x snap-mandatory scroll-smooth" style={{WebkitOverflowScrolling:'touch'}}>
                                         {orders
                                         .filter(order => {
                                             const searchMatch = order.guest.toLowerCase().includes(orderSearch.toLowerCase()) || 
@@ -1943,11 +1947,12 @@ const ManagerDashboard = () => {
                                             return (
                                                 <div 
                                                     key={i} 
-                                                    className={`bg-glass border-2 ${
+                                                    className={`snap-start shrink-0 bg-glass border-2 ${
                                                         isUnreceived 
-                                                        ? 'animate-blink-red border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]' 
-                                                        : (isUrgent && order.status !== 'Served' ? 'border-red-500/30' : 'border-glass')
-                                                    } rounded-[2rem] p-5 flex flex-col justify-between hover:border-brand/40 transition-all group relative overflow-hidden shadow-2xl min-h-[460px]`}
+                                                        ? 'animate-blink-red border-red-500 shadow-[0_0_24px_rgba(239,68,68,0.4)]' 
+                                                        : (isUrgent && order.status !== 'Served' ? 'border-red-500/40' : 'border-glass')
+                                                    } rounded-[2rem] p-6 flex flex-col justify-between hover:border-brand/40 transition-all group relative overflow-hidden shadow-2xl`}
+                                                    style={{minWidth:'340px', maxWidth:'420px', minHeight:'520px'}}
                                                 >
                                                     {/* Background Glow for Urgency */}
                                                     {isUrgent && order.status !== 'Served' && (
@@ -1958,29 +1963,29 @@ const ManagerDashboard = () => {
                                                     <div className="space-y-4 relative z-10">
                                                         <div className="flex items-start gap-4">
                                                             {/* Table / Room Number block */}
-                                                            <div className="w-16 h-16 rounded-2xl bg-dark-900 border border-main flex flex-col items-center justify-center text-primary relative overflow-hidden group-hover:border-brand/40 transition-colors shrink-0">
+                                                            <div className="w-20 h-20 rounded-2xl bg-dark-900 border-2 border-brand/30 flex flex-col items-center justify-center text-primary relative overflow-hidden group-hover:border-brand/60 transition-colors shrink-0 shadow-lg">
                                                                 <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                                <span className="text-[7px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">TABLE</span>
-                                                                <span className="text-[6px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">NUMBER</span>
-                                                                <span className="text-base font-black italic text-brand leading-none">{order.table || order.room || order.id.replace('#', '')}</span>
-                                                                <div className={`absolute bottom-0 left-0 right-0 h-1 ${order.status === 'Served' ? 'bg-brand' : 'bg-brand/20'}`} />
+                                                                <span className="text-[9px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">TABLE</span>
+                                                                <span className="text-[9px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">NO.</span>
+                                                                <span className="text-2xl font-black italic text-brand leading-none">{order.table || order.room || order.id.replace('#', '')}</span>
+                                                                <div className={`absolute bottom-0 left-0 right-0 h-1.5 ${order.status === 'Served' ? 'bg-brand' : 'bg-brand/20'}`} />
                                                             </div>
                                                             
                                                             {/* Guest details */}
                                                             <div className="flex-1 min-w-0 space-y-1.5">
-                                                                <h3 className="text-base font-black italic uppercase text-primary tracking-tighter truncate leading-none mb-0.5">{order.guest}</h3>
+                                                                <h3 className="text-xl font-black italic uppercase text-primary tracking-tighter truncate leading-none mb-1">{order.guest}</h3>
                                                                 
                                                                 {/* ID badge */}
-                                                                <div className="w-fit px-2 py-0.5 bg-brand/10 border border-brand/20 rounded-md">
-                                                                    <span className="text-[8px] font-black text-brand uppercase tracking-widest leading-none">CHECK ID: {order.id}</span>
+                                                                <div className="w-fit px-3 py-1 bg-brand/10 border border-brand/20 rounded-lg">
+                                                                    <span className="text-[11px] font-black text-brand uppercase tracking-widest leading-none">CHECK ID: {order.id}</span>
                                                                 </div>
                                                                 
                                                                 {/* Status Dropdown & Details Button */}
-                                                                <div className="flex items-center gap-1.5 pt-0.5">
+                                                                <div className="flex items-center gap-2 pt-1">
                                                                     <select
                                                                         value={order.status}
                                                                         onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                                                                        className="bg-dark-900 border border-main rounded-md px-1.5 py-0.5 text-[8px] font-black text-brand uppercase outline-none focus:border-brand/40 cursor-pointer h-[21px]"
+                                                                        className="bg-dark-900 border border-brand/30 rounded-xl px-3 py-1.5 text-[12px] font-black text-brand uppercase outline-none focus:border-brand/60 cursor-pointer h-[34px] flex-1"
                                                                     >
                                                                         <option value="Received">Received</option>
                                                                         <option value="Booked">Booked</option>
@@ -2008,38 +2013,38 @@ const ManagerDashboard = () => {
                                                                                 idNumber: 'PA-99281-XM'
                                                                             });
                                                                         }}
-                                                                        className="flex items-center gap-1 px-2.5 py-0.5 bg-brand text-dark-900 rounded-md text-[8px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md shrink-0 h-[21px]"
+                                                                        className="flex items-center gap-1.5 px-4 py-1.5 bg-brand text-dark-900 rounded-xl text-[12px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md shrink-0 h-[34px]"
                                                                     >
-                                                                        <User size={8} />
+                                                                        <User size={12} />
                                                                         Details
                                                                     </button>
                                                                 </div>
 
-                                                                {/* Metadata badges row */}
-                                                                <div className="flex items-center gap-1 pt-0.5 flex-wrap">
-                                                                    <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-white/5 rounded-full border border-white/5 leading-none shrink-0">
-                                                                        <Timer size={8} className={isUrgent ? 'text-red-400 animate-pulse' : 'text-secondary'} />
-                                                                        <span className={`text-[7px] font-black uppercase leading-none ${isUrgent ? 'text-red-400' : 'text-secondary'}`}>{order.time}</span>
+                                                                {/* Metadata badges row — LARGE for tablet readability */}
+                                                                <div className="flex items-center gap-2 pt-1 flex-wrap">
+                                                                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[12px] font-black uppercase shrink-0 ${isUrgent ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-white/5 border-white/10 text-secondary'}`}>
+                                                                        <Timer size={13} className={isUrgent ? 'animate-pulse' : ''} />
+                                                                        <span>{order.time}</span>
                                                                     </div>
-                                                                    <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-white/5 rounded-full border border-white/5 leading-none shrink-0">
-                                                                        <ShoppingBag size={8} className="text-secondary" />
-                                                                        <span className="text-[7px] font-black uppercase leading-none text-secondary">
+                                                                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 shrink-0">
+                                                                        <ShoppingBag size={13} className="text-secondary" />
+                                                                        <span className="text-[11px] font-black uppercase text-secondary">
                                                                             {managerContext === 'HM' && (order.type === 'Takeaway' || order.type === 'Stay Booking') ? 'Room Only' : order.type}
                                                                         </span>
                                                                     </div>
-                                                                    <div className={`px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase border leading-none shrink-0 ${order.payment === 'Cash' ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' : 'bg-brand/10 border-brand/20 text-brand'}`}>
-                                                                        {order.payment}
+                                                                    <div className={`px-3 py-1.5 rounded-xl text-[12px] font-black uppercase border shrink-0 ${order.payment === 'Cash' ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-brand/10 border-brand/20 text-brand'}`}>
+                                                                        {order.payment === 'Cash' ? '💵 Cash' : '💳 ' + order.payment}
                                                                     </div>
-                                                                    {order.plate && <span className="px-1.5 py-0.5 bg-brand/10 border border-brand/20 rounded-full text-[7px] font-black text-brand tracking-widest leading-none shrink-0">{order.plate}</span>}
+                                                                    {order.plate && <span className="px-3 py-1.5 bg-brand/10 border border-brand/20 rounded-xl text-[11px] font-black text-brand tracking-widest shrink-0">{order.plate}</span>}
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         {/* Actions & Gross Value Area */}
-                                                        <div className="flex items-center justify-between border-t border-main pt-3">
+                                                        <div className="flex items-center justify-between border-t border-main pt-4">
                                                             <div>
-                                                                <p className="text-[7px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 opacity-60 leading-none">Gross Value</p>
-                                                                <p className="text-lg font-black italic text-primary leading-none tracking-tighter">€{order.total}</p>
+                                                                <p className="text-[11px] font-black text-secondary uppercase tracking-[0.2em] mb-1 opacity-70 leading-none">Gross Value</p>
+                                                                <p className="text-3xl font-black italic text-primary leading-none tracking-tighter">€{order.total}</p>
                                                                 {order.status === 'Paid' && (
                                                                     <div className="flex items-center gap-1 mt-1 px-2 py-0.5 bg-brand/10 border border-brand/20 rounded-full w-fit">
                                                                         <ShieldCheck size={8} className="text-brand" />
@@ -2058,9 +2063,9 @@ const ManagerDashboard = () => {
                                                                         setOrders(prev => prev.map(o => o.id === order.id ? { ...o, payment: 'Cash (Verified)', status: 'Paid' } : o));
                                                                         alert(`CASH VERIFIED\n----------------\nTransaction ID: ${order.id}\nStatus: Verified & Synced\nCustomer has been notified via the Green Social Hub.`);
                                                                     }}
-                                                                    className="h-9 px-4 bg-amber-500 text-dark-900 rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md shadow-amber-500/20 flex items-center gap-1.5 shrink-0"
+                                                                    className="h-12 px-6 bg-amber-500 text-dark-900 rounded-2xl text-[14px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md shadow-amber-500/20 flex items-center gap-2 shrink-0"
                                                                 >
-                                                                    <CheckCircle2 size={12} />
+                                                                    <CheckCircle2 size={16} />
                                                                     Verify Cash
                                                                 </button>
                                                                                                                         ) : (
@@ -2078,13 +2083,13 @@ const ManagerDashboard = () => {
                                                                             onClick={() => undoOrderStatus(order.id)}
                                                                             disabled={!previousStatuses[order.id]}
                                                                             title="Undo Status Change"
-                                                                            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shrink-0 border ${
+                                                                            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shrink-0 border ${
                                                                                 previousStatuses[order.id]
                                                                                 ? 'bg-red-500/15 border-red-500/40 text-red-400 hover:bg-red-500/25 hover:text-red-300 hover:scale-105 active:scale-95 shadow-md shadow-red-500/5 cursor-pointer'
                                                                                 : 'bg-white/5 border-white/5 text-gray-500 opacity-40 cursor-not-allowed'
                                                                             }`}
                                                                         >
-                                                                            <Undo size={14} className="stroke-[2.5]" />
+                                                                            <Undo size={18} className="stroke-[2.5]" />
                                                                         </button>
                                                                     )}
                                                                     {order.status !== 'Served' && (
@@ -2093,9 +2098,9 @@ const ManagerDashboard = () => {
                                                                                 setMessageOrder(order);
                                                                                 setCustomMessage('');
                                                                             }}
-                                                                            className="w-9 h-9 bg-white/5 border border-brand/20 hover:border-brand/40 rounded-xl flex items-center justify-center text-secondary hover:text-brand hover:scale-105 active:scale-95 transition-all shadow-md shrink-0"
+                                                                            className="w-12 h-12 bg-white/5 border border-brand/20 hover:border-brand/40 rounded-2xl flex items-center justify-center text-secondary hover:text-brand hover:scale-105 active:scale-95 transition-all shadow-md shrink-0"
                                                                         >
-                                                                            <MessageCircle size={16} />
+                                                                            <MessageCircle size={20} />
                                                                         </button>
                                                                     )}
                                                                     <button 
@@ -2119,13 +2124,13 @@ const ManagerDashboard = () => {
                                                                             }
                                                                         }}
                                                                         disabled={order.status === 'Served' || order.status === 'Departed'}
-                                                                        className={`h-9 px-4 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-md shrink-0 ${
+                                                                        className={`h-12 px-5 rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-md shrink-0 ${
                                                                             (order.status === 'Served' || order.status === 'Departed') 
                                                                             ? 'bg-btn-sec text-secondary border border-main opacity-50 cursor-not-allowed' 
-                                                                            : 'bg-brand text-dark-900 hover:scale-105 active:scale-95'
+                                                                            : 'bg-brand text-dark-900 hover:scale-105 active:scale-95 shadow-brand/30'
                                                                         }`}
                                                                     >
-                                                                        <CheckCircle2 size={12} />
+                                                                        <CheckCircle2 size={16} />
                                                                         {order.status === 'Received' || order.status === 'Booked' ? (order.type === 'Stadium E-Ticket' || order.type === 'Club Event Ticket' ? 'Verify & Email 1' : 'Prepare') :
                                                                          order.status === 'Preparing' || order.status === 'Check-In' ? (order.type === 'Stadium E-Ticket' || order.type === 'Club Event Ticket' ? 'Send Ticket & Email 2' : 'Ready') :
                                                                          order.status === 'Ready' || order.status === 'Staying' ? (order.type === 'Stay Booking' ? 'Depart' : 'Serve') :
@@ -2138,15 +2143,15 @@ const ManagerDashboard = () => {
 
                                                     {/* YELLOW MARKED AREA (Bottom Half: Items & Pipeline Progress) */}
                                                     <div className="flex flex-col gap-3 mt-1 border-t border-main pt-3 relative z-10">
-                                                        <div className="space-y-2">
-                                                            <div className="flex justify-between items-center leading-none">
-                                                                <div className="flex items-center gap-1.5 leading-none">
-                                                                    {order.type === 'Stay Booking' ? <BedDouble size={12} className="text-brand" /> : <Utensils size={12} className="text-brand" />}
-                                                                    <span className="text-[8px] font-black text-secondary uppercase tracking-widest opacity-60 leading-none">
+                                                        <div className="space-y-3">
+                                                            <div className="flex justify-between items-center">
+                                                                <div className="flex items-center gap-2">
+                                                                    {order.type === 'Stay Booking' ? <BedDouble size={16} className="text-brand" /> : <Utensils size={16} className="text-brand" />}
+                                                                    <span className="text-[12px] font-black text-secondary uppercase tracking-widest opacity-80">
                                                                         {order.type === 'Stay Booking' ? 'Reservation Overview' : 'Production Pipeline'}
                                                                     </span>
                                                                 </div>
-                                                                <span className="text-[8px] font-black text-brand uppercase tracking-widest leading-none bg-brand/5 px-1.5 py-0.5 rounded border border-brand/10">
+                                                                <span className="text-[11px] font-black text-brand uppercase tracking-widest bg-brand/10 px-3 py-1 rounded-lg border border-brand/20">
                                                                     STATUS: {order.status}
                                                                 </span>
                                                             </div>
@@ -2208,14 +2213,14 @@ const ManagerDashboard = () => {
                                                                     )}
                                                                 </div>
                                                             ) : (
-                                                                <div className="flex gap-2 overflow-x-auto no-scrollbar py-1.5 px-2 bg-dark-950/40 rounded-2xl border border-main min-h-[58px] items-center">
+                                                                <div className="flex gap-3 overflow-x-auto no-scrollbar py-2 px-3 bg-dark-950/40 rounded-2xl border border-main min-h-[80px] items-center">
                                                                     {order.items.map((item, idx) => {
                                                                         const itemNameClean = item.replace(/\(\d+x\)/, '').trim();
                                                                         const itemInfo = getItemInfo(itemNameClean);
-                                                                        const qty = item.match(/\((\d+)x\)/) ? item.match(/\((\d+)x\)/)[1] : '1';
+                                                                        const qty = item.match(/(\d+)x\)/) ? item.match(/(\d+)x\)/)[1] : '1';
                                                                         return (
-                                                                            <div key={idx} className="relative group/img shrink-0 hover:scale-105 transition-transform duration-300">
-                                                                                <div className="w-10 h-10 rounded-xl overflow-hidden border border-main bg-dark-900 shadow-md">
+                                                                            <div key={idx} className="relative group/img shrink-0 hover:scale-105 transition-transform duration-300 flex flex-col items-center gap-1">
+                                                                                <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-brand/20 bg-dark-900 shadow-md">
                                                                                     <img 
                                                                                         src={itemInfo.image} 
                                                                                         alt={itemNameClean} 
@@ -2223,9 +2228,10 @@ const ManagerDashboard = () => {
                                                                                     />
                                                                                 </div>
                                                                                 {/* Qty Badge */}
-                                                                                <div className="absolute -top-1.5 -right-1.5 bg-brand text-dark-900 font-extrabold text-[8px] w-4.5 h-4.5 rounded-full border border-main shadow-lg flex items-center justify-center">
+                                                                                <div className="absolute -top-1 -right-1 bg-brand text-dark-900 font-extrabold text-[10px] w-5 h-5 rounded-full border-2 border-dark-900 shadow-lg flex items-center justify-center">
                                                                                     {qty}
                                                                                 </div>
+                                                                                <span className="text-[9px] font-bold text-secondary uppercase tracking-wide max-w-[56px] text-center truncate leading-tight">{itemNameClean.split(' ')[0]}</span>
                                                                             </div>
                                                                         );
                                                                     })}
@@ -2249,12 +2255,12 @@ const ManagerDashboard = () => {
                                                                 </motion.div>
                                                             </div>
                                                             
-                                                            {/* Status labels */}
-                                                            <div className="flex justify-between px-0.5 text-[6.5px] font-black uppercase text-secondary tracking-widest opacity-60">
+                                                            {/* Status labels — larger for tablet */}
+                                                            <div className="flex justify-between px-1 text-[11px] font-black uppercase text-secondary tracking-widest opacity-60">
                                                                 {(isBooking ? ['Booked', 'Check-In', 'Staying', 'Departed'] : ['Received', 'Preparing', 'Ready', 'Served']).map((label, idx) => {
                                                                     const isActive = order.status === label;
                                                                     return (
-                                                                        <span key={label} className={isActive ? 'text-brand opacity-100 font-extrabold scale-105 transition-all' : ''}>
+                                                                        <span key={label} className={isActive ? 'text-brand opacity-100 font-extrabold transition-all' : ''}>
                                                                             {label}
                                                                         </span>
                                                                     );

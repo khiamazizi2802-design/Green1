@@ -740,6 +740,7 @@ const VenueMenuPage = () => {
                 else if (isWashHub) typeDisplay = 'Wash Service';
 
                 const managerOrder = {
+                    id: newTicket.id || `#${Date.now().toString().slice(-4)}`,
                     guest: guestDetails?.companyName ? `${newTicket.guestName} (${guestDetails.companyName})` : (newTicket.guestName || 'Anonymous Guest'),
                     company: guestDetails?.companyName || undefined,
                     items: managerItemNames,
