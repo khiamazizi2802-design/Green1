@@ -8,11 +8,14 @@ import {
     Fingerprint, ShieldCheck, Activity, Cpu, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { db } from '../config/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 const MenuManagement = () => {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const [step, setStep] = useState('initial'); // initial, processing, review, manual
+    const [isPublishing, setIsPublishing] = useState(false);
     const [uploadType, setUploadType] = useState(null); // 'pdf', 'image'
     const [scannedItems, setScannedItems] = useState([]);
     const [manualItems, setManualItems] = useState([]);
@@ -122,20 +125,7 @@ const MenuManagement = () => {
 
     const forecast = getMonthlyForecast();
 
-    // Mock AI Scan Result
-    const mockScan = () => {
-        setStep('processing');
-        setTimeout(() => {
-            setScannedItems([
-                { id: 1, name: 'Truffle Burger', price: '18.50', category: 'Main', status: 'verified' },
-                { id: 2, name: 'Crispy Fries', price: '6.00', category: 'Side', status: 'verified' },
-                { id: 3, name: 'Green Garden Salad', price: '12.00', category: 'Appetizer', status: 'verified' },
-                { id: 4, name: 'Classic Mojito', price: '11.00', category: 'Drinks', status: 'flagged', reason: 'Price blurry' }
-            ]);
-            setStep('review');
-        }, 2500);
-    };
-
+    // Real AI Neural Scan calling our Node Express Server
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -149,19 +139,139 @@ const MenuManagement = () => {
                 text: `Uploaded ${type.toUpperCase()}: ${file.name}` 
             }]);
             setIsAgentThinking(true);
-            setTimeout(() => {
-                setIsAgentThinking(false);
-                setChatMessages(prev => [...prev, { 
-                    role: 'agent', 
-                    text: `I have received the ${type}. I am architecting the catalog entries based on this visual data...` 
-                }]);
-                setAiDraftMenu([
-                    { id: 201, name: 'Extracted Service A', price: '85.00', category: 'Auto-Scan', desc: 'Extracted from uploaded document.' },
-                    { id: 202, name: 'Extracted Service B', price: '45.00', category: 'Auto-Scan', desc: 'Extracted from uploaded document.' }
-                ]);
-            }, 3000);
+            
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const base64Content = event.target.result.split(',')[1];
+                    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+                    const response = await fetch(`${backendUrl}/api/ai/scan-menu`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fileData: base64Content,
+                            fileType: file.type || 'image/png',
+                            businessType: managerContext
+                        })
+                    });
+                    const data = await response.json();
+                    setIsAgentThinking(false);
+                    if (data.success && data.items) {
+                        setChatMessages(prev => [...prev, { 
+                            role: 'agent', 
+                            text: `Scan complete! Decoded ${data.items.length} visual items. I have structured a custom catalog entry proposed draft.` 
+                        }]);
+                        setAiDraftMenu(data.items);
+                    } else {
+                        setChatMessages(prev => [...prev, { role: 'agent', text: `Extraction failed: ${data.error || 'Unknown protocol error.'}` }]);
+                    }
+                } catch (err) {
+                    setIsAgentThinking(false);
+                    setChatMessages(prev => [...prev, { role: 'agent', text: 'Secure visual scan API is currently offline.' }]);
+                }
+            };
+            reader.readAsDataURL(file);
         } else {
-            mockScan();
+            // Main Neural Scan trigger
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const base64Content = event.target.result.split(',')[1];
+                setStep('processing');
+                
+                try {
+                    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+                    const response = await fetch(`${backendUrl}/api/ai/scan-menu`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fileData: base64Content,
+                            fileType: file.type || 'image/png',
+                            businessType: managerContext
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success && data.items) {
+                        // All successfully 'verified' items checked by default, 'flagged' items unchecked
+                        const itemsWithSelection = data.items.map(item => ({
+                            ...item,
+                            checked: item.status !== 'flagged'
+                        }));
+                        setScannedItems(itemsWithSelection);
+                        setStep('review');
+                    } else {
+                        console.error('Scan failed:', data.error);
+                        setStep('initial');
+                        alert('Visual scan failed: ' + (data.error || 'Unknown error'));
+                    }
+                } catch (err) {
+                    console.error('Error scanning menu:', err);
+                    setStep('initial');
+                    alert('Secure gateway offline. Visual scan failed.');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const publishScannedMenu = async () => {
+        const selected = scannedItems.filter(item => item.checked);
+        if (selected.length === 0) {
+            alert('Please select at least one catalog item to publish.');
+            return;
+        }
+
+        setIsPublishing(true);
+        try {
+            await setDoc(doc(db, 'business_menus', managerContext), {
+                items: selected,
+                updatedAt: new Date().toISOString()
+            });
+
+            localStorage.setItem(`green_published_menu_${managerContext}`, JSON.stringify(selected));
+            alert(`Catalog successfully synchronized! ${selected.length} items published live to the Green Grid.`);
+            navigate(`/manager${window.location.search}`);
+        } catch (err) {
+            console.error('Failed to sync catalog to Firestore:', err);
+            // Local fallback
+            localStorage.setItem(`green_published_menu_${managerContext}`, JSON.stringify(selected));
+            alert(`Catalog updated locally (${selected.length} items).`);
+            navigate(`/manager${window.location.search}`);
+        } finally {
+            setIsPublishing(false);
+        }
+    };
+
+    const publishManualMenu = async () => {
+        if (manualItems.length === 0) return;
+
+        setIsPublishing(true);
+        try {
+            const formattedItems = manualItems.map((item, idx) => ({
+                id: item.id || (Date.now() + idx),
+                name: item.name,
+                price: item.price,
+                category: item.category || 'Food',
+                description: item.description || '',
+                image: item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60',
+                status: 'verified'
+            }));
+
+            await setDoc(doc(db, 'business_menus', managerContext), {
+                items: formattedItems,
+                updatedAt: new Date().toISOString()
+            });
+
+            localStorage.setItem(`green_published_menu_${managerContext}`, JSON.stringify(formattedItems));
+            alert(`Catalog finalized! ${formattedItems.length} items published live to the Green Grid.`);
+            navigate(`/manager${window.location.search}`);
+        } catch (err) {
+            console.error('Failed to publish manual catalog:', err);
+            localStorage.setItem(`green_published_menu_${managerContext}`, JSON.stringify(manualItems));
+            alert(`Catalog finalized locally (${manualItems.length} items).`);
+            navigate(`/manager${window.location.search}`);
+        } finally {
+            setIsPublishing(false);
         }
     };
 
@@ -442,11 +552,33 @@ const MenuManagement = () => {
 
                             <div className="grid grid-cols-1 gap-6">
                                 {scannedItems.map((item) => (
-                                    <div key={item.id} className="p-8 bg-glass border border-main rounded-[2.5rem] flex items-center justify-between group hover:border-brand/40 transition-all shadow-xl">
+                                    <div key={item.id} className={`p-8 bg-glass border rounded-[2.5rem] flex items-center justify-between group hover:border-brand/40 transition-all shadow-xl ${item.checked ? 'border-brand/40 bg-brand/[0.02]' : 'border-main'}`}>
                                         <div className="flex items-center gap-8">
-                                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all ${item.status === 'flagged' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-btn-sec text-secondary border border-main group-hover:text-brand group-hover:border-brand/30'}`}>
-                                                {item.category === 'Drinks' ? <Wine size={28} /> : <Utensils size={28} />}
+                                            {/* Tactical Interactive Checkbox Selector */}
+                                            <div 
+                                                onClick={() => {
+                                                    setScannedItems(prev => prev.map(s => s.id === item.id ? { ...s, checked: !s.checked } : s));
+                                                }}
+                                                className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center cursor-pointer transition-all ${
+                                                    item.checked 
+                                                        ? 'bg-brand/20 border-brand text-brand shadow-[0_0_20px_rgba(33,255,165,0.3)]' 
+                                                        : 'border-main text-transparent hover:border-brand/40 bg-btn-sec'
+                                                }`}
+                                            >
+                                                <Check size={20} className={item.checked ? 'opacity-100 scale-100' : 'opacity-0 scale-50 transition-transform'} />
                                             </div>
+
+                                            {/* Dynamic AI Food Thumbnail Image Preview */}
+                                            <div className="w-20 h-20 rounded-2xl overflow-hidden border border-main shrink-0 bg-btn-sec relative shadow-md">
+                                                {item.image ? (
+                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-secondary">
+                                                        {item.category === 'Drinks' ? <Wine size={32} /> : <Utensils size={32} />}
+                                                    </div>
+                                                )}
+                                            </div>
+
                                             <div>
                                                 <div className="flex items-center gap-4">
                                                     <span className="text-2xl font-black italic uppercase text-primary tracking-tighter leading-none">{item.name}</span>
@@ -454,7 +586,9 @@ const MenuManagement = () => {
                                                         <span className="px-3 py-1 bg-amber-500/10 text-amber-500 text-[8px] font-black rounded-lg uppercase tracking-widest border border-amber-500/20 shadow-lg shadow-amber-500/5">Manual Review Required</span>
                                                     )}
                                                 </div>
-                                                <p className="text-[10px] font-black text-secondary uppercase tracking-[0.4em] mt-3 opacity-40">{item.category} • Neural Confidence: 98.4%</p>
+                                                <p className="text-[10px] font-black text-secondary uppercase tracking-[0.4em] mt-3 opacity-40">
+                                                    {item.category} • {item.description || 'Verified Catalog Item'}
+                                                </p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-10">
@@ -471,15 +605,25 @@ const MenuManagement = () => {
                             <div className="flex gap-6 pt-10 pb-20">
                                 <button 
                                     onClick={() => setStep('initial')}
-                                    className="flex-1 py-6 bg-glass border border-main rounded-[2rem] text-xs font-black uppercase tracking-[0.3em] text-secondary hover:text-primary hover:border-secondary transition-all flex items-center justify-center gap-4"
+                                    disabled={isPublishing}
+                                    className="flex-1 py-6 bg-glass border border-main rounded-[2rem] text-xs font-black uppercase tracking-[0.3em] text-secondary hover:text-primary hover:border-secondary transition-all flex items-center justify-center gap-4 animate-all"
                                 >
                                     <XCircle size={20} /> Discard Protocol
                                 </button>
                                 <button 
-                                    onClick={() => navigate(`/manager${window.location.search}`)}
-                                    className="flex-1 py-6 bg-brand text-dark-950 rounded-[2rem] text-xs font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(33,255,165,0.2)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4"
+                                    onClick={publishScannedMenu}
+                                    disabled={isPublishing}
+                                    className="flex-1 py-6 bg-brand text-dark-950 rounded-[2rem] text-xs font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(33,255,165,0.2)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 animate-all"
                                 >
-                                    <CheckCircle size={20} /> Publish to Grid
+                                    {isPublishing ? (
+                                        <>
+                                            <Loader2 className="animate-spin" size={20} /> Synchronizing...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircle size={20} /> Publish to Grid
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </motion.div>
@@ -588,10 +732,19 @@ const MenuManagement = () => {
                                         ))}
                                     </div>
                                     <button 
-                                        onClick={() => navigate(`/manager${window.location.search}`)}
-                                        className="w-full py-8 bg-brand text-dark-950 rounded-[2.5rem] text-sm font-black uppercase tracking-[0.4em] shadow-[0_30px_60px_rgba(33,255,165,0.2)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-4"
+                                        onClick={publishManualMenu}
+                                        disabled={isPublishing}
+                                        className="w-full py-8 bg-brand text-dark-950 rounded-[2.5rem] text-sm font-black uppercase tracking-[0.4em] shadow-[0_30px_60px_rgba(33,255,165,0.2)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-4 disabled:opacity-50"
                                     >
-                                        Finalize & Operationalize Catalog <ChevronRight size={24} />
+                                        {isPublishing ? (
+                                            <>
+                                                <Loader2 className="animate-spin" size={24} /> Operationalizing Catalog...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Finalize & Operationalize Catalog <ChevronRight size={24} />
+                                            </>
+                                        )}
                                     </button>
                                 </motion.div>
                             )}

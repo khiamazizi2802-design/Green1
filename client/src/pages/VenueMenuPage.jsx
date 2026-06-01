@@ -8,6 +8,8 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRide } from '../context/RideContext';
 import { useSocket } from '../context/SocketContext';
+import { db } from '../config/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 const TouchSwipeableContainer = ({ children, className, ...props }) => {
     const containerRef = React.useRef(null);
@@ -388,7 +390,7 @@ const VenueMenuPage = () => {
         }
     ];
 
-    const menuCategories = isStadium ? stadiumCategories : isClub ? clubCategories : isHotel ? hotelCategories : isDining ? diningCategories : isWashHub ? carwashCategories : isParking ? parkingCategories : [
+    const defaultCategories = isStadium ? stadiumCategories : isClub ? clubCategories : isHotel ? hotelCategories : isDining ? diningCategories : isWashHub ? carwashCategories : isParking ? parkingCategories : [
         {
             name: "Signature Cocktails",
             items: [
@@ -397,6 +399,68 @@ const VenueMenuPage = () => {
             ]
         }
     ];
+
+    const [menuCategories, setMenuCategories] = useState(defaultCategories);
+
+    // Dynamic AI Neural Catalog sync effect
+    useEffect(() => {
+        const bizType = isWashHub ? 'WM' : isParking ? 'PM' : isHotel ? 'HM' : isStadium ? 'SM' : 'RM';
+        
+        const fetchDynamicMenu = async () => {
+            let customItems = null;
+
+            // 1. Try local backup first
+            try {
+                const saved = localStorage.getItem(`green_published_menu_${bizType}`);
+                if (saved) {
+                    customItems = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('Failed to parse local menu backup:', e);
+            }
+
+            // 2. Try Firestore for real-time sync
+            try {
+                const docRef = doc(db, 'business_menus', bizType);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && Array.isArray(data.items) && data.items.length > 0) {
+                        customItems = data.items;
+                    }
+                }
+            } catch (fbError) {
+                console.warn('Firestore menu lookup bypassed/failed:', fbError.message);
+            }
+
+            // 3. Re-group custom items by category
+            if (customItems && customItems.length > 0) {
+                const grouped = {};
+                customItems.forEach(item => {
+                    const catName = item.category || 'General';
+                    if (!grouped[catName]) grouped[catName] = [];
+                    grouped[catName].push({
+                        id: item.id ? String(item.id) : `custom-${Math.random()}`,
+                        name: item.name,
+                        price: parseFloat(item.price) || 0.00,
+                        desc: item.description || '',
+                        image: item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop',
+                        tags: [item.category || 'General']
+                    });
+                });
+
+                const dynamicCategories = Object.keys(grouped).map(catName => ({
+                    name: catName,
+                    items: grouped[catName]
+                }));
+
+                setMenuCategories(dynamicCategories);
+            }
+        };
+
+        fetchDynamicMenu();
+    }, [isWashHub, isParking, isHotel, isStadium]);
 
     const hasTicketsInCart = cart.some(item => 
         item.tags?.includes('Ticket') || 
