@@ -266,7 +266,7 @@ const MessagesPage = () => {
     };
 
     return (
-        <div className="min-h-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative pb-32 overflow-y-auto no-scrollbar">
+        <div className="min-h-full bg-dark-950 text-primary font-sans relative pb-32 overflow-y-auto no-scrollbar">
             {/* Ambient Background Glows */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-brand/5 blur-[80px] rounded-full pointer-events-none" />
             <div className="absolute bottom-24 left-0 w-80 h-80 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
@@ -289,15 +289,15 @@ const MessagesPage = () => {
             {!activeChatThread ? (
                 <>
                     {/* Header Column */}
-                    <header className="sticky top-0 z-40 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-[var(--border-main)] p-6 flex items-center justify-between">
+                    <header className="sticky top-0 z-40 backdrop-blur-xl border-b border-main pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-6 px-6 flex items-center justify-between" style={{ backgroundColor: 'var(--bg-primary)' }}>
                         <button 
                             onClick={() => navigate('/home')} 
-                            className="w-12 h-12 bg-[var(--bg-secondary)] rounded-2xl flex items-center justify-center text-[var(--text-primary)] border border-[var(--border-main)] hover:border-brand transition-all active:scale-95"
+                            className="w-12 h-12 bg-dark-900 rounded-2xl flex items-center justify-center text-primary border border-main hover:border-brand transition-all active:scale-95"
                         >
                             <ArrowLeft size={24} />
                         </button>
                         <div className="text-center">
-                            <h1 className="text-2xl font-black italic uppercase tracking-tighter text-[var(--text-primary)]">Green Inbox</h1>
+                            <h1 className="text-2xl font-black italic uppercase tracking-tighter text-primary">Green Inbox</h1>
                             <p className="text-[8px] font-black uppercase text-brand tracking-[0.22em]">Authorized Direct Grid</p>
                         </div>
                         <div className="w-12 h-12" /> {/* Spacer */}
@@ -356,8 +356,8 @@ const MessagesPage = () => {
                                             </div>
                                             
                                             <div className="min-w-0">
-                                                <h4 className="text-sm font-black italic uppercase text-[var(--text-primary)] truncate leading-none">{friend.name}</h4>
-                                                <span className="text-[9px] font-black uppercase tracking-wider block mt-1.5 text-[var(--text-muted)]">{friend.role}</span>
+                                                <h4 className="text-sm font-black italic uppercase text-primary truncate leading-none">{friend.name}</h4>
+                                                <span className="text-[9px] font-black uppercase tracking-wider block mt-1.5 text-secondary">{friend.role}</span>
                                             </div>
                                         </div>
 
@@ -405,15 +405,15 @@ const MessagesPage = () => {
                                         <div className="flex-1 space-y-2 min-w-0">
                                             <div className="flex justify-between items-center gap-2">
                                                 <div className="min-w-0">
-                                                    <h4 className="text-sm font-black italic uppercase truncate leading-none text-[var(--text-primary)]">{item.sender}</h4>
-                                                    <span className="text-[9px] font-black uppercase tracking-wider block mt-1.5 text-[var(--text-muted)]">{item.role}</span>
+                                                    <h4 className="text-sm font-black italic uppercase truncate leading-none text-primary">{item.sender}</h4>
+                                                    <span className="text-[9px] font-black uppercase tracking-wider block mt-1.5 text-secondary">{item.role}</span>
                                                 </div>
-                                                <span className="text-[9px] font-bold uppercase shrink-0 text-[var(--text-muted)]">{item.time}</span>
+                                                <span className="text-[9px] font-bold uppercase shrink-0 text-secondary">{item.time}</span>
                                             </div>
 
                                             <div className="space-y-1">
                                                 <p className="text-xs font-black uppercase italic tracking-tight truncate text-brand">{item.subject}</p>
-                                                <p className="text-xs font-medium leading-relaxed truncate text-[var(--text-muted)]">{item.preview}</p>
+                                                <p className="text-xs font-medium leading-relaxed truncate text-secondary">{item.preview}</p>
                                             </div>
 
                                             <div className="flex items-center justify-between pt-2.5 border-t border-white/10">
@@ -440,22 +440,22 @@ const MessagesPage = () => {
                 </>
             ) : (
                 /* Fully Interactive Chat Thread View Window */
-                <div className="min-h-full flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] relative">
+                <div className="min-h-full flex flex-col bg-dark-950 text-primary relative">
                     {/* Sticky Chat Header */}
-                    <header className="sticky top-0 z-40 bg-[var(--bg-primary)]/90 backdrop-blur-xl border-b border-[var(--border-main)] p-6 flex items-center gap-4">
+                    <header className="sticky top-0 z-40 backdrop-blur-xl border-b border-main pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-6 px-6 flex items-center gap-4" style={{ backgroundColor: 'var(--bg-primary)' }}>
                         <button 
                             onClick={() => setActiveChatThread(null)} 
-                            className="w-12 h-12 bg-[var(--bg-secondary)] rounded-2xl flex items-center justify-center text-[var(--text-primary)] border border-[var(--border-main)] hover:border-brand transition-all active:scale-95"
+                            className="w-12 h-12 bg-dark-900 rounded-2xl flex items-center justify-center text-primary border border-main hover:border-brand transition-all active:scale-95"
                         >
                             <ArrowLeft size={24} />
                         </button>
                         
-                        <div className="w-12 h-12 rounded-2xl overflow-hidden bg-[var(--bg-secondary)] border border-[var(--border-main)] relative shrink-0">
+                        <div className="w-12 h-12 rounded-2xl overflow-hidden bg-dark-900 border border-main relative shrink-0">
                             <img src={activeChatThread.avatar} alt={activeChatThread.name} className="w-full h-full object-cover" />
                         </div>
 
                         <div className="text-left min-w-0">
-                            <h3 className="text-base font-black italic uppercase tracking-tight text-[var(--text-primary)] leading-none truncate">{activeChatThread.name}</h3>
+                            <h3 className="text-base font-black italic uppercase tracking-tight text-primary leading-none truncate">{activeChatThread.name}</h3>
                             <span className="text-[9px] font-black uppercase text-brand tracking-[0.2em] block mt-1.5 truncate">{activeChatThread.role}</span>
                         </div>
                     </header>
@@ -487,14 +487,14 @@ const MessagesPage = () => {
                     </div>
 
                     {/* Sticky Bottom Chat Input Bar */}
-                    <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/90 to-transparent z-40">
+                    <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-dark-950 via-dark-950/90 to-transparent z-40">
                         <form onSubmit={handleSendChatMessage} className="max-w-lg mx-auto flex gap-3 relative">
                             <input 
                                 type="text"
                                 placeholder={`Write secure message to ${activeChatThread.name}...`}
                                 value={chatInput}
                                 onChange={(e) => setChatInput(e.target.value)}
-                                className="w-full bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-primary)] rounded-[2rem] p-5 pr-16 text-xs font-bold focus:border-brand/40 outline-none shadow-2xl placeholder:text-gray-500"
+                                className="w-full bg-dark-900 border border-main text-primary rounded-[2rem] p-5 pr-16 text-xs font-bold focus:border-brand/40 outline-none shadow-2xl placeholder:text-gray-500"
                             />
                             <button 
                                 type="submit"
@@ -527,7 +527,7 @@ const MessagesPage = () => {
                             animate={{ y: 0 }}
                             exit={{ y: "100%" }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="bg-[var(--bg-secondary)] border-t border-[var(--border-main)] rounded-t-[3.5rem] p-8 pb-12 space-y-8 shadow-2xl relative z-10 w-full max-w-lg overflow-y-auto max-h-[85vh] no-scrollbar text-center text-[var(--text-primary)]"
+                            className="bg-dark-900 border-t border-main rounded-t-[3.5rem] p-8 pb-12 space-y-8 shadow-2xl relative z-10 w-full max-w-lg overflow-y-auto max-h-[85vh] no-scrollbar text-center text-primary"
                         >
                             <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto -mt-2 mb-2" />
 
@@ -546,15 +546,15 @@ const MessagesPage = () => {
                                 <span className={`inline-block text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${selectedItem.type === 'offer' ? 'bg-brand/10 text-brand border border-brand/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
                                     {selectedItem.tag}
                                 </span>
-                                <h3 className="text-lg font-black italic uppercase tracking-tight leading-snug text-[var(--text-primary)]">{selectedItem.subject}</h3>
-                                <p className="text-xs font-bold leading-relaxed p-6 rounded-3xl border" style={{ backgroundColor: '#161616', color: '#ffffff', borderColor: 'rgba(255, 255, 255, 0.15)' }}>
+                                <h3 className="text-lg font-black italic uppercase tracking-tight leading-snug text-primary">{selectedItem.subject}</h3>
+                                <p className="text-xs font-bold leading-relaxed p-6 rounded-3xl border border-main bg-dark-950 text-primary">
                                     {selectedItem.content}
                                 </p>
                             </div>
 
                             {/* Verification Loading States for Offers */}
                             {selectedItem.type === 'offer' && (isClaiming || claimSuccess) && (
-                                <div className="p-6 rounded-3xl bg-[#161616] border border-white/10 text-center space-y-4">
+                                <div className="p-6 rounded-3xl bg-dark-950 border border-main text-center space-y-4">
                                     {isClaiming && (
                                         <div className="space-y-3">
                                             <RefreshCw size={24} className="text-brand animate-spin mx-auto" />
@@ -567,8 +567,8 @@ const MessagesPage = () => {
                                                 <CheckCircle2 size={20} className="text-brand" />
                                             </div>
                                             <p className="text-xs font-black uppercase italic text-white pt-1">Voucher Securely Dispatched! 📧</p>
-                                            <p className="text-[10px] font-bold leading-relaxed" style={{ color: '#e5e5e5' }}>
-                                                The exclusive access perk has been successfully sent to <span style={{ color: '#ffffff', fontWeight: '900', display: 'inline-block' }}>passenger@green.de</span>. Please check your inbox!
+                                            <p className="text-[10px] font-bold leading-relaxed text-secondary">
+                                                The exclusive access perk has been successfully sent to <span className="text-white font-black inline-block">passenger@green.de</span>. Please check your inbox!
                                             </p>
                                         </div>
                                     )}

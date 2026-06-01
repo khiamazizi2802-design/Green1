@@ -105,7 +105,7 @@ const FamilyHub = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] p-8 overflow-y-auto font-sans relative">
+        <div className="min-h-screen bg-dark-950 text-primary p-8 overflow-y-auto font-sans relative">
             {/* Ambient Cosmic Background */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
                 <div className="absolute top-1/4 -left-1/4 w-[60%] h-[60%] bg-brand/5 blur-[150px] rounded-full animate-pulse" />
@@ -113,16 +113,17 @@ const FamilyHub = () => {
             </div>
 
             {/* Back Button */}
-            <header className="fixed top-8 left-8 z-[100]">
+            <header className="fixed z-[100]" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)', left: '2rem' }}>
                 <button 
                     onClick={() => navigate('/home')} 
-                    className="p-4 bg-[var(--bg-secondary)]/80 backdrop-blur-xl border border-white/10 rounded-2xl text-brand hover:text-white hover:border-brand/40 transition-all shadow-2xl active:scale-90"
+                    className="p-4 bg-dark-900 border border-main rounded-2xl text-brand hover:text-white hover:border-brand/40 transition-all shadow-2xl active:scale-90"
+                    style={{ backgroundColor: 'var(--bg-secondary)' }}
                 >
                     <ArrowLeft size={24} />
                 </button>
             </header>
 
-            <div className="max-w-4xl mx-auto pt-24 pb-20 relative z-10 space-y-12">
+            <div className="max-w-4xl mx-auto pt-36 pb-20 relative z-10 space-y-12">
                 
                 {/* Header Title */}
                 <div className="text-center space-y-4">
@@ -145,7 +146,7 @@ const FamilyHub = () => {
                     <motion.div 
                         initial={{ opacity: 0, x: -30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="bg-[var(--bg-secondary)]/40 border border-white/5 p-8 md:p-10 rounded-[3rem] space-y-6 backdrop-blur-3xl shadow-2xl"
+                        className="bg-dark-900 border border-main p-8 md:p-10 rounded-[3rem] space-y-6 backdrop-blur-3xl shadow-2xl"
                     >
                         <div className="space-y-2">
                             <h3 className="text-2xl font-black italic uppercase text-white tracking-tight flex items-center gap-3">
@@ -222,7 +223,7 @@ const FamilyHub = () => {
                     <motion.div 
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="bg-[var(--bg-secondary)]/40 border border-white/5 p-8 md:p-10 rounded-[3rem] space-y-6 backdrop-blur-3xl shadow-2xl flex flex-col justify-between"
+                        className="bg-dark-900 border border-main p-8 md:p-10 rounded-[3rem] space-y-6 backdrop-blur-3xl shadow-2xl flex flex-col justify-between"
                     >
                         <div className="space-y-6 w-full">
                             <div className="space-y-2">
