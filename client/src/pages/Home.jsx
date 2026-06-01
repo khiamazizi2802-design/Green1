@@ -1087,65 +1087,65 @@ const Home = () => {
                                     </div>
                                 </div>
                             ) : helpSubView === 'dsgvo' ? (
-                                <div className="bg-dark-900 border border-white/5 p-6 rounded-[2rem] space-y-4 h-[50vh] overflow-y-auto scrollbar-hide">
+                                <div className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-6 rounded-[2rem] space-y-4 h-[50vh] overflow-y-auto scrollbar-hide">
                                     <h4 className="text-xs font-black italic text-brand uppercase tracking-widest border-b border-brand/20 pb-2">Datenschutzerklärung (DSGVO)</h4>
-                                    <div className="space-y-4 text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
-                                        <p className="text-white">1. Verantwortliche Stelle</p>
+                                    <div className="space-y-4 text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest leading-relaxed">
+                                        <p className="text-[var(--text-primary)]">1. Verantwortliche Stelle</p>
                                         <p>Green GmbH, Cyber Strasse 404, 10117 Berlin. info@greenmobility.de</p>
-                                        <p className="text-white">2. Datenerhebung</p>
+                                        <p className="text-[var(--text-primary)]">2. Datenerhebung</p>
                                         <p>Wir erheben Daten zur Durchführung von Transportdienstleistungen (Name, Standort, Zahlungsdaten) gemäß Art. 6 Abs. 1 lit. b DSGVO.</p>
-                                        <p className="text-white">3. Standorterfassung</p>
+                                        <p className="text-[var(--text-primary)]">3. Standorterfassung</p>
                                         <p>Echtzeit-Standortdaten werden nur während aktiver Fahrten oder bei der Suche nach Fahrern erfasst und nicht dauerhaft gespeichert.</p>
-                                        <p className="text-white">4. Ihre Rechte</p>
+                                        <p className="text-[var(--text-primary)]">4. Ihre Rechte</p>
                                         <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Datenübertragbarkeit Ihrer gespeicherten Informationen.</p>
                                     </div>
                                 </div>
                             ) : helpSubView === 'app' ? (
                                 <div className="space-y-4">
-                                    <div className="bg-[var(--bg-secondary)]/50 p-6 rounded-[2rem] border border-white/5">
+                                    <div className="bg-[var(--bg-secondary)]/50 p-6 rounded-[2rem] border border-[var(--border-main)]">
                                         <div className="flex items-center gap-4 mb-4">
                                             <div className="p-3 bg-brand/20 rounded-2xl text-brand"><Zap size={24} /></div>
                                             <div>
-                                                <h4 className="text-sm font-black italic uppercase italic">Green App v1.1</h4>
-                                                <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Premium Transport Network</p>
+                                                <h4 className="text-sm font-black italic uppercase">Green App v1.1</h4>
+                                                <p className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">Premium Transport Network</p>
                                             </div>
                                         </div>
                                         <div className="space-y-3">
-                                            <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest leading-relaxed">
+                                            <p className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest leading-relaxed">
                                                 We offer three tiers of exceptional transport services across major European hubs:
                                             </p>
                                             <div className="space-y-2">
-                                                <div className="flex justify-between items-center bg-dark-900 p-3 rounded-xl border border-white/5">
+                                                <div className="flex justify-between items-center bg-[var(--bg-primary)] p-3 rounded-xl border border-[var(--border-main)]">
                                                     <span className="text-xs font-black italic text-brand">CYBERDISPATCH</span>
                                                     <span className="text-[8px] bg-brand text-dark-900 px-2 py-0.5 rounded-full font-black">ULTRA FAST</span>
                                                 </div>
-                                                <div className="flex justify-between items-center bg-dark-900 p-3 rounded-xl border border-white/5">
-                                                    <span className="text-xs font-black italic text-white">PREMIUM RIDE</span>
-                                                    <span className="text-[8px] text-gray-500 font-black">LUXURY COMFORT</span>
+                                                <div className="flex justify-between items-center bg-[var(--bg-primary)] p-3 rounded-xl border border-[var(--border-main)]">
+                                                    <span className="text-xs font-black italic text-[var(--text-primary)]">PREMIUM RIDE</span>
+                                                    <span className="text-[8px] text-[var(--text-muted)] font-black">LUXURY COMFORT</span>
                                                 </div>
-                                                <div className="flex justify-between items-center bg-dark-900 p-3 rounded-xl border border-white/5">
-                                                    <span className="text-xs font-black italic text-gray-400">CLASSIC</span>
-                                                    <span className="text-[8px] text-gray-500 font-black">RELIABLE BASIC</span>
+                                                <div className="flex justify-between items-center bg-[var(--bg-primary)] p-3 rounded-xl border border-[var(--border-main)]">
+                                                    <span className="text-xs font-black italic text-[var(--text-muted)]">CLASSIC</span>
+                                                    <span className="text-[8px] text-[var(--text-muted)] font-black">RELIABLE BASIC</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="bg-dark-900/80 border border-white/5 p-8 rounded-[3rem] text-center space-y-6">
+                                <div className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-8 rounded-[3rem] text-center space-y-6">
                                     <div className="w-20 h-20 bg-brand/10 rounded-full mx-auto flex items-center justify-center text-brand">
                                         <Mail size={32} />
                                     </div>
                                     <div>
                                         <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">GreenEmail Access</h4>
-                                        <p className="text-xs text-gray-500 font-black uppercase tracking-widest mt-2 leading-relaxed">
+                                        <p className="text-xs text-[var(--text-muted)] font-black uppercase tracking-widest mt-2 leading-relaxed">
                                             Send your official inquiries to our priority support channel:
                                         </p>
-                                        <div className="mt-4 p-4 bg-dark-950 rounded-2xl border border-brand/20 group hover:border-brand/50 transition-all cursor-pointer">
-                                            <p className="text-lg font-black italic tracking-tight text-white">support@greenemail.de</p>
+                                        <div className="mt-4 p-4 bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-main)] group hover:border-brand/50 transition-all cursor-pointer">
+                                            <p className="text-lg font-black italic tracking-tight text-[var(--text-primary)]">support@greenemail.de</p>
                                         </div>
                                     </div>
-                                    <p className="text-[8px] text-gray-600 font-black uppercase tracking-[0.2em]">Response time: ~15 minutes</p>
+                                    <p className="text-[8px] text-[var(--text-muted)] font-black uppercase tracking-[0.2em]">Response time: ~15 minutes</p>
                                 </div>
                             )}
 
