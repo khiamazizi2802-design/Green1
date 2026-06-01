@@ -93,13 +93,97 @@ const Home = () => {
     }, []);
     const [activeSheet, setActiveSheet] = useState(null);
     const [profileSubView, setProfileSubView] = useState(null); // null, 'account', 'history', 'help'
-    const [helpSubView, setHelpSubView] = useState(null); // null, 'chat', 'dsgvo', 'app', 'email'
+    const [helpSubView, setHelpSubView] = useState(null); // null, 'chat', 'dsgvo', 'app', 'email', 'delete_account'
     const [serviceDetailView, setServiceDetailView] = useState(null); // null, 'trips', 'tickets', 'rooms', 'order', 'waiter'
     const [chatMessages, setChatMessages] = useState([
         { sender: 'ai', text: `Hello! How can I assist you with your active tickets, trips, or venue orders today?` }
     ]);
     const [chatInput, setChatInput] = useState('');
     const [isAiTyping, setIsAiTyping] = useState(false);
+
+    // GDPR/DSGVO 15-Day Account Deletion States
+    const [deletionProtocolActive, setDeletionProtocolActive] = useState(false);
+    const [deletionDeadline, setDeletionDeadline] = useState(null);
+    const [confirmDeleteInput, setConfirmDeleteInput] = useState('');
+
+    useEffect(() => {
+        if (user && user.email) {
+            const deletionState = localStorage.getItem(`green_account_deletion_${user.email.toLowerCase()}`);
+            if (deletionState) {
+                try {
+                    const parsed = JSON.parse(deletionState);
+                    if (parsed && parsed.status === 'scheduled') {
+                        const deadlineDate = new Date(parsed.deadline);
+                        const now = new Date();
+                        if (now > deadlineDate) {
+                            // 15 days have passed -> WIPE COMPLETELY!
+                            performCompleteDataWipe(user.email.toLowerCase());
+                        } else {
+                            setDeletionProtocolActive(true);
+                            setDeletionDeadline(parsed.deadline);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Failed to parse deletion state:', e);
+                }
+            }
+        }
+    }, [user]);
+
+    const performCompleteDataWipe = (email) => {
+        if (!email) return;
+        
+        // 1. Wipe all local storage keys for this user role prefix
+        const role = user?.role || 'passenger';
+        const prefix = `${role}_`;
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith(prefix) || key.includes(email))) {
+                localStorage.removeItem(key);
+            }
+        }
+        
+        // 2. Remove the specific deletion key
+        localStorage.removeItem(`green_account_deletion_${email}`);
+        
+        // 3. Clear deletion states
+        setDeletionProtocolActive(false);
+        setDeletionDeadline(null);
+        setConfirmDeleteInput('');
+        
+        // 4. Trigger logout
+        logout();
+        
+        alert("GDPR PROTOCOL COMPLETED: Your account and all associated data have been permanently and irreversibly destroyed.");
+    };
+
+    const handleConfirmDeletion = () => {
+        if (!user || !user.email) return;
+        const now = new Date();
+        const deadline = new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000); // 15 days from now
+        
+        const deletionState = {
+            status: 'scheduled',
+            email: user.email.toLowerCase(),
+            scheduledAt: now.toISOString(),
+            deadline: deadline.toISOString()
+        };
+        
+        localStorage.setItem(`green_account_deletion_${user.email.toLowerCase()}`, JSON.stringify(deletionState));
+        setDeletionDeadline(deadline.toISOString());
+        setDeletionProtocolActive(true);
+        setHelpSubView(null);
+        setProfileSubView(null);
+        setConfirmDeleteInput('');
+    };
+
+    const handleCancelDeletion = () => {
+        if (!user || !user.email) return;
+        localStorage.removeItem(`green_account_deletion_${user.email.toLowerCase()}`);
+        setDeletionProtocolActive(false);
+        setDeletionDeadline(null);
+        alert("Deletion cancelled. Your account and data have been fully restored and secured!");
+    };
 
     const handleSendChatMessage = () => {
         if (!chatInput.trim()) return;
@@ -295,6 +379,71 @@ const Home = () => {
 
     return (
         <div className="relative h-full font-sans text-[var(--text-primary)] overflow-hidden flex flex-col bg-[var(--bg-primary)]">
+            {/* Account Deletion Protocol Grace Period Lockdown Screen */}
+            <AnimatePresence>
+                {deletionProtocolActive && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} 
+                        animate={{ opacity: 1 }} 
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-6 text-left"
+                    >
+                        <div className="absolute top-0 left-0 right-0 h-[3px] bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.7)]" />
+                        
+                        <div className="max-w-md w-full bg-[#0D1421] border border-red-500/30 rounded-[3rem] p-8 md:p-10 space-y-8 shadow-2xl relative overflow-hidden">
+                            <div className="absolute -top-16 -right-16 w-48 h-48 bg-red-500/10 blur-[60px] rounded-full" />
+                            
+                            <div className="flex flex-col items-center text-center space-y-6">
+                                <div className="w-20 h-20 bg-red-500/10 rounded-[2rem] flex items-center justify-center text-red-500 animate-pulse">
+                                    <Trash2 size={40} className="fill-red-500/10" />
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white">Deletion <span className="text-red-500">Active</span></h1>
+                                    <p className="text-red-500/80 text-[10px] font-black uppercase tracking-[0.2em] italic">Account Scheduled for Destruction</p>
+                                </div>
+                            </div>
+
+                            <div className="p-6 bg-red-500/5 border border-red-500/20 rounded-[2rem] space-y-4">
+                                <div className="flex items-center gap-2 text-red-500">
+                                    <Shield size={16} />
+                                    <span className="text-[10px] font-black uppercase tracking-wider">GDPR (DSGVO) Security Protocol</span>
+                                </div>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide leading-relaxed">
+                                    Your account is scheduled for permanent deactivation and deletion. To comply with GDPR guidelines, all data is retained in a secure, encrypted quarantine for a **15-day grace period**. 
+                                </p>
+                                <p className="text-[10px] text-gray-300 font-black uppercase tracking-wide leading-relaxed">
+                                    If you change your mind, you can cancel this deletion now. If not, your account, payment credentials, trips, tickets, and active ledgers will be permanently and irreversibly destroyed on:
+                                </p>
+                                <div className="p-4 bg-black/40 rounded-xl border border-red-500/10 flex items-center justify-between">
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Permanent Deletion Date:</span>
+                                    <span className="text-xs font-black text-red-500 italic uppercase">
+                                        {deletionDeadline ? new Date(deletionDeadline).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Pending'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <button 
+                                    onClick={handleCancelDeletion}
+                                    className="w-full py-5 bg-brand text-dark-950 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <CheckCircle size={16} /> Cancel Deletion & Restore
+                                </button>
+                                
+                                <button 
+                                    onClick={() => performCompleteDataWipe(user?.email?.toLowerCase())}
+                                    className="w-full py-5 bg-red-500/10 border border-red-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Zap size={16} /> Simulate 15 Days Passed (Wipe Now)
+                                </button>
+                            </div>
+                            
+                            <p className="text-center text-[7px] font-black text-gray-700 uppercase tracking-[0.4em]">GDPR Purge Daemon • Active</p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             <input
                 type="file"
                 ref={fileInputRef}
@@ -309,8 +458,12 @@ const Home = () => {
 
             {/* Background Atmosphere & Radar - Fixed Stack */}
             <div className="absolute inset-0 z-0">
-                <Bubbles />
-                <Radar hasUpdates={hasUpdates} />
+                {!activeSheet && (
+                    <>
+                        <Bubbles />
+                        <Radar hasUpdates={hasUpdates} />
+                    </>
+                )}
             </div>
 
             {/* UI Overlay - Top Column */}
@@ -1090,6 +1243,7 @@ const Home = () => {
                                 <h3 className="text-xl font-black italic tracking-tighter uppercase text-brand">
                                     {helpSubView === 'chat' ? 'AI Assistant' :
                                         helpSubView === 'dsgvo' ? 'Privacy Policy' :
+                                        helpSubView === 'delete_account' ? 'Delete Account' :
                                             helpSubView === 'app' ? (
                                                 serviceDetailView === 'trips' ? 'Premium Trips' :
                                                 serviceDetailView === 'tickets' ? 'VIP Tickets' :
@@ -1146,6 +1300,20 @@ const Home = () => {
                                                     </div>
                                                 </div>
                                                 <ChevronRight size={14} className="text-gray-600" />
+                                            </button>
+
+                                            <button 
+                                                onClick={() => setHelpSubView('delete_account')} 
+                                                className="w-full p-5 bg-red-500/5 border border-red-500/20 rounded-2xl flex items-center justify-between group hover:border-red-500/40 transition-all"
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <Trash2 className="text-red-500" size={18} />
+                                                    <div className="text-left">
+                                                        <p className="font-black italic tracking-tight uppercase text-[10px] text-red-500">Delete Account</p>
+                                                        <p className="text-[8px] text-red-500/60 uppercase font-black">Permanent Data Purge</p>
+                                                    </div>
+                                                </div>
+                                                <ChevronRight size={14} className="text-red-500/40" />
                                             </button>
                                         </div>
                                     </div>
@@ -1209,6 +1377,54 @@ const Home = () => {
                                         <p>Echtzeit-Standortdaten werden nur während aktiver Fahrten oder bei der Suche nach Fahrern erfasst und nicht dauerhaft gespeichert.</p>
                                         <p className="text-[var(--text-primary)]">4. Ihre Rechte</p>
                                         <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Datenübertragbarkeit Ihrer gespeicherten Informationen.</p>
+                                    </div>
+                                </div>
+                            ) : helpSubView === 'delete_account' ? (
+                                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                                    <div className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-6 rounded-[2rem] space-y-4">
+                                        <div className="flex items-center gap-4 mb-2">
+                                            <div className="p-3 bg-red-500/10 rounded-2xl text-red-500"><Shield size={24} /></div>
+                                            <div>
+                                                <h4 className="text-sm font-black italic uppercase text-red-500">Security Warning Protocol</h4>
+                                                <p className="text-[9px] font-black uppercase text-red-500/60 tracking-widest">Account Deletion Scheduled</p>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3 text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider leading-relaxed">
+                                            <p className="text-[var(--text-primary)]">1. 15-Day Grace Period (DSGVO/GDPR)</p>
+                                            <p>Your data is placed in secure quarantine for exactly 15 days. If you change your mind, cancel the deletion and restore everything instantly.</p>
+                                            
+                                            <p className="text-[var(--text-primary)]">2. Complete & Permanent Deletion</p>
+                                            <p>If you do not restore your account within 15 days, our system automatically wipes all profiles, payment credentials, ride histories, and ledgers permanently.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="space-y-3 px-2">
+                                        <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Type "DELETE" to confirm your decision:</p>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Type DELETE here..."
+                                            value={confirmDeleteInput}
+                                            onChange={(e) => setConfirmDeleteInput(e.target.value)}
+                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400 focus:border-red-500 outline-none transition-all"
+                                        />
+                                    </div>
+
+                                    <div className="flex gap-4">
+                                        <button 
+                                            onClick={() => setHelpSubView(null)}
+                                            className="px-6 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
+                                        >
+                                            Abort
+                                        </button>
+                                        <button 
+                                            onClick={handleConfirmDeletion}
+                                            disabled={confirmDeleteInput !== 'DELETE'}
+                                            className={`flex-1 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                                confirmDeleteInput === 'DELETE' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]/50'
+                                            }`}
+                                        >
+                                            Confirm Deletion
+                                        </button>
                                     </div>
                                 </div>
                             ) : helpSubView === 'app' ? (

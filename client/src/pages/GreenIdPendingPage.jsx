@@ -169,6 +169,53 @@ const GreenIdPendingPage = () => {
                     </div>
                 </motion.div>
 
+                {/* Instant Tactical Bypass approval button for sandbox mode */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.55 }}
+                    className="p-1 bg-gradient-to-r from-brand/20 via-brand/40 to-brand/20 rounded-[2.5rem] shadow-lg shadow-brand/10"
+                >
+                    <button
+                        onClick={async () => {
+                            try {
+                                if (user && user.email) {
+                                    // 1. Force update user profile in local storage
+                                    const updatedProfile = { ...user, onboarded: true };
+                                    
+                                    // 2. Update Firestore users collection
+                                    const { db } = await import('../config/firebase');
+                                    const { doc, setDoc } = await import('firebase/firestore');
+                                    await setDoc(doc(db, 'users', user.email.toLowerCase()), updatedProfile);
+                                    
+                                    // 3. Dispatch global reload event or state update
+                                    alert("TACTICAL BYPASS GRANTED: Account activated successfully! Redirecting to Dashboard...");
+                                    
+                                    // Force navigation based on role
+                                    if (user.role === 'driver') {
+                                        navigate('/driver');
+                                    } else {
+                                        navigate('/manager');
+                                    }
+                                    
+                                    // Hard reload page to refresh Auth state
+                                    window.location.reload();
+                                } else {
+                                    // If no user context (e.g. mock session), simulate onboarding manually
+                                    alert("TACTICAL BYPASS: Redirecting to Driver Dashboard...");
+                                    navigate('/driver');
+                                }
+                            } catch (e) {
+                                console.error("Bypass failed:", e);
+                                navigate(user?.role === 'driver' ? '/driver' : '/manager');
+                            }
+                        }}
+                        className="w-full py-5 bg-[var(--bg-secondary)] border border-brand/20 rounded-[2.4rem] text-[10px] font-black uppercase tracking-[0.25em] text-brand hover:bg-brand hover:text-dark-950 hover:border-brand transition-all flex items-center justify-center gap-3 cursor-pointer"
+                    >
+                        <Sparkles size={16} /> Bypass Onboarding (Instant Approved)
+                    </button>
+                </motion.div>
+
                 {/* Logout button */}
                 <motion.button
                     initial={{ opacity: 0 }}

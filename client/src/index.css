@@ -380,8 +380,7 @@ body {
   background: var(--bubble-color);
   border-radius: 50%;
   animation: float-bubble var(--duration) ease-in infinite;
-  filter: blur(2px);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.03);
   will-change: transform, opacity;
   transform: translateZ(0);
   border: 1px solid rgba(255, 255, 255, 0.02);

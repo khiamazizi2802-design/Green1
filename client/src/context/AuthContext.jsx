@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }) => {
 
     const defaultUsers = [
         { name: 'Alex Passenger', email: 'passenger@green.de', password: 'green2026', role: 'passenger', greenFlags: 124, redFlags: 0 },
-        { name: 'Mick Driver', email: 'driver@green.de', password: 'green2026', role: 'driver', greenFlags: 842, redFlags: 1 },
+        { name: 'Mick Driver', email: 'driver@green.de', password: 'green2026', role: 'driver', greenFlags: 842, redFlags: 1, onboarded: true },
         { 
             name: 'Sam Personnel (Universal Staff)', 
             email: 'staff@green.de', 
@@ -222,7 +222,18 @@ export const AuthProvider = ({ children }) => {
                 return { success: false, message: 'Profile mismatch in Firestore registry.' };
             }
 
-            const profile = docSnap.data();
+            let profile = docSnap.data();
+            
+            // Hardcode Mick Driver to be pre-onboarded in Firestore on every login!
+            if (userEmail === 'driver@green.de' && profile.onboarded !== true) {
+                profile = { ...profile, onboarded: true };
+                try {
+                    await setDoc(doc(fbDb, 'users', userEmail), profile);
+                } catch (err) {
+                    console.error('Failed to force sync Mick Driver onboarding in Firestore:', err);
+                }
+            }
+
             sessionStorage.setItem('simulator_active_role', profile.role);
             setUser(profile);
 

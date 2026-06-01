@@ -9,6 +9,184 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useRide } from '../context/RideContext';
 import { useSocket } from '../context/SocketContext';
 
+const TouchSwipeableContainer = ({ children, className, ...props }) => {
+    const containerRef = React.useRef(null);
+
+    React.useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        let isDown = false;
+        let startX = 0;
+        let startY = 0;
+        let scrollLeft = 0;
+        let velocity = 0;
+        let lastTime = 0;
+        let lastX = 0;
+        let lastY = 0;
+        let animationFrameId = null;
+        let isDragging = false;
+        const dragThreshold = 6;
+        let totalMoved = 0;
+
+        const onMouseDown = (e) => {
+            isDown = true;
+            isDragging = false;
+            totalMoved = 0;
+            el.style.scrollSnapType = 'none';
+            startX = e.pageX - el.offsetLeft;
+            scrollLeft = el.scrollLeft;
+            lastX = e.pageX;
+            lastTime = Date.now();
+            velocity = 0;
+            cancelAnimationFrame(animationFrameId);
+        };
+
+        const onMouseLeave = () => {
+            if (!isDown) return;
+            isDown = false;
+            el.style.scrollSnapType = 'x mandatory';
+            applyMomentum();
+        };
+
+        const onMouseUp = () => {
+            if (!isDown) return;
+            isDown = false;
+            el.style.scrollSnapType = 'x mandatory';
+            applyMomentum();
+        };
+
+        const onMouseMove = (e) => {
+            if (!isDown) return;
+            const x = e.pageX - el.offsetLeft;
+            const walk = (x - startX) * 1.5;
+            
+            const distanceX = Math.abs(e.pageX - lastX);
+            totalMoved += distanceX;
+            if (totalMoved > dragThreshold) {
+                isDragging = true;
+            }
+
+            e.preventDefault();
+            el.scrollLeft = scrollLeft - walk;
+
+            const now = Date.now();
+            const timeDiff = now - lastTime;
+            if (timeDiff > 0) {
+                velocity = (e.pageX - lastX) / timeDiff;
+            }
+            lastX = e.pageX;
+            lastTime = now;
+        };
+
+        const onTouchStart = (e) => {
+            isDown = true;
+            isDragging = false;
+            totalMoved = 0;
+            el.style.scrollSnapType = 'none';
+            startX = e.touches[0].pageX - el.offsetLeft;
+            startY = e.touches[0].pageY - el.offsetTop;
+            scrollLeft = el.scrollLeft;
+            lastX = e.touches[0].pageX;
+            lastY = e.touches[0].pageY;
+            lastTime = Date.now();
+            velocity = 0;
+            cancelAnimationFrame(animationFrameId);
+        };
+
+        const onTouchEnd = () => {
+            if (!isDown) return;
+            isDown = false;
+            el.style.scrollSnapType = 'x mandatory';
+            applyMomentum();
+        };
+
+        const onTouchMove = (e) => {
+            if (!isDown) return;
+            const touch = e.touches[0];
+            const x = touch.pageX - el.offsetLeft;
+            const y = touch.pageY - el.offsetTop;
+            
+            const dx = touch.pageX - lastX;
+            const dy = touch.pageY - lastY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            totalMoved += distance;
+            if (totalMoved > dragThreshold) {
+                isDragging = true;
+            }
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (e.cancelable) e.preventDefault();
+                e.stopPropagation();
+            }
+
+            const walk = (x - startX) * 1.2;
+            el.scrollLeft = scrollLeft - walk;
+
+            const now = Date.now();
+            const timeDiff = now - lastTime;
+            if (timeDiff > 0) {
+                velocity = dx / timeDiff;
+            }
+            lastX = touch.pageX;
+            lastY = touch.pageY;
+            lastTime = now;
+        };
+
+        const applyMomentum = () => {
+            if (Math.abs(velocity) < 0.1) return;
+            
+            const step = () => {
+                el.scrollLeft -= velocity * 15;
+                velocity *= 0.95;
+
+                if (Math.abs(velocity) > 0.1 && !isDown) {
+                    animationFrameId = requestAnimationFrame(step);
+                } else if (!isDown) {
+                    el.style.scrollSnapType = 'x mandatory';
+                }
+            };
+            step();
+        };
+
+        const onClick = (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        };
+
+        el.addEventListener('mousedown', onMouseDown);
+        el.addEventListener('mouseleave', onMouseLeave);
+        el.addEventListener('mouseup', onMouseUp);
+        el.addEventListener('mousemove', onMouseMove);
+
+        el.addEventListener('touchstart', onTouchStart, { passive: true });
+        el.addEventListener('touchend', onTouchEnd, { passive: true });
+        el.addEventListener('touchmove', onTouchMove, { passive: false });
+        el.addEventListener('click', onClick, true);
+
+        return () => {
+            el.removeEventListener('mousedown', onMouseDown);
+            el.removeEventListener('mouseleave', onMouseLeave);
+            el.removeEventListener('mouseup', onMouseUp);
+            el.removeEventListener('mousemove', onMouseMove);
+
+            el.removeEventListener('touchstart', onTouchStart);
+            el.removeEventListener('touchend', onTouchEnd);
+            el.removeEventListener('touchmove', onTouchMove);
+            el.removeEventListener('click', onClick, true);
+            cancelAnimationFrame(animationFrameId);
+        };
+    }, []);
+
+    return (
+        <div ref={containerRef} className={className} {...props}>
+            {children}
+        </div>
+    );
+};
+
 const VenueMenuPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -760,7 +938,7 @@ const VenueMenuPage = () => {
                 </div>
 
                 {/* Kategorie-Schnellwahl-Leiste (Wischbares Menü oben) */}
-                <div className="flex gap-2.5 overflow-x-auto no-scrollbar py-2 px-1 mb-2 snap-x">
+                <TouchSwipeableContainer className="flex gap-2.5 overflow-x-auto no-scrollbar py-2 px-1 mb-2 snap-x">
                     {menuCategories.map((cat, idx) => (
                         <button
                             key={idx}
@@ -776,7 +954,7 @@ const VenueMenuPage = () => {
                             {cat.name}
                         </button>
                     ))}
-                </div>
+                </TouchSwipeableContainer>
 
                 {menuCategories.map((cat, idx) => (
                     <section key={idx} id={`cat-section-${idx}`} className="space-y-4 pt-2">
@@ -786,7 +964,7 @@ const VenueMenuPage = () => {
                         </div>
                         
                         {/* Horizontale Wischbahn (Lane) */}
-                        <div className="flex overflow-x-auto no-scrollbar gap-5 py-2 px-1 snap-x snap-mandatory">
+                        <TouchSwipeableContainer className="flex overflow-x-auto no-scrollbar gap-5 py-2 px-1 snap-x snap-mandatory">
                             {cat.items.map((item) => (
                                 <div key={item.id} className="bg-[var(--bg-secondary)]/55 border border-white/5 rounded-[2.5rem] p-4 flex flex-col hover:border-brand/30 transition-all group w-[220px] sm:w-[240px] flex-shrink-0 snap-start relative overflow-hidden"
                                      style={{ background: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 255, 255, 0.05)' }}>
@@ -802,7 +980,7 @@ const VenueMenuPage = () => {
                                     </div>
                                 </div>
                             ))}
-                        </div>
+                        </TouchSwipeableContainer>
                     </section>
                 ))}
             </main>

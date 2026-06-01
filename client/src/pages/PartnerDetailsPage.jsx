@@ -140,6 +140,24 @@ const PartnerDetailsPage = () => {
                     </div>
                 </motion.div>
 
+                {/* Primary Action Section */}
+                <section className="space-y-4">
+                    <button 
+                        onClick={() => navigate('/venue/menu', { state: { venueName: venue.name, venueOffer: venue.offer } })}
+                        className="w-full p-6 bg-[var(--bg-secondary)] border border-brand/30 rounded-[3rem] flex items-center justify-between group hover:border-brand/60 transition-all shadow-xl"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-14 h-14 bg-brand/10 border border-brand/20 rounded-2xl flex items-center justify-center text-brand group-hover:scale-110 transition-transform">
+                                <Menu size={28} />
+                            </div>
+                             <div className="text-left">
+                                <h4 className="text-xl font-black italic uppercase tracking-tighter text-primary">OFFERS</h4>
+                            </div>
+                        </div>
+                        <ChevronRight size={24} className="text-secondary group-hover:text-brand transition-colors" />
+                    </button>
+                </section>
+
                 {/* Partner Feed */}
                 <section className="space-y-6">
                     <div className="flex items-center justify-between px-2">
@@ -178,23 +196,7 @@ const PartnerDetailsPage = () => {
 
                 
 
-                {/* Primary Action Section */}
-                <section className="space-y-4">
-                    <button 
-                        onClick={() => navigate('/venue/menu', { state: { venueName: venue.name, venueOffer: venue.offer } })}
-                        className="w-full p-6 bg-[var(--bg-secondary)] border border-brand/30 rounded-[3rem] flex items-center justify-between group hover:border-brand/60 transition-all shadow-xl"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-brand/10 border border-brand/20 rounded-2xl flex items-center justify-center text-brand group-hover:scale-110 transition-transform">
-                                <Menu size={28} />
-                            </div>
-                             <div className="text-left">
-                                <h4 className="text-xl font-black italic uppercase tracking-tighter text-primary">OFFERS</h4>
-                            </div>
-                        </div>
-                        <ChevronRight size={24} className="text-secondary group-hover:text-brand transition-colors" />
-                    </button>
-                </section>
+
             </div>
         </div>
     );

@@ -6,7 +6,7 @@ const Radar = ({ isOnline = false, hasUpdates = false }) => {
     const { drivers } = useSocket();
     
     // Generate static noise/particles for depth
-    const particles = useMemo(() => [...Array(20)].map((_, i) => ({
+    const particles = useMemo(() => [...Array(6)].map((_, i) => ({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
