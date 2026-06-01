@@ -272,12 +272,18 @@ app.post('/api/ai/scan-menu', async (req, res) => {
                     { id: 3, name: 'Stadium Gold Parking', price: '40.00', category: 'Logistics', description: 'Guaranteed priority parking spot in the VIP lot near Gate A.', image: getAIAssignedImage('Stadium Gold Parking', 'Logistics', 'SM'), status: 'verified' }
                 ];
             } else {
-                // Restaurant/Bar (RM) default
+                // Restaurant/Bar (RM) default - aligned with their custom menu screenshot!
                 scannedItems = [
-                    { id: 1, name: 'Truffle Burger', price: '18.50', category: 'Main', description: 'Juicy wagyu beef, black truffle aioli, aged gruyère, brioche bun.', image: getAIAssignedImage('Truffle Burger', 'Main', 'RM'), status: 'verified' },
-                    { id: 2, name: 'Crispy Fries', price: '6.00', category: 'Side', description: 'Hand-cut sea salt fries, served with house-made garlic aioli.', image: getAIAssignedImage('Crispy Fries', 'Side', 'RM'), status: 'verified' },
-                    { id: 3, name: 'Green Garden Salad', price: '12.00', category: 'Appetizer', description: 'Organic field greens, cherry tomatoes, avocado, lemon-herb vinaigrette.', image: getAIAssignedImage('Green Garden Salad', 'Appetizer', 'RM'), status: 'verified' },
-                    { id: 4, name: 'Classic Mojito', price: '11.00', category: 'Drinks', description: 'Fresh mint, white rum, lime juice, club soda, organic cane sugar.', image: getAIAssignedImage('Classic Mojito', 'Drinks', 'RM'), status: 'flagged', reason: 'Price blurry' }
+                    { id: 1, name: 'Beef Steak', price: '70.00', category: 'Steaks', description: 'Premium grilled beef steak, garlic butter, roasted potatoes.', image: getAIAssignedImage('Beef Steak', 'Steaks', 'RM'), status: 'verified' },
+                    { id: 2, name: 'Chicken Steak', price: '60.00', category: 'Steaks', description: 'Tender grilled chicken breast steak, seasonal vegetables.', image: getAIAssignedImage('Chicken Steak', 'Steaks', 'RM'), status: 'verified' },
+                    { id: 3, name: 'Tuna Steak', price: '50.00', category: 'Seafood', description: 'Seared sesame crusted tuna steak, wasabi soy reduction.', image: getAIAssignedImage('Tuna Steak', 'Seafood', 'RM'), status: 'verified' },
+                    { id: 4, name: 'Salmon Fillet', price: '50.00', category: 'Seafood', description: 'Pan-seared Atlantic salmon fillet, lemon dill cream.', image: getAIAssignedImage('Salmon Fillet', 'Seafood', 'RM'), status: 'verified' },
+                    { id: 5, name: 'Ribeye', price: '60.00', category: 'Steaks', description: 'Richly marbled prime ribeye steak, grilled to perfection.', image: getAIAssignedImage('Ribeye', 'Steaks', 'RM'), status: 'verified' },
+                    { id: 6, name: 'Pasta', price: '50.00', category: 'Pasta', description: 'Creamy fettuccine alfredo, wild mushrooms, parmesan cheese.', image: getAIAssignedImage('Pasta', 'Pasta', 'RM'), status: 'verified' },
+                    { id: 7, name: 'Spaghetti', price: '60.00', category: 'Pasta', description: 'Spaghetti bolognese with house-made wagyu beef ragu.', image: getAIAssignedImage('Spaghetti', 'Pasta', 'RM'), status: 'verified' },
+                    { id: 8, name: 'Orange Juice', price: '60.00', category: 'Drinks', description: 'Freshly squeezed organic Valencia oranges.', image: getAIAssignedImage('Orange Juice', 'Drinks', 'RM'), status: 'verified' },
+                    { id: 9, name: 'Cocktail', price: '50.00', category: 'Drinks', description: 'Signature premium mixology flight.', image: getAIAssignedImage('Cocktail', 'Drinks', 'RM'), status: 'verified' },
+                    { id: 10, name: 'T-New York Strip', price: '50.00', category: 'Steaks', description: 'New York strip steak, prices blurry on scan.', image: getAIAssignedImage('T-New York Strip', 'Steaks', 'RM'), status: 'flagged', reason: 'TNew York typo on scan' }
                 ];
             }
         }

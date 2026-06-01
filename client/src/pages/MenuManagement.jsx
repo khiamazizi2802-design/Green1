@@ -130,6 +130,9 @@ const MenuManagement = () => {
         const file = e.target.files[0];
         if (!file) return;
         
+        // Reset file input value so that the onChange event will trigger again even if the same file is selected
+        e.target.value = '';
+        
         const type = file.type.includes('pdf') ? 'pdf' : 'image';
         setUploadType(type);
 
@@ -174,10 +177,10 @@ const MenuManagement = () => {
             reader.readAsDataURL(file);
         } else {
             // Main Neural Scan trigger
+            setStep('processing'); // Set decoding/processing state instantly for immediate UI feedback
             const reader = new FileReader();
             reader.onload = async (event) => {
                 const base64Content = event.target.result.split(',')[1];
-                setStep('processing');
                 
                 try {
                     const wsUrl = import.meta.env.VITE_WS_URL || 'http://localhost:3001';
