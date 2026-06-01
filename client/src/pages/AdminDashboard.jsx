@@ -19,6 +19,11 @@ import { useSocket } from '../context/SocketContext';
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
     const { drivers } = useSocket();
+
+    // NOTCH & SAFE AREA INTEGRATION
+    const useSafeArea = localStorage.getItem('green_manager_use_safe_area') !== 'false';
+    const notchAdjustment = parseInt(localStorage.getItem('green_manager_notch_adjustment') || (window.innerWidth < 768 ? '16' : '0'), 10);
+
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [view, setView] = useState('command-deck');
@@ -1322,7 +1327,12 @@ billing payouts are required.
     };
 
     return (
-        <div className={`relative w-full h-screen overflow-hidden font-sans text-primary flex flex-row selection:bg-brand selection:text-dark-900 transition-colors duration-1000 ${systemLockdown ? 'bg-red-950/20' : 'bg-dark-950'}`}>
+        <div 
+            className={`relative w-full h-screen overflow-hidden font-sans text-primary flex flex-row selection:bg-brand selection:text-dark-900 transition-colors duration-1000 transition-all duration-300 ${systemLockdown ? 'bg-red-950/20' : 'bg-dark-950'}`}
+            style={{
+                paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`
+            }}
+        >
             {/* SECURITY SCANNER OVERLAY */}
             <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden opacity-[0.03]">
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />

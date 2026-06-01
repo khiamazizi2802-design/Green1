@@ -125,6 +125,10 @@ const DriverDashboard = () => {
     const navigate = useNavigate();
     const { lang, setLang, t } = useLanguage();
 
+    // NOTCH & SAFE AREA INTEGRATION
+    const useSafeArea = localStorage.getItem('green_manager_use_safe_area') !== 'false';
+    const notchAdjustment = parseInt(localStorage.getItem('green_manager_notch_adjustment') || (window.innerWidth < 768 ? '16' : '0'), 10);
+
     const [activeTab, setActiveTab] = useState('day');
     const [showPosts, setShowPosts] = useState(false);
     const [incomingRide, setIncomingRide] = useState(null);
@@ -815,7 +819,12 @@ const DriverDashboard = () => {
     };
 
     return (
-        <div className="relative w-full h-full overflow-hidden bg-dark-950 font-sans text-primary flex flex-col items-center">
+        <div 
+            className="relative w-full h-full overflow-hidden bg-dark-950 font-sans text-primary flex flex-col items-center transition-all duration-300"
+            style={{
+                paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`
+            }}
+        >
             {/* Arrival Notification Top Sheet */}
             <AnimatePresence mode="popLayout">
                 {arrivalNotify && (

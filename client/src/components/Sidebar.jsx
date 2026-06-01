@@ -44,6 +44,10 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
     const [langSearch, setLangSearch] = useState('');
     const [isLangExpanded, setIsLangExpanded] = useState(false);
 
+    // NOTCH & SAFE AREA INTEGRATION FOR ALL SIDEBARS
+    const useSafeArea = localStorage.getItem('green_manager_use_safe_area') !== 'false';
+    const notchAdjustment = parseInt(localStorage.getItem('green_manager_notch_adjustment') || (window.innerWidth < 768 ? '16' : '0'), 10);
+
     const allLanguages = [
         { code: 'en', name: 'English', native: 'English' },
         { code: 'de', name: 'German', native: 'Deutsch' },
@@ -240,6 +244,9 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                         exit={{ x: '-100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                         className="fixed top-0 left-0 bottom-0 w-[320px] z-[101] bg-[#0B121E] border-r border-white/5 flex flex-col shadow-2xl app-sidebar"
+                        style={{
+                            paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`
+                        }}
                     >
                         {/* Header */}
                         <div className="p-8 border-b border-white/5 flex justify-between items-center">

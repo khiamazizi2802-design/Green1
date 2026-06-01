@@ -1547,6 +1547,9 @@ const ManagerDashboard = () => {
                             exit={{ x: -288 }}
                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                             className="fixed inset-y-0 left-0 w-[288px] h-full bg-dark-900 border-r border-white/5 flex flex-col z-[600] shadow-[10px_0_30px_rgba(0,0,0,0.5)] md:hidden"
+                            style={{
+                                paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`
+                            }}
                         >
                             {renderSidebarContent()}
                         </motion.aside>
