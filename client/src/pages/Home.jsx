@@ -530,7 +530,8 @@ const Home = () => {
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    className="absolute right-0 mt-3 w-72 bg-[#0B121E]/95 backdrop-blur-2xl border border-brand/20 rounded-3xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.6)] z-[999]"
+                                    className="absolute right-0 mt-3 w-72 bg-[#0B121E]/95 backdrop-blur-2xl border border-brand/20 rounded-3xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
+                                    style={{ zIndex: 9999 }}
                                 >
                                     <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
                                         <div className="flex items-center gap-2">
