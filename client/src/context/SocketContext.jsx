@@ -9,7 +9,8 @@ export const SocketProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-        const newSocket = io('http://localhost:3001');
+        const wsUrl = import.meta.env.VITE_WS_URL || 'http://localhost:3001';
+        const newSocket = io(wsUrl);
         setSocket(newSocket);
 
         newSocket.on('connect', () => {
