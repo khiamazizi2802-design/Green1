@@ -557,50 +557,50 @@ const MenuManagement = () => {
 
                             <div className="grid grid-cols-1 gap-6">
                                 {scannedItems.map((item) => (
-                                    <div key={item.id} className={`p-8 bg-glass border rounded-[2.5rem] flex items-center justify-between group hover:border-brand/40 transition-all shadow-xl ${item.checked ? 'border-brand/40 bg-brand/[0.02]' : 'border-main'}`}>
-                                        <div className="flex items-center gap-8">
+                                    <div key={item.id} className={`p-4 md:p-8 bg-glass border rounded-[2rem] md:rounded-[2.5rem] flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6 group hover:border-brand/40 transition-all shadow-xl ${item.checked ? 'border-brand/40 bg-brand/[0.02]' : 'border-main'}`}>
+                                        <div className="flex flex-row items-center gap-4 md:gap-8">
                                             {/* Tactical Interactive Checkbox Selector */}
                                             <div 
                                                 onClick={() => {
                                                     setScannedItems(prev => prev.map(s => s.id === item.id ? { ...s, checked: !s.checked } : s));
                                                 }}
-                                                className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center cursor-pointer transition-all ${
+                                                className={`w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl border-2 flex items-center justify-center cursor-pointer transition-all shrink-0 ${
                                                     item.checked 
                                                         ? 'bg-brand/20 border-brand text-brand shadow-[0_0_20px_rgba(33,255,165,0.3)]' 
                                                         : 'border-main text-transparent hover:border-brand/40 bg-btn-sec'
                                                 }`}
                                             >
-                                                <Check size={20} className={item.checked ? 'opacity-100 scale-100' : 'opacity-0 scale-50 transition-transform'} />
+                                                <Check size={16} className={item.checked ? 'opacity-100 scale-100' : 'opacity-0 scale-50 transition-transform'} />
                                             </div>
 
                                             {/* Dynamic AI Food Thumbnail Image Preview */}
-                                            <div className="w-20 h-20 rounded-2xl overflow-hidden border border-main shrink-0 bg-btn-sec relative shadow-md">
+                                            <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl md:rounded-2xl overflow-hidden border border-main shrink-0 bg-btn-sec relative shadow-md">
                                                 {item.image ? (
                                                     <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center text-secondary">
-                                                        {item.category === 'Drinks' ? <Wine size={32} /> : <Utensils size={32} />}
+                                                        {item.category === 'Drinks' ? <Wine size={24} /> : <Utensils size={24} />}
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div>
-                                                <div className="flex items-center gap-4">
-                                                    <span className="text-2xl font-black italic uppercase text-primary tracking-tighter leading-none">{item.name}</span>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                                    <span className="text-lg md:text-2xl font-black italic uppercase text-primary tracking-tighter leading-none truncate">{item.name}</span>
                                                     {item.status === 'flagged' && (
-                                                        <span className="px-3 py-1 bg-amber-500/10 text-amber-500 text-[8px] font-black rounded-lg uppercase tracking-widest border border-amber-500/20 shadow-lg shadow-amber-500/5">Manual Review Required</span>
+                                                        <span className="self-start px-2 py-0.5 bg-amber-500/10 text-amber-500 text-[8px] font-black rounded uppercase tracking-widest border border-amber-500/20 shadow-lg shadow-amber-500/5">Review Required</span>
                                                     )}
                                                 </div>
-                                                <p className="text-[10px] font-black text-secondary uppercase tracking-[0.4em] mt-3 opacity-40">
+                                                <p className="text-[9px] md:text-[10px] font-black text-secondary uppercase tracking-[0.2em] md:tracking-[0.4em] mt-2 opacity-40 line-clamp-2">
                                                     {item.category} • {item.description || 'Verified Catalog Item'}
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-10">
-                                            <span className="text-3xl font-black italic text-brand tracking-tighter">€{item.price}</span>
+                                        <div className="flex flex-row items-center justify-between md:justify-end gap-6 md:gap-10 border-t border-main/50 md:border-none pt-4 md:pt-0">
+                                            <span className="text-2xl md:text-3xl font-black italic text-brand tracking-tighter">€{item.price}</span>
                                             <div className="flex gap-3">
-                                                <button className="w-12 h-12 bg-btn-sec border border-main rounded-xl text-secondary hover:text-brand hover:border-brand/40 transition-all flex items-center justify-center"><Edit3 size={20} /></button>
-                                                <button onClick={() => removeItem(item.id, 'scanned')} className="w-12 h-12 bg-btn-sec border border-main rounded-xl text-secondary hover:text-red-500 hover:border-red-500/40 transition-all flex items-center justify-center"><Trash2 size={20} /></button>
+                                                <button className="w-10 h-10 md:w-12 md:h-12 bg-btn-sec border border-main rounded-xl text-secondary hover:text-brand hover:border-brand/40 transition-all flex items-center justify-center"><Edit3 size={18} /></button>
+                                                <button onClick={() => removeItem(item.id, 'scanned')} className="w-10 h-10 md:w-12 md:h-12 bg-btn-sec border border-main rounded-xl text-secondary hover:text-red-500 hover:border-red-500/40 transition-all flex items-center justify-center"><Trash2 size={18} /></button>
                                             </div>
                                         </div>
                                     </div>
