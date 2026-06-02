@@ -404,6 +404,17 @@ const VenueMenuPage = () => {
 
     // Dynamic AI Neural Catalog sync effect
     useEffect(() => {
+        // Resolve fallback demo email key if not passed
+        let emailKey = location.state?.emailKey;
+        if (!emailKey) {
+            if (isHotel) emailKey = 'hotel_green_de';
+            else if (isStadium) emailKey = 'stadium_green_de';
+            else if (isWashHub) emailKey = 'wash_green_de';
+            else if (isParking) emailKey = 'parking_green_de';
+            else if (venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('velvet')) emailKey = 'club_green_de';
+            else emailKey = 'restaurant_green_de';
+        }
+
         const bizType = isWashHub ? 'WM' : isParking ? 'PM' : isHotel ? 'HM' : isStadium ? 'SM' : 'RM';
         
         const fetchDynamicMenu = async () => {
@@ -411,7 +422,7 @@ const VenueMenuPage = () => {
 
             // 1. Try local backup first
             try {
-                const saved = localStorage.getItem(`green_published_menu_${bizType}`);
+                const saved = localStorage.getItem(`green_published_menu_${bizType}_${emailKey}`);
                 if (saved) {
                     customItems = JSON.parse(saved);
                 }
@@ -421,7 +432,7 @@ const VenueMenuPage = () => {
 
             // 2. Try Firestore for real-time sync
             try {
-                const docRef = doc(db, 'business_menus', bizType);
+                const docRef = doc(db, 'business_menus', `${bizType}_${emailKey}`);
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists()) {
@@ -460,7 +471,7 @@ const VenueMenuPage = () => {
         };
 
         fetchDynamicMenu();
-    }, [isWashHub, isParking, isHotel, isStadium]);
+    }, [isWashHub, isParking, isHotel, isStadium, location.state, venueName]);
 
     const hasTicketsInCart = cart.some(item => 
         item.tags?.includes('Ticket') || 

@@ -34,7 +34,7 @@ const LandingPage = () => {
             </div>
 
             {/* --- HEADER / PARTNER GATE --- */}
-            <header className="relative z-50 p-6 flex justify-between items-center">
+            <header className="relative z-50 px-6 pt-14 pb-6 md:pt-6 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     <span className="font-black tracking-tighter text-3xl italic uppercase text-[var(--text-primary)]">Green</span>
                 </div>

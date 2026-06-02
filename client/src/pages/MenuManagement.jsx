@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     Upload, FileText, ImageIcon, Camera, Plus, Trash2, 
@@ -10,22 +10,41 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../config/firebase';
 import { doc, setDoc } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
 
 const MenuManagement = () => {
     const navigate = useNavigate();
+    const { user, loading } = useAuth();
     const fileInputRef = useRef(null);
     const [step, setStep] = useState('initial'); // initial, processing, review, manual
     const [isPublishing, setIsPublishing] = useState(false);
     const [uploadType, setUploadType] = useState(null); // 'pdf', 'image'
     const [scannedItems, setScannedItems] = useState([]);
     const [manualItems, setManualItems] = useState([]);
-    const [managerContext] = useState(localStorage.getItem('green_manager_context') || 'RM');
+    
+    const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+    const [managerContext, setManagerContext] = useState(() => localStorage.getItem(`green_manager_context_${userEmailKey}`) || 'RM');
+    
     const [config, setConfig] = useState({
         capacity: managerContext === 'WM' ? 4 : managerContext === 'PM' ? 200 : 30,
         standingCapacity: (managerContext === 'BM' || managerContext === 'CM') ? 100 : 0,
         openTime: '08:00',
         closeTime: '22:00'
     });
+
+    useEffect(() => {
+        if (!loading && user) {
+            const ctx = localStorage.getItem(`green_manager_context_${userEmailKey}`) || 'RM';
+            setManagerContext(ctx);
+            setConfig({
+                capacity: ctx === 'WM' ? 4 : ctx === 'PM' ? 200 : 30,
+                standingCapacity: (ctx === 'BM' || ctx === 'CM') ? 100 : 0,
+                openTime: '08:00',
+                closeTime: '22:00'
+            });
+        }
+    }, [user, loading, userEmailKey]);
+
     const [isConfigEditing, setIsConfigEditing] = useState(false);
 
     const [currentManualItem, setCurrentManualItem] = useState({
@@ -43,6 +62,16 @@ const MenuManagement = () => {
     const [userMessage, setUserMessage] = useState('');
     const [isAgentThinking, setIsAgentThinking] = useState(false);
     const [aiDraftMenu, setAiDraftMenu] = useState(null);
+
+    if (loading) {
+        return (
+            <div className="w-screen h-screen bg-dark-950 flex items-center justify-center">
+                <div className="text-xl font-black italic uppercase text-brand animate-pulse">
+                    Grid Intelligence Loading...
+                </div>
+            </div>
+        );
+    }
 
     const handleSendMessage = () => {
         if (!userMessage.trim()) return;
@@ -228,18 +257,18 @@ const MenuManagement = () => {
 
         setIsPublishing(true);
         try {
-            await setDoc(doc(db, 'business_menus', managerContext), {
+            await setDoc(doc(db, 'business_menus', `${managerContext}_${userEmailKey}`), {
                 items: selected,
                 updatedAt: new Date().toISOString()
             });
 
-            localStorage.setItem(`green_published_menu_${managerContext}`, JSON.stringify(selected));
+            localStorage.setItem(`green_published_menu_${managerContext}_${userEmailKey}`, JSON.stringify(selected));
             alert(`Catalog successfully synchronized! ${selected.length} items published live to the Green Grid.`);
             navigate(`/manager${window.location.search}`);
         } catch (err) {
             console.error('Failed to sync catalog to Firestore:', err);
             // Local fallback
-            localStorage.setItem(`green_published_menu_${managerContext}`, JSON.stringify(selected));
+            localStorage.setItem(`green_published_menu_${managerContext}_${userEmailKey}`, JSON.stringify(selected));
             alert(`Catalog updated locally (${selected.length} items).`);
             navigate(`/manager${window.location.search}`);
         } finally {
@@ -262,17 +291,17 @@ const MenuManagement = () => {
                 status: 'verified'
             }));
 
-            await setDoc(doc(db, 'business_menus', managerContext), {
+            await setDoc(doc(db, 'business_menus', `${managerContext}_${userEmailKey}`), {
                 items: formattedItems,
                 updatedAt: new Date().toISOString()
             });
 
-            localStorage.setItem(`green_published_menu_${managerContext}`, JSON.stringify(formattedItems));
+            localStorage.setItem(`green_published_menu_${managerContext}_${userEmailKey}`, JSON.stringify(formattedItems));
             alert(`Catalog finalized! ${formattedItems.length} items published live to the Green Grid.`);
             navigate(`/manager${window.location.search}`);
         } catch (err) {
             console.error('Failed to publish manual catalog:', err);
-            localStorage.setItem(`green_published_menu_${managerContext}`, JSON.stringify(manualItems));
+            localStorage.setItem(`green_published_menu_${managerContext}_${userEmailKey}`, JSON.stringify(manualItems));
             alert(`Catalog finalized locally (${manualItems.length} items).`);
             navigate(`/manager${window.location.search}`);
         } finally {

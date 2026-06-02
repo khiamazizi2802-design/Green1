@@ -1,10 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ArrowLeft, Search, Sparkles, Star, MapPin, Navigation, ArrowRight,
     Zap, Utensils, BedDouble, GlassWater, Trophy, Compass, ShieldCheck
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { db } from '../config/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const DiscoveryGallery = () => {
     const navigate = useNavigate();
@@ -25,17 +27,19 @@ const DiscoveryGallery = () => {
         { id: 'hotel', label: 'Hotels', icon: BedDouble, color: 'text-emerald-400' }
     ];
 
-    const venues = [
+    const defaultVenues = [
         { 
             id: 1, 
-            category: 'partners', 
+            category: 'club', 
             name: "Skyline Club", 
             offer: "FREE ENTRY + 1 DRINK", 
             discount: "100%",
             rating: 4.9,
             dist: "0.8km",
             img: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=800&q=80",
-            tags: ["VIP", "Nightlife"]
+            tags: ["VIP", "Nightlife"],
+            emailKey: 'club_green_de',
+            email: 'club@green.de'
         },
         { 
             id: 2, 
@@ -46,7 +50,9 @@ const DiscoveryGallery = () => {
             rating: 4.7,
             dist: "1.2km",
             img: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80",
-            tags: ["Cocktails", "Lounge"]
+            tags: ["Cocktails", "Lounge"],
+            emailKey: 'club_green_de', // Fallback key
+            email: 'club@green.de'
         },
         { 
             id: 3, 
@@ -57,7 +63,9 @@ const DiscoveryGallery = () => {
             rating: 4.8,
             dist: "2.4km",
             img: "https://images.unsplash.com/photo-1550966841-3ee7adac1af0?w=800&q=80",
-            tags: ["Organic", "Modern"]
+            tags: ["Organic", "Modern"],
+            emailKey: 'restaurant_green_de',
+            email: 'restaurant@green.de'
         },
         { 
             id: 4, 
@@ -68,7 +76,9 @@ const DiscoveryGallery = () => {
             rating: 4.6,
             dist: "3.1km",
             img: "https://images.unsplash.com/photo-1574096079513-d8259312b785?w=800&q=80",
-            tags: ["Techno", "Underground"]
+            tags: ["Techno", "Underground"],
+            emailKey: 'club_green_de',
+            email: 'club@green.de'
         },
         { 
             id: 5, 
@@ -79,7 +89,9 @@ const DiscoveryGallery = () => {
             rating: 5.0,
             dist: "5.0km",
             img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80",
-            tags: ["Outdoor", "Live"]
+            tags: ["Outdoor", "Live"],
+            emailKey: 'club_green_de',
+            email: 'club@green.de'
         },
         { 
             id: 6, 
@@ -90,7 +102,9 @@ const DiscoveryGallery = () => {
             rating: 4.9, 
             dist: "1.5km", 
             img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80", 
-            tags: ["5-Star", "Spa"] 
+            tags: ["5-Star", "Spa"],
+            emailKey: 'hotel_green_de',
+            email: 'hotel@green.de'
         },
         {
             id: 7,
@@ -101,9 +115,68 @@ const DiscoveryGallery = () => {
             rating: 4.9,
             dist: "4.2km",
             img: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=800&q=80",
-            tags: ["Sports", "VIP"]
+            tags: ["Sports", "VIP"],
+            emailKey: 'stadium_green_de',
+            email: 'stadium@green.de'
         }
     ];
+
+    const [venues, setVenues] = useState(defaultVenues);
+
+    useEffect(() => {
+        const fetchDynamicVenues = async () => {
+            try {
+                const q = query(collection(db, 'users'), where('role', '==', 'manager'));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const loaded = [];
+                    querySnapshot.forEach(doc => {
+                        const data = doc.data();
+                        
+                        // Ignore generic fleet managers (FM) in Discovery Gallery list
+                        if (data.businessType === 'FM') return;
+
+                        let category = 'restaurant';
+                        if (data.businessType === 'BM') category = 'bar';
+                        else if (data.businessType === 'CM') category = 'club';
+                        else if (data.businessType === 'HM') category = 'hotel';
+                        else if (data.businessType === 'SM') category = 'stadium';
+
+                        const emailKey = data.email ? data.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+
+                        loaded.push({
+                            id: doc.id,
+                            category: category,
+                            name: data.name || "Unnamed Partner",
+                            offer: data.businessType === 'HM' ? "LATE CHECKOUT 2PM" : data.businessType === 'CM' ? "FREE ENTRY + 1 DRINK" : "20% OFF TOTAL BILL",
+                            discount: data.businessType === 'HM' ? null : "20%",
+                            rating: 4.8,
+                            dist: "1.2km",
+                            img: category === 'club' 
+                                ? "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=800&q=80"
+                                : category === 'hotel'
+                                ? "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80"
+                                : category === 'bar'
+                                ? "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80"
+                                : category === 'stadium'
+                                ? "https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=800&q=80"
+                                : "https://images.unsplash.com/photo-1550966841-3ee7adac1af0?w=800&q=80",
+                            tags: category === 'club' ? ["VIP", "Nightlife"] : ["Verified"],
+                            emailKey: emailKey,
+                            email: data.email
+                        });
+                    });
+                    
+                    if (loaded.length > 0) {
+                        setVenues(loaded);
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching dynamic venues from Firestore:", err);
+            }
+        };
+        fetchDynamicVenues();
+    }, []);
 
     const filteredVenues = useMemo(() => {
         return venues.filter(v => {

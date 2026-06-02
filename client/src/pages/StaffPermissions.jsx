@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
     ArrowLeft, Shield, Save, CheckCircle, XCircle, 
@@ -14,7 +14,7 @@ import { useAuth } from '../context/AuthContext';
 const StaffPermissions = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     
     // Determine the initial context based on manager email/identity (Same as ManagerDashboard)
     const getInitialContext = () => {
@@ -27,8 +27,15 @@ const StaffPermissions = () => {
         return 'FM'; // Default to Fleet Manager
     };
 
-    const [managerContext] = useState(() => localStorage.getItem('green_manager_context') || getInitialContext());
+    const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+    const [managerContext, setManagerContext] = useState(() => localStorage.getItem(`green_manager_context_${userEmailKey}`) || getInitialContext());
     
+    useEffect(() => {
+        if (!loading && user) {
+            setManagerContext(localStorage.getItem(`green_manager_context_${userEmailKey}`) || getInitialContext());
+        }
+    }, [user, loading, userEmailKey]);
+
     // Mock staff data
     const staff = {
         id: id || 'ST-1024',
@@ -137,6 +144,16 @@ const StaffPermissions = () => {
         'business-docs': false,
         network: false
     });
+
+    if (loading) {
+        return (
+            <div className="w-screen h-screen bg-dark-950 flex items-center justify-center">
+                <div className="text-xl font-black italic uppercase text-brand animate-pulse">
+                    Grid Intelligence Loading...
+                </div>
+            </div>
+        );
+    }
 
     const togglePermission = (itemId) => {
         setPermissions(prev => ({

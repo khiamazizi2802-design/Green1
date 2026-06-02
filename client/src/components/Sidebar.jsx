@@ -67,7 +67,8 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
         l.native.toLowerCase().includes(langSearch.toLowerCase()) ||
         l.code.toLowerCase().includes(langSearch.toLowerCase())
     );
-    const managerContext = localStorage.getItem('green_manager_context') || 'RM';
+    const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+    const managerContext = localStorage.getItem(`green_manager_context_${userEmailKey}`) || 'RM';
     const staffTemplate = localStorage.getItem('green_staff_template') || 'pilot'; 
 
     const getAdaptiveLabel = (id, baseLabel) => {

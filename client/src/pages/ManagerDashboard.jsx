@@ -78,7 +78,7 @@ import Sidebar from '../components/Sidebar';
 import Radar from '../components/Radar';
 import { useLanguage } from '../context/LanguageContext';
 import { useSocket } from '../context/SocketContext';
-import { Banknote, Check, Moon, Sun } from 'lucide-react';
+import { Banknote, Check, Moon, Sun, Loader2 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 const itemMetadata = {
@@ -134,7 +134,7 @@ const getItemInfo = (itemName) => {
 };
 
 const ManagerDashboard = () => {
-    const { user, logout } = useAuth();
+    const { user, loading, logout } = useAuth();
     const { theme, setTheme } = useTheme();
     const navigate = useNavigate();
     const { lang, setLang } = useLanguage();
@@ -201,15 +201,34 @@ const ManagerDashboard = () => {
         }
         return false;
     };
+    const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+    const isDemo = !user || user.email === 'manager@green.de' || user.email === 'admin@green-nightlife.com' || user.email?.includes('test') || user.email === 'staff@green.de' || user.email === 'admin@green.de';
+
     const [staffList, setStaffList] = useState(() => {
-        const saved = localStorage.getItem('green_staff_list');
-        const initial = [
-            { id: 'ST-1021', name: 'Lukas Meyer', role: 'Floor Manager', status: 'On Shift', avatar: 'Lukas', permissions: ['Orders', 'Feed', 'Terminal'] },
-            { id: 'ST-1022', name: 'Anja Schmidt', role: 'Receptionist', status: 'On Shift', avatar: 'Anja', permissions: ['Feed', 'Terminal'] },
-            { id: 'ST-1023', name: 'Marc Becker', role: 'Staff Pilot', status: 'Offline', avatar: 'Marc', permissions: ['Terminal'] }
-        ];
-        if (saved) return [...initial, ...JSON.parse(saved)];
-        return initial;
+        const saved = localStorage.getItem(`green_staff_list_${userEmailKey}`);
+        if (saved) return JSON.parse(saved);
+        if (isDemo) {
+            return [
+                { id: 'ST-1021', name: 'Lukas Meyer', role: 'Floor Manager', status: 'On Shift', avatar: 'Lukas', permissions: ['Orders', 'Feed', 'Terminal'] },
+                { id: 'ST-1022', name: 'Anja Schmidt', role: 'Receptionist', status: 'On Shift', avatar: 'Anja', permissions: ['Feed', 'Terminal'] },
+                { id: 'ST-1023', name: 'Marc Becker', role: 'Staff Pilot', status: 'Offline', avatar: 'Marc', permissions: ['Terminal'] }
+            ];
+        }
+        return [];
+    });
+
+    const [orders, setOrders] = useState(() => {
+        const saved = localStorage.getItem(`green_active_orders_${userEmailKey}`);
+        if (saved) return JSON.parse(saved);
+        if (isDemo) {
+            return [
+                { id: '#BK-9921', guest: 'Lukas M.', items: ['Deluxe King Suite', 'Spa Access Included'], total: '450.00', status: 'Received', type: 'Stay Booking', time: 'Just now', payment: 'Online', room: '204', checkIn: 'May 10', checkOut: 'May 12' },
+                { id: '#8821', guest: 'Sarah J.', items: ['Midnight Neon (2x)', 'Truffle Fries'], total: '38.00', status: 'Preparing', type: 'Dine-In', time: '12m ago', payment: 'Online', table: '14' },
+                { id: '#8822', guest: 'Pioneer #042', items: ['Gold Leaf Burger', 'Emerald Cocktail'], total: '61.00', status: 'Received', type: 'Takeaway', time: '5m ago', payment: 'Cash', plate: 'B-GR-2026', carColor: 'Blue' },
+                { id: '#8823', guest: 'Dr. Müller', items: ['Lobster Thermidor', 'Champagne (Bottle)'], total: '195.00', status: 'Served', type: 'VIP Table 1', time: '45m ago', payment: 'Online', room: '402' }
+            ];
+        }
+        return [];
     });
     
     // Determine the initial context based on manager email/identity
@@ -224,19 +243,18 @@ const ManagerDashboard = () => {
     };
 
     const [managerContext, setManagerContext] = useState(() => {
-        const userEmail = user?.email || 'manager@green.de';
-        const saved = localStorage.getItem(`green_manager_context_${userEmail}`);
+        const saved = localStorage.getItem(`green_manager_context_${userEmailKey}`);
         if (saved) return saved;
         const ctx = getInitialContext();
-        localStorage.setItem(`green_manager_context_${userEmail}`, ctx);
+        localStorage.setItem(`green_manager_context_${userEmailKey}`, ctx);
         return ctx;
     });
 
     // Dynamic Commission and Payout Calculations based on business type
     const commissionData = useMemo(() => {
-        const gross = 15280.00;
+        const gross = isDemo ? 15280.00 : orders.filter(o => o.status === 'Paid' || o.status === 'Served' || o.status === 'Departed').reduce((acc, curr) => acc + parseFloat(curr.total || 0), 0);
         let rateLabel = "Platform Comm. (15%)";
-        let commVal = 2292.00;
+        let commVal = gross * 0.15;
         let isFree = false;
 
         if (managerContext === 'HM' || managerContext === 'SM') {
@@ -248,7 +266,7 @@ const ManagerDashboard = () => {
             isFree = true;
         } else if (managerContext === 'FM') {
             rateLabel = "Platform Comm. (Staffel / Degressive)";
-            commVal = 1180.00; 
+            commVal = isDemo ? 1180.00 : gross * 0.08; 
         }
 
         return {
@@ -258,7 +276,7 @@ const ManagerDashboard = () => {
             settlement: gross - commVal,
             isFree: isFree
         };
-    }, [managerContext]);
+    }, [managerContext, orders, isDemo]);
 
     const [selectedGuest, setSelectedGuest] = useState(null);
     const [messageOrder, setMessageOrder] = useState(null);
@@ -467,7 +485,7 @@ const ManagerDashboard = () => {
             };
             setStaffList(prev => {
                 const updated = [...prev, newMember];
-                localStorage.setItem('green_staff_list', JSON.stringify(updated.filter(s => !['ST-1021','ST-1022','ST-1023'].includes(s.id))));
+                localStorage.setItem(`green_staff_list_${userEmailKey}`, JSON.stringify(updated));
                 return updated;
             });
 
@@ -509,41 +527,43 @@ const ManagerDashboard = () => {
     const [isScanningSeats, setIsScanningSeats] = useState(false);
     const [aiMatrixResult, setAiMatrixResult] = useState(null);
     const [stadiumEvents, setStadiumEvents] = useState(() => {
-        const saved = localStorage.getItem('green_stadium_events');
+        const saved = localStorage.getItem(`green_stadium_events_${userEmailKey}`);
         if (saved) return JSON.parse(saved);
         
-        const userEmail = user?.email || 'manager@green.de';
-        const isClub = localStorage.getItem(`green_manager_context_${userEmail}`) === 'CM';
-        if (isClub) {
+        if (isDemo) {
+            const isClub = managerContext === 'CM';
+            if (isClub) {
+                return [
+                    {
+                        id: 'evt-1',
+                        name: 'Midnight Neon Festival 2026',
+                        date: '2026-06-12',
+                        time: '22:00',
+                        published: true,
+                        tiers: [
+                            { id: 't1', name: 'Silver (Normal Ticket)', price: 35, quantity: 1500, sold: 940 },
+                            { id: 't2', name: 'Gold (Premium)', price: 120, quantity: 200, sold: 165 },
+                            { id: 't3', name: 'Diamond (VIP)', price: 750, quantity: 20, sold: 14 }
+                        ]
+                    }
+                ];
+            }
             return [
                 {
                     id: 'evt-1',
-                    name: 'Midnight Neon Festival 2026',
-                    date: '2026-06-12',
-                    time: '22:00',
+                    name: 'Champions League Final',
+                    date: '2024-05-24',
+                    time: '20:45',
                     published: true,
                     tiers: [
-                        { id: 't1', name: 'Silver (Normal Ticket)', price: 35, quantity: 1500, sold: 940 },
-                        { id: 't2', name: 'Gold (Premium)', price: 120, quantity: 200, sold: 165 },
-                        { id: 't3', name: 'Diamond (VIP)', price: 750, quantity: 20, sold: 14 }
+                        { id: 't1', name: 'Silver (Normal Ticket)', price: 85, quantity: 500, sold: 120 },
+                        { id: 't2', name: 'Gold (Premium)', price: 450, quantity: 50, sold: 42 },
+                        { id: 't3', name: 'Diamond (VIP)', price: 1200, quantity: 10, sold: 8 }
                     ]
                 }
             ];
         }
-        return [
-            {
-                id: 'evt-1',
-                name: 'Champions League Final',
-                date: '2024-05-24',
-                time: '20:45',
-                published: true,
-                tiers: [
-                    { id: 't1', name: 'Silver (Normal Ticket)', price: 85, quantity: 500, sold: 120 },
-                    { id: 't2', name: 'Gold (Premium)', price: 450, quantity: 50, sold: 42 },
-                    { id: 't3', name: 'Diamond (VIP)', price: 1200, quantity: 10, sold: 8 }
-                ]
-            }
-        ];
+        return [];
     });
     const [activeSettingsEvent, setActiveSettingsEvent] = useState(null);
     const [webhookTestType, setWebhookTestType] = useState('email1');
@@ -585,7 +605,7 @@ const ManagerDashboard = () => {
             return evt;
         });
         setStadiumEvents(updatedEvents);
-        localStorage.setItem('green_stadium_events', JSON.stringify(updatedEvents));
+        localStorage.setItem(`green_stadium_events_${userEmailKey}`, JSON.stringify(updatedEvents));
         
         try {
             if (window.parent) {
@@ -905,7 +925,7 @@ const ManagerDashboard = () => {
         };
         const updated = [...stadiumEvents, newEvent];
         setStadiumEvents(updated);
-        localStorage.setItem('green_stadium_events', JSON.stringify(updated));
+        localStorage.setItem(`green_stadium_events_${userEmailKey}`, JSON.stringify(updated));
         setIsAddingEvent(false);
         setNewEventData({ 
             name: '', 
@@ -946,7 +966,7 @@ const ManagerDashboard = () => {
     const togglePublishEvent = (id) => {
         const updated = stadiumEvents.map(e => e.id === id ? { ...e, published: !e.published } : e);
         setStadiumEvents(updated);
-        localStorage.setItem('green_stadium_events', JSON.stringify(updated));
+        localStorage.setItem(`green_stadium_events_${userEmailKey}`, JSON.stringify(updated));
     };
 
     const fleetDrivers = [
@@ -1014,7 +1034,7 @@ const ManagerDashboard = () => {
             setOrders(prev => {
                 if (prev.some(o => o.id === ticket.id)) return prev;
                 const updated = [managerOrder, ...prev];
-                localStorage.setItem('green_active_orders', JSON.stringify(updated));
+                localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
                 return updated;
             });
 
@@ -1068,18 +1088,6 @@ const ManagerDashboard = () => {
         setOrders(prev => prev.map(o => o.id === orderIdStr ? { ...o, payment: 'Cash (Paid)', status: 'Paid' } : o));
     };
 
-    // SYNC: Load orders from localStorage
-    const [orders, setOrders] = useState(() => {
-        const saved = localStorage.getItem('green_active_orders');
-        if (saved) return JSON.parse(saved);
-        return [
-            { id: '#BK-9921', guest: 'Lukas M.', items: ['Deluxe King Suite', 'Spa Access Included'], total: '450.00', status: 'Received', type: 'Stay Booking', time: 'Just now', payment: 'Online', room: '204', checkIn: 'May 10', checkOut: 'May 12' },
-            { id: '#8821', guest: 'Sarah J.', items: ['Midnight Neon (2x)', 'Truffle Fries'], total: '38.00', status: 'Preparing', type: 'Dine-In', time: '12m ago', payment: 'Online', table: '14' },
-            { id: '#8822', guest: 'Pioneer #042', items: ['Gold Leaf Burger', 'Emerald Cocktail'], total: '61.00', status: 'Received', type: 'Takeaway', time: '5m ago', payment: 'Cash', plate: 'B-GR-2026', carColor: 'Blue' },
-            { id: '#8823', guest: 'Dr. Müller', items: ['Lobster Thermidor', 'Champagne (Bottle)'], total: '195.00', status: 'Served', type: 'VIP Table 1', time: '45m ago', payment: 'Online', room: '402' }
-        ];
-    });
-
     const [sessionTransitioned, setSessionTransitioned] = useState({});
     const [previousStatuses, setPreviousStatuses] = useState({});
 
@@ -1090,7 +1098,7 @@ const ManagerDashboard = () => {
         }
         const updated = orders.map(o => o.id === id ? { ...o, status: newStatus } : o);
         setOrders(updated);
-        localStorage.setItem('green_active_orders', JSON.stringify(updated));
+        localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
         setSessionTransitioned(prev => ({ ...prev, [id]: true }));
     };
 
@@ -1100,7 +1108,7 @@ const ManagerDashboard = () => {
 
         const updated = orders.map(o => o.id === id ? { ...o, status: prevStatus } : o);
         setOrders(updated);
-        localStorage.setItem('green_active_orders', JSON.stringify(updated));
+        localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
 
         setPreviousStatuses(prev => {
             const next = { ...prev };
@@ -1153,18 +1161,19 @@ const ManagerDashboard = () => {
 
     // Ensure demo booking exists for visualization
     useEffect(() => {
+        if (!isDemo) return;
         const demoBooking = { id: '#BK-9921', guest: 'Lukas M.', items: ['Deluxe King Suite', 'Spa Access Included'], total: '450.00', status: 'Received', type: 'Stay Booking', time: 'Just now', payment: 'Online', room: '204', checkIn: 'May 10', checkOut: 'May 12' };
         if (!orders.find(o => o.id === demoBooking.id)) {
             const updated = [demoBooking, ...orders];
             setOrders(updated);
-            localStorage.setItem('green_active_orders', JSON.stringify(updated));
+            localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
         }
-    }, []);
+    }, [orders, isDemo, userEmailKey]);
 
     // Real-Time orders synchronization from passenger / venue booking page
     useEffect(() => {
         const handleSync = () => {
-            const saved = localStorage.getItem('green_active_orders');
+            const saved = localStorage.getItem(`green_active_orders_${userEmailKey}`);
             if (saved) {
                 try {
                     setOrders(JSON.parse(saved));
@@ -1193,12 +1202,12 @@ const ManagerDashboard = () => {
             }
             window.removeEventListener('storage', handleSync);
         };
-    }, []);
+    }, [userEmailKey]);
 
     // Real-Time stadium events sold counts synchronization
     useEffect(() => {
         const handleEventsSync = () => {
-            const saved = localStorage.getItem('green_stadium_events');
+            const saved = localStorage.getItem(`green_stadium_events_${userEmailKey}`);
             if (saved) {
                 try {
                     setStadiumEvents(JSON.parse(saved));
@@ -1228,6 +1237,51 @@ const ManagerDashboard = () => {
     }, []);
 
     const getStatsByContext = () => {
+        if (!isDemo) {
+            if (managerContext === 'CM' || managerContext === 'BM') return [
+                { label: 'Guests Inside', value: '0', icon: Users, color: 'text-white', trend: '—' },
+                { label: 'Weekly Sales', value: '€0', icon: DollarSign, color: 'text-brand', trend: 'Stable' },
+                { label: 'Door Wait Time', value: '—', icon: Timer, color: 'text-brand', trend: '—' },
+                { label: 'VIP Capacity', value: '0%', icon: Star, color: 'text-white', trend: '—' }
+            ];
+            if (managerContext === 'HM') return [
+                { label: 'Current Guests', value: '0', icon: Users, color: 'text-white', trend: 'Stable' },
+                { label: 'Nightlife Out', value: '0', icon: Car, color: 'text-brand', trend: '—' },
+                { label: 'Concierge Tasks', value: '0', icon: Activity, color: 'text-brand', trend: 'Active' },
+                { label: 'Service Rating', value: '—', icon: Star, color: 'text-white', trend: '—' }
+            ];
+            if (managerContext === 'RM') return [
+                { label: 'Active Tables', value: '0/30', icon: Utensils, color: 'text-white', trend: '0% Full' },
+                { label: 'Kitchen Load', value: 'None', icon: Activity, color: 'text-brand', trend: 'Optimal' },
+                { label: 'Avg Ticket', value: '€0.00', icon: DollarSign, color: 'text-brand', trend: '—' },
+                { label: 'Waitlist', value: '0', icon: Clock, color: 'text-white', trend: '—' }
+            ];
+            if (managerContext === 'PM') return [
+                { label: 'Occupancy', value: '0%', icon: Target, color: 'text-brand', trend: '—' },
+                { label: 'Active Bays', value: '0/200', icon: MapPin, color: 'text-brand', trend: 'Stable' },
+                { label: 'EV Charging', value: '0', icon: Zap, color: 'text-white', trend: 'No Demand' },
+                { label: 'Avg Session', value: '—', icon: Clock, color: 'text-brand', trend: '—' }
+            ];
+            if (managerContext === 'WM') return [
+                { label: 'Active Queue', value: '0', icon: Droplets, color: 'text-white', trend: '—' },
+                { label: 'Throughput', value: '0 Cars', icon: Car, color: 'text-brand', trend: '—' },
+                { label: 'Avg Cycle', value: '—', icon: Timer, color: 'text-brand', trend: 'Optimal' },
+                { label: 'Daily Rev.', value: '€0', icon: DollarSign, color: 'text-white', trend: '—' }
+            ];
+            if (managerContext === 'SM') return [
+                { label: 'Arena Fill', value: '0%', icon: Users, color: 'text-white', trend: '—' },
+                { label: 'Gate Flow', value: '0/h', icon: Activity, color: 'text-brand', trend: 'Smooth' },
+                { label: 'VIP Sales', value: '€0', icon: DollarSign, color: 'text-brand', trend: 'Stable' },
+                { label: 'Alerts', value: '0', icon: ShieldCheck, color: 'text-white', trend: 'Clear' }
+            ];
+            return [
+                { label: 'Weekly Accrual', value: '€0', icon: DollarSign, color: 'text-brand', trend: 'Friday Payout' },
+                { label: 'Active Units', value: '0', icon: Car, color: 'text-brand', trend: 'No Deployment' },
+                { label: 'Completion Rate', value: '0.0%', icon: CheckCircle2, color: 'text-white', trend: 'Optimal' },
+                { label: 'Avg Arrival', value: '—', icon: Clock, color: 'text-brand', trend: '—' }
+            ];
+        }
+
         if (managerContext === 'CM' || managerContext === 'BM') return [
             { label: 'Guests Inside', value: '412', icon: Users, color: 'text-white', trend: '+12%' },
             { label: 'Weekly Sales', value: '€24,420', icon: DollarSign, color: 'text-brand', trend: 'Stable' },
@@ -1273,6 +1327,7 @@ const ManagerDashboard = () => {
     };
 
     const getOperationalDataByContext = () => {
+        if (!isDemo) return [];
         if (managerContext === 'PM') return [
             { id: 'P1-102', guest: 'B-G-2026', order: 'Parking Session', status: 'Active', time: '1h 12m' },
             { id: 'P2-404', guest: 'Lukas M.', order: 'EV Fast Charge', status: '85% Charged', time: '45m' },
@@ -1503,6 +1558,16 @@ const ManagerDashboard = () => {
             </div>
         </>
     );
+
+    if (loading) {
+        return (
+            <div className="w-screen h-screen bg-dark-950 flex items-center justify-center">
+                <div className="text-xl font-black italic uppercase text-brand animate-pulse">
+                    Grid Intelligence Loading...
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div 

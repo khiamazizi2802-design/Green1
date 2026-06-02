@@ -143,7 +143,7 @@ const PartnerDetailsPage = () => {
                 {/* Primary Action Section */}
                 <section className="space-y-4">
                     <button 
-                        onClick={() => navigate('/venue/menu', { state: { venueName: venue.name, venueOffer: venue.offer } })}
+                        onClick={() => navigate('/venue/menu', { state: { venueName: venue.name, venueOffer: venue.offer, emailKey: venue.emailKey, email: venue.email } })}
                         className="w-full p-6 bg-[var(--bg-secondary)] border border-brand/30 rounded-[3rem] flex items-center justify-between group hover:border-brand/60 transition-all shadow-xl"
                     >
                         <div className="flex items-center gap-4">
