@@ -338,7 +338,50 @@ export const AuthProvider = ({ children }) => {
                 const seg1 = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
                 const seg2 = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
                 createdUser.greenId = `GRN-${seg1}-${seg2}`;
-                createdUser.onboarded = false; // awaiting manager onboarding
+                
+                if (newUserData.invitedByManager) {
+                    createdUser.onboarded = true;
+                    createdUser.managerId = newUserData.invitedByManager.toLowerCase();
+                    // Auto-resolve business details client-side
+                    try {
+                        const managerSnap = await getDoc(doc(fbDb, 'users', createdUser.managerId));
+                        if (managerSnap.exists()) {
+                            const managerData = managerSnap.data();
+                            createdUser.businessName = managerData.businessName || 'Green Fleet Ops';
+                            createdUser.businessType = managerData.businessType || 'FM';
+                        } else {
+                            createdUser.businessName = 'Green Fleet Ops';
+                            createdUser.businessType = 'FM';
+                        }
+                    } catch (e) {
+                        createdUser.businessName = 'Green Fleet Ops';
+                        createdUser.businessType = 'FM';
+                    }
+
+                    // Add to manager's local staff list directly so the manager's dashboard updates immediately
+                    try {
+                        const managerKey = createdUser.managerId.replace(/[^a-zA-Z0-9]/g, '_');
+                        const managerStaffListKey = `green_staff_list_${managerKey}`;
+                        const existingStaff = JSON.parse(localStorage.getItem(managerStaffListKey) || '[]');
+                        const newMember = {
+                            id: createdUser.greenId,
+                            name: createdUser.name,
+                            role: createdUser.role === 'driver' ? 'Driver / Pilot' : 'Staff Member',
+                            status: 'Pending First Login',
+                            avatar: createdUser.name,
+                            permissions: createdUser.role === 'driver' ? ['orders', 'compliance'] : ['orders', 'feed', 'finance', 'terminal'],
+                            greenId: createdUser.greenId,
+                            email: createdUser.email
+                        };
+                        if (!existingStaff.some(s => s.email === createdUser.email)) {
+                            localStorage.setItem(managerStaffListKey, JSON.stringify([...existingStaff, newMember]));
+                        }
+                    } catch (e) {
+                        console.error('Error updating manager local staff list:', e);
+                    }
+                } else {
+                    createdUser.onboarded = false; // awaiting manager onboarding
+                }
 
                 // Save to Firebase Firestore pending_staff collection
                 const pendingRef = doc(fbDb, 'pending_staff', createdUser.greenId);
@@ -349,8 +392,10 @@ export const AuthProvider = ({ children }) => {
                     role: createdUser.role,
                     phone: createdUser.phone || '',
                     registeredAt: new Date().toISOString(),
-                    onboarded: false,
-                    managerId: null
+                    onboarded: createdUser.onboarded,
+                    managerId: createdUser.managerId || null,
+                    businessName: createdUser.businessName || null,
+                    businessType: createdUser.businessType || null
                 });
 
                 localStorage.setItem('green_pending_id', createdUser.greenId);

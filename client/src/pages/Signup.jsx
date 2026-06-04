@@ -9,9 +9,12 @@ const Signup = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const mode = searchParams.get('mode') || 'passenger';
+    const inviteEmail = searchParams.get('invite');
     
-    // Define available roles based on mode
-    const availableRoles = mode === 'partner' ? ['staff', 'driver', 'manager'] : ['passenger'];
+    // Define available roles based on mode (restrict to staff/driver if invited)
+    const availableRoles = mode === 'partner' 
+        ? (inviteEmail ? ['driver', 'staff'] : ['staff', 'driver', 'manager']) 
+        : ['passenger'];
     
     const [role, setRole] = useState(availableRoles[0]);
     const [formData, setFormData] = useState({
@@ -73,6 +76,7 @@ const Signup = () => {
             phone: formData.phone,
             age: finalRole === 'passenger' ? formData.age : null,
             businessType: finalRole === 'manager' ? formData.businessType : null,
+            invitedByManager: inviteEmail || null,
             // Staff/driver no longer need to provide a company — manager will link them via Green ID
             gdprAccepted: true,
             gdprAcceptedAt: new Date().toISOString()
@@ -123,6 +127,11 @@ const Signup = () => {
                 </div>
 
                 <form onSubmit={handleSignup} className="space-y-5">
+                    {inviteEmail && (
+                        <div className="p-4 bg-brand/10 border border-brand/20 rounded-2xl text-[9px] font-black uppercase tracking-widest text-brand flex items-center gap-2">
+                            <Handshake size={14} className="shrink-0" /> Joining Fleet of {inviteEmail}
+                        </div>
+                    )}
                     {/* Role Selection (Only shown if multiple roles are available) */}
                     {availableRoles.length > 1 && (
                         <div className="space-y-4 mb-6">

@@ -49,6 +49,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { db as fbDb } from '../config/firebase';
+import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import Radar from '../components/Radar';
 import Button from '../components/Button';
 import Sheet from '../components/Sheet';
@@ -371,6 +373,28 @@ const DriverDashboard = () => {
             setVehicleDocs(prev => prev.map(d => ({ ...d, status: 'missing' })));
         }
     }, [user]);
+
+    useEffect(() => {
+        if (!user?.email) return;
+        
+        const unsubscribe = onSnapshot(doc(fbDb, 'users', user.email.toLowerCase()), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.vehicleInfo) {
+                    setVehicleInfo(data.vehicleInfo);
+                    localStorage.setItem('driver_vehicle_data', JSON.stringify(data.vehicleInfo));
+                } else {
+                    const isDemoUser = user?.email?.toLowerCase().endsWith('@green.de');
+                    if (!isDemoUser) {
+                        setVehicleInfo({ plate: '', model: '', year: '', color: '', photo: null, status: 'unregistered' });
+                        localStorage.removeItem('driver_vehicle_data');
+                    }
+                }
+            }
+        });
+        
+        return () => unsubscribe();
+    }, [user?.email]);
 
 
     const currentStats = stats[activeTab];
@@ -2968,6 +2992,11 @@ const DriverDashboard = () => {
                                             const updated = { ...vehicleInfo, status: 'unregistered' };
                                             setVehicleInfo(updated);
                                             localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
+                                            if (user?.email) {
+                                                updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                                                    vehicleInfo: null
+                                                }).catch(err => console.error("Error resetting vehicle in Firestore:", err));
+                                            }
                                         }
                                     }}
                                     className="w-full py-5 bg-white/5 border border-white/10 text-white/60 hover:text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all"
@@ -2986,6 +3015,11 @@ const DriverDashboard = () => {
                                         const updated = { ...vehicleInfo, status: 'unregistered' };
                                         setVehicleInfo(updated);
                                         localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
+                                        if (user?.email) {
+                                            updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                                                vehicleInfo: null
+                                            }).catch(err => console.error("Error recalling vehicle in Firestore:", err));
+                                        }
                                         alert("APPROVAL REQUEST RECALLED: Reverted back to draft status.");
                                     }}
                                     className="w-full py-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl font-black text-xs uppercase tracking-widest transition-all hover:bg-red-500 hover:text-white"
@@ -3010,6 +3044,11 @@ const DriverDashboard = () => {
                                         const updated = { ...vehicleInfo, status: 'pending', driverName: `${profileData.firstName} ${profileData.lastName}` };
                                         setVehicleInfo(updated);
                                         localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
+                                        if (user?.email) {
+                                            updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                                                vehicleInfo: updated
+                                            }).catch(err => console.error("Error updating vehicle in Firestore:", err));
+                                        }
                                         setVehicleSheetOpen(false);
                                         alert("VEHICLE REGISTRATION INITIATED • Secure approval request dispatched to the GreenRide Admin Portal! Awaiting verification by Chief Director Khiam Azizi.");
                                     }}

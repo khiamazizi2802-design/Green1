@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db as fbDb } from '../config/firebase';
-import { doc, getDoc, updateDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import {
     TrendingUp,
     History,
@@ -925,6 +925,127 @@ const ManagerDashboard = () => {
         }
         return [];
     });
+
+    useEffect(() => {
+        if (!user?.email) return;
+        const managerId = user.email.toLowerCase();
+        
+        const q = query(collection(fbDb, 'users'), where('managerId', '==', managerId));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const list = [];
+            const deployments = [];
+            
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                list.push({
+                    id: data.greenId || doc.id,
+                    name: data.name,
+                    role: data.role === 'driver' ? 'Driver / Pilot' : 'Staff Member',
+                    status: data.status || 'Offline',
+                    avatar: data.name,
+                    permissions: data.permissions || [],
+                    greenId: data.greenId || '',
+                    email: data.email,
+                    vehicleInfo: data.vehicleInfo || null
+                });
+                
+                if (data.role === 'driver') {
+                    deployments.push({
+                        name: data.name,
+                        status: data.status || 'Standby',
+                        current: data.vehicleInfo?.status === 'approved' || data.vehicleInfo?.status === 'pending' ? data.vehicleInfo.model : 'None',
+                        rating: data.rating || 5.0,
+                        avatar: data.name,
+                        vehicleInfo: data.vehicleInfo || null
+                    });
+                }
+            });
+            
+            if (list.length > 0) {
+                setStaffList(list);
+                localStorage.setItem(`green_staff_list_${userEmailKey}`, JSON.stringify(list));
+            } else if (!isDemo) {
+                setStaffList([]);
+            }
+            
+            if (deployments.length > 0) {
+                setDriverDeployments(prev => {
+                    const merged = deployments.map(d => {
+                        const local = prev.find(p => p.name === d.name);
+                        return local ? { ...d, status: local.status } : d;
+                    });
+                    localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(merged));
+                    return merged;
+                });
+            } else if (!isDemo) {
+                setDriverDeployments([]);
+            }
+        });
+        
+        return () => unsubscribe();
+    }, [user?.email, userEmailKey, isDemo]);
+
+    const handleApproveVehicle = async (driverEmail) => {
+        try {
+            const userRef = doc(fbDb, 'users', driverEmail.toLowerCase());
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                const currentVehicle = userSnap.data().vehicleInfo;
+                await updateDoc(userRef, {
+                    vehicleInfo: {
+                        ...currentVehicle,
+                        status: 'approved'
+                    }
+                });
+                alert("✅ Vehicle registration approved successfully!");
+            }
+        } catch (err) {
+            console.error("Error approving vehicle:", err);
+            alert("❌ Failed to approve vehicle registration.");
+        }
+    };
+
+    const handleRejectVehicle = async (driverEmail) => {
+        try {
+            const userRef = doc(fbDb, 'users', driverEmail.toLowerCase());
+            await updateDoc(userRef, {
+                vehicleInfo: null
+            });
+            alert("❌ Vehicle registration rejected and reset.");
+        } catch (err) {
+            console.error("Error rejecting vehicle:", err);
+            alert("❌ Failed to reject vehicle registration.");
+        }
+    };
+    const pendingVerifications = useMemo(() => {
+        const items = [];
+        staffList.forEach(member => {
+            if (member.vehicleInfo && (member.vehicleInfo.status === 'pending' || member.vehicleInfo.status === 'awaiting_upload')) {
+                items.push({
+                    id: member.greenId || member.id,
+                    driver: member.name,
+                    model: member.vehicleInfo.model,
+                    plate: member.vehicleInfo.plate,
+                    status: member.vehicleInfo.status,
+                    photo: member.vehicleInfo.photo || 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=200&auto=format&fit=crop',
+                    email: member.email
+                });
+            }
+        });
+        return items;
+    }, [staffList]);
+
+    const activeVerificationQueue = useMemo(() => {
+        if (pendingVerifications.length > 0) return pendingVerifications;
+        if (isDemo) {
+            return [
+                { id: 'V-882', driver: 'Marcus H.', model: 'Tesla Model 3', plate: 'F-GR-2024', status: 'awaiting_upload', photo: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=200&auto=format&fit=crop' },
+                { id: 'V-991', driver: 'Sarah K.', model: 'Mercedes EQE', plate: 'F-GR-9921', status: 'awaiting_verification', hasV5C: true, photo: 'https://images.unsplash.com/photo-1617469767053-d3b523a0b982?q=80&w=200&auto=format&fit=crop' }
+            ];
+        }
+        return [];
+    }, [pendingVerifications, isDemo]);
+
     const [editingDriver, setEditingDriver] = useState(null);
 
     const [qrScanStep, setQrScanStep] = useState('idle'); // idle, scanning, result, choices
@@ -3356,11 +3477,8 @@ const ManagerDashboard = () => {
                                             </div>
 
                                             <div className="space-y-4">
-                                                {isDemo ? (
-                                                    [
-                                                        { id: 'V-882', driver: 'Marcus H.', model: 'Tesla Model 3', plate: 'F-GR-2024', status: 'awaiting_upload', photo: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=200&auto=format&fit=crop' },
-                                                        { id: 'V-991', driver: 'Sarah K.', model: 'Mercedes EQE', plate: 'F-GR-9921', status: 'awaiting_verification', hasV5C: true, photo: 'https://images.unsplash.com/photo-1617469767053-d3b523a0b982?q=80&w=200&auto=format&fit=crop' }
-                                                    ].map((v) => (
+                                                {activeVerificationQueue.length > 0 ? (
+                                                    activeVerificationQueue.map((v) => (
                                                         <div key={v.id} className="p-6 bg-btn-sec border border-main rounded-3xl space-y-4 group hover:border-brand/30 transition-all">
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center gap-5">
@@ -3376,7 +3494,7 @@ const ManagerDashboard = () => {
                                                                     {v.status === 'awaiting_upload' ? (
                                                                         <span className="text-[8px] font-black text-primary bg-amber-500/10 px-2 py-1 rounded uppercase">Missing V5C</span>
                                                                     ) : (
-                                                                        <span className="text-[8px] font-black text-primary bg-blue-400/10 px-2 py-1 rounded uppercase">Awaiting Super-Admin</span>
+                                                                        <span className="text-[8px] font-black text-primary bg-blue-400/10 px-2 py-1 rounded uppercase">Awaiting Verification</span>
                                                                     )}
                                                                 </div>
                                                             </div>
@@ -3396,15 +3514,32 @@ const ManagerDashboard = () => {
                                                                 )}
                                                                 
                                                                 <div className="flex gap-2">
-                                                                    {user?.role === 'super_admin' ? (
+                                                                    {v.email ? (
                                                                         <>
-                                                                            <button className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-primary transition-all"><X size={16} /></button>
-                                                                            <button className="p-3 bg-brand/10 text-brand rounded-xl hover:bg-brand hover:text-dark-900 transition-all"><CheckCircle size={16} /></button>
+                                                                            <button 
+                                                                                onClick={() => handleRejectVehicle(v.email)}
+                                                                                className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-primary transition-all"
+                                                                            >
+                                                                                <X size={16} />
+                                                                            </button>
+                                                                            <button 
+                                                                                onClick={() => handleApproveVehicle(v.email)}
+                                                                                className="p-3 bg-brand/10 text-brand rounded-xl hover:bg-brand hover:text-dark-900 transition-all"
+                                                                            >
+                                                                                <CheckCircle size={16} />
+                                                                            </button>
                                                                         </>
                                                                     ) : (
-                                                                        <div className="flex gap-2 opacity-30">
-                                                                            <div className="p-3 bg-btn-sec text-secondary rounded-xl cursor-not-allowed" title="Super Admin Only"><Lock size={16} /></div>
-                                                                        </div>
+                                                                        user?.role === 'super_admin' ? (
+                                                                            <>
+                                                                                <button className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-primary transition-all"><X size={16} /></button>
+                                                                                <button className="p-3 bg-brand/10 text-brand rounded-xl hover:bg-brand hover:text-dark-900 transition-all"><CheckCircle size={16} /></button>
+                                                                            </>
+                                                                        ) : (
+                                                                            <div className="flex gap-2 opacity-30">
+                                                                                <div className="p-3 bg-btn-sec text-secondary rounded-xl cursor-not-allowed" title="Super Admin Only"><Lock size={16} /></div>
+                                                                            </div>
+                                                                        )
                                                                     )}
                                                                 </div>
                                                             </div>
@@ -4071,6 +4206,36 @@ const ManagerDashboard = () => {
                                         </div>
                                         <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Staff <span className="text-primary">Onboarding</span></h1>
                                         <p className="text-secondary text-xs font-bold uppercase tracking-[0.3em] leading-none">Search Personnel by Green ID</p>
+                                    </div>
+
+                                    {/* --- BULK INVITE LINK --- */}
+                                    <div className="bg-glass border border-main rounded-[3rem] p-10 space-y-6 shadow-2xl relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 p-6 opacity-5"><Handshake size={80} className="text-brand" /></div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand">
+                                                <Handshake size={22} />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-black italic uppercase text-primary">Bulk Invite Link</p>
+                                                <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Copy and share this link to onboard drivers and staff automatically</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex gap-3 bg-btn-sec border border-main p-3 rounded-2xl items-center justify-between">
+                                            <span className="text-[10px] font-mono text-secondary truncate flex-1 px-2 select-all">
+                                                {`${window.location.origin}/signup?mode=partner&invite=${encodeURIComponent(user?.email || 'manager@green.de')}`}
+                                            </span>
+                                            <button 
+                                                onClick={() => {
+                                                    const link = `${window.location.origin}/signup?mode=partner&invite=${encodeURIComponent(user?.email || 'manager@green.de')}`;
+                                                    navigator.clipboard.writeText(link);
+                                                    alert("📋 Invite Link Copied to Clipboard!\n\nShare this link with your drivers and staff so they can register and link to your fleet automatically.");
+                                                }}
+                                                className="px-5 py-3 bg-brand text-dark-900 rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shrink-0"
+                                            >
+                                                Copy Link
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div className="bg-glass border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl">
