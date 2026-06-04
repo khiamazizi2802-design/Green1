@@ -278,6 +278,47 @@ const ManagerDashboard = () => {
         };
     }, [managerContext, orders, isDemo]);
 
+    // Dynamic Top Level Financials Summary (Mock for Demo, calculated from active orders otherwise)
+    const financialsSummary = useMemo(() => {
+        if (isDemo) {
+            return {
+                primarySales: 8450.00,
+                premiumSales: 5200.00,
+                ancillarySales: 1630.00,
+                txVolume: 1420
+            };
+        }
+        
+        const completedOrders = orders.filter(o => o.status === 'Paid' || o.status === 'Served' || o.status === 'Departed');
+        
+        const primarySales = completedOrders
+            .filter(o => o.type !== 'VIP Table 1' && o.type !== 'VIP' && o.type !== 'VIP Premium')
+            .reduce((acc, curr) => acc + parseFloat(curr.total || 0), 0);
+            
+        const premiumSales = completedOrders
+            .filter(o => o.type === 'VIP Table 1' || o.type === 'VIP' || o.type === 'VIP Premium')
+            .reduce((acc, curr) => acc + parseFloat(curr.total || 0), 0);
+            
+        const ancillarySales = completedOrders.reduce((acc, curr) => {
+            const hasAncillary = curr.items && curr.items.some(item => 
+                item.toLowerCase().includes('drink') || 
+                item.toLowerCase().includes('fries') || 
+                item.toLowerCase().includes('cocktail') || 
+                item.toLowerCase().includes('ancillary')
+            );
+            return hasAncillary ? acc + parseFloat(curr.total || 0) : acc;
+        }, 0);
+        
+        const txVolume = completedOrders.length;
+        
+        return {
+            primarySales,
+            premiumSales,
+            ancillarySales,
+            txVolume
+        };
+    }, [orders, isDemo]);
+
     const [selectedGuest, setSelectedGuest] = useState(null);
     const [messageOrder, setMessageOrder] = useState(null);
     const [customMessage, setCustomMessage] = useState('');
@@ -314,6 +355,7 @@ const ManagerDashboard = () => {
 
     const [isAddingVehicle, setIsAddingVehicle] = useState(false);
     const [newVehicleData, setNewVehicleData] = useState({ model: '', year: '', plate: '', color: '', concession: '', assignedDriver: 'None', photo: null });
+    const [globalPosts, setGlobalPosts] = useState(() => JSON.parse(localStorage.getItem('green_global_posts') || '[]'));
 
     useEffect(() => {
         // HQ SENTINEL: Staff are allowed in the Manager Portal for business operations (Bar, Restaurant, etc.)
@@ -2560,23 +2602,23 @@ const ManagerDashboard = () => {
                                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 relative z-10 border-b border-white/5 pb-8">
                                                 <div className="p-4 bg-black/40 border border-main rounded-2xl flex flex-col justify-between">
                                                     <p className="text-[7px] font-black text-secondary uppercase tracking-[0.1em] mb-2">Primary Sales</p>
-                                                    <p className="text-xl font-black text-primary italic">€8,450.00</p>
-                                                    <div className="mt-3 h-1 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full w-[65%] bg-blue-400"></div></div>
+                                                    <p className="text-xl font-black text-primary italic">€{financialsSummary.primarySales.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                                    <div className="mt-3 h-1 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-blue-400" style={{ width: financialsSummary.primarySales > 0 ? '65%' : '0%' }}></div></div>
                                                 </div>
                                                 <div className="p-4 bg-black/40 border border-main rounded-2xl flex flex-col justify-between">
                                                     <p className="text-[7px] font-black text-secondary uppercase tracking-[0.1em] mb-2">Premium / VIP</p>
-                                                    <p className="text-xl font-black text-primary italic">€5,200.00</p>
-                                                    <div className="mt-3 h-1 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full w-[80%] bg-purple-400"></div></div>
+                                                    <p className="text-xl font-black text-primary italic">€{financialsSummary.premiumSales.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                                    <div className="mt-3 h-1 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-purple-400" style={{ width: financialsSummary.premiumSales > 0 ? '80%' : '0%' }}></div></div>
                                                 </div>
                                                 <div className="p-4 bg-black/40 border border-main rounded-2xl flex flex-col justify-between">
                                                     <p className="text-[7px] font-black text-secondary uppercase tracking-[0.1em] mb-2">Ancillary / F&B</p>
-                                                    <p className="text-xl font-black text-primary italic">€1,630.00</p>
-                                                    <div className="mt-3 h-1 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full w-[40%] bg-emerald-400"></div></div>
+                                                    <p className="text-xl font-black text-primary italic">€{financialsSummary.ancillarySales.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                                    <div className="mt-3 h-1 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-emerald-400" style={{ width: financialsSummary.ancillarySales > 0 ? '40%' : '0%' }}></div></div>
                                                 </div>
                                                 <div className="p-4 bg-black/40 border border-main rounded-2xl flex flex-col justify-between">
                                                     <p className="text-[7px] font-black text-secondary uppercase tracking-[0.1em] mb-2">Tx Volume</p>
-                                                    <p className="text-xl font-black text-primary italic">1,420</p>
-                                                    <div className="mt-3 h-1 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full w-[100%] bg-brand"></div></div>
+                                                    <p className="text-xl font-black text-primary italic">{financialsSummary.txVolume.toLocaleString('de-DE')}</p>
+                                                    <div className="mt-3 h-1 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-brand" style={{ width: financialsSummary.txVolume > 0 ? '100%' : '0%' }}></div></div>
                                                 </div>
                                             </div>
 
@@ -2927,7 +2969,7 @@ const ManagerDashboard = () => {
                                         <div className="flex gap-4 w-full md:w-auto">
                                             <div className="flex-1 md:flex-initial px-4 md:px-6 py-3 bg-btn-sec border border-main rounded-xl text-right">
                                                 <p className="text-[8px] font-black text-secondary uppercase tracking-widest">Global Reach</p>
-                                                <p className="text-sm md:text-xl font-black italic text-brand leading-none mt-1">2.4M Pilots</p>
+                                                <p className="text-sm md:text-xl font-black italic text-brand leading-none mt-1">{isDemo ? '2.4M Pilots' : '0 Pilots'}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -3032,7 +3074,9 @@ const ManagerDashboard = () => {
                                                             isBusiness: true
                                                         };
                                                         const existingPosts = JSON.parse(localStorage.getItem('green_global_posts') || '[]');
-                                                        localStorage.setItem('green_global_posts', JSON.stringify([newPost, ...existingPosts]));
+                                                        const updatedPosts = [newPost, ...existingPosts];
+                                                        localStorage.setItem('green_global_posts', JSON.stringify(updatedPosts));
+                                                        setGlobalPosts(updatedPosts);
                                                         if (managerContext === 'FM') {
                                                             alert("UPLOAD SUCCESSFUL: Your 4K Reel is now live for all pilots!");
                                                         } else {
@@ -3062,15 +3106,15 @@ const ManagerDashboard = () => {
                                                 
                                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
                                                     {[
-                                                        { label: 'Likes', value: '12.4K', trend: '+18%', icon: Heart, color: 'text-rose-500' },
-                                                        { label: 'Comments', value: '892', trend: '+5%', icon: MessageCircle, color: 'text-brand' },
-                                                        { label: 'Shares', value: '452', trend: '+12%', icon: Share2, color: 'text-primary' }
+                                                        { label: 'Likes', value: isDemo ? '12.4K' : '0', trend: isDemo ? '+18%' : '0%', surge: isDemo ? '18% Surge' : 'Stable', icon: Heart, color: 'text-rose-500' },
+                                                        { label: 'Comments', value: isDemo ? '892' : '0', trend: isDemo ? '+5%' : '0%', surge: isDemo ? '5% Surge' : 'Stable', icon: MessageCircle, color: 'text-brand' },
+                                                        { label: 'Shares', value: isDemo ? '452' : '0', trend: isDemo ? '+12%' : '0%', surge: isDemo ? '12% Surge' : 'Stable', icon: Share2, color: 'text-primary' }
                                                     ].map((stat, i) => (
                                                         <div key={i} className="p-6 md:p-8 bg-btn-sec rounded-[2.5rem] border border-main group hover:border-brand/20 transition-all text-left">
                                                             <stat.icon size={20} className={`${stat.color} mb-3`} />
                                                             <p className="text-[9px] font-black text-secondary uppercase tracking-widest">{stat.label}</p>
                                                             <p className="text-2xl font-black italic text-primary mt-1">{stat.value}</p>
-                                                            <p className="text-[8px] font-black text-primary uppercase mt-2">{stat.trend} Surge</p>
+                                                            <p className="text-[8px] font-black text-primary uppercase mt-2">{stat.surge}</p>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -3079,27 +3123,57 @@ const ManagerDashboard = () => {
                                             <div className="space-y-4">
                                                 <h3 className="text-lg font-black italic uppercase text-primary ml-6">Live <span className="text-brand">15s Feed Preview</span></h3>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                                                    {[
-                                                        { title: 'Summer Spritz 4K', views: '45K', img: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop' },
-                                                        { title: 'Golden Hour Beats', views: '28K', img: 'https://images.unsplash.com/photo-1551024601-8f230c6c64b9?q=80&w=800&auto=format&fit=crop' }
-                                                    ].map((post, i) => (
-                                                        <div key={i} className="aspect-video bg-dark-900 rounded-[2.5rem] border border-main relative overflow-hidden group">
-                                                            <img src={post.img} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" alt="Post" />
-                                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-6 flex flex-col justify-end text-left">
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    <Play size={12} className="text-brand" fill="currentColor" />
-                                                                    <p className="text-[10px] font-black italic text-primary">{post.title}</p>
-                                                                </div>
-                                                                <div className="flex items-center justify-between mt-2">
-                                                                    <div className="flex gap-3">
-                                                                        <span className="text-[8px] font-black text-brand uppercase">{post.views} Views</span>
-                                                                        <span className="text-[8px] font-black text-gray-400 uppercase">15.0s</span>
+                                                    {isDemo ? (
+                                                        [
+                                                            { title: 'Summer Spritz 4K', views: '45K', img: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop' },
+                                                            { title: 'Golden Hour Beats', views: '28K', img: 'https://images.unsplash.com/photo-1551024601-8f230c6c64b9?q=80&w=800&auto=format&fit=crop' }
+                                                        ].map((post, i) => (
+                                                            <div key={i} className="aspect-video bg-dark-900 rounded-[2.5rem] border border-main relative overflow-hidden group">
+                                                                <img src={post.img} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" alt="Post" />
+                                                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-6 flex flex-col justify-end text-left">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <Play size={12} className="text-brand" fill="currentColor" />
+                                                                        <p className="text-[10px] font-black italic text-primary">{post.title}</p>
                                                                     </div>
-                                                                    <button className="p-2 bg-white/10 rounded-lg text-primary hover:bg-brand hover:text-dark-900 transition-all"><Settings size={12} /></button>
+                                                                    <div className="flex items-center justify-between mt-2">
+                                                                        <div className="flex gap-3">
+                                                                            <span className="text-[8px] font-black text-brand uppercase">{post.views} Views</span>
+                                                                            <span className="text-[8px] font-black text-gray-400 uppercase">15.0s</span>
+                                                                        </div>
+                                                                        <button className="p-2 bg-white/10 rounded-lg text-primary hover:bg-brand hover:text-dark-900 transition-all"><Settings size={12} /></button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                        ))
+                                                    ) : globalPosts.length > 0 ? (
+                                                        globalPosts.map((post, i) => (
+                                                            <div key={post.id || i} className="aspect-video bg-dark-900 rounded-[2.5rem] border border-main relative overflow-hidden group">
+                                                                {post.url ? (
+                                                                    <video src={post.url} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" controls />
+                                                                ) : (
+                                                                    <div className="w-full h-full bg-btn-sec flex items-center justify-center text-secondary"><Video size={32} /></div>
+                                                                )}
+                                                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black to-transparent p-6 flex flex-col justify-end text-left pointer-events-none">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <Play size={12} className="text-brand" fill="currentColor" />
+                                                                        <p className="text-[10px] font-black italic text-primary">{post.caption || 'Partner Broadcast'}</p>
+                                                                    </div>
+                                                                    <div className="flex items-center justify-between mt-2">
+                                                                        <div className="flex gap-3">
+                                                                            <span className="text-[8px] font-black text-brand uppercase">0 Views</span>
+                                                                            <span className="text-[8px] font-black text-gray-400 uppercase">15.0s</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="col-span-2 bg-btn-sec border border-main rounded-[2.5rem] p-10 text-center flex flex-col items-center justify-center min-h-[200px] w-full">
+                                                            <Video size={32} className="text-secondary/30 mb-4" />
+                                                            <p className="text-sm font-black italic uppercase text-primary">No Broadcasted Reels</p>
+                                                            <p className="text-[9px] font-bold text-secondary uppercase tracking-widest mt-1">Upload your first 4K Reel using the media studio on the left.</p>
                                                         </div>
-                                                    ))}
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -3124,29 +3198,37 @@ const ManagerDashboard = () => {
                                         <div className="lg:col-span-2 space-y-8">
                                             <h3 className="text-xl font-black italic uppercase tracking-tighter ml-2">Upcoming High-Demand Events</h3>
                                             <div className="grid grid-cols-1 gap-4">
-                                                {[
-                                                    { title: 'Eintracht Frankfurt vs. Real Madrid', category: 'Football (UCL)', date: 'Saturday, 09.05.2026', impact: '95%', surge: 'Critical Rush', icon: Trophy, color: 'text-red-500' },
-                                                    { title: 'Automechanika Frankfurt', category: 'Trade Fair (Messe)', date: '12.05 - 16.05.2026', impact: '82%', surge: 'High Demand', icon: Box, color: 'text-primary' },
-                                                    { title: 'Museumsuferfest', category: 'City Festival', date: '22.05 - 24.05.2026', impact: '75%', surge: 'Medium Surge', icon: Users, color: 'text-primary' }
-                                                ].map((event, i) => (
-                                                    <div key={i} className="bg-btn-sec border border-main rounded-[2.5rem] p-4 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/10 transition-all group overflow-hidden relative text-left">
-                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 rounded-full blur-3xl -mr-10 -mt-10" />
-                                                        <div className="flex items-center gap-4 md:gap-6 relative z-10 min-w-0">
-                                                            <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-btn-sec flex items-center justify-center shrink-0 ${event.color}`}><event.icon size={24} /></div>
-                                                            <div className="min-w-0">
-                                                                <h4 className="text-lg md:text-xl font-black italic uppercase text-primary tracking-tighter leading-tight truncate">{event.title}</h4>
-                                                                <p className="text-[10px] font-bold text-secondary uppercase tracking-widest mt-1 truncate">{event.category} | {event.date}</p>
+                                                {isDemo ? (
+                                                    [
+                                                        { title: 'Eintracht Frankfurt vs. Real Madrid', category: 'Football (UCL)', date: 'Saturday, 09.05.2026', impact: '95%', surge: 'Critical Rush', icon: Trophy, color: 'text-red-500' },
+                                                        { title: 'Automechanika Frankfurt', category: 'Trade Fair (Messe)', date: '12.05 - 16.05.2026', impact: '82%', surge: 'High Demand', icon: Box, color: 'text-primary' },
+                                                        { title: 'Museumsuferfest', category: 'City Festival', date: '22.05 - 24.05.2026', impact: '75%', surge: 'Medium Surge', icon: Users, color: 'text-primary' }
+                                                    ].map((event, i) => (
+                                                        <div key={i} className="bg-btn-sec border border-main rounded-[2.5rem] p-4 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/10 transition-all group overflow-hidden relative text-left">
+                                                            <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 rounded-full blur-3xl -mr-10 -mt-10" />
+                                                            <div className="flex items-center gap-4 md:gap-6 relative z-10 min-w-0">
+                                                                <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-btn-sec flex items-center justify-center shrink-0 ${event.color}`}><event.icon size={24} /></div>
+                                                                <div className="min-w-0">
+                                                                    <h4 className="text-lg md:text-xl font-black italic uppercase text-primary tracking-tighter leading-tight truncate">{event.title}</h4>
+                                                                    <p className="text-[10px] font-bold text-secondary uppercase tracking-widest mt-1 truncate">{event.category} | {event.date}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-left sm:text-right relative z-10 shrink-0">
+                                                                <div className="flex items-center gap-2 sm:justify-end mb-1">
+                                                                    <TrendingUp size={14} className={event.color} />
+                                                                    <span className={`text-2xl font-black italic ${event.color}`}>{event.impact}</span>
+                                                                </div>
+                                                                <p className="text-[8px] font-black uppercase tracking-widest text-secondary">{event.surge}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="text-left sm:text-right relative z-10 shrink-0">
-                                                            <div className="flex items-center gap-2 sm:justify-end mb-1">
-                                                                <TrendingUp size={14} className={event.color} />
-                                                                <span className={`text-2xl font-black italic ${event.color}`}>{event.impact}</span>
-                                                            </div>
-                                                            <p className="text-[8px] font-black uppercase tracking-widest text-secondary">{event.surge}</p>
-                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="bg-btn-sec border border-main rounded-[2.5rem] p-10 text-center">
+                                                        <Sparkles size={32} className="text-secondary/30 mx-auto mb-4" />
+                                                        <p className="text-sm font-black italic uppercase text-primary">No Upcoming Events Forecast</p>
+                                                        <p className="text-[9px] font-bold text-secondary uppercase tracking-widest mt-1">AI predictive model will populate events as data syncs.</p>
                                                     </div>
-                                                ))}
+                                                )}
                                             </div>
                                         </div>
 
@@ -3155,19 +3237,31 @@ const ManagerDashboard = () => {
                                             <div className="bg-brand/5 border border-brand/20 rounded-[3rem] p-8 space-y-8 relative overflow-hidden">
                                                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
                                                 <div className="space-y-6 relative z-10">
-                                                    <div className="p-5 bg-btn-sec rounded-2xl border border-main">
-                                                        <p className="text-[10px] font-black text-brand uppercase mb-3 flex items-center gap-2"><Sparkles size={12} /> Strategic Advice</p>
-                                                        <p className="text-xs font-bold text-gray-300 leading-relaxed italic">
-                                                            "The upcoming Champions League match will cause massive gridlock around Eco-Park Central. I recommend increasing valet staff by 20% and ensuring all EV chargers are pre-cleared by 15:00."
-                                                        </p>
-                                                    </div>
+                                                    {isDemo ? (
+                                                        <>
+                                                            <div className="p-5 bg-btn-sec rounded-2xl border border-main">
+                                                                <p className="text-[10px] font-black text-brand uppercase mb-3 flex items-center gap-2"><Sparkles size={12} /> Strategic Advice</p>
+                                                                <p className="text-xs font-bold text-gray-300 leading-relaxed italic">
+                                                                    "The upcoming Champions League match will cause massive gridlock around Eco-Park Central. I recommend increasing valet staff by 20% and ensuring all EV chargers are pre-cleared by 15:00."
+                                                                </p>
+                                                            </div>
 
-                                                    <div className="p-5 bg-btn-sec rounded-2xl border border-main">
-                                                        <p className="text-[10px] font-black text-primary uppercase mb-3">Resource Forecast</p>
-                                                        <p className="text-xs font-bold text-gray-300 leading-relaxed italic">
-                                                            "Based on Messe attendance, your QR Paper stock will deplete in 4 days. Order placed for overnight delivery to avoid downtime."
-                                                        </p>
-                                                    </div>
+                                                            <div className="p-5 bg-btn-sec rounded-2xl border border-main">
+                                                                <p className="text-[10px] font-black text-primary uppercase mb-3">Resource Forecast</p>
+                                                                <p className="text-xs font-bold text-gray-300 leading-relaxed italic">
+                                                                    "Based on Messe attendance, your QR Paper stock will deplete in 4 days. Order placed for overnight delivery to avoid downtime."
+                                                                </p>
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="p-5 bg-btn-sec rounded-2xl border border-main text-center py-10">
+                                                            <Sparkles size={24} className="text-brand/20 mx-auto mb-3" />
+                                                            <p className="text-[10px] font-black text-brand uppercase">No Active Insights</p>
+                                                            <p className="text-[9px] font-bold text-secondary leading-relaxed uppercase tracking-wider mt-2">
+                                                                Insights will generate dynamically as operational logs accumulate.
+                                                            </p>
+                                                        </div>
+                                                    )}
 
                                                     <button className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-105 transition-all">Optimize My Operations 🚀</button>
                                                 </div>
@@ -3262,59 +3356,67 @@ const ManagerDashboard = () => {
                                             </div>
 
                                             <div className="space-y-4">
-                                                {[
-                                                    { id: 'V-882', driver: 'Marcus H.', model: 'Tesla Model 3', plate: 'F-GR-2024', status: 'awaiting_upload', photo: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=200&auto=format&fit=crop' },
-                                                    { id: 'V-991', driver: 'Sarah K.', model: 'Mercedes EQE', plate: 'F-GR-9921', status: 'awaiting_verification', hasV5C: true, photo: 'https://images.unsplash.com/photo-1617469767053-d3b523a0b982?q=80&w=200&auto=format&fit=crop' }
-                                                ].map((v) => (
-                                                    <div key={v.id} className="p-6 bg-btn-sec border border-main rounded-3xl space-y-4 group hover:border-brand/30 transition-all">
-                                                        <div className="flex items-center justify-between">
-                                                            <div className="flex items-center gap-5">
-                                                                <div className="w-20 h-14 bg-dark-950 rounded-xl overflow-hidden border border-main">
-                                                                    <img src={v.photo} className="w-full h-full object-cover" alt="Car" />
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-sm font-black italic uppercase text-primary">{v.driver}</p>
-                                                                    <p className="text-[9px] font-bold text-secondary uppercase">{v.model} • {v.plate}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="text-right">
-                                                                {v.status === 'awaiting_upload' ? (
-                                                                    <span className="text-[8px] font-black text-primary bg-amber-500/10 px-2 py-1 rounded uppercase">Missing V5C</span>
-                                                                ) : (
-                                                                    <span className="text-[8px] font-black text-primary bg-blue-400/10 px-2 py-1 rounded uppercase">Awaiting Super-Admin</span>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-3 pt-2 border-t border-main">
-                                                            {v.status === 'awaiting_upload' ? (
-                                                                <button 
-                                                                    onClick={() => alert(`Opening Secure Upload for ${v.plate}...`)}
-                                                                    className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] font-black uppercase text-gray-400 hover:text-primary hover:bg-brand/20 hover:border-brand/30 transition-all flex items-center justify-center gap-2"
-                                                                >
-                                                                    <Upload size={14} className="text-brand" /> Upload V5C Registration
-                                                                </button>
-                                                            ) : (
-                                                                <button className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] font-black uppercase text-secondary cursor-not-allowed flex items-center justify-center gap-2 opacity-50">
-                                                                    <FileText size={14} /> Document Uploaded
-                                                                </button>
-                                                            )}
-                                                            
-                                                            <div className="flex gap-2">
-                                                                {user?.role === 'super_admin' ? (
-                                                                    <>
-                                                                        <button className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-primary transition-all"><X size={16} /></button>
-                                                                        <button className="p-3 bg-brand/10 text-brand rounded-xl hover:bg-brand hover:text-dark-900 transition-all"><CheckCircle size={16} /></button>
-                                                                    </>
-                                                                ) : (
-                                                                    <div className="flex gap-2 opacity-30">
-                                                                        <div className="p-3 bg-btn-sec text-secondary rounded-xl cursor-not-allowed" title="Super Admin Only"><Lock size={16} /></div>
+                                                {isDemo ? (
+                                                    [
+                                                        { id: 'V-882', driver: 'Marcus H.', model: 'Tesla Model 3', plate: 'F-GR-2024', status: 'awaiting_upload', photo: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=200&auto=format&fit=crop' },
+                                                        { id: 'V-991', driver: 'Sarah K.', model: 'Mercedes EQE', plate: 'F-GR-9921', status: 'awaiting_verification', hasV5C: true, photo: 'https://images.unsplash.com/photo-1617469767053-d3b523a0b982?q=80&w=200&auto=format&fit=crop' }
+                                                    ].map((v) => (
+                                                        <div key={v.id} className="p-6 bg-btn-sec border border-main rounded-3xl space-y-4 group hover:border-brand/30 transition-all">
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="flex items-center gap-5">
+                                                                    <div className="w-20 h-14 bg-dark-950 rounded-xl overflow-hidden border border-main">
+                                                                        <img src={v.photo} className="w-full h-full object-cover" alt="Car" />
                                                                     </div>
+                                                                    <div>
+                                                                        <p className="text-sm font-black italic uppercase text-primary">{v.driver}</p>
+                                                                        <p className="text-[9px] font-bold text-secondary uppercase">{v.model} • {v.plate}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    {v.status === 'awaiting_upload' ? (
+                                                                        <span className="text-[8px] font-black text-primary bg-amber-500/10 px-2 py-1 rounded uppercase">Missing V5C</span>
+                                                                    ) : (
+                                                                        <span className="text-[8px] font-black text-primary bg-blue-400/10 px-2 py-1 rounded uppercase">Awaiting Super-Admin</span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-3 pt-2 border-t border-main">
+                                                                {v.status === 'awaiting_upload' ? (
+                                                                    <button 
+                                                                        onClick={() => alert(`Opening Secure Upload for ${v.plate}...`)}
+                                                                        className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] font-black uppercase text-gray-400 hover:text-primary hover:bg-brand/20 hover:border-brand/30 transition-all flex items-center justify-center gap-2"
+                                                                    >
+                                                                        <Upload size={14} className="text-brand" /> Upload V5C Registration
+                                                                    </button>
+                                                                ) : (
+                                                                    <button className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] font-black uppercase text-secondary cursor-not-allowed flex items-center justify-center gap-2 opacity-50">
+                                                                        <FileText size={14} /> Document Uploaded
+                                                                    </button>
                                                                 )}
+                                                                
+                                                                <div className="flex gap-2">
+                                                                    {user?.role === 'super_admin' ? (
+                                                                        <>
+                                                                            <button className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-primary transition-all"><X size={16} /></button>
+                                                                            <button className="p-3 bg-brand/10 text-brand rounded-xl hover:bg-brand hover:text-dark-900 transition-all"><CheckCircle size={16} /></button>
+                                                                        </>
+                                                                    ) : (
+                                                                        <div className="flex gap-2 opacity-30">
+                                                                            <div className="p-3 bg-btn-sec text-secondary rounded-xl cursor-not-allowed" title="Super Admin Only"><Lock size={16} /></div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="bg-btn-sec border border-main rounded-[2.5rem] p-10 text-center py-12">
+                                                        <ShieldCheck size={32} className="text-brand/30 mx-auto mb-4 animate-pulse" />
+                                                        <p className="text-sm font-black italic uppercase text-primary">All Assets Verified</p>
+                                                        <p className="text-[9px] font-bold text-secondary uppercase tracking-widest mt-1">No pending V5C uploads or verifications in queue.</p>
                                                     </div>
-                                                ))}
+                                                )}
                                             </div>
                                         </div>
 
@@ -3322,47 +3424,55 @@ const ManagerDashboard = () => {
                                         <div className="bg-glass border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl">
                                             <div className="flex items-center justify-between">
                                                 <h3 className="text-xl font-black italic uppercase tracking-tighter text-red-500">Security Red Flags</h3>
-                                                <div className="flex items-center gap-2 px-3 py-1 bg-red-500/10 rounded-lg">
-                                                    <ShieldAlert size={14} className="text-red-500" />
-                                                    <span className="text-[9px] font-black text-red-500 uppercase">1 Active Collision</span>
+                                                <div className={`flex items-center gap-2 px-3 py-1 rounded-lg ${isDemo ? 'bg-red-500/10 text-red-500' : 'bg-brand/10 text-brand'}`}>
+                                                    <ShieldAlert size={14} className={isDemo ? 'text-red-500' : 'text-brand'} />
+                                                    <span className="text-[9px] font-black uppercase">{isDemo ? '1 Active Collision' : '0 Active Flags'}</span>
                                                 </div>
                                             </div>
 
-                                            <div className="p-6 bg-red-500/5 border border-red-500/20 rounded-3xl space-y-6 relative overflow-hidden">
-                                                <div className="absolute top-0 right-0 p-4 opacity-10"><ShieldAlert size={80} className="text-red-500" /></div>
-                                                <div className="flex items-start gap-4">
-                                                    <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-500">
-                                                        <User size={24} />
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <p className="text-sm font-black italic uppercase text-primary">Identity Collision Detected</p>
-                                                        <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Driver: Thomas M. (ID: GRN-284M)</p>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div className="space-y-2">
-                                                        <p className="text-[7px] font-black text-secondary uppercase tracking-widest text-center">Master Profile</p>
-                                                        <div className="aspect-square bg-dark-950 rounded-2xl border border-main overflow-hidden shadow-inner">
-                                                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Thomas" className="w-full h-full" alt="Profile" />
+                                            {isDemo ? (
+                                                <div className="p-6 bg-red-500/5 border border-red-500/20 rounded-3xl space-y-6 relative overflow-hidden">
+                                                    <div className="absolute top-0 right-0 p-4 opacity-10"><ShieldAlert size={80} className="text-red-500" /></div>
+                                                    <div className="flex items-start gap-4">
+                                                        <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-500">
+                                                            <User size={24} />
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <p className="text-sm font-black italic uppercase text-primary">Identity Collision Detected</p>
+                                                            <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Driver: Thomas M. (ID: GRN-284M)</p>
                                                         </div>
                                                     </div>
-                                                    <div className="space-y-2">
-                                                        <p className="text-[7px] font-black text-red-500 uppercase tracking-widest text-center">Challenge Capture</p>
-                                                        <div className="aspect-square bg-dark-950 rounded-2xl border border-red-500/30 overflow-hidden relative shadow-inner">
-                                                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Stranger" className="w-full h-full grayscale" alt="Stranger" />
-                                                            <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center">
-                                                                <span className="text-[8px] font-black bg-red-500 text-primary px-2 py-1 rounded italic uppercase shadow-lg">NO MATCH</span>
+                                                    
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="space-y-2">
+                                                            <p className="text-[7px] font-black text-secondary uppercase tracking-widest text-center">Master Profile</p>
+                                                            <div className="aspect-square bg-dark-950 rounded-2xl border border-main overflow-hidden shadow-inner">
+                                                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Thomas" className="w-full h-full" alt="Profile" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <p className="text-[7px] font-black text-red-500 uppercase tracking-widest text-center">Challenge Capture</p>
+                                                            <div className="aspect-square bg-dark-950 rounded-2xl border border-red-500/30 overflow-hidden relative shadow-inner">
+                                                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Stranger" className="w-full h-full grayscale" alt="Stranger" />
+                                                                <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center">
+                                                                    <span className="text-[8px] font-black bg-red-500 text-primary px-2 py-1 rounded italic uppercase shadow-lg">NO MATCH</span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                <div className="flex gap-3 pt-4">
-                                                    <button className="flex-1 py-4 bg-btn-sec border border-main rounded-2xl text-[9px] font-black uppercase text-gray-400 hover:text-primary transition-all">Reject Dispute</button>
-                                                    <button className="flex-1 py-4 bg-red-500 text-primary rounded-2xl text-[9px] font-black uppercase shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all">Permaban Account</button>
+                                                    <div className="flex gap-3 pt-4">
+                                                        <button className="flex-1 py-4 bg-btn-sec border border-main rounded-2xl text-[9px] font-black uppercase text-gray-400 hover:text-primary transition-all">Reject Dispute</button>
+                                                        <button className="flex-1 py-4 bg-red-500 text-primary rounded-2xl text-[9px] font-black uppercase shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all">Permaban Account</button>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            ) : (
+                                                <div className="bg-btn-sec border border-main rounded-[2.5rem] p-10 text-center py-12">
+                                                    <ShieldCheck size={32} className="text-brand/30 mx-auto mb-4" />
+                                                    <p className="text-sm font-black italic uppercase text-primary">System Secure</p>
+                                                    <p className="text-[9px] font-bold text-secondary uppercase tracking-widest mt-1">No identity collisions or security red flags detected.</p>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* ASSET ASSIGNMENT TERMINAL */}
