@@ -35,10 +35,12 @@ const Signup = () => {
 
     const businessCategories = [
         { id: 'FM', label: 'Fleet' },
-        { id: 'CB', label: 'Club & Bar' },
+        { id: 'CM', label: 'Club' },
+        { id: 'BM', label: 'Bar' },
         { id: 'RM', label: 'Restaurant' },
-        { id: 'HM', label: 'Hotel & Spa' },
-        { id: 'SM', label: 'Stadium/Events' },
+        { id: 'HM', label: 'Hotel' },
+        { id: 'SM', label: 'Stadium' },
+        { id: 'VM', label: 'Event' },
     ];
 
     const verifiedCompanies = [
@@ -246,11 +248,12 @@ const Signup = () => {
 
                     {role === 'manager' && (
                         <div className="space-y-3">
-                            {/* Row 1: Fleet + Restaurant */}
-                            <div className="grid grid-cols-2 gap-3">
+                            {/* Row 1: Fleet + Restaurant + Hotel */}
+                            <div className="grid grid-cols-3 gap-3">
                                 {[
                                     { id: 'FM', label: 'Fleet' },
                                     { id: 'RM', label: 'Restaurant' },
+                                    { id: 'HM', label: 'Hotel' },
                                 ].map((type) => (
                                     <button
                                         key={type.id}
@@ -262,12 +265,12 @@ const Signup = () => {
                                     </button>
                                 ))}
                             </div>
-                            {/* Row 2: Hotel + Bar + Events — together */}
+                            {/* Row 2: Club + Bar + Event */}
                             <div className="grid grid-cols-3 gap-3">
                                 {[
-                                    { id: 'HM', label: 'Hotel & Spa' },
-                                    { id: 'CB', label: 'Club & Bar' },
-                                    { id: 'EV', label: 'Events' },
+                                    { id: 'CM', label: 'Club' },
+                                    { id: 'BM', label: 'Bar' },
+                                    { id: 'VM', label: 'Event' },
                                 ].map((type) => (
                                     <button
                                         key={type.id}

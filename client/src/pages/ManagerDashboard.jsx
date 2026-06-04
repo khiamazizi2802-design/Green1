@@ -202,7 +202,7 @@ const ManagerDashboard = () => {
         return false;
     };
     const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
-    const isDemo = !user || user.email === 'manager@green.de' || user.email === 'admin@green-nightlife.com' || user.email?.includes('test') || user.email === 'staff@green.de' || user.email === 'admin@green.de';
+    const isDemo = ['manager@green.de', 'restaurant@green.de', 'club@green.de', 'hotel@green.de', 'stadium@green.de', 'parking@green.de'].includes(user?.email?.toLowerCase());
 
     const [staffList, setStaffList] = useState(() => {
         const saved = localStorage.getItem(`green_staff_list_${userEmailKey}`);
@@ -353,6 +353,9 @@ const ManagerDashboard = () => {
     const [showSecurityGate, setShowSecurityGate] = useState(false);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [resetStep, setResetStep] = useState('verify'); 
+    const [currentPasswordInput, setCurrentPasswordInput] = useState('');
+    const [newPasswordInput, setNewPasswordInput] = useState('');
+    const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
     const [orderFilter, setOrderFilter] = useState('New');
     const [orderSearch, setOrderSearch] = useState('');
 
@@ -869,13 +872,16 @@ const ManagerDashboard = () => {
 
     // DRIVER ASSET PAIRING DEPLOYMENTS
     const [driverDeployments, setDriverDeployments] = useState(() => {
-        const saved = localStorage.getItem('green_driver_deployments');
+        const saved = localStorage.getItem(`green_driver_deployments_${userEmailKey}`);
         if (saved) return JSON.parse(saved);
-        return [
-            { name: 'Marcus H.', status: 'In Service', current: 'Tesla Model 3', rating: 4.9, avatar: 'Marcus' },
-            { name: 'Sarah K.', status: 'Standby', current: 'VW ID.4', rating: 5.0, avatar: 'Sarah' },
-            { name: 'Thomas M.', status: 'Locked', current: 'None', rating: 0.0, avatar: 'Thomas', isLocked: true }
-        ];
+        if (isDemo) {
+            return [
+                { name: 'Marcus H.', status: 'In Service', current: 'Tesla Model 3', rating: 4.9, avatar: 'Marcus' },
+                { name: 'Sarah K.', status: 'Standby', current: 'VW ID.4', rating: 5.0, avatar: 'Sarah' },
+                { name: 'Thomas M.', status: 'Locked', current: 'None', rating: 0.0, avatar: 'Thomas', isLocked: true }
+            ];
+        }
+        return [];
     });
     const [editingDriver, setEditingDriver] = useState(null);
 
@@ -892,21 +898,210 @@ const ManagerDashboard = () => {
     });
 
     const [businessInfo, setBusinessInfo] = useState({
-        legalName: getBusinessName(),
-        address: 'Zeil 106, 60313 Frankfurt',
-        email: 'ops@' + (user?.email?.split('@')[1] || 'green.com'),
-        phone: '+49 69 1234567'
+        legalName: isDemo ? getBusinessName() : (user?.name ? `${user.name} Operations` : 'My Fleet Ops'),
+        address: isDemo ? 'Zeil 106, 60313 Frankfurt' : '',
+        email: user?.email || '',
+        phone: isDemo ? '+49 69 1234567' : '',
+        vatId: isDemo ? 'DE123456789' : ''
     });
 
     const [bankingInfo, setBankingInfo] = useState({
-        iban: 'DE44 1234 5678 9012 3456 78',
-        bic: 'MARKDEFFXXX',
-        bankName: 'Deutsche Bank AG',
-        holder: getBusinessName()
+        iban: isDemo ? 'DE44 1234 5678 9012 3456 78' : '',
+        bic: isDemo ? 'MARKDEFFXXX' : '',
+        bankName: isDemo ? 'Deutsche Bank AG' : '',
+        holder: isDemo ? getBusinessName() : ''
+    });
+
+    const [fleetVehicles, setFleetVehicles] = useState(() => {
+        const saved = localStorage.getItem(`green_fleet_vehicles_${userEmailKey}`);
+        if (saved) return JSON.parse(saved);
+        return ['Tesla Model 3', 'Tesla Model Y', 'VW ID.4', 'Polestar 2', 'BMW i4', 'None'];
     });
 
     const handleExport = () => {
         alert(`GENERATING DATEV MANIFEST\n--------------------------\nEntity: ${getBusinessName()}\nIndustry Type: ${managerContext}\nTax Jurisdiction: DE/EU\n\nStatus: Encrypted & Industry-Segmented`);
+    };
+
+    const handleDownloadPDFReport = () => {
+        const businessName = getBusinessName();
+        const gross = commissionData.gross;
+        const comm = commissionData.commission;
+        const net = commissionData.settlement;
+        const rateLabel = commissionData.rateLabel;
+        const dateStr = new Date().toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Monthly Performance Report - ${businessName}</title>
+                <style>
+                    body {
+                        font-family: 'Inter', sans-serif;
+                        background: #0B121E;
+                        color: #FFFFFF;
+                        padding: 40px;
+                        margin: 0;
+                    }
+                    .header {
+                        border-bottom: 2px solid #00FF88;
+                        padding-bottom: 20px;
+                        margin-bottom: 30px;
+                    }
+                    .logo {
+                        font-size: 24px;
+                        font-weight: 900;
+                        font-style: italic;
+                        text-transform: uppercase;
+                        color: #00FF88;
+                    }
+                    .title {
+                        font-size: 18px;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                        color: #8A99AD;
+                        margin-top: 5px;
+                    }
+                    .meta-grid {
+                        display: grid;
+                        grid-template-cols: 1fr 1fr;
+                        gap: 20px;
+                        margin-bottom: 40px;
+                    }
+                    .meta-item {
+                        background: #162235;
+                        padding: 15px 20px;
+                        border-radius: 12px;
+                        border: 1px solid rgba(255,255,255,0.05);
+                    }
+                    .meta-label {
+                        font-size: 10px;
+                        text-transform: uppercase;
+                        color: #8A99AD;
+                        font-weight: bold;
+                        letter-spacing: 1px;
+                    }
+                    .meta-value {
+                        font-size: 16px;
+                        font-weight: bold;
+                        margin-top: 5px;
+                    }
+                    .stats-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 40px;
+                    }
+                    .stats-table th, .stats-table td {
+                        padding: 15px 20px;
+                        text-align: left;
+                    }
+                    .stats-table th {
+                        background: #162235;
+                        color: #8A99AD;
+                        font-size: 11px;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                    }
+                    .stats-table td {
+                        border-bottom: 1px solid rgba(255,255,255,0.05);
+                        font-size: 14px;
+                    }
+                    .total-row td {
+                        font-weight: bold;
+                        font-size: 16px;
+                        color: #00FF88;
+                        border-bottom: 2px solid #00FF88;
+                    }
+                    .footer {
+                        text-align: center;
+                        font-size: 10px;
+                        color: #8A99AD;
+                        margin-top: 60px;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                    }
+                    @media print {
+                        body {
+                            background: white;
+                            color: black;
+                            padding: 20px;
+                        }
+                        .meta-item {
+                            background: #F4F6F8;
+                            border: 1px solid #E2E8F0;
+                            color: black;
+                        }
+                        .meta-label {
+                            color: #4A5568;
+                        }
+                        .stats-table th {
+                            background: #F4F6F8;
+                            color: #4A5568;
+                        }
+                        .stats-table td {
+                            border-bottom: 1px solid #E2E8F0;
+                            color: black;
+                        }
+                        .total-row td {
+                            color: #2F855A;
+                            border-bottom: 2px solid #2F855A;
+                        }
+                        .footer {
+                            color: #4A5568;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div class="logo">GREEN Fleet Operations</div>
+                    <div class="title">Monthly Performance Statement</div>
+                </div>
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <div class="meta-label">Business Partner</div>
+                        <div class="meta-value">${businessName}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Statement Period</div>
+                        <div class="meta-value">${dateStr}</div>
+                    </div>
+                </div>
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th style="text-align: right;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gross Earnings (Gross Invoiced)</td>
+                            <td style="text-align: right; font-weight: bold;">€${gross.toLocaleString('de-DE', { minimumFractionDigits: 2 })}</td>
+                        </tr>
+                        <tr>
+                            <td>Platform Commission Fee (${rateLabel})</td>
+                            <td style="text-align: right; color: #FF6B6B;">-€${comm.toLocaleString('de-DE', { minimumFractionDigits: 2 })}</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Net Payout Settlement</td>
+                            <td style="text-align: right;">€${net.toLocaleString('de-DE', { minimumFractionDigits: 2 })}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="footer">
+                    Generated via Green Partner Portal Security Protocol v4.0. Confirmed for Settlement.
+                </div>
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        setTimeout(function() { window.close(); }, 500);
+                    };
+                </script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
     };
 
     const [promotions] = useState([
@@ -2329,9 +2524,15 @@ const ManagerDashboard = () => {
                                             <h1 className="text-4xl font-black italic uppercase tracking-tighter text-primary leading-none">Financial Intel</h1>
                                             <p className="text-secondary text-xs md:text-sm font-bold uppercase tracking-widest leading-none">Real-time Revenue & Payout Ledger</p>
                                         </div>
-                                        <button onClick={handleExport} className="w-full md:w-auto px-6 py-3 bg-btn-sec border border-main rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/10 transition-all whitespace-nowrap">
-                                            <FileText size={14} /> Export Datev (SKR03)
-                                        </button>
+                                        {managerContext === 'FM' ? (
+                                            <button onClick={handleDownloadPDFReport} className="w-full md:w-auto px-6 py-3 bg-brand text-dark-900 border border-brand rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(33,255,165,0.3)]">
+                                                <FileText size={14} /> Export Monthly PDF Report
+                                            </button>
+                                        ) : (
+                                            <button onClick={handleExport} className="w-full md:w-auto px-6 py-3 bg-btn-sec border border-main rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/10 transition-all whitespace-nowrap">
+                                                <FileText size={14} /> Export Datev (SKR03)
+                                            </button>
+                                        )}
                                     </div>
                                     
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -2527,7 +2728,7 @@ const ManagerDashboard = () => {
                                                                  onClick={() => {
                                                                      setStripeOnboardMode('create');
                                                                      setStripeOnboardStep(1);
-                                                                     setStripeFormBankName('');
+                                     setStripeFormBankName('');
                                                                      setStripeFormIban('');
                                                                      setStripeFormRouting('');
                                                                      setIsStripeModalOpen(true);
@@ -2540,42 +2741,81 @@ const ManagerDashboard = () => {
                                                      </div>
                                                  )}
                                              </div>
-                                         </div>
-                                    </div>
+
+                                             {/* SETTLEMENT & BUSINESS CREDENTIALS CARD */}
+                                             {managerContext === 'FM' && (
+                                                 <div className="bg-glass border border-main rounded-[3rem] p-6 md:p-10 space-y-6 relative overflow-hidden shadow-2xl">
+                                                     <div className="absolute top-0 right-0 p-6 opacity-[0.03] text-brand pointer-events-none">
+                                                         <Building2 size={120} />
+                                                     </div>
+                                                     <div className="flex items-center gap-3 pb-2 border-b border-white/5">
+                                                         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-brand/10 text-brand">
+                                                             <Building2 size={18} />
+                                                         </div>
+                                                         <div>
+                                                             <h3 className="text-base font-black italic uppercase tracking-tighter text-primary">Settlement & Business Credentials</h3>
+                                                             <p className="text-[7px] font-black text-secondary uppercase tracking-[0.1em] mt-0.5">Genesis & Payout Settings</p>
+                                                         </div>
+                                                     </div>
+
+                                                     <div className="space-y-4">
+                                                         <div className="space-y-1">
+                                                             <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">Legal Entity Name</label>
+                                                             <input 
+                                                                 type="text" 
+                                                                 value={businessInfo.legalName} 
+                                                                 onChange={(e) => setBusinessInfo({...businessInfo, legalName: e.target.value})}
+                                                                 className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                             />
+                                                         </div>
+                                                         <div className="space-y-1">
+                                                             <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">HQ Physical Address</label>
+                                                             <input 
+                                                                 type="text" 
+                                                                 value={businessInfo.address} 
+                                                                 onChange={(e) => setBusinessInfo({...businessInfo, address: e.target.value})}
+                                                                 className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                             />
+                                                         </div>
+                                                         <div className="grid grid-cols-2 gap-3">
+                                                             <div className="space-y-1">
+                                                                 <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">VAT ID (EU/DE)</label>
+                                                                 <input 
+                                                                     type="text" 
+                                                                     value={businessInfo.vatId}
+                                                                     onChange={(e) => setBusinessInfo({...businessInfo, vatId: e.target.value})}
+                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                 />
+                                                             </div>
+                                                             <div className="space-y-1">
+                                                                 <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">Settlement IBAN</label>
+                                                                 <input 
+                                                                     type="text" 
+                                                                     value={bankingInfo.iban} 
+                                                                     onChange={(e) => setBankingInfo({...bankingInfo, iban: e.target.value})}
+                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                 />
+                                                             </div>
+                                                         </div>
+                                                     </div>
+
+                                                     <div className="p-4 bg-brand/5 border border-brand/20 rounded-2xl space-y-2 text-left">
+                                                         <div className="flex items-center gap-2 text-brand">
+                                                             <Zap size={14} className="shrink-0" />
+                                                             <span className="text-[9px] font-black uppercase tracking-widest">Stripe Connect Split Payment</span>
+                                                         </div>
+                                                         <p className="text-[9px] text-gray-400 font-bold leading-relaxed uppercase tracking-wider">
+                                                             Since we use Stripe Connect for direct automated payments to your business account, there are no manual monthly payout settlements to process. 
+                                                             Payments from customers are split automatically in real-time. Your partner share is transferred directly to your Stripe account, while the Green Platform commission is settled immediately.
+                                                         </p>
+                                                     </div>
+                                                 </div>
+                                             )}
+                                          </div>
+                                     </div>
+
                                 </motion.div>
                             )}
-
-                            {view === 'promotions' && (
-                                <motion.div key="promos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-10">
-                                    <div className="flex justify-between items-end">
-                                        <div className="space-y-2">
-                                            <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white leading-none">VIP Perks</h1>
-                                            <p className="text-gray-500 text-sm font-bold uppercase tracking-widest leading-none">Loyalty Campaigns & Pioneer Incentives</p>
-                                        </div>
-                                        <button className="px-8 py-4 bg-amber-500 text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-amber-500/20">Create New Perk</button>
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                        {promotions.map(p => (
-                                            <div key={p.id} className="bg-btn-sec border border-glass rounded-[3rem] p-8 space-y-6 relative overflow-hidden group hover:border-amber-500/30 transition-all cursor-pointer">
-                                                <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-primary"><Star size={24} /></div>
-                                                <div>
-                                                    <h3 className="text-xl font-black italic uppercase text-primary">{p.title}</h3>
-                                                    <p className="text-[10px] font-bold text-secondary uppercase mt-1 tracking-widest">{p.target}</p>
-                                                </div>
-                                                <div className="flex justify-between items-end border-t border-main pt-6">
-                                                    <div>
-                                                        <p className="text-[9px] font-black text-secondary uppercase mb-1">Vouchers Used</p>
-                                                        <p className="text-2xl font-black italic text-primary leading-none">{p.used}</p>
-                                                    </div>
-                                                    <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${p.status === 'Active' ? 'bg-btn-sec text-primary' : 'bg-gray-500/10 text-secondary'}`}>{p.status}</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            )}
-
 
                             {view === 'qr-terminal' && (
                                 <motion.div key="terminal" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-10 max-w-4xl mx-auto">
@@ -2771,14 +3011,18 @@ const ManagerDashboard = () => {
                                                         };
                                                         const existingPosts = JSON.parse(localStorage.getItem('green_global_posts') || '[]');
                                                         localStorage.setItem('green_global_posts', JSON.stringify([newPost, ...existingPosts]));
-                                                        alert("BROADCAST SUCCESSFUL: Your 4K Reel is now live for all pilots!");
+                                                        if (managerContext === 'FM') {
+                                                            alert("UPLOAD SUCCESSFUL: Your 4K Reel is now live for all pilots!");
+                                                        } else {
+                                                            alert("BROADCAST SUCCESSFUL: Your 4K Reel is now live for all pilots!");
+                                                        }
                                                         setPreviewUrl(null);
                                                         setUploadStatus(null);
                                                         setBroadcastCaption('');
                                                     }}
                                                     className="w-full py-5 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all"
                                                 >
-                                                    Blast to 4K Live Feed
+                                                    {managerContext === 'FM' ? "Upload to 4K Live Feed" : "Blast to 4K Live Feed"}
                                                 </button>
                                             </div>
                                         </div>
@@ -3259,7 +3503,7 @@ const ManagerDashboard = () => {
                                                     <div className="space-y-3">
                                                         <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Swap / Assign Vehicle</label>
                                                         <div className="grid grid-cols-2 gap-3">
-                                                            {['Tesla Model 3', 'Tesla Model Y', 'VW ID.4', 'Polestar 2', 'BMW i4', 'None'].map((veh) => {
+                                                            {fleetVehicles.map((veh) => {
                                                                 const isSelected = editingDriver.current === veh;
                                                                 return (
                                                                     <button
@@ -3287,7 +3531,7 @@ const ManagerDashboard = () => {
                                                                 d.name === editingDriver.originalName ? { ...d, name: editingDriver.name, status: editingDriver.status, rating: editingDriver.rating, avatar: editingDriver.avatar, current: 'None' } : d
                                                             );
                                                             setDriverDeployments(updated);
-                                                            localStorage.setItem('green_driver_deployments', JSON.stringify(updated));
+                                                            localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(updated));
                                                             setEditingDriver(null);
                                                         }}
                                                         className="flex-1 py-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-primary transition-all"
@@ -3300,7 +3544,7 @@ const ManagerDashboard = () => {
                                                                 d.name === editingDriver.originalName ? { ...d, name: editingDriver.name, status: editingDriver.status, rating: editingDriver.rating, avatar: editingDriver.avatar, current: editingDriver.current } : d
                                                             );
                                                             setDriverDeployments(updated);
-                                                            localStorage.setItem('green_driver_deployments', JSON.stringify(updated));
+                                                            localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(updated));
                                                             setEditingDriver(null);
                                                         }}
                                                         className="flex-1 py-4 bg-brand text-dark-900 rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-95 transition-all"
@@ -3388,6 +3632,11 @@ const ManagerDashboard = () => {
 
                                                 <button 
                                                     onClick={() => {
+                                                        if (newVehicleData.model) {
+                                                            const updatedPool = [...fleetVehicles.filter(v => v !== 'None'), newVehicleData.model, 'None'];
+                                                            setFleetVehicles(updatedPool);
+                                                            localStorage.setItem(`green_fleet_vehicles_${userEmailKey}`, JSON.stringify(updatedPool));
+                                                        }
                                                         alert(`FLEET ASSET REGISTERED\n----------------------\nModel: ${newVehicleData.model}\nPlate: ${newVehicleData.plate}\nConcession: ${newVehicleData.concession || 'N/A'}\nStatus: Pending Final Inspection`);
                                                         setIsAddingVehicle(false);
                                                     }}
@@ -3400,115 +3649,6 @@ const ManagerDashboard = () => {
                                     </>
                                 )}
                             </AnimatePresence>
-
-                            {view === 'reputation' && (
-                                <motion.div key="reputation" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="space-y-10">
-                                    <div className="flex flex-col md:flex-row gap-4 md:justify-between md:items-end">
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-primary"><ShieldCheck size={28} /></div>
-                                                <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none">Behavioral <span className="text-brand">Governance</span></h1>
-                                            </div>
-                                            <p className="text-secondary text-xs md:text-sm font-bold uppercase tracking-widest leading-none">Reputation Ledger & Punishment Strike tracking</p>
-                                        </div>
-                                        <div className="w-full md:w-auto px-6 py-3 bg-btn-sec border border-main rounded-xl text-[10px] font-black uppercase tracking-widest text-primary bg-white/10 text-center whitespace-nowrap">Official Green Standing</div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                        {/* REPUTATION STATS */}
-                                        <div className="lg:col-span-1 space-y-8">
-                                            <div className="bg-btn-sec border border-main rounded-[3rem] p-6 md:p-10 space-y-10">
-                                                <div className="space-y-2 text-center">
-                                                    <p className="text-[10px] font-black text-secondary uppercase tracking-[0.3em]">Trust Quotient</p>
-                                                    <p className="text-6xl font-black italic text-primary tracking-tighter">{(user?.greenFlags / 1000).toFixed(1)}K</p>
-                                                    <p className="text-[8px] font-black text-primary/50 uppercase">Verified Green Flags</p>
-                                                </div>
-
-                                                <div className="space-y-4">
-                                                    <div className="flex justify-between items-end">
-                                                        <p className="text-[10px] font-black uppercase text-gray-400">Suspension Strike 1</p>
-                                                        <p className="text-xs font-black text-primary italic">{user?.redFlags}/3 Flags</p>
-                                                    </div>
-                                                    <div className="h-4 bg-btn-sec rounded-full overflow-hidden p-1 border border-main">
-                                                        <motion.div 
-                                                            initial={{ width: 0 }}
-                                                            animate={{ width: `${(user?.redFlags / 3) * 100}%` }}
-                                                            className={`h-full rounded-full ${user?.redFlags > 1 ? 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'bg-brand shadow-[0_0_15px_rgba(52,211,153,0.5)]'}`}
-                                                        />
-                                                    </div>
-                                                    <p className="text-[7px] font-black text-secondary uppercase text-center tracking-[0.2em]">Next Strike triggers 6-Month Automatic Freeze</p>
-                                                </div>
-                                            </div>
-
-                                            <div className="p-6 md:p-10 bg-gradient-to-br from-white/5 to-transparent border border-main rounded-[3rem] space-y-6">
-                                                <h3 className="text-sm font-black italic uppercase text-primary">How it works</h3>
-                                                <ul className="space-y-4">
-                                                    {[
-                                                        { icon: ShieldCheck, text: 'Green Flags boost your visibility in the 4K Live Feed.', color: 'text-brand' },
-                                                        { icon: ShieldAlert, text: '3 Red Flags = 6 Mo Ban. 6 Flags = 12 Mo. 9 Flags = Permaban.', color: 'text-red-500' },
-                                                        { icon: Handshake, text: 'Resolve issues with customers to have flags revoked.', color: 'text-primary' }
-                                                    ].map((rule, i) => (
-                                                        <li key={i} className="flex gap-4 items-start">
-                                                            <rule.icon size={16} className={`${rule.color} shrink-0 mt-1`} />
-                                                            <p className="text-[10px] font-bold text-gray-400 leading-relaxed uppercase">{rule.text}</p>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
-
-                                        {/* INCIDENT HISTORY */}
-                                        <div className="lg:col-span-2 space-y-8">
-                                            <div className="bg-glass border border-main rounded-[3rem] p-4 md:p-10 space-y-8 shadow-2xl relative overflow-hidden">
-                                                <h3 className="text-xl font-black italic uppercase text-primary">Incident <span className="text-brand">History</span></h3>
-                                                
-                                                <div className="space-y-4">
-                                                    {[
-                                                        { id: 'GRN-421', type: 'Red Flag', reason: 'Unsafe Driving Report', date: '02.05.2026', status: 'Pending', color: 'text-primary' },
-                                                        { id: 'GRN-398', type: 'Red Flag', reason: 'Misleading Advertisement', date: '28.04.2026', status: 'Revoked', color: 'text-primary' },
-                                                        { id: 'GRN-112', type: 'Green Flag', reason: 'Exceptional Service Award', date: '15.04.2026', status: 'Permanent', color: 'text-brand' }
-                                                    ].map((incident, i) => (
-                                                        <div key={i} className="p-4 md:p-6 bg-btn-sec rounded-[2rem] border border-main flex flex-row items-center justify-between gap-2 md:gap-4 group hover:bg-white/10 transition-all">
-                                                            <div className="flex items-center gap-3 md:gap-6 min-w-0">
-                                                                <div className={`w-12 h-12 rounded-xl bg-btn-sec flex items-center justify-center shrink-0 ${incident.color}`}><ShieldAlert size={20} /></div>
-                                                                <div className="min-w-0">
-                                                                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                                                                        <p className="text-sm font-black italic uppercase text-primary tracking-tight leading-none truncate">{incident.reason}</p>
-                                                                        <span className="text-[8px] font-black text-secondary bg-btn-sec px-2 py-0.5 rounded uppercase whitespace-nowrap w-fit">ID: {incident.id}</span>
-                                                                    </div>
-                                                                    <p className="text-[9px] font-bold text-secondary uppercase tracking-widest mt-1.5">{incident.type} • {incident.date}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="text-right shrink-0">
-                                                                <div className="flex items-center justify-end gap-2">
-                                                                    {incident.status === 'Pending' && <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />}
-                                                                    <p className={`text-[10px] font-black uppercase tracking-widest ${incident.color}`}>{incident.status}</p>
-                                                                </div>
-                                                                {incident.status === 'Active' && (
-                                                                    <button 
-                                                                        onClick={() => navigate(`/manager/resolution/${incident.id}`)}
-                                                                        className="text-[8px] font-black text-brand uppercase mt-2 hover:underline"
-                                                                    >
-                                                                        Request Resolution
-                                                                    </button>
-                                                                )}
-                                                                {incident.status === 'Pending' && (
-                                                                    <p className="text-[7px] font-black text-secondary uppercase mt-2">Proposal Sent</p>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-
-                                                <div className="p-8 bg-brand/5 border border-brand/20 rounded-[2rem] text-center space-y-4">
-                                                    <p className="text-xs font-bold text-gray-300 italic">"Only customers who issued the flag can revoke it. Maintain high standards to avoid disciplinary action."</p>
-                                                    <button className="text-[10px] font-black text-brand uppercase tracking-widest">Read Governance Terms & Standards</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
 
                             {view === 'sitting' && (
                                 <motion.div key="sitting" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-10 pb-20">
@@ -3525,7 +3665,7 @@ const ManagerDashboard = () => {
                                         </button>
                                     </div>
 
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    <div className={`grid grid-cols-1 ${managerContext === 'FM' ? '' : 'lg:grid-cols-2'} gap-8`}>
                                         {/* MANAGER PERSONAL DETAILS */}
                                         <div className="bg-btn-sec border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl">
                                             <div className="flex items-center gap-4">
@@ -3542,67 +3682,145 @@ const ManagerDashboard = () => {
                                                         className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none transition-all" 
                                                     />
                                                 </div>
-                                                <div className="space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Direct Email</label>
-                                                    <input 
-                                                        type="email" 
-                                                        value={personalInfo.email} 
-                                                        onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
-                                                        className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
-                                                    />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Mobile Line</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={personalInfo.phone} 
-                                                        onChange={(e) => setPersonalInfo({...personalInfo, phone: e.target.value})}
-                                                        className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
-                                                    />
-                                                </div>
+                                                {managerContext === 'FM' ? (
+                                                    <>
+                                                        <div className="col-span-2 md:col-span-1 space-y-1">
+                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">Direct Email</label>
+                                                            <input 
+                                                                type="email" 
+                                                                value={personalInfo.email} 
+                                                                onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                            />
+                                                        </div>
+                                                        <div className="col-span-2 md:col-span-1 space-y-1">
+                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">Mobile Line</label>
+                                                            <input 
+                                                                type="text" 
+                                                                value={personalInfo.phone} 
+                                                                onChange={(e) => setPersonalInfo({...personalInfo, phone: e.target.value})}
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                            />
+                                                        </div>
+                                                        <div className="col-span-2 md:col-span-1 space-y-1">
+                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">Personal Address</label>
+                                                            <input 
+                                                                type="text" 
+                                                                value={personalInfo.address} 
+                                                                onChange={(e) => setPersonalInfo({...personalInfo, address: e.target.value})}
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">ZIP Code</label>
+                                                            <input 
+                                                                type="text" 
+                                                                value={personalInfo.zip} 
+                                                                onChange={(e) => setPersonalInfo({...personalInfo, zip: e.target.value})}
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">City</label>
+                                                            <input 
+                                                                type="text" 
+                                                                value={personalInfo.city} 
+                                                                onChange={(e) => setPersonalInfo({...personalInfo, city: e.target.value})}
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                            />
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">Direct Email</label>
+                                                            <input 
+                                                                type="email" 
+                                                                value={personalInfo.email} 
+                                                                onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">Mobile Line</label>
+                                                            <input 
+                                                                type="text" 
+                                                                value={personalInfo.phone} 
+                                                                onChange={(e) => setPersonalInfo({...personalInfo, phone: e.target.value})}
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                            />
+                                                        </div>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
 
+                                        {/* PASSWORD CHANGE TERMINAL */}
+                                        {managerContext === 'FM' && (
+                                            <div className="bg-btn-sec border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="p-4 rounded-2xl bg-brand/10 text-brand"><ShieldCheck size={24} /></div>
+                                                    <h3 className="text-xl font-black italic uppercase tracking-tighter text-primary">Console Security Password</h3>
+                                                </div>
+                                                
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                    <div className="space-y-1">
+                                                        <label className="text-[9px] font-black text-secondary uppercase ml-1">Current Password</label>
+                                                        <input 
+                                                            type="password" 
+                                                            placeholder="••••"
+                                                            value={currentPasswordInput}
+                                                            onChange={(e) => setCurrentPasswordInput(e.target.value)}
+                                                            className="w-full bg-dark-950 border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[9px] font-black text-secondary uppercase ml-1">New Password</label>
+                                                        <input 
+                                                            type="password" 
+                                                            placeholder="••••"
+                                                            value={newPasswordInput}
+                                                            onChange={(e) => setNewPasswordInput(e.target.value)}
+                                                            className="w-full bg-dark-950 border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[9px] font-black text-secondary uppercase ml-1">Confirm New Password</label>
+                                                        <input 
+                                                            type="password" 
+                                                            placeholder="••••"
+                                                            value={confirmPasswordInput}
+                                                            onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                                                            className="w-full bg-dark-950 border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
+                                                        />
+                                                    </div>
+                                                </div>
+                                                
+                                                <button 
+                                                    onClick={() => {
+                                                        if (currentPasswordInput !== securityPassword) {
+                                                            return alert("Error: Current password is incorrect.");
+                                                        }
+                                                        if (!newPasswordInput) {
+                                                            return alert("Error: New password cannot be empty.");
+                                                        }
+                                                        if (newPasswordInput !== confirmPasswordInput) {
+                                                            return alert("Error: New passwords do not match.");
+                                                        }
+                                                        setSecurityPassword(newPasswordInput);
+                                                        setCurrentPasswordInput('');
+                                                        setNewPasswordInput('');
+                                                        setConfirmPasswordInput('');
+                                                        alert("PASSWORD CHANGED SUCCESSFULLY: Console security credentials updated.");
+                                                    }}
+                                                    className="px-6 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all"
+                                                >
+                                                    Update Security Password
+                                                </button>
+                                            </div>
+                                        )}
+
                                         {/* BUSINESS CORE DETAILS */}
-                                        <div className="bg-btn-sec border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl">
-                                            <div className="flex items-center gap-4">
-                                                <div className="p-4 rounded-2xl bg-brand/10 text-brand"><Building2 size={24} /></div>
-                                                <h3 className="text-xl font-black italic uppercase tracking-tighter text-primary">Business Genesis</h3>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="col-span-2 space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Legal Entity Name</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={businessInfo.legalName} 
-                                                        onChange={(e) => setBusinessInfo({...businessInfo, legalName: e.target.value})}
-                                                        className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none transition-all" 
-                                                    />
-                                                </div>
-                                                <div className="col-span-2 space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">HQ Physical Address</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={businessInfo.address} 
-                                                        onChange={(e) => setBusinessInfo({...businessInfo, address: e.target.value})}
-                                                        className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
-                                                    />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">VAT ID (EU/DE)</label>
-                                                    <input type="text" defaultValue="DE123456789" className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Settlement IBAN</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={bankingInfo.iban} 
-                                                        onChange={(e) => setBankingInfo({...bankingInfo, iban: e.target.value})}
-                                                        className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         {/* GPS Lockdown (Relocated) */}
                                         {(managerContext !== 'FM' && managerContext !== 'SM') && (

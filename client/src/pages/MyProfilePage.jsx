@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ArrowLeft, Settings, Heart, MessageSquare, Share2, MoreHorizontal, 
@@ -14,6 +14,10 @@ const MyProfilePage = () => {
     const navigate = useNavigate();
     
     const { user } = useAuth();
+
+    const [localAvatar, setLocalAvatar] = useState(() => {
+        return user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`;
+    });
     
     const [mockComplaints, setMockComplaints] = useState([
         { id: 'GRN-421', business: 'Skyline Bar', reason: 'Unsafe Driving Report', date: '02.05.2026', status: 'Active' },
@@ -27,35 +31,51 @@ const MyProfilePage = () => {
     const [selectedPostId, setSelectedPostId] = useState(null);
     const [newCommentText, setNewCommentText] = useState("");
 
-    const [myPosts, setMyPosts] = useState([
-        { 
-            id: 1, 
-            type: 'image',
-            img: "https://images.unsplash.com/photo-1574096079513-d8259312b785?w=800&q=80", 
-            caption: "Nothing beats the atmosphere at Green Underground tonight. ⚡", 
-            likes: 124, 
-            comments: 2,
-            time: "1h ago",
-            liked: false,
-            commentsList: [
-                { id: 1, author: "Alex S.", text: "This looks absolutely incredible! 🔥", time: "30m ago" },
-                { id: 2, author: "Sofia M.", text: "Best vibe in town!", time: "10m ago" }
-            ]
-        },
-        { 
-            id: 2, 
-            type: 'video',
-            img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&q=80", 
-            caption: "Testing the new 'Midnight Neon' cocktail. Pure art. 🍸", 
-            likes: 215, 
-            comments: 1,
-            time: "Yesterday",
-            liked: false,
-            commentsList: [
-                { id: 1, author: "Elena R.", text: "That cocktail is a masterpiece! 🍸", time: "4h ago" }
-            ]
+    const [myPosts, setMyPosts] = useState([]);
+
+    useEffect(() => {
+        if (user) {
+            const isDemoUser = user?.email?.toLowerCase().endsWith('@green.de');
+            if (isDemoUser) {
+                setMyPosts(prev => {
+                    if (prev.length === 0) {
+                        return [
+                            { 
+                                id: 1, 
+                                type: 'image',
+                                img: "https://images.unsplash.com/photo-1574096079513-d8259312b785?w=800&q=80", 
+                                caption: "Nothing beats the atmosphere at Green Underground tonight. ⚡", 
+                                likes: 124, 
+                                comments: 2,
+                                time: "1h ago",
+                                liked: false,
+                                commentsList: [
+                                    { id: 1, author: "Alex S.", text: "This looks absolutely incredible! 🔥", time: "30m ago" },
+                                    { id: 2, author: "Sofia M.", text: "Best vibe in town!", time: "10m ago" }
+                                ]
+                            },
+                            { 
+                                id: 2, 
+                                type: 'video',
+                                img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&q=80", 
+                                caption: "Testing the new 'Midnight Neon' cocktail. Pure art. 🍸", 
+                                likes: 215, 
+                                comments: 1,
+                                time: "Yesterday",
+                                liked: false,
+                                commentsList: [
+                                    { id: 1, author: "Elena R.", text: "That cocktail is a masterpiece! 🍸", time: "4h ago" }
+                                ]
+                            }
+                        ];
+                    }
+                    return prev;
+                });
+            } else {
+                setMyPosts(prev => prev.filter(post => post.id !== 1 && post.id !== 2));
+            }
         }
-    ]);
+    }, [user]);
 
     const selectedPost = myPosts.find(p => p.id === selectedPostId);
 
@@ -97,6 +117,53 @@ const MyProfilePage = () => {
         triggerNotification("COMMENT SECURELY POSTED", "SUCCESS");
     };
 
+    const handleReelUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const videoUrl = URL.createObjectURL(file);
+            const newReel = {
+                id: Date.now(),
+                type: 'video',
+                img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+                videoUrl: videoUrl,
+                caption: `New Reel: ${file.name.replace(/\.[^/.]+$/, "")} 🎬`,
+                likes: 0,
+                comments: 0,
+                time: "Just now",
+                liked: false,
+                commentsList: []
+            };
+            setMyPosts(prev => [newReel, ...prev]);
+            setActiveTab('reels');
+            triggerNotification("REEL SECURELY UPLOADED", "SUCCESS");
+        }
+    };
+
+    const handleMomentUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const imgUrl = URL.createObjectURL(file);
+            const newMoment = {
+                id: Date.now(),
+                type: 'image',
+                img: imgUrl,
+                caption: `New Moment: ${file.name.replace(/\.[^/.]+$/, "")} 📸`,
+                likes: 0,
+                comments: 0,
+                time: "Just now",
+                liked: false,
+                commentsList: []
+            };
+            setMyPosts(prev => [newMoment, ...prev]);
+            setActiveTab('posts');
+            triggerNotification("NEW MOMENT POSTED", "SUCCESS");
+        }
+    };
+
+    const displayedPosts = activeTab === 'reels' 
+        ? myPosts.filter(p => p.type === 'video') 
+        : myPosts;
+
     return (
         <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans selection:bg-brand/30 transition-colors duration-300">
             {/* Header / Cover */}
@@ -129,7 +196,7 @@ const MyProfilePage = () => {
                 <div className="flex flex-col items-center text-center">
                     <div className="relative mb-6">
                         <div className="w-40 h-40 rounded-[3rem] p-1.5 bg-gradient-to-tr from-brand via-brand-end to-brand shadow-[0_0_50px_rgba(52,211,153,0.3)]">
-                            <img src={user.avatar} alt={user.name} className="w-full h-full rounded-[2.8rem] bg-[var(--bg-secondary)] border-8 border-[var(--bg-primary)] shadow-inner" />
+                            <img src={localAvatar} alt={user.name} className="w-full h-full rounded-[2.8rem] bg-[var(--bg-secondary)] border-8 border-[var(--bg-primary)] shadow-inner" />
                         </div>
 
                     </div>
@@ -158,8 +225,34 @@ const MyProfilePage = () => {
                     </div>
 
                     {/* Hidden Inputs */}
-                    <input type="file" id="profile-pic-input" className="hidden" accept="image/*" onChange={(e) => alert('Profile Picture Updated from Gallery/Camera')} />
-                    <input type="file" id="cover-pic-input" className="hidden" accept="image/*" onChange={(e) => alert('Cover Photo Updated from Gallery/Camera')} />
+                    <input 
+                        type="file" 
+                        id="profile-pic-input" 
+                        className="hidden" 
+                        accept="image/*" 
+                        onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                                const url = URL.createObjectURL(file);
+                                setLocalAvatar(url);
+                                triggerNotification("AVATAR SECURELY UPDATED", "SUCCESS");
+                            }
+                        }} 
+                    />
+                    <input 
+                        type="file" 
+                        id="reel-upload-input" 
+                        className="hidden" 
+                        accept="video/*" 
+                        onChange={handleReelUpload} 
+                    />
+                    <input 
+                        type="file" 
+                        id="moment-upload-input" 
+                        className="hidden" 
+                        accept="image/*" 
+                        onChange={handleMomentUpload} 
+                    />
 
                     {/* Identity Upload Center - Hardened High Contrast */}
                     <div className="w-full mt-10 p-1.5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[3rem] flex gap-2 shadow-2xl">
@@ -170,10 +263,10 @@ const MyProfilePage = () => {
                             <Camera size={16} /> Update Avatar
                         </button>
                         <button 
-                            onClick={() => document.getElementById('cover-pic-input').click()}
+                            onClick={() => document.getElementById('reel-upload-input').click()}
                             className="flex-1 py-5 bg-[#1A1A1A] text-white border border-white/10 rounded-[2.5rem] font-black uppercase tracking-[0.2em] italic text-[10px] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
                         >
-                            <ImageIcon size={16} /> Update Cover
+                            <Video size={16} /> Post Reel
                         </button>
                     </div>
                 </div>
@@ -235,7 +328,7 @@ const MyProfilePage = () => {
                             </motion.div>
                         ) : (
                             <div className="grid grid-cols-2 gap-4">
-                                {myPosts.map((post) => (
+                                {displayedPosts.map((post) => (
                                     <motion.div 
                                         initial={{ opacity: 0, scale: 0.9 }}
                                         animate={{ opacity: 1, scale: 1 }}
@@ -265,6 +358,7 @@ const MyProfilePage = () => {
                                 {/* Add Post Placeholder */}
                                 <motion.button 
                                     whileHover={{ scale: 1.02 }}
+                                    onClick={() => document.getElementById('moment-upload-input').click()}
                                     className="aspect-[3/4] border-2 border-dashed border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 text-gray-600 hover:text-brand hover:border-brand/40 transition-all bg-white/5"
                                 >
                                     <div className="w-12 h-12 rounded-full bg-dark-950 border border-white/10 flex items-center justify-center">
@@ -385,17 +479,14 @@ const MyProfilePage = () => {
                             {/* Top Media Bar */}
                             <div className="relative aspect-[4/5] w-full bg-black flex items-center justify-center overflow-hidden">
                                 {selectedPost.type === 'video' ? (
-                                    <div className="w-full h-full relative">
-                                        <img 
-                                            src={selectedPost.img} 
-                                            alt="" 
-                                            className="w-full h-full object-cover opacity-80" 
+                                    <div className="w-full h-full relative bg-black">
+                                        <video 
+                                            src={selectedPost.videoUrl || "https://assets.mixkit.co/videos/preview/mixkit-pouring-a-drink-into-a-glass-41714-large.mp4"} 
+                                            controls 
+                                            autoPlay 
+                                            loop
+                                            className="w-full h-full object-cover" 
                                         />
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                                            <div className="w-16 h-16 rounded-full bg-brand/90 flex items-center justify-center text-dark-900 shadow-[0_0_30px_rgba(52,211,153,0.5)] animate-pulse cursor-pointer">
-                                                <Video size={32} className="ml-1" fill="currentColor" />
-                                            </div>
-                                        </div>
                                     </div>
                                 ) : (
                                     <img 
@@ -409,7 +500,7 @@ const MyProfilePage = () => {
                                 <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-center z-10">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-full border border-brand/40 p-0.5 bg-black/50">
-                                            <img src={user.avatar} alt="" className="w-full h-full rounded-full object-cover" />
+                                            <img src={localAvatar} alt="" className="w-full h-full rounded-full object-cover" />
                                         </div>
                                         <div>
                                             <p className="text-sm font-black italic uppercase text-white leading-none tracking-tight">{user.name}</p>

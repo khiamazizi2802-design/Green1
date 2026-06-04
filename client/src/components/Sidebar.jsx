@@ -78,19 +78,17 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                 case 'overview':
                     if (managerContext === 'HM') return "Palace Mission Control";
                     if (managerContext === 'SM') return "Arena Mission Control";
-                    if (managerContext === 'WM') return "Bay Mission Control";
                     if (managerContext === 'PM') return "Gate Control Hub";
                     if (managerContext === 'BM' || managerContext === 'CM') return "Venue Mission Control";
                     return "Service Mission Control";
                 case 'menu':
                     if (managerContext === 'HM') return "In-Suite Catalog";
                     if (managerContext === 'SM') return "Arena Catalog";
-                    if (managerContext === 'WM') return "Service Matrix";
                     if (managerContext === 'PM') return "Spot Allocation";
                     if (managerContext === 'BM' || managerContext === 'CM') return "Nightlife Catalog";
                     return "Intelligence & Catalog";
                 case 'compliance':
-                    return (managerContext === 'PM' || managerContext === 'WM') ? "Legal Center" : "Compliance Vault";
+                    return managerContext === 'PM' ? "Legal Center" : "Compliance Vault";
                 default:
                     return baseLabel;
             }

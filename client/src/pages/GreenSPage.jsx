@@ -132,23 +132,36 @@ const GreenSPage = () => {
     }, [groupState]);
 
     // Real-Time Group Tab Ledger
-    const [groupTab, setGroupTab] = useState(() => {
-        try {
-            const saved = localStorage.getItem('green_group_tab');
-            return saved ? JSON.parse(saved) : [
-                { id: 'item-1', member: 'YOU', item: 'VIP Club Entry Pass', price: 45.00, status: 'pending', payer: 'self' },
-                { id: 'item-2', member: 'Marcus V.', item: 'Champions League Ticket', price: 45.00, status: 'pending', payer: 'self' },
-                { id: 'item-3', member: 'Elena R.', item: 'Neon Lounge Cocktail', price: 12.00, status: 'pending', payer: 'self' },
-                { id: 'item-4', member: 'Julian K.', item: 'Gourmet Dining Plate', price: 28.00, status: 'pending', payer: 'self' }
-            ];
-        } catch (e) {
-            return [];
-        }
-    });
+    const [groupTab, setGroupTab] = useState([]);
 
     React.useEffect(() => {
-        localStorage.setItem('green_group_tab', JSON.stringify(groupTab));
-    }, [groupTab]);
+        if (!user) return;
+        const emailKey = user.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+        const isDemoUser = user.email.toLowerCase().endsWith('@green.de');
+        try {
+            const saved = localStorage.getItem(`green_group_tab_${emailKey}`);
+            if (saved) {
+                setGroupTab(JSON.parse(saved));
+            } else if (isDemoUser) {
+                setGroupTab([
+                    { id: 'item-1', member: 'YOU', item: 'VIP Club Entry Pass', price: 45.00, status: 'pending', payer: 'self' },
+                    { id: 'item-2', member: 'Marcus V.', item: 'Champions League Ticket', price: 45.00, status: 'pending', payer: 'self' },
+                    { id: 'item-3', member: 'Elena R.', item: 'Neon Lounge Cocktail', price: 12.00, status: 'pending', payer: 'self' },
+                    { id: 'item-4', member: 'Julian K.', item: 'Gourmet Dining Plate', price: 28.00, status: 'pending', payer: 'self' }
+                ]);
+            } else {
+                setGroupTab([]);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }, [user]);
+
+    React.useEffect(() => {
+        if (!user) return;
+        const emailKey = user.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+        localStorage.setItem(`green_group_tab_${emailKey}`, JSON.stringify(groupTab));
+    }, [groupTab, user]);
 
     const togglePayer = (memberName) => {
         setGroupTab(prev => prev.map(item => {

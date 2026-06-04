@@ -23,19 +23,24 @@ const FamilyHub = () => {
             const myInvites = allInvites.filter(inv => inv.parentEmail.toLowerCase() === user.email.toLowerCase());
             setInvitations(myInvites);
         } else {
-            // Seed a default pending invitation for testing/demo
-            const demoInvites = [
-                {
-                    id: 'inv-demo-1',
-                    parentEmail: user.email,
-                    childEmail: 'teenager@green.de',
-                    age: 16,
-                    status: 'pending',
-                    sentAt: new Date(Date.now() - 86400000 * 2).toISOString() // 2 days ago
-                }
-            ];
-            localStorage.setItem('green_parent_invitations', JSON.stringify(demoInvites));
-            setInvitations(demoInvites);
+            const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
+            if (isDemo) {
+                // Seed a default pending invitation for testing/demo
+                const demoInvites = [
+                    {
+                        id: 'inv-demo-1',
+                        parentEmail: user.email,
+                        childEmail: 'teenager@green.de',
+                        age: 16,
+                        status: 'pending',
+                        sentAt: new Date(Date.now() - 86400000 * 2).toISOString() // 2 days ago
+                    }
+                ];
+                localStorage.setItem('green_parent_invitations', JSON.stringify(demoInvites));
+                setInvitations(demoInvites);
+            } else {
+                setInvitations([]);
+            }
         }
     }, [user.email]);
 

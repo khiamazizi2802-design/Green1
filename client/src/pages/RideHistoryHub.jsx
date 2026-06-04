@@ -5,15 +5,64 @@ import {
     Shield, History, TrendingUp, Trophy
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const RideHistoryHub = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
 
-    const rideHistory = [
-        { id: 1, service: 'CYBERDISPATCH', date: 'TODAY, 18:42', price: '€ 14.20', destination: 'Cyber Terrace 42', driver: 'SERGEI K.', icon: Zap },
-        { id: 2, service: 'PREMIUM RIDE', date: 'YESTERDAY, 21:15', price: '€ 22.50', destination: 'Neo Tokyo Central', driver: 'ELENA R.', icon: Shield },
-        { id: 3, service: 'CLASSIC', date: '14 FEB, 09:30', price: '€ 8.90', destination: 'Uplink Tower', driver: 'MARCUS V.', icon: Clock }
-    ];
+    const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+    const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
+
+    const getServiceIcon = (service) => {
+        const s = (service || '').toUpperCase();
+        if (s.includes('PREMIUM')) return Shield;
+        if (s.includes('CYBER') || s.includes('DISPATCH')) return Zap;
+        return Clock;
+    };
+
+    const localHistory = React.useMemo(() => {
+        try {
+            const data = localStorage.getItem(`green_ride_history_${userEmailKey}`);
+            if (data) {
+                return JSON.parse(data);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        return [];
+    }, [userEmailKey]);
+
+    const displayHistory = React.useMemo(() => {
+        if (localHistory && localHistory.length > 0) {
+            return localHistory.map(ride => ({
+                ...ride,
+                icon: getServiceIcon(ride.service)
+            }));
+        }
+        if (isDemo) {
+            return [
+                { id: 1, service: 'CYBERDISPATCH', date: 'TODAY, 18:42', price: '€ 14.20', destination: 'Cyber Terrace 42', driver: 'SERGEI K.', icon: Zap },
+                { id: 2, service: 'PREMIUM RIDE', date: 'YESTERDAY, 21:15', price: '€ 22.50', destination: 'Neo Tokyo Central', driver: 'ELENA R.', icon: Shield },
+                { id: 3, service: 'CLASSIC', date: '14 FEB, 09:30', price: '€ 8.90', destination: 'Uplink Tower', driver: 'MARCUS V.', icon: Clock }
+            ];
+        }
+        return [];
+    }, [localHistory, isDemo]);
+
+    const memberSince = React.useMemo(() => {
+        if (isDemo) return "JAN '24";
+        if (user?.createdAt) {
+            try {
+                const date = typeof user.createdAt.toDate === 'function' ? user.createdAt.toDate() : new Date(user.createdAt);
+                const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+                return `${months[date.getMonth()]} '${String(date.getFullYear()).slice(-2)}`;
+            } catch (e) {
+                // ignore
+            }
+        }
+        return "NEW";
+    }, [isDemo, user]);
 
     return (
         <div className="min-h-screen bg-dark-950 text-primary font-sans relative pb-32 transition-colors duration-300">
@@ -42,7 +91,7 @@ const RideHistoryHub = () => {
                         </div>
                         <div className="relative z-10 text-center space-y-2">
                             <p className="text-[8px] font-black uppercase tracking-[0.2em] text-brand">Fleet Stats ⚡</p>
-                            <h2 className="text-4xl font-black italic tracking-tighter text-primary">{rideHistory.length}</h2>
+                            <h2 className="text-4xl font-black italic tracking-tighter text-primary">{displayHistory.length}</h2>
                             <p className="text-[8px] font-black uppercase tracking-widest text-secondary">Total Trips</p>
                         </div>
                     </div>
@@ -52,7 +101,7 @@ const RideHistoryHub = () => {
                         </div>
                         <div className="relative z-10 text-center space-y-2">
                             <p className="text-[8px] font-black uppercase tracking-[0.2em] text-brand">Network Tier 💎</p>
-                            <h2 className="text-2xl font-black italic tracking-tighter text-primary">JAN '24</h2>
+                            <h2 className="text-2xl font-black italic tracking-tighter text-primary">{memberSince}</h2>
                             <p className="text-[8px] font-black uppercase tracking-widest text-secondary">Member Since</p>
                         </div>
                     </div>
@@ -62,7 +111,7 @@ const RideHistoryHub = () => {
                 <section className="space-y-4">
                     <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-secondary px-2 italic text-left">Past Services</h3>
                     <div className="space-y-4">
-                        {rideHistory.map((ride, i) => (
+                        {displayHistory.map((ride, i) => (
                             <motion.div 
                                 key={ride.id}
                                 initial={{ opacity: 0, y: 20 }}

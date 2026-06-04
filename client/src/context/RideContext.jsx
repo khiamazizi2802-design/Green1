@@ -1,8 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const RideContext = createContext();
 
 export const RideProvider = ({ children }) => {
+    const { user } = useAuth();
+    const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
+    const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+
     const [activeRides, setActiveRides] = useState([]); 
     const [isPoolingEnabled, setIsPoolingEnabled] = useState(() => localStorage.getItem('green_pooling_enabled') === 'true');
     const [isFTDOnly, setIsFTDOnly] = useState(false);
@@ -10,9 +15,18 @@ export const RideProvider = ({ children }) => {
     
     const [allowDashboardView, setAllowDashboardView] = useState(false);
     const [friendRequests, setFriendRequests] = useState({}); // Outgoing: { riderId: 'pending' }
-    const [incomingRequests, setIncomingRequests] = useState([
-        { id: 'cr-mock-1', name: 'Julian R.', image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julian', status: 'pending' }
-    ]);
+    const [incomingRequests, setIncomingRequests] = useState([]);
+    
+    useEffect(() => {
+        if (isDemo) {
+            setIncomingRequests([
+                { id: 'cr-mock-1', name: 'Julian R.', image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julian', status: 'pending' }
+            ]);
+        } else {
+            setIncomingRequests([]);
+        }
+    }, [isDemo]);
+
     const [mutualFriends, setMutualFriends] = useState([]);
     
     // Global Ride Status for persistence
@@ -22,14 +36,32 @@ export const RideProvider = ({ children }) => {
         return saved ? JSON.parse(saved) : null;
     });
 
-    const [venueTickets, setVenueTickets] = useState(() => {
-        const saved = localStorage.getItem('green_venue_tickets');
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [venueTickets, setVenueTickets] = useState([]);
 
     useEffect(() => {
-        localStorage.setItem('green_venue_tickets', JSON.stringify(venueTickets));
-    }, [venueTickets]);
+        if (user?.email) {
+            const emailKey = user.email.replace(/[^a-zA-Z0-9]/g, '_');
+            const saved = localStorage.getItem(`green_venue_tickets_${emailKey}`);
+            if (saved) {
+                try {
+                    setVenueTickets(JSON.parse(saved));
+                } catch (e) {
+                    setVenueTickets([]);
+                }
+            } else {
+                setVenueTickets([]);
+            }
+        } else {
+            setVenueTickets([]);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (user?.email) {
+            const emailKey = user.email.replace(/[^a-zA-Z0-9]/g, '_');
+            localStorage.setItem(`green_venue_tickets_${emailKey}`, JSON.stringify(venueTickets));
+        }
+    }, [venueTickets, user]);
 
     const addVenueTicket = (ticket) => {
         setVenueTickets(prev => [ticket, ...prev]);

@@ -19,6 +19,7 @@ import { useSocket } from '../context/SocketContext';
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
     const { drivers } = useSocket();
+    const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
 
     // NOTCH & SAFE AREA INTEGRATION
     const useSafeArea = localStorage.getItem('green_manager_use_safe_area') !== 'false';
@@ -171,7 +172,6 @@ const AdminDashboard = () => {
                 
                 const categoryColor = offerCategory === 'Nightlife' ? 'text-brand' :
                                       offerCategory === 'Restaurant' ? 'text-amber-400' :
-                                      offerCategory === 'Eco-Wash' ? 'text-blue-400' :
                                       offerCategory === 'Hotel VIP' ? 'text-violet-400' : 'text-emerald-400';
                 
                 const newOffer = {
@@ -302,12 +302,12 @@ const AdminDashboard = () => {
         }
     ]);
 
-    const rawFeedbackItems = [
+    const rawFeedbackItems = isDemo ? [
         { type: 'Fleet', id: 'DR-492', location: 'Frankfurt Sector 2', date: '2024-05-01', time: '22:14', rating: 1, text: 'Driver was late and the vehicle cleanliness was subpar for the Executive tier.', user: 'Marcus G.' },
         { type: 'Restaurant', id: 'Midnight Neon', location: 'Zeil District', date: '2024-05-01', time: '23:45', rating: 5, text: 'Incredible atmosphere and the fast-track entry via the app worked flawlessly.', user: 'Elena V.' },
         { type: 'Stadium', id: 'Commerzbank Arena', location: 'South Gate', date: '2024-05-01', time: '19:30', rating: 4, text: 'Shuttle frequency was high, but boarding needs better organization.', user: 'Hansi M.' },
         { type: 'Hotel', id: 'Grand Frankfurt', location: 'Main River', date: '2024-04-30', time: '09:12', rating: 5, text: 'Seamless checkout experience. The Director level concierge was helpful.', user: 'Sophie K.' }
-    ];
+    ] : [];
 
     const anonymizeFeedback = (items, active) => {
         if (!active) return items;
@@ -602,6 +602,77 @@ billing payouts are required.
         { id: 'INS-03', type: 'legal', title: 'New EU Data Directive', target: 'System Policy', reason: 'Amendment required for cross-border passenger data retention.', law: 'GDPR Art. 44-49', severity: 'medium', status: 'pending' }
     ]);
 
+    useEffect(() => {
+        if (!isDemo) {
+            setStripeTotalVolume(0);
+            setStripePlatformProvisions(0);
+            setStripeCardFees(0);
+            setStripeDirectSplitsProcessed(0);
+            setTodayEarnings(0);
+            setStripeLiveWebhookEvents([]);
+            setLiveSplitsLedger([]);
+            setStripeConnectedPartners([]);
+            setStaffList([]);
+            setNeuralInsights([]);
+            setStripeKycAccountId('');
+            setStripeKycName('');
+            setStripeKycEmail('');
+            setStripeKycAddress('');
+            setStripeKycTaxId('');
+            setStripeKycIban('');
+            setStripeKycSwift('');
+            setStripeKycSubmitted(false);
+            setStripeBankVerified(false);
+        } else {
+            setStripeTotalVolume(142840.00);
+            setStripePlatformProvisions(14320.00);
+            setStripeCardFees(2841.80);
+            setStripeDirectSplitsProcessed(3204);
+            setTodayEarnings(642.45);
+            setStripeLiveWebhookEvents([
+                { time: '21:05:33', level: 'SYSTEM', msg: '🔐 Stripe API Connect Session active on port 443' },
+                { time: '21:04:42', level: 'WEBHOOK', msg: 'Event payment_intent.succeeded received for tx ch_3M4d99FKe821' },
+                { time: '21:04:42', level: 'ROUTING', msg: 'Connect Split: routed 20.91 € net to partner acct_fleet_102 (absorbed card fee 0.59 €)' },
+                { time: '21:04:42', level: 'PLATFORM', msg: 'Secured flat step provision of 3.00 € for Jordan Executive' },
+                { time: '21:04:42', level: 'FINANZAMT', msg: 'Stored legal B2B invoice INV-2026-0881 under BDSG / GwG §6' },
+                { time: '20:46:01', level: 'WEBHOOK', msg: 'Event payment_intent.succeeded received for tx ch_3M4d88FKe190' },
+                { time: '20:46:01', level: 'ROUTING', msg: 'Connect Split: routed 140.15 € net to partner acct_stadium_824 (absorbed card fee 2.35 €)' },
+                { time: '20:46:01', level: 'PLATFORM', msg: 'Secured flat 5% ticket commission of 7.50 €' }
+            ]);
+            setLiveSplitsLedger([
+                { id: 1, time: '21:02:44', tx: 'ch_3M4d99FKe821', partner: 'acct_fleet_102', partnerName: 'Hessen EcoFleet', client: 'Marcus G.', total: '24.50', prov: '3.00', fee: '0.59', tag: '🚗 Fleet Trip (Base Step)', status: 'INSTANT SPLIT ⚡', inv: 'INV-2026-0881', category: 'transport', date: '2026-05-23' },
+                { id: 2, time: '20:45:12', tx: 'ch_3M4d88FKe190', partner: 'acct_stadium_824', partnerName: 'Green Stadium Arena', client: 'Hansi M.', total: '150.00', prov: '7.50', fee: '2.35', tag: '🎟️ VIP Tickets (5% Commission)', status: 'INSTANT SPLIT ⚡', inv: 'INV-2026-0882', category: 'events', date: '2026-05-23' },
+                { id: 3, time: '19:12:05', tx: 'ch_3M4d77FKe402', partner: 'acct_hotel_913', partnerName: 'Grand Frankfurt Hotel', client: 'Sophie K.', total: '240.00', prov: '12.00', fee: '3.61', tag: '🏨 Hotel Suite (5% Commission)', status: 'INSTANT SPLIT ⚡', inv: 'INV-2026-0883', category: 'hotels', date: '2026-05-23' },
+                { id: 4, time: '18:55:30', tx: 'ch_3M4d66FKe331', partner: 'acct_restaurant_495', partnerName: 'Saffron Fine Dining', client: 'Elena V.', total: '85.00', prov: '0.00', fee: '1.44', tag: '🍔 Food & Drinks (0% Platform Fee)', status: 'VENUE PAYOUT 🍹', inv: 'N/A (Direct Sales)', category: 'clubs', date: '2026-05-23' }
+            ]);
+            setStripeConnectedPartners([
+                { id: 'acct_fleet_102', name: 'Hessen EcoFleet', manager: 'Marcus G.', industry: 'Logistics', status: 'Active', balance: 4120.50, grossContribution: 38400.00, iban: 'DE44 5002 0000 1294 88', swift: 'HEFLEETDEM1X', commissionModel: 'Progressive Step (3€ Base + 2€ per 30€)', totalPaidOut: 34279.50 },
+                { id: 'acct_restaurant_495', name: 'Saffron Fine Dining', manager: 'Elena V.', industry: 'Restaurant', status: 'Active', balance: 1480.00, grossContribution: 22120.00, iban: 'DE91 2201 9922 4481 00', swift: 'SAFFRONDEM2X', commissionModel: '0% Restaurant Sales Policy', totalPaidOut: 20640.00 },
+                { id: 'acct_hotel_913', name: 'Grand Frankfurt Hotel', manager: 'Sophie K.', industry: 'Hospitality', status: 'Active', balance: 5800.00, grossContribution: 54300.00, iban: 'DE33 4004 1122 3344 55', swift: 'GRANDDEM3X', commissionModel: 'Flat 5.0% Platform Fee', totalPaidOut: 48500.00 },
+                { id: 'acct_stadium_824', name: 'Green Stadium Arena', manager: 'Hansi M.', industry: 'Events', status: 'Active', balance: 9200.00, grossContribution: 28020.00, iban: 'DE22 9009 5544 3322 11', swift: 'STADIUMDEM4X', commissionModel: 'Flat 5.0% Booking Fee', totalPaidOut: 18820.00 },
+                { id: 'acct_fleet_044', name: 'Berlin VIP Shuttle', manager: 'Sven Weber', industry: 'Logistics', status: 'Active', balance: 2940.00, grossContribution: 16120.00, iban: 'DE77 1001 8844 9922 11', swift: 'BERLINDEM5X', commissionModel: 'Progressive Step (3€ Base + 2€ per 30€)', totalPaidOut: 13180.00 }
+            ]);
+            setStaffList([
+                { id: 'S-900-11', name: 'Elena Richter', role: 'Customer Service Alpha', email: 'elena.r@green.io', phone: '+49 152 4492 110', adress: 'Hauptstr 12, 60311 Frankfurt', zip: '60311', bank: 'DE44 5002 0000 1294 88', img: 'Elena' },
+                { id: 'S-900-12', name: 'Sven Weber', role: 'Partner Support Beta', email: 'sven.w@green.io', phone: '+49 176 8821 004', adress: 'Zeil 44, 60313 Frankfurt', zip: '60313', bank: 'DE91 2201 9922 4481 00', img: 'Sven' }
+            ]);
+            setNeuralInsights([
+                { id: 'INS-01', type: 'fraud', title: 'GPS Manipulation Detected', target: 'Driver D-404', reason: 'System detected simulated coordinates matching known spoofing patterns.', law: 'PBefG §49 (Operating outside territory)', severity: 'high', status: 'pending' },
+                { id: 'INS-02', type: 'compliance', title: 'V5C Authenticity Warning', target: 'Partner P-102', reason: 'Metadata mismatch in uploaded Vehicle Registration. Possible forgery.', law: 'StVZO §13 (Document Integrity)', severity: 'critical', status: 'pending' },
+                { id: 'INS-03', type: 'legal', title: 'New EU Data Directive', target: 'System Policy', reason: 'Amendment required for cross-border passenger data retention.', law: 'GDPR Art. 44-49', severity: 'medium', status: 'pending' }
+            ]);
+            setStripeKycAccountId('acct_1oA92FFK99014B');
+            setStripeKycName('Jordan Executive');
+            setStripeKycEmail('jordan@green.io');
+            setStripeKycAddress('Sky Tower 1, Main Plaza, Frankfurt');
+            setStripeKycTaxId('DE-88-129-44');
+            setStripeKycIban('DE99 2004 0000 1294 55');
+            setStripeKycSwift('DBANKDEMXXX');
+            setStripeKycSubmitted(true);
+            setStripeBankVerified(true);
+        }
+    }, [isDemo]);
+
     const [chatMessages, setChatMessages] = useState({
         financial: [{ role: 'agent', text: 'Good morning, Director. I have reviewed the latest transport amendments for Germany. Your current fleet licensing is 100% compliant, but the new PBefG regulations in Q3 will require a minor adjustment to your partner insurance clauses. Shall I prepare the briefing?' }],
         operations: [{ role: 'agent', text: 'Operational load is steady. Stadium event at 8 PM will require 20% more fleet density in Sector 4.' }],
@@ -661,6 +732,7 @@ billing payouts are required.
     // Real-Time passive daily platform earnings ticking simulator
     useEffect(() => {
         const earningsTimer = setInterval(() => {
+            if (!isDemo) return;
             if (isSimulatingPayoutFlow) return; // Pause ticking during active direct splits simulator
 
             const randIncrement = parseFloat((Math.random() * 0.16 + 0.02).toFixed(2));
@@ -1145,10 +1217,7 @@ billing payouts are required.
                 partner = 'Green Stadium Arena';
                 title = '15% Off VIP Skybox Ticket';
                 discount = '15%';
-            } else if (query.includes('wash') || query.includes('car') || query.includes('clean')) {
-                partner = 'Eco-Wash Zentrum';
-                title = 'Free Premium Wax & Protection';
-                discount = 'Free Wax';
+
             } else if (query.includes('neon') || query.includes('festival') || query.includes('club')) {
                 partner = 'Midnight Neon Club';
                 title = 'Free Welcome Drink & Express Gate Access';
@@ -1886,7 +1955,7 @@ billing payouts are required.
                                             {/* Multi-Slot Offer Type Uploader */}
                                             <div className="space-y-3">
                                                 <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">1. UPLOAD OFFERS BY CATEGORY (PDF / FLYER / IMAGE)</label>
-                                                {[{id:'nightlife', label:'🍸 Nightlife'}, {id:'restaurant', label:'🍽️ Restaurant'}, {id:'ecowash', label:'♻️ Eco-Wash'}, {id:'hotel', label:'🏨 Hotel VIP'}].map(cat => (
+                                                {[{id:'nightlife', label:'🍸 Nightlife'}, {id:'restaurant', label:'🍽️ Restaurant'}, {id:'hotel', label:'🏨 Hotel VIP'}].map(cat => (
                                                     <div key={cat.id} className="flex items-center gap-3">
                                                         <div
                                                             onClick={() => document.getElementById(`campaign-file-${cat.id}`)?.click()}
@@ -3999,7 +4068,7 @@ billing payouts are required.
                                             <div className="space-y-4">
                                                 {[
                                                     { id: 'TR-01', name: 'Marcus H.', from: 'Green Fleet', to: 'Midnight Club', date: 'Just now' },
-                                                    { id: 'TR-02', name: 'Sarah K.', from: 'Eco-Wash', to: 'Blue Velvet Bar', date: '2h ago' }
+                                                    { id: 'TR-02', name: 'Sarah K.', from: 'Grand Frankfurt Hotel', to: 'Blue Velvet Bar', date: '2h ago' }
                                                 ].map((req) => (
                                                     <div key={req.id} className="p-6 bg-white/5 border border-white/5 rounded-[2rem] flex flex-col md:flex-row justify-between items-center gap-6 hover:border-violet-500/30 transition-all">
                                                         <div className="flex items-center gap-4">

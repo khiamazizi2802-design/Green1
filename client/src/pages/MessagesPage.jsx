@@ -6,8 +6,11 @@ import {
     MessageCircle, Users, CheckCircle2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const MessagesPage = () => {
+    const { user } = useAuth();
+    const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('all'); // 'all', 'messages', 'offers', 'friends'
     const [selectedItem, setSelectedItem] = useState(null); // Full offer detail modal
@@ -37,36 +40,7 @@ const MessagesPage = () => {
     }, [activeChatThread]);
 
     // Friends list (Customers who are friends)
-    const [friendsList, setFriendsList] = useState([
-        { 
-            name: 'Sarah M.', 
-            role: 'Friend • Passenger', 
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah', 
-            status: 'Online',
-            initialMsg: 'Hey Alex! I saw you are heading to Eco-Park Central too. Would you like to split the ride?'
-        },
-        { 
-            name: 'Marcus V.', 
-            role: 'Friend • Passenger', 
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus', 
-            status: 'Offline',
-            initialMsg: 'Hey leader! Just took a look at the Fair-Split ledger card on the GreenS tab for our group. Split payout sent!'
-        },
-        { 
-            name: 'Elena R.', 
-            role: 'Friend • Passenger', 
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena', 
-            status: 'Online',
-            initialMsg: 'Are you at the Green Underground lounge yet?'
-        },
-        { 
-            name: 'Julian K.', 
-            role: 'Friend • Passenger', 
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julian', 
-            status: 'Online',
-            initialMsg: 'Just splitting the bottle bill now on Greens!'
-        }
-    ]);
+    const [friendsList, setFriendsList] = useState([]);
 
     // Authorized chat contacts database (Staff, Drivers, Managers, and Friends ONLY)
     const allowedChatThreads = {
@@ -97,86 +71,127 @@ const MessagesPage = () => {
     };
 
     // Chat threads state manager
-    const [chatHistory, setChatHistory] = useState(allowedChatThreads);
+    const [chatHistory, setChatHistory] = useState({});
 
     // General inbox feed items
-    const [inboxItems, setInboxItems] = useState([
-        {
-            id: 'm-1',
-            type: 'message',
-            sender: 'Sarah M.',
-            role: 'Friend • Passenger',
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-            subject: 'Let’s share a ride to Eco-Park!',
-            preview: 'Hey Alex! I saw you are heading to Eco-Park Central too. Would you like to split...',
-            time: '2 mins ago',
-            tag: 'Friend Match'
-        },
-        {
-            id: 'o-1',
-            type: 'offer',
-            sender: 'Green Underground',
-            role: 'Premium Partner Venue',
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Underground',
-            subject: 'Exclusive VIP Fast-Lane Entry Offer! 🎟️',
-            preview: 'Get 50% off standard VIP passes for tonight event. Exclusively on Green...',
-            content: 'Exclusive member perk! The Green Underground is offering you a prestige fast-lane entry voucher for tonight’s Neon Beats Showcase. Present this digital ticket at the entrance to bypass the main queue completely. Claim it now to add to your secure wallet.',
-            time: '1 hour ago',
-            tag: '50% Discount',
-            actionText: 'Claim Pass (50% Off)',
-            actionRoute: '/venue/menu'
-        },
-        {
-            id: 'm-2',
-            type: 'message',
-            sender: 'Sergei K.',
-            role: 'Elite Driver (FTD Saved)',
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sergei',
-            subject: 'Detached Detailing ready',
-            preview: 'Hi Alex, I am back on the grid and available. If you need a ride today...',
-            time: '3 hours ago',
-            tag: 'Driver'
-        },
-        {
-            id: 'o-2',
-            type: 'offer',
-            sender: 'Eco-Wash Hub',
-            role: 'Registered Partner',
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Wash',
-            subject: 'Free Premium Espresso Perk! ☕',
-            preview: 'Enjoy a free single-origin espresso at our lounge while your car gets...',
-            content: 'Hello Alex! To welcome you back, we are hosting a loyalty program perk: Enjoy a complimentary single-origin espresso in our premium lounge during any active vehicle detailing session today. Simply scan this voucher code at our cafe counter.',
-            time: '5 hours ago',
-            tag: 'Loyalty Reward',
-            actionText: 'View Wash Hub',
-            actionRoute: '/partner/details'
-        },
-        {
-            id: 'm-3',
-            type: 'message',
-            sender: 'Marcus V.',
-            role: 'Friend • Passenger',
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus',
-            subject: 'Group Tab Ledger updated!',
-            preview: 'Hey leader, I just reviewed our shared balance card for last night. Looks...',
-            time: '1 day ago',
-            tag: 'Group Friend'
-        },
-        {
-            id: 'o-3',
-            type: 'offer',
-            sender: 'Khiam Sentinel',
-            role: 'HQ Security Hub',
-            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sentinel',
-            subject: 'Biometric Safe Recovery Verification active',
-            preview: 'Secure your backup keys today to receive 50 bonus Green Coins...',
-            content: 'System Alert: Enhance your account security protocol today by configuring your biometric backup recovery keys. Completing this 1-minute security audit adds 50 bonus Green Coins directly into your secure wallet.',
-            time: '2 days ago',
-            tag: 'HQ Staff Alert',
-            actionText: 'Secure Hub Now',
-            actionRoute: '/security-recovery'
+    const [inboxItems, setInboxItems] = useState([]);
+
+    useEffect(() => {
+        if (!isDemo) {
+            setFriendsList([]);
+            setChatHistory({});
+            setInboxItems([]);
+        } else {
+            setFriendsList([
+                { 
+                    name: 'Sarah M.', 
+                    role: 'Friend • Passenger', 
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah', 
+                    status: 'Online',
+                    initialMsg: 'Hey Alex! I saw you are heading to Eco-Park Central too. Would you like to split the ride?'
+                },
+                { 
+                    name: 'Marcus V.', 
+                    role: 'Friend • Passenger', 
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus', 
+                    status: 'Offline',
+                    initialMsg: 'Hey leader! Just took a look at the Fair-Split ledger card on the GreenS tab for our group. Split payout sent!'
+                },
+                { 
+                    name: 'Elena R.', 
+                    role: 'Friend • Passenger', 
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena', 
+                    status: 'Online',
+                    initialMsg: 'Are you at the Green Underground lounge yet?'
+                },
+                { 
+                    name: 'Julian K.', 
+                    role: 'Friend • Passenger', 
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julian', 
+                    status: 'Online',
+                    initialMsg: 'Just splitting the bottle bill now on Greens!'
+                }
+            ]);
+            setChatHistory(allowedChatThreads);
+            setInboxItems([
+                {
+                    id: 'm-1',
+                    type: 'message',
+                    sender: 'Sarah M.',
+                    role: 'Friend • Passenger',
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+                    subject: 'Let’s share a ride to Eco-Park!',
+                    preview: 'Hey Alex! I saw you are heading to Eco-Park Central too. Would you like to split...',
+                    time: '2 mins ago',
+                    tag: 'Friend Match'
+                },
+                {
+                    id: 'o-1',
+                    type: 'offer',
+                    sender: 'Green Underground',
+                    role: 'Premium Partner Venue',
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Underground',
+                    subject: 'Exclusive VIP Fast-Lane Entry Offer! 🎟️',
+                    preview: 'Get 50% off standard VIP passes for tonight event. Exclusively on Green...',
+                    content: 'Exclusive member perk! The Green Underground is offering you a prestige fast-lane entry voucher for tonight’s Neon Beats Showcase. Present this digital ticket at the entrance to bypass the main queue completely. Claim it now to add to your secure wallet.',
+                    time: '1 hour ago',
+                    tag: '50% Discount',
+                    actionText: 'Claim Pass (50% Off)',
+                    actionRoute: '/venue/menu'
+                },
+                {
+                    id: 'm-2',
+                    type: 'message',
+                    sender: 'Sergei K.',
+                    role: 'Elite Driver (FTD Saved)',
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sergei',
+                    subject: 'Detached Detailing ready',
+                    preview: 'Hi Alex, I am back on the grid and available. If you need a ride today...',
+                    time: '3 hours ago',
+                    tag: 'Driver'
+                },
+                {
+                    id: 'o-2',
+                    type: 'offer',
+                    sender: 'The Blue Velvet Bar',
+                    role: 'Registered Partner',
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bar',
+                    subject: 'Free Signature Cocktail Perk! 🍸',
+                    preview: 'Enjoy a free signature mixology cocktail at our premium lounge today...',
+                    content: 'Hello Alex! To welcome you back, we are hosting a loyalty program perk: Enjoy a complimentary handcrafted signature cocktail in our premium lounge today. Simply scan this voucher code at our bar counter.',
+                    time: '5 hours ago',
+                    tag: 'Loyalty Reward',
+                    actionText: 'View Blue Velvet',
+                    actionRoute: '/venue/menu'
+                },
+                {
+                    id: 'm-3',
+                    type: 'message',
+                    sender: 'Marcus V.',
+                    role: 'Friend • Passenger',
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus',
+                    subject: 'Group Tab Ledger updated!',
+                    preview: 'Hey leader, I just reviewed our shared balance card for last night. Looks...',
+                    time: '1 day ago',
+                    tag: 'Group Friend'
+                },
+                {
+                    id: 'o-3',
+                    type: 'offer',
+                    sender: 'Khiam Sentinel',
+                    role: 'HQ Security Hub',
+                    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sentinel',
+                    subject: 'Biometric Safe Recovery Verification active',
+                    preview: 'Secure your backup keys today to receive 50 bonus Green Coins...',
+                    content: 'System Alert: Enhance your account security protocol today by configuring your biometric backup recovery keys. Completing this 1-minute security audit adds 50 bonus Green Coins directly into your secure wallet.',
+                    time: '2 days ago',
+                    tag: 'HQ Staff Alert',
+                    actionText: 'Secure Hub Now',
+                    actionRoute: '/security-recovery'
+                }
+            ]);
         }
-    ]);
+    }, [isDemo]);
 
     // Load custom offers from localStorage on mount
     useEffect(() => {

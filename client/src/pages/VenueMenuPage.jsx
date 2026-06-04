@@ -8,6 +8,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRide } from '../context/RideContext';
 import { useSocket } from '../context/SocketContext';
+import { useAuth } from '../context/AuthContext';
 import { db } from '../config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -193,17 +194,18 @@ const VenueMenuPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { socket } = useSocket();
+    const { user } = useAuth();
+    const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
     
     const venueName = location.state?.venueName || "Eco-Park Central";
     const venueOffer = location.state?.venueOffer || "Reserve Level -1 Spots";
     const isTakeawayMode = location.state?.isTakeawayMode || false;
     
-    const isWashHub = venueName.toLowerCase().includes('wash');
     const isParking = venueName.toLowerCase().includes('park');
     const isHotel = venueName.toLowerCase().includes('hotel') || venueName.toLowerCase().includes('luxe');
     const isStadium = venueName.toLowerCase().includes('stadium') || venueName.toLowerCase().includes('arena');
     const isDining = venueName.toLowerCase().includes('dining') || venueName.toLowerCase().includes('restaurant') || venueName.toLowerCase().includes('bistro') || venueName.toLowerCase().includes('eat') || venueName.toLowerCase().includes('food') || venueName.toLowerCase().includes('cafe') || venueName.toLowerCase().includes('café') || venueName.toLowerCase().includes('diner') || venueName.toLowerCase().includes('steakhouse') || venueName.toLowerCase().includes('gastronomy') || venueName.toLowerCase().includes('sushi') || venueName.toLowerCase().includes('pizza') || venueName.toLowerCase().includes('kitchen') || venueName.toLowerCase().includes('bistro');
-    const isClub = (venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('disco') || venueName.toLowerCase().includes('lounge') || venueName.toLowerCase().includes('night') || venueName.toLowerCase().includes('bar') || venueName.toLowerCase().includes('festival') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('underground')) && !isDining && !isHotel && !isStadium && !isWashHub && !isParking;
+    const isClub = (venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('disco') || venueName.toLowerCase().includes('lounge') || venueName.toLowerCase().includes('night') || venueName.toLowerCase().includes('bar') || venueName.toLowerCase().includes('festival') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('underground')) && !isDining && !isHotel && !isStadium && !isParking;
 
     const isGroupActive = localStorage.getItem('green_group_state') === 'active';
 
@@ -274,19 +276,8 @@ const VenueMenuPage = () => {
             name: "Elite Subscriptions",
             items: [
                 { id: 'pw1', name: "Weekly Membership", price: 120.00, desc: "7 days of priority parking. Valet Service Included.", image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=400&fit=crop", tags: ["Valet Included"] },
-                { id: 'pm1', name: "Monthly Executive", price: 350.00, desc: "Unlimited access. 24/7 Valet Service & Carwash discounts.", image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=400&fit=crop", tags: ["Valet Included"] },
+                { id: 'pm1', name: "Monthly Executive", price: 350.00, desc: "Unlimited access. 24/7 Valet Service & EV charging access.", image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=400&fit=crop", tags: ["Valet Included"] },
                 { id: 'py1', name: "Annual Diamond", price: 3200.00, desc: "Dedicated spot. Full Concierge & Valet Service.", image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=400&fit=crop", tags: ["Valet Included"] },
-            ]
-        }
-    ];
-
-    const carwashCategories = [
-        {
-            name: "Professional Services",
-            items: [
-                { id: 'w1', name: "Ceramic Shield Pro", price: 85.00, desc: "9H Nano-ceramic coating for extreme gloss and 12-month protection.", image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=400&h=400&fit=crop", tags: ["Service"] },
-                { id: 'w2', name: "Showroom Carnuba Wax", price: 45.00, desc: "Hand-applied Brazilian wax for exhibition-quality depth.", image: "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=400&h=400&fit=crop", tags: ["Service"] },
-                { id: 'w3', name: "Interior Steam Purge", price: 35.00, desc: "Deep steam cleaning to eliminate bacteria and stubborn odors.", image: "https://images.unsplash.com/photo-1599256621730-535171e28e50?w=400&h=400&fit=crop", tags: ["Service"] },
             ]
         }
     ];
@@ -360,7 +351,7 @@ const VenueMenuPage = () => {
             name: "VIP Parking & Valet",
             items: [
                 { id: 'sv1', name: "Stadium Valet Entry", price: 45.00, desc: "VIP gate vehicle drop-off. Car returned to exit at full-time.", image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=400&fit=crop", tags: ["Valet"] },
-                { id: 'sv2', name: "The 'Watch & Wash' Bundle", price: 120.00, desc: "Valet drop-off + Full Ceramic detail at Green Wash Hub during the match.", image: "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=400&h=400&fit=crop", tags: ["Bundle", "Valet"] },
+                { id: 'sv2', name: "The 'Valet Charging' Bundle", price: 120.00, desc: "Valet drop-off + Full EV charging to 100% capacity during the match.", image: "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=400&h=400&fit=crop", tags: ["Bundle", "Valet"] },
             ]
         }
     ];
@@ -390,7 +381,7 @@ const VenueMenuPage = () => {
         }
     ];
 
-    const defaultCategories = isStadium ? stadiumCategories : isClub ? clubCategories : isHotel ? hotelCategories : isDining ? diningCategories : isWashHub ? carwashCategories : isParking ? parkingCategories : [
+    const defaultCategories = isStadium ? stadiumCategories : isClub ? clubCategories : isHotel ? hotelCategories : isDining ? diningCategories : isParking ? parkingCategories : [
         {
             name: "Signature Cocktails",
             items: [
@@ -409,13 +400,12 @@ const VenueMenuPage = () => {
         if (!emailKey) {
             if (isHotel) emailKey = 'hotel_green_de';
             else if (isStadium) emailKey = 'stadium_green_de';
-            else if (isWashHub) emailKey = 'wash_green_de';
             else if (isParking) emailKey = 'parking_green_de';
             else if (venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('velvet')) emailKey = 'club_green_de';
             else emailKey = 'restaurant_green_de';
         }
 
-        const bizType = isWashHub ? 'WM' : isParking ? 'PM' : isHotel ? 'HM' : isStadium ? 'SM' : 'RM';
+        const bizType = isParking ? 'PM' : isHotel ? 'HM' : isStadium ? 'SM' : 'RM';
         
         const fetchDynamicMenu = async () => {
             let customItems = null;
@@ -471,7 +461,7 @@ const VenueMenuPage = () => {
         };
 
         fetchDynamicMenu();
-    }, [isWashHub, isParking, isHotel, isStadium, location.state, venueName]);
+    }, [isParking, isHotel, isStadium, location.state, venueName]);
 
     const hasTicketsInCart = cart.some(item => 
         item.tags?.includes('Ticket') || 
@@ -604,6 +594,7 @@ const VenueMenuPage = () => {
     }, [showPaymentTerminal, paymentStep, isStadium, isClub, cart]);
 
     const getPaymentMethods = () => {
+        if (!isDemo) return [];
         try {
             const savedMethods = localStorage.getItem('green_payment_methods');
             if (savedMethods) {
@@ -745,10 +736,10 @@ const VenueMenuPage = () => {
             
             const newTicket = {
                 id: `#${Date.now()}`,
-                type: (isStadium && hasTicketsInCart) ? 'stadium_ticket' : (isClub && hasTicketsInCart) ? 'club_ticket' : isParking ? 'parking' : isWashHub ? 'service' : isBooking ? 'booking' : (isHotel ? 'room_service' : 'order'),
+                type: (isStadium && hasTicketsInCart) ? 'stadium_ticket' : (isClub && hasTicketsInCart) ? 'club_ticket' : isParking ? 'parking' : isBooking ? 'booking' : (isHotel ? 'room_service' : 'order'),
                 venueName,
                 venueOffer,
-                tableId: isStadium ? 'E-Ticket' : isClub ? 'Club-Pass' : hasTicketsInCart ? 'E-Ticket' : isParking ? 'Valet-Pass' : isWashHub ? 'Wash-Ticket' : isBooking ? 'Check-in Assigned' : selectedTable,
+                tableId: isStadium ? 'E-Ticket' : isClub ? 'Club-Pass' : hasTicketsInCart ? 'E-Ticket' : isParking ? 'Valet-Pass' : isBooking ? 'Check-in Assigned' : selectedTable,
                 guestName: isBooking ? `${guestDetails.firstName} ${guestDetails.lastName}`.trim() : guestName,
                 guestDetails: (isBooking || isStadium || isClub || hasTicketsInCart) ? guestDetails : null,
                 attendees: (isStadium || isClub) ? attendees : [],
@@ -808,7 +799,6 @@ const VenueMenuPage = () => {
                 else if (isStadium && hasTicketsInCart) typeDisplay = 'Stadium E-Ticket';
                 else if (isClub && hasTicketsInCart) typeDisplay = 'Club Event Ticket';
                 else if (isParking) typeDisplay = 'Valet Parking';
-                else if (isWashHub) typeDisplay = 'Wash Service';
 
                 const managerOrder = {
                     guest: guestDetails?.companyName ? `${newTicket.guestName} (${guestDetails.companyName})` : (newTicket.guestName || 'Anonymous Guest'),
@@ -819,7 +809,7 @@ const VenueMenuPage = () => {
                     type: typeDisplay,
                     time: 'Just now',
                     payment: paymentDisplay,
-                    table: (!isBooking && !isHotel && !isStadium && !isClub && !isParking && !isWashHub && !hasTicketsInCart) ? newTicket.tableId : undefined,
+                    table: (!isBooking && !isHotel && !isStadium && !isClub && !isParking && !hasTicketsInCart) ? newTicket.tableId : undefined,
                     room: (isBooking || isHotel) ? (newTicket.tableId && newTicket.tableId !== 'Check-in Assigned' ? newTicket.tableId : String(Math.floor(100 + Math.random() * 400))) : undefined,
                     checkIn: isBooking ? 'May 19' : undefined,
                     checkOut: isBooking ? 'May 21' : undefined
@@ -904,9 +894,7 @@ const VenueMenuPage = () => {
                     ? `Mission Secured. Personalized tickets dispatched to ${guestName} and ${attendees.length} guests.`
                     : isHotel 
                         ? `Request Sent for Room ${selectedTable}. Added to Folio.` 
-                        : isWashHub
-                            ? `Request Sent for Ticket #${Date.now().toString().slice(-4)}. Payment Pending.`
-                            : `Order Sent for Table ${selectedTable}. Payment Pending.`;
+                        : `Order Sent for Table ${selectedTable}. Payment Pending.`;
             
             triggerToast(successMsg);
         }, 2000);
@@ -923,7 +911,6 @@ const VenueMenuPage = () => {
         if (isStadium) return 'GENERATE TICKETS';
         if (isBooking) return 'BOOK ROOM';
         if (isHotel) return 'ORDER ROOM SERVICE';
-        if (isWashHub) return 'REQUEST SERVICE';
         
         return 'SEND ORDER';
     };
@@ -1155,14 +1142,14 @@ const VenueMenuPage = () => {
                                             )}
 
                                             <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">
-                                                {(isStadium || isClub) ? 'Ticket Hub' : isParking ? 'Pass Authorization' : isWashHub ? 'Service Authorization' : isBooking ? 'Guest Registration' : 'Guest Verification'}
+                                                {(isStadium || isClub) ? 'Ticket Hub' : isParking ? 'Pass Authorization' : isBooking ? 'Guest Registration' : 'Guest Verification'}
                                             </h3>
                                             <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">
-                                                {isStadium ? 'Stadium Mission Authorization' : isClub ? 'Club Event Admission Protocol' : isParking ? 'Digital Access Pass Protocol' : isWashHub ? 'Wash Service Protocol' : isBooking ? 'Full Check-in Protocol' : `Room #${selectedTable} Security Check`}
+                                                {isStadium ? 'Stadium Mission Authorization' : isClub ? 'Club Event Admission Protocol' : isParking ? 'Digital Access Pass Protocol' : isBooking ? 'Full Check-in Protocol' : `Room #${selectedTable} Security Check`}
                                             </p>
                                         </div>
                                         
-                                        <div className={`space-y-4 ${ (isBooking || isStadium || isParking || isWashHub || isClub) ? 'max-h-[50vh] overflow-y-auto pr-2 no-scrollbar px-1' : ''}`}>
+                                        <div className={`space-y-4 ${ (isBooking || isStadium || isParking || isClub) ? 'max-h-[50vh] overflow-y-auto pr-2 no-scrollbar px-1' : ''}`}>
                                             {isBooking ? (
                                                 <div className="space-y-4 px-2">
                                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mb-2">Gast-Details / Guest Information</p>
@@ -1300,7 +1287,7 @@ const VenueMenuPage = () => {
                                                 <div className="text-left space-y-4">
                                                     <div className="px-2">
                                                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mb-4">
-                                                            {isParking ? 'Lead Driver' : isWashHub ? 'Service Requestor' : 'Lead Ticket Holder'}
+                                                            {isParking ? 'Lead Driver' : 'Lead Ticket Holder'}
                                                         </p>
                                                         <input 
                                                             type="text" 
@@ -1311,7 +1298,7 @@ const VenueMenuPage = () => {
                                                         />
                                                     </div>
 
-                                                    {(hasTicketsInCart || isStadium || isParking || isWashHub || isClub) && (
+                                                    {(hasTicketsInCart || isStadium || isParking || isClub) && (
                                                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 gap-4 px-2">
                                                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mt-4">Communication Hub</p>
                                                             <input 
@@ -1402,7 +1389,7 @@ const VenueMenuPage = () => {
                                             disabled={isBooking ? (!guestDetails.firstName || !guestDetails.lastName || !guestDetails.email || !guestDetails.phone || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.idNumber || !guestDetails.dob) : (hasTicketsInCart ? (!guestName || !guestDetails.email) : !guestName)}
                                             className={`w-full py-6 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${(isBooking ? (guestDetails.firstName && guestDetails.lastName && guestDetails.email && guestDetails.phone && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.idNumber && guestDetails.dob) : (hasTicketsInCart ? (guestName && guestDetails.email) : guestName)) ? 'bg-brand text-dark-950 shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]/50'}`}
                                         >
-                                            {isBooking ? 'Complete Registration' : isParking ? 'Authorize Pass' : (isStadium || isClub || hasTicketsInCart) ? `Authorize Tickets` : isWashHub ? 'Authorize Service' : 'Continue to Settlement'}
+                                            {isBooking ? 'Complete Registration' : isParking ? 'Authorize Pass' : (isStadium || isClub || hasTicketsInCart) ? `Authorize Tickets` : 'Continue to Settlement'}
                                         </button>
                                     </motion.div>
                                 ) : (
@@ -1418,7 +1405,7 @@ const VenueMenuPage = () => {
                                                 <ArrowLeft size={20} />
                                             </button>
                                             <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">Settlement Method</h3>
-                                            <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">{(isStadium || isClub || hasTicketsInCart) ? `E-Ticket Authorization ${guestName ? `• ${guestName}` : ''}` : isParking ? `Parking Pass Authorization ${guestName ? `• ${guestName}` : ''}` : isWashHub ? `Service Authorization ${guestName ? `• ${guestName}` : ''}` : isBooking ? `New Booking ${guestName ? `• ${guestName}` : ''}` : `${isHotel ? 'Room' : 'Table'} #${selectedTable}${guestName ? ` • ${guestName}` : ''}`} • €{totalCost.toFixed(2)}</p>
+                                            <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">{(isStadium || isClub || hasTicketsInCart) ? `E-Ticket Authorization ${guestName ? `• ${guestName}` : ''}` : isParking ? `Parking Pass Authorization ${guestName ? `• ${guestName}` : ''}` : isBooking ? `New Booking ${guestName ? `• ${guestName}` : ''}` : `${isHotel ? 'Room' : 'Table'} #${selectedTable}${guestName ? ` • ${guestName}` : ''}`} • €{totalCost.toFixed(2)}</p>
                                         </div>
                                         
                                         <div className="flex items-center justify-between px-2 mb-4">
@@ -1599,7 +1586,6 @@ const VenueMenuPage = () => {
                                     const isHotelTicket = ticket.venueName.toLowerCase().includes('hotel') || ticket.venueName.toLowerCase().includes('luxe');
                                     const isStadiumTicket = ticket.venueName.toLowerCase().includes('stadium') || ticket.venueName.toLowerCase().includes('arena');
                                     const isParkingTicket = ticket.venueName.toLowerCase().includes('park') || ticket.venueName.toLowerCase().includes('garage');
-                                    const isWashTicket = ticket.venueName.toLowerCase().includes('wash');
                                     const isClubTicket = ticket.venueName.toLowerCase().includes('club') || ticket.venueName.toLowerCase().includes('disco') || ticket.venueName.toLowerCase().includes('lounge') || ticket.venueName.toLowerCase().includes('night') || ticket.venueName.toLowerCase().includes('bar') || ticket.venueName.toLowerCase().includes('festival') || ticket.venueName.toLowerCase().includes('event');
                                     
                                     let locationLabel = 'Table';
@@ -1614,9 +1600,6 @@ const VenueMenuPage = () => {
                                     } else if (isParkingTicket) {
                                         locationLabel = 'Pass';
                                         displayTitle = 'Digital Pass';
-                                    } else if (isWashTicket) {
-                                        locationLabel = 'Ticket';
-                                        displayTitle = 'Digital Service';
                                     }
 
                                     // Dynamic Status Mapping from B2B Manager Dashboard

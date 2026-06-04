@@ -67,6 +67,18 @@ import Bubbles from '../components/Bubbles';
 
 import ThemeToggle from '../components/ThemeToggle';
 
+const RenderIcon = ({ icon, size }) => {
+    if (!icon) return <Clock size={size} />;
+    if (typeof icon !== 'string') {
+        const IconComponent = icon;
+        return <IconComponent size={size} />;
+    }
+    const lower = icon.toLowerCase();
+    if (lower.includes('shield')) return <Shield size={size} />;
+    if (lower.includes('zap') || lower.includes('lightning')) return <Zap size={size} />;
+    return <Clock size={size} />;
+};
+
 const Home = () => {
     const { logout, login, user } = useAuth();
     const navigate = useNavigate();
@@ -353,17 +365,78 @@ const Home = () => {
         phone: '+49 151 2345678'
     });
 
-    const [rideHistory] = useState([
-        { id: 1, date: 'Today, 18:42', destination: 'Cyber Terrace 42', driver: 'Sergei K.', service: 'CyberDispatch', price: '€ 14.20', icon: Zap },
-        { id: 2, date: 'Yesterday, 21:15', destination: 'Neo Tokyo Central', driver: 'Elena R.', service: 'Premium Ride', price: '€ 22.50', icon: Shield },
-        { id: 3, date: '14 Feb, 09:30', destination: 'Uplink Tower', driver: 'Marcus V.', service: 'Classic', price: '€ 8.90', icon: Clock }
-    ]);
+    const [rideHistory, setRideHistory] = useState([]);
+    const [favoriteDrivers, setFavoriteDrivers] = useState([]);
 
-    const [favoriteDrivers, setFavoriteDrivers] = useState([
-        { name: "Sergei K.", rating: 5.0, trips: 124, vehicle: "Tesla Model S - Black", status: "Available", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sergei" },
-        { name: "Elena R.", rating: 4.9, trips: 89, vehicle: "Mercedes EQE", status: "In Ride", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena" },
-        { name: "Marcus V.", rating: 5.0, trips: 256, vehicle: "Audi e-tron GT", status: "Available", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus" }
-    ]);
+    const memberSince = React.useMemo(() => {
+        const isDemoUser = user?.email?.toLowerCase().endsWith('@green.de');
+        if (isDemoUser) return "JAN '24";
+        if (user?.createdAt) {
+            try {
+                const date = typeof user.createdAt.toDate === 'function' ? user.createdAt.toDate() : new Date(user.createdAt);
+                const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+                return `${months[date.getMonth()]} '${String(date.getFullYear()).slice(-2)}`;
+            } catch (e) {
+                // ignore
+            }
+        }
+        return "NEW";
+    }, [user]);
+
+    useEffect(() => {
+        const isDemoUser = user?.email?.toLowerCase().endsWith('@green.de');
+        const emailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+
+        if (isDemoUser) {
+            setFavoriteDrivers([
+                { name: "Sergei K.", rating: 5.0, trips: 124, vehicle: "Tesla Model S - Black", status: "Available", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sergei" },
+                { name: "Elena R.", rating: 4.9, trips: 89, vehicle: "Mercedes EQE", status: "In Ride", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena" },
+                { name: "Marcus V.", rating: 5.0, trips: 256, vehicle: "Audi e-tron GT", status: "Available", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus" }
+            ]);
+            setPaymentMethods([
+                { id: 1, type: 'Credit Card', provider: 'Mastercard', last4: '4242 4242 4242 4242', icon: CreditCard, name: 'Alex Passenger', expiry: '12/26', cvv: '123', status: 'Active' },
+                { id: 2, type: 'Bank Account', provider: 'Deutsche Bank', iban: 'DE91 1007 0000 1234 5678 90', bic: 'DEUTDEBB', expiry: '01/30', name: 'Alex Passenger', status: 'Active', icon: Landmark },
+                { id: 3, type: 'Digital Wallet', provider: 'PayPal', email: 'alex.p@uplink.net', icon: Shield, status: 'Active' },
+                { id: 4, type: 'Cash', provider: 'Physical Cash', status: 'Always Active', icon: Coins },
+            ]);
+            setWalletStats({
+                totalPaid: 1240.50,
+                totalSaved: 312.20
+            });
+        } else {
+            setFavoriteDrivers([]);
+            setPaymentMethods([
+                { id: 4, type: 'Cash', provider: 'Physical Cash', status: 'Always Active', icon: Coins }
+            ]);
+            setWalletStats({
+                totalPaid: 0.00,
+                totalSaved: 0.00
+            });
+        }
+
+        try {
+            const data = localStorage.getItem(`green_ride_history_${emailKey}`);
+            if (data) {
+                const parsed = JSON.parse(data);
+                if (parsed.length > 0) {
+                    setRideHistory(parsed);
+                    return;
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+
+        if (isDemoUser) {
+            setRideHistory([
+                { id: 1, date: 'Today, 18:42', destination: 'Cyber Terrace 42', driver: 'Sergei K.', service: 'CyberDispatch', price: '€ 14.20', icon: Zap },
+                { id: 2, date: 'Yesterday, 21:15', destination: 'Neo Tokyo Central', driver: 'Elena R.', service: 'Premium Ride', price: '€ 22.50', icon: Shield },
+                { id: 3, date: '14 Feb, 09:30', destination: 'Uplink Tower', driver: 'Marcus V.', service: 'Classic', price: '€ 8.90', icon: Clock }
+            ]);
+        } else {
+            setRideHistory([]);
+        }
+    }, [user]);
 
     const removeDriver = (name) => {
         setFavoriteDrivers(prev => prev.filter(d => d.name !== name));
@@ -493,7 +566,7 @@ const Home = () => {
 
             {/* UI Overlay - Top Column */}
             <header 
-                className="relative z-10 px-8 pb-8 flex justify-between items-start"
+                className="relative z-20 px-8 pb-8 flex justify-between items-start"
                 style={{
                     paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px + 1.25rem)`
                 }}
@@ -919,10 +992,10 @@ const Home = () => {
                                      <p className="text-[7px] uppercase font-black tracking-widest text-gray-500 text-center mt-2">Total Trips</p>
                                  </div>
                                  <div className="p-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[2rem] relative shadow-xl">
-                                     <div className="absolute -top-3 left-6 px-3 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-[0.2em] shadow-lg">Network Tier 💎</div>
-                                     <p className="text-2xl font-black italic text-white text-center leading-none mt-2">JAN '24</p>
-                                     <p className="text-[7px] uppercase font-black tracking-widest text-gray-500 text-center mt-2">Member Since</p>
-                                 </div>
+                                      <div className="absolute -top-3 left-6 px-3 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-[0.2em] shadow-lg">Network Tier 💎</div>
+                                      <p className="text-2xl font-black italic text-white text-center leading-none mt-2">{memberSince}</p>
+                                      <p className="text-[7px] uppercase font-black tracking-widest text-gray-500 text-center mt-2">Member Since</p>
+                                  </div>
                              </div>
 
                             {/* History List */}
@@ -934,7 +1007,7 @@ const Home = () => {
                                             <div className="flex justify-between items-start mb-3">
                                                 <div className="flex items-center gap-3">
                                                     <div className="p-2 rounded-xl" style={{ background: '#1A2235', color: 'var(--brand)' }}>
-                                                        <ride.icon size={18} />
+                                                        <RenderIcon icon={ride.icon} size={18} />
                                                     </div>
                                                     <div>
                                                         <p className="text-[10px] font-black uppercase tracking-widest text-brand">{ride.service}</p>
@@ -1023,7 +1096,7 @@ const Home = () => {
                                 + Add New Favorite from History
                             </button>
                         </div>
-                    ) : profileSubView === 'perks' ? (
+                    ) : (profileSubView === 'perks' && user?.email?.toLowerCase().endsWith('@green.de')) ? (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 pb-12">
                             {/* Perks Header */}
                             <div className="flex items-center gap-4 mb-2">
@@ -1059,7 +1132,7 @@ const Home = () => {
                                         { shop: 'The Blue Velvet Bar', offer: '50% OFF ALL DRINKS', icon: GlassWater, category: 'Bar & Lounge', color: 'text-brand' },
                                         { shop: 'Saffron Fine Dining', offer: 'FREE STARTER + VIP TABLE', icon: Utensils, category: 'Restaurant', color: 'text-amber-400' },
                                         { shop: 'Green Palace & Spa', offer: 'FREE SPA ACCESS', icon: BedDouble, category: 'Luxury Hotel', color: 'text-violet-400' },
-                                        { shop: 'Eco-Wash Zentrum', offer: 'FREE PREMIUM WAX', icon: Droplets, category: 'Car Care', color: 'text-emerald-400' }
+                                        { shop: 'Green Stadium Arena', offer: 'FREE VIP TICKET UPGRADE', icon: Star, category: 'Entertainment', color: 'text-amber-400' }
                                     ].map((perk, i) => (
                                         <div key={i} className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-5 rounded-3xl group hover:border-amber-400/20 transition-all relative overflow-hidden">
                                             <div className="flex justify-between items-start mb-4">

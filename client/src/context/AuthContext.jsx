@@ -121,7 +121,6 @@ export const AuthProvider = ({ children }) => {
         { name: 'Heidi Hotel', email: 'hotel@green.de', password: 'green2026', role: 'manager', businessType: 'HM', greenFlags: 3410, redFlags: 0 },
         { name: 'Stephan Stadium', email: 'stadium@green.de', password: 'green2026', role: 'manager', businessType: 'SM', greenFlags: 4500, redFlags: 0 },
         { name: 'Pedro Parking', email: 'parking@green.de', password: 'green2026', role: 'manager', businessType: 'PM', greenFlags: 620, redFlags: 0 },
-        { name: 'Walter Wash', email: 'wash@green.de', password: 'green2026', role: 'manager', businessType: 'WM', greenFlags: 310, redFlags: 0 },
     ];
 
     // Asynchronous Auto-Seeder for Default Accounts

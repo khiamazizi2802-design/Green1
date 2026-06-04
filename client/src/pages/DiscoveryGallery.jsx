@@ -7,10 +7,12 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { db } from '../config/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
 
 const DiscoveryGallery = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { user } = useAuth();
     
     // Default to 'club' if no state passed
     const initialCategory = location.state?.category || 'club';
@@ -179,14 +181,24 @@ const DiscoveryGallery = () => {
     }, []);
 
     const filteredVenues = useMemo(() => {
+        const userEmail = user?.email || '';
+        const isDemoUser = userEmail.toLowerCase().endsWith('@green.de');
+
         return venues.filter(v => {
             const matchesCat = v.category === activeCategory;
             const matchesSearch = v.name.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesFilter = activeFilter === 'all' || 
                                 (activeFilter === 'active' && v.rating > 4.7);
+            
+            // Hide demo venues for non-demo users
+            const isVenueDemo = (v.email || '').toLowerCase().endsWith('@green.de');
+            if (!isDemoUser && isVenueDemo) {
+                return false;
+            }
+
             return matchesCat && matchesSearch && matchesFilter;
         });
-    }, [activeCategory, searchQuery, activeFilter]);
+    }, [venues, activeCategory, searchQuery, activeFilter, user]);
 
     return (
         <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans selection:bg-brand/30">
