@@ -313,7 +313,7 @@ const ManagerDashboard = () => {
     const [selectedSeat, setSelectedSeat] = useState(null);
 
     const [isAddingVehicle, setIsAddingVehicle] = useState(false);
-    const [newVehicleData, setNewVehicleData] = useState({ model: '', year: '', plate: '', color: '', concession: '', photo: null });
+    const [newVehicleData, setNewVehicleData] = useState({ model: '', year: '', plate: '', color: '', concession: '', assignedDriver: 'None', photo: null });
 
     useEffect(() => {
         // HQ SENTINEL: Staff are allowed in the Manager Portal for business operations (Bar, Restaurant, etc.)
@@ -899,7 +899,9 @@ const ManagerDashboard = () => {
 
     const [businessInfo, setBusinessInfo] = useState({
         legalName: isDemo ? getBusinessName() : (user?.name ? `${user.name} Operations` : 'My Fleet Ops'),
-        address: isDemo ? 'Zeil 106, 60313 Frankfurt' : '',
+        address: isDemo ? 'Zeil 106' : '',
+        zip: isDemo ? '60313' : '',
+        city: isDemo ? 'Frankfurt' : '',
         email: user?.email || '',
         phone: isDemo ? '+49 69 1234567' : '',
         vatId: isDemo ? 'DE123456789' : ''
@@ -2779,6 +2781,26 @@ const ManagerDashboard = () => {
                                                          </div>
                                                          <div className="grid grid-cols-2 gap-3">
                                                              <div className="space-y-1">
+                                                                 <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">ZIP Code</label>
+                                                                 <input 
+                                                                     type="text" 
+                                                                     value={businessInfo.zip || ''} 
+                                                                     onChange={(e) => setBusinessInfo({...businessInfo, zip: e.target.value})}
+                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                 />
+                                                             </div>
+                                                             <div className="space-y-1">
+                                                                 <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">City</label>
+                                                                 <input 
+                                                                     type="text" 
+                                                                     value={businessInfo.city || ''} 
+                                                                     onChange={(e) => setBusinessInfo({...businessInfo, city: e.target.value})}
+                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                 />
+                                                             </div>
+                                                         </div>
+                                                         <div className="grid grid-cols-2 gap-3">
+                                                             <div className="space-y-1">
                                                                  <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">VAT ID (EU/DE)</label>
                                                                  <input 
                                                                      type="text" 
@@ -3352,7 +3374,10 @@ const ManagerDashboard = () => {
                                                     <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Remotely manage driver vehicle pairings</p>
                                                 </div>
                                                 <button 
-                                                    onClick={() => setIsAddingVehicle(true)}
+                                                    onClick={() => {
+                                                        setNewVehicleData({ model: '', year: '', plate: '', color: '', concession: '', assignedDriver: 'None', photo: null });
+                                                        setIsAddingVehicle(true);
+                                                    }}
                                                     className="px-6 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand flex items-center gap-2 hover:bg-brand hover:text-dark-900 transition-all"
                                                 >
                                                     <PlusCircle size={14} /> Add New Asset to Pool
@@ -3627,6 +3652,19 @@ const ManagerDashboard = () => {
                                                                 />
                                                             </div>
                                                         ))}
+                                                        <div className="space-y-1.5">
+                                                            <label className="text-[7px] font-black text-secondary uppercase tracking-widest ml-1">Assign Driver</label>
+                                                            <select 
+                                                                value={newVehicleData.assignedDriver || 'None'}
+                                                                onChange={(e) => setNewVehicleData(prev => ({ ...prev, assignedDriver: e.target.value }))}
+                                                                className="w-full bg-dark-950 border border-main rounded-xl px-4 py-3 text-[10px] font-bold text-primary outline-none focus:border-brand/50 transition-all"
+                                                            >
+                                                                <option value="None" className="bg-dark-950 text-secondary">None</option>
+                                                                {driverDeployments.map(driver => (
+                                                                    <option key={driver.name} value={driver.name} className="bg-dark-950 text-primary">{driver.name}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -3636,8 +3674,17 @@ const ManagerDashboard = () => {
                                                             const updatedPool = [...fleetVehicles.filter(v => v !== 'None'), newVehicleData.model, 'None'];
                                                             setFleetVehicles(updatedPool);
                                                             localStorage.setItem(`green_fleet_vehicles_${userEmailKey}`, JSON.stringify(updatedPool));
+                                                            
+                                                            // Auto-assign driver if selected
+                                                            if (newVehicleData.assignedDriver && newVehicleData.assignedDriver !== 'None') {
+                                                                const updatedDrivers = driverDeployments.map(d => 
+                                                                    d.name === newVehicleData.assignedDriver ? { ...d, current: newVehicleData.model } : d
+                                                                );
+                                                                setDriverDeployments(updatedDrivers);
+                                                                localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(updatedDrivers));
+                                                            }
                                                         }
-                                                        alert(`FLEET ASSET REGISTERED\n----------------------\nModel: ${newVehicleData.model}\nPlate: ${newVehicleData.plate}\nConcession: ${newVehicleData.concession || 'N/A'}\nStatus: Pending Final Inspection`);
+                                                        alert(`FLEET ASSET REGISTERED\n----------------------\nModel: ${newVehicleData.model}\nPlate: ${newVehicleData.plate}\nConcession: ${newVehicleData.concession || 'N/A'}\nAssigned Driver: ${newVehicleData.assignedDriver || 'None'}\n\nStatus: Pending Final Inspection`);
                                                         setIsAddingVehicle(false);
                                                     }}
                                                     className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-brand/20 active:scale-95 transition-all"
