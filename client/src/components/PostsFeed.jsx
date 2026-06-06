@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Search, UserPlus, ChevronRight, Heart, MessageCircle, Share2, Plus, Zap, MapPin, Flag, Send } from 'lucide-react';
+import { X, Search, UserPlus, ChevronRight, Heart, MessageCircle, Share2, Plus, Zap, MapPin, Flag, Send, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { db } from '../config/firebase';
+import { collection, getDocs, query, limit } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
+import { useRide } from '../context/RideContext';
 
 const PostsFeed = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const { mutualFriends, setMutualFriends } = useRide();
     
     // Notch State from LocalStorage
     const useSafeArea = localStorage.getItem('green_manager_use_safe_area') !== 'false';
@@ -42,12 +48,38 @@ const PostsFeed = ({ isOpen, onClose }) => {
     const [captionText, setCaptionText] = useState('');
     const [selectedMedia, setSelectedMedia] = useState('https://images.unsplash.com/photo-1549239120-0a4c321d1bc1?q=80&w=600&auto=format&fit=crop');
 
-    const mockFriends = [
-        { id: 'u1', name: 'Alex Night', handle: '@night_hawk', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex' },
-        { id: 'u2', name: 'Sara Luxe', handle: '@sara_zenith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sara' },
-        { id: 'u3', name: 'Mick Driver', handle: '@mick_green', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mick' },
-        { id: 'u4', name: 'Lukas Manager', handle: '@lukas_mgr', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lukas' }
-    ];
+    // Dynamic Friends list loaded from Firestore
+    const [friendsList, setFriendsList] = useState([]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const q = query(collection(db, 'users'), limit(20));
+                const querySnapshot = await getDocs(q);
+                const loaded = [];
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.email && data.email.toLowerCase() !== user?.email?.toLowerCase()) {
+                        const name = data.name || 'Anonymous User';
+                        const handle = '@' + name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        loaded.push({
+                            id: doc.id,
+                            name: name,
+                            handle: handle,
+                            avatar: data.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`
+                        });
+                    }
+                });
+                
+                setFriendsList(loaded);
+            } catch (err) {
+                console.error("Failed to fetch friends from Firestore:", err);
+            }
+        };
+        if (isOpen) {
+            fetchUsers();
+        }
+    }, [isOpen, user]);
 
     const [localPosts, setLocalPosts] = useState([]);
 
@@ -91,27 +123,16 @@ const PostsFeed = ({ isOpen, onClose }) => {
     };
 
     const getCommentsForPost = (postId) => {
-        const comments = postsComments[postId] || [];
-        if (comments.length === 0) {
-            // Return some initial mock comments for visualization
-            return [
-                { user: 'night_hawk', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex', text: 'Stunning capture! Let’s meet up tonight ⚡', time: '2h ago' },
-                { user: 'sara_zenith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sara', text: 'This looks so premium! 🌱💚', time: '1h ago' }
-            ];
-        }
-        return comments;
+        return postsComments[postId] || [];
     };
 
     const handleAddComment = () => {
         if (!newCommentText.trim() || showCommentsForPost === null) return;
-        const currentComments = postsComments[showCommentsForPost] || [
-            { user: 'night_hawk', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex', text: 'Stunning capture! Let’s meet up tonight ⚡', time: '2h ago' },
-            { user: 'sara_zenith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sara', text: 'This looks so premium! 🌱💚', time: '1h ago' }
-        ];
+        const currentComments = postsComments[showCommentsForPost] || [];
 
         const newComment = {
-            user: 'You',
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=You`,
+            user: user?.name || 'You',
+            avatar: user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'You'}`,
             text: newCommentText.trim(),
             time: 'Just now'
         };
@@ -210,33 +231,57 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                         exit={{ opacity: 0, y: 10 }}
                                         className="absolute top-full left-0 mt-2 bg-dark-950/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-2.5 shadow-2xl z-[80] w-[280px] sm:w-[320px]"
                                     >
-                                        {mockFriends.map(f => (
-                                            <div key={f.id} className="p-3 flex items-center justify-between hover:bg-white/5 rounded-xl transition-all group">
-                                                <div className="flex items-center gap-3">
-                                                    <img src={f.avatar} className="w-8 h-8 rounded-lg border border-white/10" alt="User" />
-                                                    <div>
-                                                        <p className="text-[10px] font-black italic text-white">{f.name}</p>
-                                                        <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">{f.handle}</p>
+                                        {friendsList
+                                            .filter(f => 
+                                                f.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                                f.handle.toLowerCase().includes(searchQuery.toLowerCase())
+                                            )
+                                            .map(f => {
+                                                const isAlreadyFriend = mutualFriends.some(m => m.id === f.id);
+                                                return (
+                                                    <div key={f.id} className="p-3 flex items-center justify-between hover:bg-white/5 rounded-xl transition-all group">
+                                                        <div className="flex items-center gap-3">
+                                                            <img src={f.avatar} className="w-8 h-8 rounded-lg border border-white/10" alt="User" />
+                                                            <div>
+                                                                <p className="text-[10px] font-black italic text-white">{f.name}</p>
+                                                                <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">{f.handle}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <button 
+                                                                onClick={() => {
+                                                                    if (!isAlreadyFriend) {
+                                                                        setMutualFriends(prev => [
+                                                                            ...prev,
+                                                                            {
+                                                                                id: f.id,
+                                                                                name: f.name,
+                                                                                username: f.handle,
+                                                                                avatar: f.avatar,
+                                                                                status: 'Online',
+                                                                                mutuals: Math.floor(Math.random() * 15) + 5,
+                                                                                rank: 'New Member'
+                                                                            }
+                                                                        ]);
+                                                                    }
+                                                                }} 
+                                                                className={`h-9 w-9 rounded-xl flex items-center justify-center transition-all ${isAlreadyFriend ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400' : 'bg-brand text-dark-950 shadow-[0_0_15px_rgba(52,211,153,0.4)] hover:scale-110 active:scale-95'}`}
+                                                                title={isAlreadyFriend ? "Friends" : "Add Friend"}
+                                                                disabled={isAlreadyFriend}
+                                                            >
+                                                                {isAlreadyFriend ? <Check size={18} /> : <UserPlus size={18} />}
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => { setIsSearching(false); setSearchQuery(''); navigate(`/profile/${f.id}`); onClose(); }} 
+                                                                className="h-9 w-9 bg-black border border-white/10 rounded-xl flex items-center justify-center text-white hover:bg-white/10 hover:scale-110 active:scale-95 transition-all shadow-xl"
+                                                                title="View Profile"
+                                                            >
+                                                                <ChevronRight size={18} />
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <button 
-                                                        onClick={() => { setIsSearching(false); setSearchQuery(''); }} 
-                                                        className="h-9 w-9 bg-brand rounded-xl flex items-center justify-center text-dark-950 shadow-[0_0_15px_rgba(52,211,153,0.4)] hover:scale-110 active:scale-95 transition-all"
-                                                        title="Add Friend"
-                                                    >
-                                                        <UserPlus size={18} />
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => { setIsSearching(false); setSearchQuery(''); navigate(`/profile/${f.id}`); onClose(); }} 
-                                                        className="h-9 w-9 bg-black border border-white/10 rounded-xl flex items-center justify-center text-white hover:bg-white/10 hover:scale-110 active:scale-95 transition-all shadow-xl"
-                                                        title="View Profile"
-                                                    >
-                                                        <ChevronRight size={18} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
+                                                );
+                                            })}
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -413,7 +458,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                         </button>
                                     </div>
                                     <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto no-scrollbar">
-                                        {mockFriends.map(f => {
+                                        {mutualFriends.map(f => {
                                             const isSelected = selectedShareFriends.includes(f.id);
                                             return (
                                                 <div 
@@ -424,7 +469,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                                     <img src={f.avatar} className="w-12 h-12 rounded-xl border border-white/10" alt="Friend" />
                                                     <div>
                                                         <p className="text-[10px] font-black italic text-primary">{f.name}</p>
-                                                        <p className="text-[8px] opacity-40 font-bold uppercase mt-0.5">{f.handle}</p>
+                                                        <p className="text-[8px] opacity-40 font-bold uppercase mt-0.5">{f.username}</p>
                                                     </div>
                                                 </div>
                                             );

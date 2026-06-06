@@ -195,17 +195,17 @@ const VenueMenuPage = () => {
     const location = useLocation();
     const { socket } = useSocket();
     const { user } = useAuth();
-    const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
+    const isDemo = user?.isDemo;
     
-    const venueName = location.state?.venueName || "Eco-Park Central";
-    const venueOffer = location.state?.venueOffer || "Reserve Level -1 Spots";
+    const venueName = location.state?.venueName || "Skyline Club";
+    const venueOffer = location.state?.venueOffer || "FREE ENTRY + 1 DRINK";
     const isTakeawayMode = location.state?.isTakeawayMode || false;
     
-    const isParking = venueName.toLowerCase().includes('park');
+    const isParking = false;
     const isHotel = venueName.toLowerCase().includes('hotel') || venueName.toLowerCase().includes('luxe');
     const isStadium = venueName.toLowerCase().includes('stadium') || venueName.toLowerCase().includes('arena');
     const isDining = venueName.toLowerCase().includes('dining') || venueName.toLowerCase().includes('restaurant') || venueName.toLowerCase().includes('bistro') || venueName.toLowerCase().includes('eat') || venueName.toLowerCase().includes('food') || venueName.toLowerCase().includes('cafe') || venueName.toLowerCase().includes('café') || venueName.toLowerCase().includes('diner') || venueName.toLowerCase().includes('steakhouse') || venueName.toLowerCase().includes('gastronomy') || venueName.toLowerCase().includes('sushi') || venueName.toLowerCase().includes('pizza') || venueName.toLowerCase().includes('kitchen') || venueName.toLowerCase().includes('bistro');
-    const isClub = (venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('disco') || venueName.toLowerCase().includes('lounge') || venueName.toLowerCase().includes('night') || venueName.toLowerCase().includes('bar') || venueName.toLowerCase().includes('festival') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('underground')) && !isDining && !isHotel && !isStadium && !isParking;
+    const isClub = (venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('disco') || venueName.toLowerCase().includes('lounge') || venueName.toLowerCase().includes('night') || venueName.toLowerCase().includes('bar') || venueName.toLowerCase().includes('festival') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('underground')) && !isDining && !isHotel && !isStadium;
 
     const isGroupActive = localStorage.getItem('green_group_state') === 'active';
 
@@ -257,30 +257,6 @@ const VenueMenuPage = () => {
     const [lastOrderDetails, setLastOrderDetails] = useState(null);
     const [showToast, setShowToast] = useState(false);
     const [toastMsg, setToastMsg] = useState("");
-
-    const parkingCategories = [
-        {
-            name: "Hourly Rates",
-            items: [
-                { id: 'ph1', name: "Standard Hourly", price: 4.50, desc: "Billed per hour. Maximum 12 hours.", image: "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=400&h=400&fit=crop", tags: ["Self-Park"] },
-                { id: 'ph2', name: "Prime Space Hourly", price: 8.00, desc: "Premium spots near exits/elevators.", image: "https://images.unsplash.com/photo-1545179605-1296651bc9b4?w=400&h=400&fit=crop", tags: ["Self-Park"] },
-            ]
-        },
-        {
-            name: "Standard Passes",
-            items: [
-                { id: 'pd1', name: "Daily Pass (24h)", price: 25.00, desc: "Full day access. No Valet included.", image: "https://images.unsplash.com/photo-1470224492023-147c28ff81ad?w=400&h=400&fit=crop", tags: ["No Valet"] },
-            ]
-        },
-        {
-            name: "Elite Subscriptions",
-            items: [
-                { id: 'pw1', name: "Weekly Membership", price: 120.00, desc: "7 days of priority parking. Valet Service Included.", image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=400&fit=crop", tags: ["Valet Included"] },
-                { id: 'pm1', name: "Monthly Executive", price: 350.00, desc: "Unlimited access. 24/7 Valet Service & EV charging access.", image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=400&fit=crop", tags: ["Valet Included"] },
-                { id: 'py1', name: "Annual Diamond", price: 3200.00, desc: "Dedicated spot. Full Concierge & Valet Service.", image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=400&fit=crop", tags: ["Valet Included"] },
-            ]
-        }
-    ];
 
     const hotelCategories = [
         {
@@ -346,13 +322,6 @@ const VenueMenuPage = () => {
                 { id: 'st1', name: "Executive VIP Box", price: 2500.00, desc: "Private suite for 12, premium catering, and field-side balcony access.", image: "https://images.unsplash.com/photo-1510204819217-1d35ae4489ae?w=400&h=400&fit=crop", tags: ["VIP"] },
                 { id: 'st2', name: "Field-Side Premium", price: 450.00, desc: "Front row seats with lounge access and unlimited drinks.", image: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=400&h=400&fit=crop", tags: ["Premium"] },
             ]
-        },
-        {
-            name: "VIP Parking & Valet",
-            items: [
-                { id: 'sv1', name: "Stadium Valet Entry", price: 45.00, desc: "VIP gate vehicle drop-off. Car returned to exit at full-time.", image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=400&fit=crop", tags: ["Valet"] },
-                { id: 'sv2', name: "The 'Valet Charging' Bundle", price: 120.00, desc: "Valet drop-off + Full EV charging to 100% capacity during the match.", image: "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=400&h=400&fit=crop", tags: ["Bundle", "Valet"] },
-            ]
         }
     ];
 
@@ -381,7 +350,72 @@ const VenueMenuPage = () => {
         }
     ];
 
-    const defaultCategories = isStadium ? stadiumCategories : isClub ? clubCategories : isHotel ? hotelCategories : isDining ? diningCategories : isParking ? parkingCategories : [
+    // Dynamic hotel categories helper to resolve from local room inventory
+    const getDynamicHotelCategories = (roomsList) => {
+        let currentHotelCategories = [...hotelCategories];
+        let roomsToUse = [];
+        
+        if (Array.isArray(roomsList) && roomsList.length > 0) {
+            roomsToUse = roomsList;
+        } else {
+            try {
+                const savedRooms = localStorage.getItem('green_hotel_rooms');
+                if (savedRooms) {
+                    roomsToUse = JSON.parse(savedRooms);
+                }
+            } catch (err) {
+                console.error("Failed to parse manual hotel rooms from local storage:", err);
+            }
+        }
+        
+        if (!Array.isArray(roomsToUse) || roomsToUse.length === 0) {
+            roomsToUse = [
+                { id: '101', name: 'Deluxe King Suite', tier: 'Deluxe', status: 'occupied', guest: 'Julian R.', price: 280, cleanStatus: 'clean', bedLayout: 'Double' },
+                { id: '102', name: 'Deluxe King Suite', tier: 'Deluxe', status: 'available', guest: null, price: 280, cleanStatus: 'clean', bedLayout: 'Double' },
+                { id: '103', name: 'Spa Balcony Suite', tier: 'Premium', status: 'cleaning', guest: null, price: 420, cleanStatus: 'cleaning', bedLayout: 'Double' },
+                { id: '104', name: 'Spa Balcony Suite', tier: 'Premium', status: 'occupied', guest: 'Sarah J.', price: 420, cleanStatus: 'clean', bedLayout: 'Double' },
+                { id: '201', name: 'Emerald Suite', tier: 'Executive', status: 'available', guest: null, price: 650, cleanStatus: 'clean', bedLayout: 'Double' },
+                { id: '202', name: 'Emerald Suite', tier: 'Executive', status: 'occupied', guest: 'Elena M.', price: 650, cleanStatus: 'clean', bedLayout: 'Double' },
+                { id: '301', name: 'Zenith Penthouse', tier: 'Presidential', status: 'available', guest: null, price: 1800, cleanStatus: 'clean', bedLayout: 'Triple' }
+            ];
+        }
+
+        const uniqueCategories = {};
+        roomsToUse.forEach(room => {
+            const catName = room.name || 'Standard Room';
+            const bed = room.bedLayout || 'Double';
+            const displayName = `${catName} (${bed} Bed)`;
+            const price = parseFloat(room.price) || 150.00;
+            const key = `${catName}_${bed}`;
+            if (!uniqueCategories[key]) {
+                uniqueCategories[key] = {
+                    id: `dynamic-room-${room.id}`,
+                    name: displayName,
+                    price: price,
+                    desc: `Individually managed luxury suite. Category: ${catName}. Bed Layout: ${bed}. Modern room automation, ambient light, and 24/7 service.`,
+                    image: bed === 'Single' 
+                        ? "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=400&h=400&fit=crop"
+                        : bed === 'Double'
+                        ? "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=400&fit=crop"
+                        : "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=400&fit=crop",
+                    tags: ["Rooms", "Luxury", "Hotel Room"] // Crucial tag so checkout flow recognizes it as room booking
+                };
+            }
+        });
+        const dynamicRoomItems = Object.values(uniqueCategories);
+        currentHotelCategories = currentHotelCategories.map(cat => {
+            if (cat.name === "Zimmer (Rooms)") {
+                return {
+                    ...cat,
+                    items: dynamicRoomItems
+                };
+            }
+            return cat;
+        });
+        return currentHotelCategories;
+    };
+
+    const defaultCategories = isStadium ? stadiumCategories : isClub ? clubCategories : isHotel ? getDynamicHotelCategories() : isDining ? diningCategories : [
         {
             name: "Signature Cocktails",
             items: [
@@ -400,12 +434,17 @@ const VenueMenuPage = () => {
         if (!emailKey) {
             if (isHotel) emailKey = 'hotel_green_de';
             else if (isStadium) emailKey = 'stadium_green_de';
-            else if (isParking) emailKey = 'parking_green_de';
+            else if (venueName.toLowerCase().includes('gala') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('show') || venueName.toLowerCase().includes('festival')) emailKey = 'event_green_de';
             else if (venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('velvet')) emailKey = 'club_green_de';
             else emailKey = 'restaurant_green_de';
         }
 
-        const bizType = isParking ? 'PM' : isHotel ? 'HM' : isStadium ? 'SM' : 'RM';
+        const bizType = isHotel ? 'HM' : 
+                        isStadium ? 'SM' : 
+                        (venueName.toLowerCase().includes('gala') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('show') || venueName.toLowerCase().includes('festival') || venueName.toLowerCase().includes('party')) ? 'VM' :
+                        (venueName.toLowerCase().includes('bar') || venueName.toLowerCase().includes('lounge')) ? 'BM' : 
+                        (venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('velvet') || venueName.toLowerCase().includes('disco') || venueName.toLowerCase().includes('night')) ? 'CM' : 
+                        'RM';
         
         const fetchDynamicMenu = async () => {
             let customItems = null;
@@ -451,17 +490,90 @@ const VenueMenuPage = () => {
                     });
                 });
 
+                // If B2C user is viewing a hotel, inject the B2B manually added rooms
+                if (isHotel) {
+                    try {
+                        const managerEmail = location.state?.email || 'hotel@green.de';
+                        const mgrRef = doc(db, 'users', managerEmail.toLowerCase());
+                        const mgrSnap = await getDoc(mgrRef);
+                        let roomsToUse = [];
+                        if (mgrSnap.exists()) {
+                            const data = mgrSnap.data();
+                            if (Array.isArray(data.hotelRooms)) {
+                                roomsToUse = data.hotelRooms;
+                            }
+                        }
+                        if (roomsToUse.length === 0) {
+                            const savedRooms = localStorage.getItem('green_hotel_rooms');
+                            if (savedRooms) {
+                                roomsToUse = JSON.parse(savedRooms);
+                            }
+                        }
+                        if (roomsToUse.length === 0) {
+                            roomsToUse = [
+                                { id: '101', name: 'Deluxe King Suite', tier: 'Deluxe', status: 'occupied', guest: 'Julian R.', price: 280, cleanStatus: 'clean', bedLayout: 'Double' },
+                                { id: '102', name: 'Deluxe King Suite', tier: 'Deluxe', status: 'available', guest: null, price: 280, cleanStatus: 'clean', bedLayout: 'Double' },
+                                { id: '103', name: 'Spa Balcony Suite', tier: 'Premium', status: 'cleaning', guest: null, price: 420, cleanStatus: 'cleaning', bedLayout: 'Double' },
+                                { id: '104', name: 'Spa Balcony Suite', tier: 'Premium', status: 'occupied', guest: 'Sarah J.', price: 420, cleanStatus: 'clean', bedLayout: 'Double' },
+                                { id: '201', name: 'Emerald Suite', tier: 'Executive', status: 'available', guest: null, price: 650, cleanStatus: 'clean', bedLayout: 'Double' },
+                                { id: '202', name: 'Emerald Suite', tier: 'Executive', status: 'occupied', guest: 'Elena M.', price: 650, cleanStatus: 'clean', bedLayout: 'Double' },
+                                { id: '301', name: 'Zenith Penthouse', tier: 'Presidential', status: 'available', guest: null, price: 1800, cleanStatus: 'clean', bedLayout: 'Triple' }
+                            ];
+                        }
+
+                        const uniqueCategories = {};
+                        roomsToUse.forEach(room => {
+                            const catName = room.name || 'Standard Room';
+                            const bed = room.bedLayout || 'Double';
+                            const displayName = `${catName} (${bed} Bed)`;
+                            const price = parseFloat(room.price) || 150.00;
+                            const key = `${catName}_${bed}`;
+                            if (!uniqueCategories[key]) {
+                                uniqueCategories[key] = {
+                                    id: `dynamic-room-${room.id}`,
+                                    name: displayName,
+                                    price: price,
+                                    desc: `Individually managed luxury suite. Category: ${catName}. Bed Layout: ${bed}. Modern room automation, ambient light, and 24/7 service.`,
+                                    image: bed === 'Single' 
+                                        ? "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=400&h=400&fit=crop"
+                                        : bed === 'Double'
+                                        ? "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=400&fit=crop"
+                                        : "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=400&fit=crop",
+                                    tags: ["Rooms", "Luxury", "Hotel Room"]
+                                };
+                            }
+                        });
+                        grouped["Zimmer (Rooms)"] = Object.values(uniqueCategories);
+                    } catch (e) {
+                        console.error("Failed to parse manual hotel rooms inside fetchDynamicMenu:", e);
+                    }
+                }
+
                 const dynamicCategories = Object.keys(grouped).map(catName => ({
                     name: catName,
                     items: grouped[catName]
                 }));
 
                 setMenuCategories(dynamicCategories);
+            } else if (isHotel) {
+                try {
+                    const managerEmail = location.state?.email || 'hotel@green.de';
+                    const mgrRef = doc(db, 'users', managerEmail.toLowerCase());
+                    const mgrSnap = await getDoc(mgrRef);
+                    if (mgrSnap.exists()) {
+                        const data = mgrSnap.data();
+                        if (Array.isArray(data.hotelRooms)) {
+                            setMenuCategories(getDynamicHotelCategories(data.hotelRooms));
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch hotel rooms from Firestore for default categories:", e);
+                }
             }
         };
 
         fetchDynamicMenu();
-    }, [isParking, isHotel, isStadium, location.state, venueName]);
+    }, [isHotel, isStadium, location.state, venueName]);
 
     const hasTicketsInCart = cart.some(item => 
         item.tags?.includes('Ticket') || 
@@ -798,7 +910,6 @@ const VenueMenuPage = () => {
                 else if (isHotel) typeDisplay = 'Room Service';
                 else if (isStadium && hasTicketsInCart) typeDisplay = 'Stadium E-Ticket';
                 else if (isClub && hasTicketsInCart) typeDisplay = 'Club Event Ticket';
-                else if (isParking) typeDisplay = 'Valet Parking';
 
                 const managerOrder = {
                     guest: guestDetails?.companyName ? `${newTicket.guestName} (${guestDetails.companyName})` : (newTicket.guestName || 'Anonymous Guest'),
@@ -809,7 +920,7 @@ const VenueMenuPage = () => {
                     type: typeDisplay,
                     time: 'Just now',
                     payment: paymentDisplay,
-                    table: (!isBooking && !isHotel && !isStadium && !isClub && !isParking && !hasTicketsInCart) ? newTicket.tableId : undefined,
+                    table: (!isBooking && !isHotel && !isStadium && !isClub && !hasTicketsInCart) ? newTicket.tableId : undefined,
                     room: (isBooking || isHotel) ? (newTicket.tableId && newTicket.tableId !== 'Check-in Assigned' ? newTicket.tableId : String(Math.floor(100 + Math.random() * 400))) : undefined,
                     checkIn: isBooking ? 'May 19' : undefined,
                     checkOut: isBooking ? 'May 21' : undefined
@@ -907,7 +1018,6 @@ const VenueMenuPage = () => {
     // duplicate triggerToast ended
 
     const getCheckoutLabel = () => {
-        if (isParking) return 'GET ACCESS PASS';
         if (isStadium) return 'GENERATE TICKETS';
         if (isBooking) return 'BOOK ROOM';
         if (isHotel) return 'ORDER ROOM SERVICE';
@@ -1142,14 +1252,14 @@ const VenueMenuPage = () => {
                                             )}
 
                                             <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">
-                                                {(isStadium || isClub) ? 'Ticket Hub' : isParking ? 'Pass Authorization' : isBooking ? 'Guest Registration' : 'Guest Verification'}
+                                                {(isStadium || isClub) ? 'Ticket Hub' : isBooking ? 'Guest Registration' : 'Guest Verification'}
                                             </h3>
                                             <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">
-                                                {isStadium ? 'Stadium Mission Authorization' : isClub ? 'Club Event Admission Protocol' : isParking ? 'Digital Access Pass Protocol' : isBooking ? 'Full Check-in Protocol' : `Room #${selectedTable} Security Check`}
+                                                {isStadium ? 'Stadium Mission Authorization' : isClub ? 'Club Event Admission Protocol' : isBooking ? 'Full Check-in Protocol' : `Room #${selectedTable} Security Check`}
                                             </p>
                                         </div>
                                         
-                                        <div className={`space-y-4 ${ (isBooking || isStadium || isParking || isClub) ? 'max-h-[50vh] overflow-y-auto pr-2 no-scrollbar px-1' : ''}`}>
+                                        <div className={`space-y-4 ${ (isBooking || isStadium || isClub) ? 'max-h-[50vh] overflow-y-auto pr-2 no-scrollbar px-1' : ''}`}>
                                             {isBooking ? (
                                                 <div className="space-y-4 px-2">
                                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mb-2">Gast-Details / Guest Information</p>
@@ -1287,7 +1397,7 @@ const VenueMenuPage = () => {
                                                 <div className="text-left space-y-4">
                                                     <div className="px-2">
                                                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mb-4">
-                                                            {isParking ? 'Lead Driver' : 'Lead Ticket Holder'}
+                                                            Lead Ticket Holder
                                                         </p>
                                                         <input 
                                                             type="text" 
@@ -1298,7 +1408,7 @@ const VenueMenuPage = () => {
                                                         />
                                                     </div>
 
-                                                    {(hasTicketsInCart || isStadium || isParking || isClub) && (
+                                                    {(hasTicketsInCart || isStadium || isClub) && (
                                                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 gap-4 px-2">
                                                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mt-4">Communication Hub</p>
                                                             <input 
@@ -1389,7 +1499,7 @@ const VenueMenuPage = () => {
                                             disabled={isBooking ? (!guestDetails.firstName || !guestDetails.lastName || !guestDetails.email || !guestDetails.phone || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.idNumber || !guestDetails.dob) : (hasTicketsInCart ? (!guestName || !guestDetails.email) : !guestName)}
                                             className={`w-full py-6 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${(isBooking ? (guestDetails.firstName && guestDetails.lastName && guestDetails.email && guestDetails.phone && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.idNumber && guestDetails.dob) : (hasTicketsInCart ? (guestName && guestDetails.email) : guestName)) ? 'bg-brand text-dark-950 shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]/50'}`}
                                         >
-                                            {isBooking ? 'Complete Registration' : isParking ? 'Authorize Pass' : (isStadium || isClub || hasTicketsInCart) ? `Authorize Tickets` : 'Continue to Settlement'}
+                                            {isBooking ? 'Complete Registration' : (isStadium || isClub || hasTicketsInCart) ? `Authorize Tickets` : 'Continue to Settlement'}
                                         </button>
                                     </motion.div>
                                 ) : (
@@ -1405,7 +1515,7 @@ const VenueMenuPage = () => {
                                                 <ArrowLeft size={20} />
                                             </button>
                                             <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">Settlement Method</h3>
-                                            <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">{(isStadium || isClub || hasTicketsInCart) ? `E-Ticket Authorization ${guestName ? `• ${guestName}` : ''}` : isParking ? `Parking Pass Authorization ${guestName ? `• ${guestName}` : ''}` : isBooking ? `New Booking ${guestName ? `• ${guestName}` : ''}` : `${isHotel ? 'Room' : 'Table'} #${selectedTable}${guestName ? ` • ${guestName}` : ''}`} • €{totalCost.toFixed(2)}</p>
+                                            <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">{(isStadium || isClub || hasTicketsInCart) ? `E-Ticket Authorization ${guestName ? `• ${guestName}` : ''}` : isBooking ? `New Booking ${guestName ? `• ${guestName}` : ''}` : `${isHotel ? 'Room' : 'Table'} #${selectedTable}${guestName ? ` • ${guestName}` : ''}`} • €{totalCost.toFixed(2)}</p>
                                         </div>
                                         
                                         <div className="flex items-center justify-between px-2 mb-4">
@@ -1585,7 +1695,6 @@ const VenueMenuPage = () => {
                                 {venueTickets.map((ticket) => {
                                     const isHotelTicket = ticket.venueName.toLowerCase().includes('hotel') || ticket.venueName.toLowerCase().includes('luxe');
                                     const isStadiumTicket = ticket.venueName.toLowerCase().includes('stadium') || ticket.venueName.toLowerCase().includes('arena');
-                                    const isParkingTicket = ticket.venueName.toLowerCase().includes('park') || ticket.venueName.toLowerCase().includes('garage');
                                     const isClubTicket = ticket.venueName.toLowerCase().includes('club') || ticket.venueName.toLowerCase().includes('disco') || ticket.venueName.toLowerCase().includes('lounge') || ticket.venueName.toLowerCase().includes('night') || ticket.venueName.toLowerCase().includes('bar') || ticket.venueName.toLowerCase().includes('festival') || ticket.venueName.toLowerCase().includes('event');
                                     
                                     let locationLabel = 'Table';
@@ -1597,9 +1706,6 @@ const VenueMenuPage = () => {
                                     } else if (isStadiumTicket || isClubTicket) {
                                         locationLabel = 'Ticket';
                                         displayTitle = 'Digital Ticket';
-                                    } else if (isParkingTicket) {
-                                        locationLabel = 'Pass';
-                                        displayTitle = 'Digital Pass';
                                     }
 
                                     // Dynamic Status Mapping from B2B Manager Dashboard

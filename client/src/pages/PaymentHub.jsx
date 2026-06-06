@@ -7,22 +7,23 @@ import {
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { triggerNotification } from '../components/NotificationToast';
+import { useAuth } from '../context/AuthContext';
 
-const saveMethodsToStorage = (methods) => {
+const saveMethodsToStorage = (methods, userEmailKey) => {
     try {
         const cleaned = methods.map(m => {
             const { icon, ...rest } = m;
             return rest;
         });
-        localStorage.setItem('green_payment_methods', JSON.stringify(cleaned));
+        localStorage.setItem(`green_payment_methods_${userEmailKey}`, JSON.stringify(cleaned));
     } catch (e) {
         console.error(e);
     }
 };
 
-const loadMethodsFromStorage = () => {
+const loadMethodsFromStorage = (userEmailKey, user) => {
     try {
-        const saved = localStorage.getItem('green_payment_methods');
+        const saved = localStorage.getItem(`green_payment_methods_${userEmailKey}`);
         if (saved) {
             const parsed = JSON.parse(saved);
             return parsed.map(m => {
@@ -41,16 +42,26 @@ const loadMethodsFromStorage = () => {
         }
     } catch (e) {}
     
+    const isDemo = user?.isDemo;
+    if (isDemo) {
+        return [
+            { id: 1, type: 'Credit Card', provider: 'Mastercard', last4: '4242 4242 4242 4242', icon: CreditCard, holder: 'Alex Passenger', expiry: '12/28', cvv: '999' },
+            { id: 2, type: 'Bank Account', provider: 'Deutsche Bank', iban: 'DE91 5007 0024 0123 4567 89', icon: BankIcon, holder: 'Alex Passenger', swift: 'DBANKDEMXXX' },
+            { id: 3, type: 'PayPal', provider: 'PayPal', email: 'alex.p@uplink.net', icon: Wallet }
+        ];
+    }
+    
     return [
-        { id: 1, type: 'Credit Card', provider: 'Mastercard', last4: '4242 4242 4242 4242', icon: CreditCard, holder: 'Alex Passenger', expiry: '12/28', cvv: '999' },
-        { id: 2, type: 'Bank Account', provider: 'Deutsche Bank', iban: 'DE91 5007 0024 0123 4567 89', icon: BankIcon, holder: 'Alex Passenger', swift: 'DBANKDEMXXX' },
-        { id: 3, type: 'PayPal', provider: 'PayPal', email: 'alex.p@uplink.net', icon: Wallet }
+        { id: 4, type: 'Cash', provider: 'Physical Cash', status: 'Always Active', icon: Coins, holder: user?.name || 'Member' }
     ];
 };
 
 const PaymentHub = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { user } = useAuth();
+    const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+
     const [editingPaymentId, setEditingPaymentId] = useState(null);
     
     // Stripe & PayPal modal and form states
@@ -73,30 +84,43 @@ const PaymentHub = () => {
         password: ''
     });
     
-    const [activeMethodId, setActiveMethodId] = useState(() => {
-        try {
-            const saved = localStorage.getItem('green_active_payment_id');
+    const [activeMethodId, setActiveMethodId] = useState(4);
+    const [paymentMethods, setPaymentMethods] = useState([]);
+
+    React.useEffect(() => {
+        if (user) {
+            setPaymentMethods(loadMethodsFromStorage(userEmailKey, user));
+            setStripeForm(prev => ({
+                ...prev,
+                holder: user.name || 'Member'
+            }));
+
+            const saved = localStorage.getItem(`green_active_payment_id_${userEmailKey}`);
             if (saved) {
                 const parsed = Number(saved);
-                return isNaN(parsed) ? saved : parsed;
+                setActiveMethodId(isNaN(parsed) ? saved : parsed);
+            } else {
+                const isDemo = user?.isDemo;
+                setActiveMethodId(isDemo ? 1 : 4);
             }
-        } catch (e) {}
-        return 1;
-    });
-    
-    const [paymentMethods, setPaymentMethods] = useState(() => loadMethodsFromStorage());
+        }
+    }, [user, userEmailKey]);
 
     // Auto-save when updated
     React.useEffect(() => {
-        saveMethodsToStorage(paymentMethods);
-    }, [paymentMethods]);
+        if (user && paymentMethods.length > 0) {
+            saveMethodsToStorage(paymentMethods, userEmailKey);
+        }
+    }, [paymentMethods, user, userEmailKey]);
 
     React.useEffect(() => {
-        localStorage.setItem('green_active_payment_id', String(activeMethodId));
-    }, [activeMethodId]);
+        if (user && activeMethodId) {
+            localStorage.setItem(`green_active_payment_id_${userEmailKey}`, String(activeMethodId));
+        }
+    }, [activeMethodId, user, userEmailKey]);
 
     const activeMethod = paymentMethods.find(m => String(m.id) === String(activeMethodId)) || paymentMethods[0] || {
-        type: 'Credit Card', provider: 'Mastercard', last4: '4242 4242 4242 4242', icon: CreditCard, holder: 'Alex Passenger', expiry: '12/28', cvv: '999'
+        type: 'Cash', provider: 'Physical Cash', status: 'Always Active', icon: Coins, holder: user?.name || 'Member'
     };
 
     const getBackendUrl = () => {

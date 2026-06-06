@@ -78,17 +78,15 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                 case 'overview':
                     if (managerContext === 'HM') return "Palace Mission Control";
                     if (managerContext === 'SM') return "Arena Mission Control";
-                    if (managerContext === 'PM') return "Gate Control Hub";
                     if (managerContext === 'BM' || managerContext === 'CM') return "Venue Mission Control";
                     return "Service Mission Control";
                 case 'menu':
                     if (managerContext === 'HM') return "In-Suite Catalog";
                     if (managerContext === 'SM') return "Arena Catalog";
-                    if (managerContext === 'PM') return "Spot Allocation";
                     if (managerContext === 'BM' || managerContext === 'CM') return "Nightlife Catalog";
                     return "Intelligence & Catalog";
                 case 'compliance':
-                    return managerContext === 'PM' ? "Legal Center" : "Compliance Vault";
+                    return "Compliance Vault";
                 default:
                     return baseLabel;
             }
@@ -101,7 +99,6 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                 case 'overview':
                     if (['waiter', 'cashier'].includes(staffTemplate)) return "Service Pulse";
                     if (staffTemplate === 'reception') return "Guest Registry";
-                    if (['parking', 'valet'].includes(staffTemplate)) return "Vehicle Queue";
                     return "Operational Cockpit";
                 case 'menu':
                     if (staffTemplate === 'waiter') return "Table Ordering";
@@ -109,7 +106,6 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                     return "Service Matrix";
                 case 'terminal':
                     if (staffTemplate === 'cashier') return "Payment Terminal";
-                    if (staffTemplate === 'valet') return "Key Dispatcher";
                     return "Staff Scanner";
                 default:
                     return baseLabel;

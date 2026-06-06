@@ -89,6 +89,26 @@ const scopedStorage = {
     removeItem: (key) => localStorage.removeItem(getScopedKey(key)),
 };
 
+const demoEmails = [
+    'passenger@green.de',
+    'driver@green.de',
+    'staff@green.de',
+    'staff.fleet@green.de',
+    'staff.restaurant@green.de',
+    'staff.club@green.de',
+    'staff.hotel@green.de',
+    'staff.stadium@green.de',
+    'manager@green.de',
+    'admin@green.de',
+    'restaurant@green.de',
+    'club@green.de',
+    'hotel@green.de',
+    'stadium@green.de'
+];
+const isDemoEmail = (email) => {
+    return email && demoEmails.includes(email.toLowerCase());
+};
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -105,7 +125,7 @@ export const AuthProvider = ({ children }) => {
             businessType: 'ALL', 
             greenId: 'GRN-STAFF-ALL', 
             onboarded: true, 
-            permissions: ['overview', 'orders', 'stadium-seats', 'hotel-rooms', 'staff', 'qr-dispatcher', 'finance', 'documents', 'feed', 'reputation', 'strategic-hub', 'fleet-control', 'sitting', 'menu'], 
+            permissions: ['overview', 'orders', 'stadium-seats', 'hotel-rooms', 'staff', 'finance', 'documents', 'feed', 'reputation', 'strategic-hub', 'fleet-control', 'sitting', 'menu'], 
             greenFlags: 45, 
             redFlags: 0 
         },
@@ -120,7 +140,6 @@ export const AuthProvider = ({ children }) => {
         { name: 'Carlo Club', email: 'club@green.de', password: 'green2026', role: 'manager', businessType: 'CM', greenFlags: 1540, redFlags: 0 },
         { name: 'Heidi Hotel', email: 'hotel@green.de', password: 'green2026', role: 'manager', businessType: 'HM', greenFlags: 3410, redFlags: 0 },
         { name: 'Stephan Stadium', email: 'stadium@green.de', password: 'green2026', role: 'manager', businessType: 'SM', greenFlags: 4500, redFlags: 0 },
-        { name: 'Pedro Parking', email: 'parking@green.de', password: 'green2026', role: 'manager', businessType: 'PM', greenFlags: 620, redFlags: 0 },
     ];
 
     // Asynchronous Auto-Seeder for Default Accounts
@@ -168,7 +187,7 @@ export const AuthProvider = ({ children }) => {
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
                         const profile = docSnap.data();
-                        setUser(profile);
+                        setUser({ ...profile, isDemo: isDemoEmail(profile.email) });
                         sessionStorage.setItem('simulator_active_role', profile.role);
                         scopedStorage.setItem('green_user_email', profile.email);
                         scopedStorage.setItem('green_role', profile.role);
@@ -187,7 +206,7 @@ export const AuthProvider = ({ children }) => {
                             greenFlags: 0,
                             redFlags: 0
                         };
-                        setUser(fallbackUser);
+                        setUser({ ...fallbackUser, isDemo: isDemoEmail(fallbackUser.email) });
                     }
                 } catch (e) {
                     console.error('Failed to load user profile from Firestore:', e);
@@ -406,7 +425,7 @@ export const AuthProvider = ({ children }) => {
             await setDoc(docRef, createdUser);
 
             sessionStorage.setItem('simulator_active_role', createdUser.role);
-            setUser(createdUser);
+            setUser({ ...createdUser, isDemo: false });
 
             scopedStorage.setItem('green_jwt_token', 'firebase_jwt_' + firebaseUser.uid);
             scopedStorage.removeItem('green_explicit_logout');
@@ -468,7 +487,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout, isVerified, verify, register }}>
+        <AuthContext.Provider value={{ user, setUser, loading, login, logout, isVerified, verify, register }}>
             {children}
         </AuthContext.Provider>
     );

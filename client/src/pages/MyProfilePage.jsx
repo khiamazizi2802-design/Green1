@@ -9,15 +9,23 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
 import { triggerNotification } from '../components/NotificationToast';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db as fbDb } from '../config/firebase';
 
 const MyProfilePage = () => {
     const navigate = useNavigate();
     
-    const { user } = useAuth();
+    const { user, setUser } = useAuth();
 
     const [localAvatar, setLocalAvatar] = useState(() => {
         return user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`;
     });
+
+    useEffect(() => {
+        if (user) {
+            setLocalAvatar(user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name || 'Alex'}`);
+        }
+    }, [user]);
     
     const [mockComplaints, setMockComplaints] = useState([
         { id: 'GRN-421', business: 'Skyline Bar', reason: 'Unsafe Driving Report', date: '02.05.2026', status: 'Active' },
@@ -35,7 +43,7 @@ const MyProfilePage = () => {
 
     useEffect(() => {
         if (user) {
-            const isDemoUser = user?.email?.toLowerCase().endsWith('@green.de');
+            const isDemoUser = user?.isDemo;
             if (isDemoUser) {
                 setMyPosts(prev => {
                     if (prev.length === 0) {
@@ -233,9 +241,25 @@ const MyProfilePage = () => {
                         onChange={(e) => {
                             const file = e.target.files[0];
                             if (file) {
-                                const url = URL.createObjectURL(file);
-                                setLocalAvatar(url);
-                                triggerNotification("AVATAR SECURELY UPDATED", "SUCCESS");
+                                const reader = new FileReader();
+                                reader.onloadend = async () => {
+                                    const base64Data = reader.result;
+                                    setLocalAvatar(base64Data);
+                                    if (user && user.email) {
+                                        try {
+                                            const userDocRef = doc(fbDb, 'users', user.email.toLowerCase());
+                                            await updateDoc(userDocRef, { avatar: base64Data });
+                                            setUser({ ...user, avatar: base64Data });
+                                            triggerNotification("AVATAR SECURELY UPDATED", "SUCCESS");
+                                        } catch (err) {
+                                            console.error("Failed to save avatar in Firestore:", err);
+                                            triggerNotification("AVATAR UPDATED", "SUCCESS");
+                                        }
+                                    } else {
+                                        triggerNotification("AVATAR UPDATED", "SUCCESS");
+                                    }
+                                };
+                                reader.readAsDataURL(file);
                             }
                         }} 
                     />
@@ -418,7 +442,18 @@ const MyProfilePage = () => {
                                                 <button 
                                                     onClick={() => {
                                                         setIncomingRequests(prev => prev.filter(r => r.id !== req.id));
-                                                        setMutualFriends(prev => [...prev, req]);
+                                                        setMutualFriends(prev => [
+                                                            ...prev,
+                                                            {
+                                                                id: req.id,
+                                                                name: req.name,
+                                                                username: `@${req.name.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
+                                                                avatar: req.image || req.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${req.name}`,
+                                                                status: 'Online',
+                                                                mutuals: Math.floor(Math.random() * 5) + 1,
+                                                                rank: 'New Connection'
+                                                            }
+                                                        ]);
                                                         triggerNotification("CONNECTION ESTABLISHED", "SUCCESS");
                                                     }}
                                                     className="w-12 h-12 rounded-2xl bg-brand flex items-center justify-center text-dark-900 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand/20"

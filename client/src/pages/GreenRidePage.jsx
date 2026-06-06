@@ -30,6 +30,7 @@ import {
     Smartphone
 } from 'lucide-react';
 import { useRide } from '../context/RideContext';
+import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { triggerNotification } from '../components/NotificationToast';
 
@@ -134,6 +135,7 @@ const MapController = ({ center, rideActive, driverPos, pickupPos }) => {
 
 const GreenRidePage = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const { 
         rideStatus, setRideStatus, 
         driverInfo, setDriverInfo,
@@ -1239,6 +1241,25 @@ const GreenRidePage = () => {
                     {/* Done Button */}
                     <button
                         onClick={() => {
+                            if (driverInfo) {
+                                try {
+                                    const emailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+                                    const historyKey = `green_ride_history_${emailKey}`;
+                                    const existing = JSON.parse(localStorage.getItem(historyKey) || '[]');
+                                    const newRide = {
+                                        id: Date.now(),
+                                        service: serviceType === 'shared' ? 'GreenS (Shared)' : 'GreenRide (Private)',
+                                        date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                                        price: serviceType === 'shared' ? '€ 19.60' : '€ 24.50',
+                                        destination: destination || 'Eco-Park Central',
+                                        driver: driverInfo.name || 'MICK D.',
+                                        icon: serviceType === 'shared' ? 'Share2' : 'Zap'
+                                    };
+                                    localStorage.setItem(historyKey, JSON.stringify([newRide, ...existing]));
+                                } catch (e) {
+                                    console.error('Failed to save ride history:', e);
+                                }
+                            }
                             setRideStatus('idle');
                             setDriverInfo(null);
                             setPickup('Main St 123 (Current)');

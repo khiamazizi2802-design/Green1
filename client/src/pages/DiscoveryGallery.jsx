@@ -149,9 +149,9 @@ const DiscoveryGallery = () => {
                         loaded.push({
                             id: doc.id,
                             category: category,
-                            name: data.name || "Unnamed Partner",
-                            offer: data.businessType === 'HM' ? "LATE CHECKOUT 2PM" : data.businessType === 'CM' ? "FREE ENTRY + 1 DRINK" : "20% OFF TOTAL BILL",
-                            discount: data.businessType === 'HM' ? null : "20%",
+                            name: data.businessInfo?.legalName || data.businessName || data.name || "Unnamed Partner",
+                            offer: data.businessInfo?.offer || (data.businessType === 'HM' ? "LATE CHECKOUT 2PM" : data.businessType === 'CM' ? "FREE ENTRY + 1 DRINK" : "20% OFF TOTAL BILL"),
+                            discount: (data.businessInfo?.discount !== undefined && data.businessInfo?.discount !== '') ? data.businessInfo.discount : (data.businessType === 'HM' ? null : "20%"),
                             rating: 4.8,
                             dist: "1.2km",
                             img: category === 'club' 
@@ -182,7 +182,7 @@ const DiscoveryGallery = () => {
 
     const filteredVenues = useMemo(() => {
         const userEmail = user?.email || '';
-        const isDemoUser = userEmail.toLowerCase().endsWith('@green.de');
+        const isDemoUser = user?.isDemo;
 
         return venues.filter(v => {
             const matchesCat = v.category === activeCategory;
@@ -191,7 +191,7 @@ const DiscoveryGallery = () => {
                                 (activeFilter === 'active' && v.rating > 4.7);
             
             // Hide demo venues for non-demo users
-            const isVenueDemo = (v.email || '').toLowerCase().endsWith('@green.de');
+            const isVenueDemo = ['manager@green.de', 'restaurant@green.de', 'club@green.de', 'hotel@green.de', 'stadium@green.de'].includes((v.email || '').toLowerCase());
             if (!isDemoUser && isVenueDemo) {
                 return false;
             }

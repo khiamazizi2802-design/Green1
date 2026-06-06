@@ -70,7 +70,8 @@ import {
     Send,
     DoorOpen,
     Undo,
-    Mail
+    Mail,
+    Camera
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -134,7 +135,7 @@ const getItemInfo = (itemName) => {
 };
 
 const ManagerDashboard = () => {
-    const { user, loading, logout } = useAuth();
+    const { user, setUser, loading, logout } = useAuth();
     const { theme, setTheme } = useTheme();
     const navigate = useNavigate();
     const { lang, setLang } = useLanguage();
@@ -202,7 +203,7 @@ const ManagerDashboard = () => {
         return false;
     };
     const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
-    const isDemo = ['manager@green.de', 'restaurant@green.de', 'club@green.de', 'hotel@green.de', 'stadium@green.de', 'parking@green.de'].includes(user?.email?.toLowerCase());
+    const isDemo = ['manager@green.de', 'restaurant@green.de', 'club@green.de', 'hotel@green.de', 'stadium@green.de'].includes(user?.email?.toLowerCase());
 
     const [staffList, setStaffList] = useState(() => {
         const saved = localStorage.getItem(`green_staff_list_${userEmailKey}`);
@@ -249,6 +250,146 @@ const ManagerDashboard = () => {
         localStorage.setItem(`green_manager_context_${userEmailKey}`, ctx);
         return ctx;
     });
+
+    // Compliance Document States
+    const [complianceDocs, setComplianceDocs] = useState(() => {
+        const saved = localStorage.getItem(`green_compliance_docs_${userEmailKey}`);
+        if (saved) return JSON.parse(saved);
+        return {};
+    });
+
+    // Save and load compliance states and sync metadata
+    useEffect(() => {
+        if (user?.email) {
+            const saved = localStorage.getItem(`green_compliance_docs_${userEmailKey}`);
+            const currentDocs = saved ? JSON.parse(saved) : {};
+            // Sync metadata
+            currentDocs._metadata = {
+                email: user.email,
+                name: user.name || 'Partner Manager',
+                businessName: user.businessName || 'Green Fleet Ops',
+                context: managerContext,
+                updatedAt: new Date().toISOString()
+            };
+            localStorage.setItem(`green_compliance_docs_${userEmailKey}`, JSON.stringify(currentDocs));
+            setComplianceDocs(currentDocs);
+        }
+    }, [user?.email, userEmailKey, managerContext]);
+
+    const requiredDocIds = managerContext === 'FM' 
+        ? ['tl', 'fip', 'cc', 'vr', 'tuv', 'es', 'sepa', 'vatc', 'bankv']
+        : ['reg', 'mid', 'tax', 'gast', 'liq', 'fire', 'sepa', 'vatc', 'bankv'];
+
+    const getComplianceStatus = () => {
+        const missing = [];
+        const pending = [];
+        const rejected = [];
+        const approved = [];
+        requiredDocIds.forEach(id => {
+            const docState = complianceDocs[id];
+            if (!docState || docState.status === 'missing') {
+                missing.push(id);
+            } else if (docState.status === 'pending') {
+                pending.push(id);
+            } else if (docState.status === 'rejected') {
+                rejected.push(id);
+            } else if (docState.status === 'approved') {
+                approved.push(id);
+            }
+        });
+        return {
+            missing,
+            pending,
+            rejected,
+            approved,
+            isApproved: approved.length === requiredDocIds.length
+        };
+    };
+
+    const handleDocumentUpload = (docId, file) => {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const fileData = e.target.result;
+            const updatedDocs = {
+                ...complianceDocs,
+                [docId]: {
+                    id: docId,
+                    name: file.name,
+                    size: (file.size / 1024).toFixed(1) + ' KB',
+                    status: 'pending',
+                    uploadedAt: new Date().toISOString(),
+                    fileData: fileData
+                }
+            };
+            // Ensure metadata is updated
+            updatedDocs._metadata = {
+                email: user?.email || 'unknown',
+                name: user?.name || 'Partner Manager',
+                businessName: user?.businessName || 'Green Fleet Ops',
+                context: managerContext,
+                updatedAt: new Date().toISOString()
+            };
+            setComplianceDocs(updatedDocs);
+            localStorage.setItem(`green_compliance_docs_${userEmailKey}`, JSON.stringify(updatedDocs));
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleViewDocument = (docState) => {
+        if (!docState || !docState.fileData) return;
+        const newWindow = window.open();
+        if (newWindow) {
+            newWindow.document.title = docState.name || 'Document View';
+            newWindow.document.body.style.margin = '0';
+            newWindow.document.body.style.background = '#0a0a0a';
+            newWindow.document.body.style.display = 'flex';
+            newWindow.document.body.style.justifyContent = 'center';
+            newWindow.document.body.style.alignItems = 'center';
+            newWindow.document.body.style.height = '100vh';
+            
+            if (docState.fileData.startsWith('data:image/')) {
+                const img = newWindow.document.createElement('img');
+                img.src = docState.fileData;
+                img.style.maxWidth = '90%';
+                img.style.maxHeight = '90%';
+                img.style.borderRadius = '12px';
+                img.style.boxShadow = '0 20px 50px rgba(0,0,0,0.5)';
+                newWindow.document.body.appendChild(img);
+            } else {
+                const iframe = newWindow.document.createElement('iframe');
+                iframe.src = docState.fileData;
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.border = 'none';
+                newWindow.document.body.appendChild(iframe);
+            }
+        }
+    };
+
+    // A helper to auto-approve all documents for developer testing
+    const handleDevAutoApprove = () => {
+        const autoDocs = { ...complianceDocs };
+        requiredDocIds.forEach(id => {
+            autoDocs[id] = {
+                id,
+                name: `Auto_Generated_${id}.pdf`,
+                size: '150.0 KB',
+                status: 'approved',
+                uploadedAt: new Date().toISOString(),
+                fileData: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 100 100"><rect width="100" height="100" fill="%2310b981"/><text x="50" y="50" font-family="sans-serif" font-size="8" fill="white" text-anchor="middle">APPROVED DOCUMENT</text></svg>'
+            };
+        });
+        autoDocs._metadata = {
+            email: user?.email || 'unknown',
+            name: user?.name || 'Partner Manager',
+            businessName: user?.businessName || 'Green Fleet Ops',
+            context: managerContext,
+            updatedAt: new Date().toISOString()
+        };
+        setComplianceDocs(autoDocs);
+        localStorage.setItem(`green_compliance_docs_${userEmailKey}`, JSON.stringify(autoDocs));
+    };
 
     // Dynamic Commission and Payout Calculations based on business type
     const commissionData = useMemo(() => {
@@ -331,8 +472,6 @@ const ManagerDashboard = () => {
             BM: { unit: 'Table Number', id: 'Ticket ID', badge: 'Bar' },
             CM: { unit: 'Table Number', id: 'Guest ID', badge: 'Nightlife' },
             SM: { unit: 'Ticket Inventory', id: 'Batch ID', badge: 'Stadium' },
-            WM: { unit: 'Service Bay', id: 'Service ID', badge: 'Carwash' },
-            PM: { unit: 'Parking Space', id: 'Pass ID', badge: 'Parking' },
             FM: { unit: 'Vehicle ID', id: 'Mission ID', badge: 'Fleet' }
         };
         return labels[managerContext] || { unit: 'Unit', id: 'Order ID', badge: 'General' };
@@ -345,8 +484,8 @@ const ManagerDashboard = () => {
         sectors.forEach(s => {
             initial[s] = Array.from({ length: 15 }).map((_, i) => ({
                 id: i + 1,
-                status: (i + 1) % 4 === 0 ? 'occupied' : 'available',
-                guest: (i + 1) % 4 === 0 ? 'Julian R.' : null
+                status: isDemo ? ((i + 1) % 4 === 0 ? 'occupied' : 'available') : 'available',
+                guest: isDemo ? ((i + 1) % 4 === 0 ? 'Julian R.' : null) : null
             }));
         });
         return initial;
@@ -363,15 +502,18 @@ const ManagerDashboard = () => {
         // and let the hasPermission() logic handle internal view security.
     }, [managerContext, simRole, navigate]);
 
-    // Mock Business Data based on context
     const getBusinessName = (ctx = managerContext) => {
+        if (user?.businessInfo?.legalName) {
+            return user.businessInfo.legalName;
+        }
+        if (user?.businessName) {
+            return user.businessName;
+        }
         switch(ctx) {
             case 'BM': return "The Blue Velvet Bar";
             case 'RM': return "Saffron Fine Dining";
             case 'HM': return "Green Palace & Spa";
             case 'CM': return "Midnight Club & Lounge";
-            case 'PM': return "Hauptwache Parkhaus";
-            case 'WM': return "Eco-Wash Zentrum";
             case 'VM': return "Veranstaltung: Gala 2026";
             case 'SM': return "Green Stadium Arena";
             default: return "Green Fleet Operations";
@@ -547,26 +689,7 @@ const ManagerDashboard = () => {
     const [aiDraftMenu, setAiDraftMenu] = useState(null);
     const [menuApprovalPending, setMenuApprovalPending] = useState(false);
 
-    // PARKING AI AGENT STATE
-    const [isScanningStructure, setIsScanningStructure] = useState(false);
-    const [aiDraftStructure, setAiDraftStructure] = useState(null);
-    const [structureApprovalPending, setStructureApprovalPending] = useState(false);
-    const [parkingStructure, setParkingStructure] = useState([
-        { floor: 0, total: 50, free: 12, spaces: [] },
-        { floor: 1, total: 50, free: 48, spaces: [] },
-        { floor: -1, total: 50, free: 5, spaces: [] },
-        { floor: -2, total: 50, free: 2, spaces: [] }
-    ]);
 
-    // CARWASH AI AGENT STATE
-    const [isScanningWash, setIsScanningWash] = useState(false);
-    const [aiDraftWash, setAiDraftWash] = useState(null);
-    const [washApprovalPending, setWashApprovalPending] = useState(false);
-    const [carwashServices, setCarwashServices] = useState([
-        { id: 1, name: 'Eco-Express', price: 12.00, duration: '8m', type: 'Standard' },
-        { id: 2, name: 'Premium Pearl', price: 24.50, duration: '15m', type: 'Premium' },
-        { id: 3, name: 'Green Ceramic', price: 45.00, duration: '30m', type: 'Luxury' }
-    ]);
 
     // STADIUM AI AGENT STATE
     const [isScanningSeats, setIsScanningSeats] = useState(false);
@@ -789,27 +912,43 @@ const ManagerDashboard = () => {
     };
 
     const handleTierFileChange = (index, e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+        const selectedFiles = Array.from(e.target.files);
+        if (selectedFiles.length === 0) return;
 
-        const fileData = {
+        const newFilesData = selectedFiles.map(file => ({
             name: file.name,
             size: (file.size / 1024).toFixed(1) + ' KB',
             type: file.type,
             url: file.type.startsWith('image/') ? URL.createObjectURL(file) : null
-        };
+        }));
 
         setNewEventData(prev => {
             const updatedTiers = [...prev.tiers];
-            updatedTiers[index] = { ...updatedTiers[index], file: fileData, verified: false };
+            const currentFiles = updatedTiers[index].files || [];
+            if (updatedTiers[index].file && currentFiles.length === 0) {
+                currentFiles.push(updatedTiers[index].file);
+            }
+            updatedTiers[index] = { 
+                ...updatedTiers[index], 
+                files: [...currentFiles, ...newFilesData], 
+                verified: false 
+            };
             return { ...prev, tiers: updatedTiers };
         });
+        e.target.value = '';
     };
 
-    const handleRemoveTierFile = (index) => {
+    const handleRemoveTierFile = (tierIndex, fileIndex) => {
         setNewEventData(prev => {
             const updatedTiers = [...prev.tiers];
-            updatedTiers[index] = { ...updatedTiers[index], file: null, verified: false };
+            const currentFiles = updatedTiers[tierIndex].files || [];
+            const updatedFiles = currentFiles.filter((_, idx) => idx !== fileIndex);
+            updatedTiers[tierIndex] = { 
+                ...updatedTiers[tierIndex], 
+                files: updatedFiles, 
+                file: null, 
+                verified: updatedFiles.length > 0 ? updatedTiers[tierIndex].verified : false 
+            };
             return { ...prev, tiers: updatedTiers };
         });
     };
@@ -850,23 +989,90 @@ const ManagerDashboard = () => {
     const [roomsData, setRoomsData] = useState(() => {
         const saved = localStorage.getItem('green_hotel_rooms');
         if (saved) return JSON.parse(saved);
-        return [
-            { id: '101', name: 'Deluxe King Suite', tier: 'Deluxe', status: 'occupied', guest: 'Julian R.', price: 280, cleanStatus: 'clean' },
-            { id: '102', name: 'Deluxe King Suite', tier: 'Deluxe', status: 'available', guest: null, price: 280, cleanStatus: 'clean' },
-            { id: '103', name: 'Spa Balcony Suite', tier: 'Premium', status: 'cleaning', guest: null, price: 420, cleanStatus: 'cleaning' },
-            { id: '104', name: 'Spa Balcony Suite', tier: 'Premium', status: 'occupied', guest: 'Sarah J.', price: 420, cleanStatus: 'clean' },
-            { id: '201', name: 'Emerald Suite', tier: 'Executive', status: 'available', guest: null, price: 650, cleanStatus: 'clean' },
-            { id: '202', name: 'Emerald Suite', tier: 'Executive', status: 'occupied', guest: 'Elena M.', price: 650, cleanStatus: 'clean' },
-            { id: '301', name: 'Zenith Penthouse', tier: 'Presidential', status: 'available', guest: null, price: 1800, cleanStatus: 'clean' }
-        ];
+        if (isDemo) {
+            return [
+                { id: '101', name: 'Deluxe King Suite', tier: 'Deluxe', status: 'occupied', guest: 'Julian R.', price: 280, cleanStatus: 'clean' },
+                { id: '102', name: 'Deluxe King Suite', tier: 'Deluxe', status: 'available', guest: null, price: 280, cleanStatus: 'clean' },
+                { id: '103', name: 'Spa Balcony Suite', tier: 'Premium', status: 'cleaning', guest: null, price: 420, cleanStatus: 'cleaning' },
+                { id: '104', name: 'Spa Balcony Suite', tier: 'Premium', status: 'occupied', guest: 'Sarah J.', price: 420, cleanStatus: 'clean' },
+                { id: '201', name: 'Emerald Suite', tier: 'Executive', status: 'available', guest: null, price: 650, cleanStatus: 'clean' },
+                { id: '202', name: 'Emerald Suite', tier: 'Executive', status: 'occupied', guest: 'Elena M.', price: 650, cleanStatus: 'clean' },
+                { id: '301', name: 'Zenith Penthouse', tier: 'Presidential', status: 'available', guest: null, price: 1800, cleanStatus: 'clean' }
+            ];
+        }
+        return [];
     });
 
-    const [pmsApiKey, setPmsApiKey] = useState('grn_pms_key_8f3a2c91b8d7e4f0');
-    const [pmsConnected, setPmsConnected] = useState(true);
-    const [pmsLog, setPmsLog] = useState([
-        { time: '10:02:15', type: 'info', message: 'PMS Channel Synchronized: 7 rooms parsed.' },
-        { time: '09:45:00', type: 'checkin', message: 'Room 202 checked in: Elena M. via Mews Webhook (Auto-Sync).' }
-    ]);
+    const [pmsApiKey, setPmsApiKey] = useState(isDemo ? 'grn_pms_key_8f3a2c91b8d7e4f0' : '');
+    const [pmsConnected, setPmsConnected] = useState(isDemo);
+    const [pmsLog, setPmsLog] = useState(() => {
+        if (isDemo) {
+            return [
+                { time: '10:02:15', type: 'info', message: 'PMS Channel Synchronized: 7 rooms parsed.' },
+                { time: '09:45:00', type: 'checkin', message: 'Room 202 checked in: Elena M. via Mews Webhook (Auto-Sync).' }
+            ];
+        }
+        return [];
+    });
+
+    // Manual room adding form states
+    const [newRoomNumber, setNewRoomNumber] = useState('');
+    const [newRoomPrice, setNewRoomPrice] = useState('');
+    const [newRoomCategory, setNewRoomCategory] = useState('');
+    const [newRoomBedLayout, setNewRoomBedLayout] = useState('Single');
+
+    const saveRooms = async (updatedRooms) => {
+        setRoomsData(updatedRooms);
+        localStorage.setItem('green_hotel_rooms', JSON.stringify(updatedRooms));
+        if (user?.email) {
+            try {
+                const userDocRef = doc(fbDb, 'users', user.email.toLowerCase());
+                await updateDoc(userDocRef, { hotelRooms: updatedRooms });
+            } catch (err) {
+                console.error("Failed to sync rooms to Firestore:", err);
+            }
+        }
+    };
+
+    const handleCreateManualRoom = () => {
+        if (!newRoomNumber.trim() || !newRoomPrice || !newRoomCategory.trim()) {
+            alert("Validation Error:\nPlease provide a room number, nightly price, and room category.");
+            return;
+        }
+
+        const exists = roomsData.some(r => r.id === newRoomNumber.trim());
+        if (exists) {
+            alert(`Validation Error:\nRoom #${newRoomNumber.trim()} already exists in the inventory.`);
+            return;
+        }
+
+        const newRoom = {
+            id: newRoomNumber.trim(),
+            name: newRoomCategory.trim(),
+            tier: 'Deluxe',
+            status: 'available',
+            guest: null,
+            price: parseFloat(newRoomPrice),
+            cleanStatus: 'clean',
+            bedLayout: newRoomBedLayout
+        };
+
+        const updatedRooms = [...roomsData, newRoom];
+        saveRooms(updatedRooms);
+
+        setNewRoomNumber('');
+        setNewRoomPrice('');
+        setNewRoomCategory('');
+        setNewRoomBedLayout('Single');
+
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0];
+        setPmsLog(prev => [
+            { time: timeStr, type: 'info', message: `Manual Room #${newRoom.id} added to inventory (€${newRoom.price}/n).` },
+            ...prev
+        ]);
+        alert(`ROOM INVENTORY UPDATED\n-------------------------------\nRoom #${newRoom.id} has been added successfully!`);
+    };
 
     const handleSimulatePmsBooking = () => {
         const availableRooms = roomsData.filter(r => r.status === 'available');
@@ -881,8 +1087,7 @@ const ManagerDashboard = () => {
                 ? { ...r, status: 'occupied', guest: randomGuest }
                 : r
         );
-        setRoomsData(updatedRooms);
-        localStorage.setItem('green_hotel_rooms', JSON.stringify(updatedRooms));
+        saveRooms(updatedRooms);
         
         const now = new Date();
         const timeStr = now.toTimeString().split(' ')[0];
@@ -901,8 +1106,7 @@ const ManagerDashboard = () => {
             }
             return r;
         });
-        setRoomsData(updatedRooms);
-        localStorage.setItem('green_hotel_rooms', JSON.stringify(updatedRooms));
+        saveRooms(updatedRooms);
         
         const now = new Date();
         const timeStr = now.toTimeString().split(' ')[0];
@@ -1082,6 +1286,106 @@ const ManagerDashboard = () => {
         if (saved) return JSON.parse(saved);
         return ['Tesla Model 3', 'Tesla Model Y', 'VW ID.4', 'Polestar 2', 'BMW i4', 'None'];
     });
+
+    useEffect(() => {
+        if (user) {
+            setPersonalInfo({
+                name: user.name || 'Authorized Manager',
+                email: user.email || 'admin@green-nightlife.com',
+                phone: user.phone || '+49 152 9821 004',
+                address: user.address || 'Hauptstraße 12',
+                zip: user.zip || '60311',
+                city: user.city || 'Frankfurt am Main',
+                profilePicture: user.profilePicture || ''
+            });
+
+            if (user.businessInfo) {
+                setBusinessInfo({
+                    offer: '',
+                    discount: '',
+                    ...user.businessInfo
+                });
+            } else {
+                setBusinessInfo({
+                    legalName: user.businessName || (user.name ? `${user.name} Operations` : 'My Fleet Ops'),
+                    address: user.businessAddress || (isDemo ? 'Zeil 106' : ''),
+                    zip: user.businessZip || (isDemo ? '60313' : ''),
+                    city: user.businessCity || (isDemo ? 'Frankfurt' : ''),
+                    email: user.email || '',
+                    phone: user.businessPhone || (isDemo ? '+49 69 1234567' : ''),
+                    vatId: user.businessVatId || (isDemo ? 'DE123456789' : ''),
+                    offer: '',
+                    discount: ''
+                });
+            }
+
+            if (user.bankingInfo) {
+                setBankingInfo(user.bankingInfo);
+            }
+
+            if (user.securityPassword) {
+                setSecurityPassword(user.securityPassword);
+            }
+
+            if (user.hotelRooms) {
+                setRoomsData(user.hotelRooms);
+            }
+        }
+    }, [user]);
+
+    const handleSaveGlobalManifest = async () => {
+        if (!user?.email) {
+            alert("Error: No authenticated session found.");
+            return;
+        }
+
+        try {
+            const userEmail = user.email.toLowerCase();
+            const userRef = doc(fbDb, 'users', userEmail);
+
+            const updatedPersonalInfo = {
+                ...personalInfo,
+                profilePicture: personalInfo.profilePicture || ''
+            };
+
+            await setDoc(userRef, {
+                name: personalInfo.name,
+                phone: personalInfo.phone,
+                address: personalInfo.address,
+                zip: personalInfo.zip,
+                city: personalInfo.city,
+                profilePicture: personalInfo.profilePicture || '',
+                businessInfo: businessInfo,
+                bankingInfo: bankingInfo,
+                securityPassword: securityPassword
+            }, { merge: true });
+
+            localStorage.setItem(`green_personal_info_${userEmailKey}`, JSON.stringify(updatedPersonalInfo));
+            localStorage.setItem(`green_business_info_${userEmailKey}`, JSON.stringify(businessInfo));
+            localStorage.setItem(`green_banking_info_${userEmailKey}`, JSON.stringify(bankingInfo));
+            localStorage.setItem(`green_security_password_${userEmailKey}`, securityPassword);
+
+            if (setUser) {
+                setUser(prev => ({
+                    ...prev,
+                    name: personalInfo.name,
+                    phone: personalInfo.phone,
+                    address: personalInfo.address,
+                    zip: personalInfo.zip,
+                    city: personalInfo.city,
+                    profilePicture: personalInfo.profilePicture || '',
+                    businessInfo: businessInfo,
+                    bankingInfo: bankingInfo,
+                    securityPassword: securityPassword
+                }));
+            }
+
+            alert("MANIFEST SAVED: All credentials encrypted and synchronized to Google Cloud in real-time.");
+        } catch (error) {
+            console.error("Error saving global manifest:", error);
+            alert(`Error: Failed to save manifest. ${error.message}`);
+        }
+    };
 
     const handleExport = () => {
         alert(`GENERATING DATEV MANIFEST\n--------------------------\nEntity: ${getBusinessName()}\nIndustry Type: ${managerContext}\nTax Jurisdiction: DE/EU\n\nStatus: Encrypted & Industry-Segmented`);
@@ -1616,18 +1920,6 @@ const ManagerDashboard = () => {
                 { label: 'Avg Ticket', value: '€0.00', icon: DollarSign, color: 'text-brand', trend: '—' },
                 { label: 'Waitlist', value: '0', icon: Clock, color: 'text-white', trend: '—' }
             ];
-            if (managerContext === 'PM') return [
-                { label: 'Occupancy', value: '0%', icon: Target, color: 'text-brand', trend: '—' },
-                { label: 'Active Bays', value: '0/200', icon: MapPin, color: 'text-brand', trend: 'Stable' },
-                { label: 'EV Charging', value: '0', icon: Zap, color: 'text-white', trend: 'No Demand' },
-                { label: 'Avg Session', value: '—', icon: Clock, color: 'text-brand', trend: '—' }
-            ];
-            if (managerContext === 'WM') return [
-                { label: 'Active Queue', value: '0', icon: Droplets, color: 'text-white', trend: '—' },
-                { label: 'Throughput', value: '0 Cars', icon: Car, color: 'text-brand', trend: '—' },
-                { label: 'Avg Cycle', value: '—', icon: Timer, color: 'text-brand', trend: 'Optimal' },
-                { label: 'Daily Rev.', value: '€0', icon: DollarSign, color: 'text-white', trend: '—' }
-            ];
             if (managerContext === 'SM') return [
                 { label: 'Arena Fill', value: '0%', icon: Users, color: 'text-white', trend: '—' },
                 { label: 'Gate Flow', value: '0/h', icon: Activity, color: 'text-brand', trend: 'Smooth' },
@@ -1660,18 +1952,6 @@ const ManagerDashboard = () => {
             { label: 'Avg Ticket', value: '€72.50', icon: DollarSign, color: 'text-brand', trend: '+12%' },
             { label: 'Waitlist', value: '4', icon: Clock, color: 'text-white', trend: '15m ETA' }
         ];
-        if (managerContext === 'PM') return [
-            { label: 'Occupancy', value: '84%', icon: Target, color: 'text-brand', trend: '+5% Today' },
-            { label: 'Active Bays', value: '168/200', icon: MapPin, color: 'text-brand', trend: 'Stable' },
-            { label: 'EV Charging', value: '12', icon: Zap, color: 'text-white', trend: 'High Demand' },
-            { label: 'Avg Session', value: '2.4h', icon: Clock, color: 'text-brand', trend: '-10m' }
-        ];
-        if (managerContext === 'WM') return [
-            { label: 'Active Queue', value: '4', icon: Droplets, color: 'text-white', trend: 'Fast' },
-            { label: 'Throughput', value: '42 Cars', icon: Car, color: 'text-brand', trend: '+12% Day' },
-            { label: 'Avg Cycle', value: '12m', icon: Timer, color: 'text-brand', trend: 'Optimal' },
-            { label: 'Daily Rev.', value: '€1,240', icon: DollarSign, color: 'text-white', trend: 'Peak' }
-        ];
         if (managerContext === 'SM') return [
             { label: 'Arena Fill', value: '92%', icon: Users, color: 'text-white', trend: 'Near Cap' },
             { label: 'Gate Flow', value: '1.2k/h', icon: Activity, color: 'text-brand', trend: 'Smooth' },
@@ -1688,16 +1968,7 @@ const ManagerDashboard = () => {
 
     const getOperationalDataByContext = () => {
         if (!isDemo) return [];
-        if (managerContext === 'PM') return [
-            { id: 'P1-102', guest: 'B-G-2026', order: 'Parking Session', status: 'Active', time: '1h 12m' },
-            { id: 'P2-404', guest: 'Lukas M.', order: 'EV Fast Charge', status: '85% Charged', time: '45m' },
-            { id: 'VALET', guest: 'Dr. Müller', order: 'Valet Pickup', status: 'In Transit', time: '5m' }
-        ];
-        if (managerContext === 'WM') return [
-            { id: 'BAY-1', guest: 'B-W-442', order: 'Premium Pearl', status: 'Drying', time: '8m' },
-            { id: 'BAY-2', guest: 'Sarah K.', order: 'Eco-Express', status: 'Washing', time: '4m' },
-            { id: 'FINISH', guest: 'Thomas M.', order: 'Interior Deep', status: 'Ready', time: '25m' }
-        ];
+
         if (managerContext === 'SM') return [
             { id: 'S1-A12', guest: 'Julian R.', order: 'VVIP Sector A', status: 'Seated', time: '2h 15m' },
             { id: 'S2-B04', guest: 'TKT-9921', order: 'North Stand', status: 'Entry Scan', time: '1m' },
@@ -1780,7 +2051,7 @@ const ManagerDashboard = () => {
                         badge: '3', 
                         hidden: (managerContext === 'FM') 
                     },
-                    { id: 'stadium-seats', label: 'Ticket Hub', icon: Ticket, visible: managerContext === 'CM' || managerContext === 'SM' },
+                    { id: 'stadium-seats', label: 'Ticket Hub', icon: Ticket, visible: managerContext === 'CM' || managerContext === 'SM' || managerContext === 'VM' },
                     { 
                         id: 'hotel-rooms', 
                         label: 'Room Hub', 
@@ -1789,13 +2060,7 @@ const ManagerDashboard = () => {
                         badge: 'Sync'
                     },
                     { id: 'staff', label: 'Team Hub', icon: Users },
-                    { 
-                        id: 'qr-dispatcher', 
-                        label: managerContext === 'HM' ? 'Keycard Dispatch' : managerContext === 'CM' ? 'Guestlist Scan' : (managerContext === 'PM' || managerContext === 'WM') ? 'Access Dispatcher' : 'Scan Terminal', 
-                        icon: QrCode, 
-                        badge: 'Live', 
-                        hidden: (managerContext === 'FM' || managerContext === 'CB' || managerContext === 'RM' || managerContext === 'SM' || managerContext === 'HM' || managerContext === 'CM' || managerContext === 'BM') 
-                    },
+
                     { 
                         id: 'finance', 
                         label: managerContext === 'HM' ? 'Nightly Audit' : managerContext === 'CM' ? 'Cover Revenue' : 'Financials', 
@@ -1807,7 +2072,7 @@ const ManagerDashboard = () => {
                     { id: 'strategic-hub', label: 'AI Strategic Hub', icon: Sparkles, badge: 'Insight' },
                     { id: 'fleet-control', label: 'Fleet Control Hub', icon: Car, visible: managerContext === 'FM', badge: 'Alert' },
                     { id: 'sitting', label: 'Sitting', icon: Settings },
-                    { id: 'menu', label: 'Menu Catalog', icon: managerContext === 'SM' ? Trophy : Utensils, badge: 'New', hidden: (managerContext === 'FM' || managerContext === 'SM') }
+                    { id: 'menu', label: 'Menu Catalog', icon: managerContext === 'SM' ? Trophy : Utensils, badge: 'New', hidden: (managerContext === 'FM') }
                 ].filter(item => {
                     if (item.hidden) return false;
                     if (item.visible !== undefined) return item.visible;
@@ -2156,7 +2421,7 @@ const ManagerDashboard = () => {
                         </div>
                         <div className="flex flex-col items-center gap-1.5 shrink-0">
                             <div className="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 p-1">
-                                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} alt="Avatar" className="w-full h-full rounded-lg" />
+                                <img src={user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} alt="Avatar" className="w-full h-full rounded-lg" />
                             </div>
                             {!isMobile && (
                                 <span className="text-[6px] font-black text-brand uppercase tracking-widest bg-brand/5 px-1 rounded border border-brand/10">ID: GRN-{user?.id || '284M'}</span>
@@ -2173,6 +2438,72 @@ const ManagerDashboard = () => {
                     <div className="relative z-10 max-w-7xl mx-auto py-6">
                         {!hasPermission(view) ? (
                             <AccessDenied feature={view} />
+                        ) : !getComplianceStatus().isApproved && view !== 'documents' ? (
+                            <div className="bg-glass border border-red-500/30 rounded-[3rem] p-10 space-y-8 shadow-2xl relative overflow-hidden max-w-3xl mx-auto text-center backdrop-blur-2xl">
+                                <div className="absolute top-0 left-0 right-0 h-1 bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]" />
+                                <div className="flex flex-col items-center gap-6 py-6">
+                                    <div className="w-20 h-20 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500 shadow-[0_0_30px_rgba(239,68,68,0.2)] animate-pulse">
+                                        <ShieldAlert size={40} />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <h2 className="text-3xl font-black italic uppercase tracking-tighter text-red-500 text-glow-red">Operational Suspension</h2>
+                                        <p className="text-xs font-bold text-secondary uppercase tracking-[0.25em]">Access Restricted • PBefG §49 / GwG Art. 12</p>
+                                    </div>
+                                    <p className="text-sm text-gray-300 max-w-xl leading-relaxed">
+                                        Under federal regulatory frameworks, your organization's operational dispatch privileges are currently suspended. 
+                                        All live orders, team terminals, and fleet controls remain inactive until your legal compliance vault is verified and approved by system administration.
+                                    </p>
+                                    
+                                    {/* Document status summary in the lock screen */}
+                                    <div className="w-full max-w-md bg-black/40 border border-white/5 rounded-2xl p-6 text-left space-y-3 font-mono text-[10px]">
+                                        <div className="flex justify-between border-b border-white/5 pb-2 text-[10px] font-bold text-gray-400">
+                                            <span>REQUIRED CREDENTIALS</span>
+                                            <span>STATUS</span>
+                                        </div>
+                                        {requiredDocIds.map(id => {
+                                            const docState = complianceDocs[id];
+                                            const name = managerContext === 'FM' 
+                                                ? (id === 'tl' ? 'Transport License' : id === 'fip' ? 'Fleet Insurance' : id === 'cc' ? 'Chauffeur Cert' : id === 'vr' ? 'Vehicle Reg' : id === 'tuv' ? 'TÜV Certification' : id === 'es' ? 'Emissions standard' : id === 'sepa' ? 'SEPA Mandate' : id === 'vatc' ? 'VAT Certification' : 'Bank Validation')
+                                                : (id === 'reg' ? 'Commercial Register' : id === 'mid' ? 'Manager ID' : id === 'tax' ? 'Tax Registration' : id === 'gast' ? 'Gastronomy License' : id === 'liq' ? 'Liquor License' : id === 'fire' ? 'Fire Safety' : id === 'sepa' ? 'SEPA Mandate' : id === 'vatc' ? 'VAT Certification' : 'Bank Validation');
+                                            
+                                            let statusColor = 'text-red-400';
+                                            let statusText = 'MISSING';
+                                            if (docState?.status === 'pending') {
+                                                statusColor = 'text-amber-500';
+                                                statusText = 'AWAITING ADMIN';
+                                            } else if (docState?.status === 'approved') {
+                                                statusColor = 'text-brand';
+                                                statusText = 'APPROVED';
+                                            } else if (docState?.status === 'rejected') {
+                                                statusColor = 'text-red-500';
+                                                statusText = 'REJECTED';
+                                            }
+                                            
+                                            return (
+                                                <div key={id} className="flex justify-between">
+                                                    <span className="text-gray-400">{name}</span>
+                                                    <span className={`font-black ${statusColor}`}>{statusText}</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    
+                                    <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+                                        <button 
+                                            onClick={() => setView('documents')}
+                                            className="flex-1 py-4 bg-brand text-dark-900 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                        >
+                                            Go to Compliance Vault
+                                        </button>
+                                        <button 
+                                            onClick={handleDevAutoApprove}
+                                            className="flex-1 py-4 bg-white/5 border border-white/10 hover:border-brand/40 text-gray-400 hover:text-white font-black uppercase tracking-widest text-[8px] rounded-xl transition-all"
+                                        >
+                                            [DEV BYPASS] Auto-Approve All
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         ) : (
                             <AnimatePresence mode="wait">
                                 {view === 'overview' && (
@@ -2197,8 +2528,7 @@ const ManagerDashboard = () => {
                                             </div>
                                         ))}
                                     </div>
-
-                                    {(managerContext !== 'CM' && managerContext !== 'RM') && (
+                                    {(managerContext !== 'CM' && managerContext !== 'RM' && managerContext !== 'HM') && (
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                         {/* PRIMARY MODULE */}
                                         <div className="lg:col-span-2 bg-glass border border-glass rounded-[3rem] p-10 relative shadow-2xl">
@@ -2208,8 +2538,6 @@ const ManagerDashboard = () => {
                                                     {managerContext === 'RM' ? 'Kitchen Command Hub' : 
                                                      managerContext === 'CM' ? 'Live Entry Feed' :
                                                      managerContext === 'HM' ? 'Guest Nightlife Monitor' :
-                                                     managerContext === 'PM' ? 'Parking Traffic Control' :
-                                                     managerContext === 'WM' ? 'Service Queue Monitor' :
                                                      managerContext === 'SM' ? 'Arena Operations' :
                                                      managerContext === 'FM' ? 'Fleet Dispatch Hub' : 'Operational Hub'}
                                                 </h3>
@@ -2872,7 +3200,7 @@ const ManagerDashboard = () => {
                                                      /* OFFLINE / DISCONNECTED STATE */
                                                      <div className="space-y-5 text-left">
                                                          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wide leading-relaxed">
-                                                             Link your existing Stripe profile or create a new connected partner account to configure automatic settlements and bank payouts.
+                                                             Link your existing Stripe profile to configure automatic settlements and bank payouts.
                                                          </p>
 
                                                          <div className="flex flex-col gap-2.5">
@@ -2887,20 +3215,7 @@ const ManagerDashboard = () => {
                                                                  }}
                                                                  className="w-full py-4 bg-brand text-dark-900 rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md shadow-brand/10 flex items-center justify-center gap-1.5"
                                                              >
-                                                                 <CheckCircle2 size={12} /> Connect Existing Profile
-                                                             </button>
-                                                             <button
-                                                                 onClick={() => {
-                                                                     setStripeOnboardMode('create');
-                                                                     setStripeOnboardStep(1);
-                                     setStripeFormBankName('');
-                                                                     setStripeFormIban('');
-                                                                     setStripeFormRouting('');
-                                                                     setIsStripeModalOpen(true);
-                                                                 }}
-                                                                 className="w-full py-4 bg-white/5 border border-white/10 hover:border-brand/30 hover:text-brand rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5"
-                                                             >
-                                                                 <PlusCircle size={12} /> Set Up New Account & Payouts
+                                                                 <CheckCircle2 size={12} /> Connect Stripe Account
                                                              </button>
                                                          </div>
                                                      </div>
@@ -2908,7 +3223,7 @@ const ManagerDashboard = () => {
                                              </div>
 
                                              {/* SETTLEMENT & BUSINESS CREDENTIALS CARD */}
-                                             {managerContext === 'FM' && (
+                                             {(managerContext === 'FM' || managerContext === 'RM' || managerContext === 'HM' || managerContext === 'CM' || managerContext === 'BM' || managerContext === 'SM' || managerContext === 'VM') && (
                                                  <div className="bg-glass border border-main rounded-[3rem] p-6 md:p-10 space-y-6 relative overflow-hidden shadow-2xl">
                                                      <div className="absolute top-0 right-0 p-6 opacity-[0.03] text-brand pointer-events-none">
                                                          <Building2 size={120} />
@@ -2982,6 +3297,28 @@ const ManagerDashboard = () => {
                                                                  />
                                                              </div>
                                                          </div>
+                                                          <div className="grid grid-cols-2 gap-3">
+                                                              <div className="space-y-1">
+                                                                  <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">Active Membership Offer</label>
+                                                                  <input 
+                                                                      type="text" 
+                                                                      placeholder="e.g. FREE ENTRY + 1 DRINK"
+                                                                      value={businessInfo.offer || ''}
+                                                                      onChange={(e) => setBusinessInfo({...businessInfo, offer: e.target.value})}
+                                                                      className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                  />
+                                                              </div>
+                                                              <div className="space-y-1">
+                                                                  <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">Default Discount Rate</label>
+                                                                  <input 
+                                                                      type="text" 
+                                                                      placeholder="e.g. 20%"
+                                                                      value={businessInfo.discount || ''}
+                                                                      onChange={(e) => setBusinessInfo({...businessInfo, discount: e.target.value})}
+                                                                      className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                  />
+                                                              </div>
+                                                          </div>
                                                      </div>
 
                                                      <div className="p-4 bg-brand/5 border border-brand/20 rounded-2xl space-y-2 text-left">
@@ -2994,6 +3331,13 @@ const ManagerDashboard = () => {
                                                              Payments from customers are split automatically in real-time. Your partner share is transferred directly to your Stripe account, while the Green Platform commission is settled immediately.
                                                          </p>
                                                      </div>
+
+                                                     <button 
+                                                         onClick={handleSaveGlobalManifest}
+                                                         className="w-full py-4 mt-2 bg-brand/10 border border-brand/20 rounded-xl text-[9px] font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all flex items-center justify-center gap-1.5 shadow-lg"
+                                                     >
+                                                         <CheckCircle2 size={12} /> Save Credentials
+                                                     </button>
                                                  </div>
                                              )}
                                           </div>
@@ -3396,7 +3740,7 @@ const ManagerDashboard = () => {
                                 <motion.div key="documents" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
                                     <div className="space-y-2">
                                         <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none">
-                                            {(managerContext === 'PM' || managerContext === 'WM') ? 'Legal & Compliance Center' : 'Digital Compliance Vault'}
+                                            Digital Compliance Vault
                                         </h1>
                                         <p className="text-secondary text-sm font-bold uppercase tracking-widest leading-none">Legal Document Repository & Verification Status</p>
                                     </div>
@@ -3422,35 +3766,60 @@ const ManagerDashboard = () => {
                                                     <h3 className="text-xl font-black italic uppercase tracking-tighter">{group.group}</h3>
                                                 </div>
                                                 <div className="space-y-4 relative z-10">
-                                                    {group.docs.map((doc) => (
-                                                        <div key={doc.id} className="p-5 bg-btn-sec rounded-2xl border border-main flex flex-col gap-4 hover:bg-white/10 transition-all border-l-4 border-l-transparent hover:border-l-brand">
-                                                            <div className="flex justify-between items-center">
-                                                                <span className="text-xs font-black italic uppercase text-primary">{doc.name}</span>
-                                                                {user?.role === 'super_admin' ? (
-                                                                    <div className="flex gap-2">
-                                                                        <button className="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-primary transition-all"><X size={12} /></button>
-                                                                        <button className="p-2 bg-brand/10 text-brand rounded-lg hover:bg-brand hover:text-dark-900 transition-all"><CheckCircle size={12} /></button>
+                                                    {group.docs.map((doc) => {
+                                                        const docState = complianceDocs[doc.id] || { status: 'missing' };
+                                                        return (
+                                                            <div key={doc.id} className="p-5 bg-btn-sec rounded-2xl border border-main flex flex-col gap-4 hover:bg-white/10 transition-all border-l-4 border-l-transparent hover:border-l-brand">
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className="text-xs font-black italic uppercase text-primary">{doc.name}</span>
+                                                                    <div>
+                                                                        {docState.status === 'missing' && (
+                                                                            <span className="text-[8px] font-black text-secondary uppercase px-2 py-1 bg-white/5 rounded">Missing</span>
+                                                                        )}
+                                                                        {docState.status === 'pending' && (
+                                                                            <span className="text-[8px] font-black text-amber-500 uppercase px-2 py-1 bg-amber-500/10 rounded">Awaiting Admin</span>
+                                                                        )}
+                                                                        {docState.status === 'approved' && (
+                                                                            <span className="text-[8px] font-black text-brand uppercase px-2 py-1 bg-brand/10 rounded">Approved ✓</span>
+                                                                        )}
+                                                                        {docState.status === 'rejected' && (
+                                                                            <span className="text-[8px] font-black text-red-500 uppercase px-2 py-1 bg-red-500/10 rounded">Rejected ✗</span>
+                                                                        )}
                                                                     </div>
-                                                                ) : (
-                                                                    <span className="text-[8px] font-black text-primary uppercase px-2 py-1 bg-amber-500/10 rounded">Awaiting Admin</span>
-                                                                )}
-                                                            </div>
-                                                            <div className="flex gap-2">
-                                                                <label className="flex-1 cursor-pointer">
-                                                                    <input type="file" className="hidden" accept="image/*,application/pdf" onChange={() => alert(`UPLOADING: ${doc.name} received by GREEN Compliance Engine.`)} />
-                                                                    <div className="w-full py-3 bg-btn-sec border border-main rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all">
-                                                                        <Upload size={14} className="text-brand" />
-                                                                        <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">Upload (PDF/IMG)</span>
+                                                                </div>
+                                                                {docState.name && (
+                                                                    <div className="text-[8px] font-mono text-gray-500 truncate max-w-full">
+                                                                        📄 {docState.name} ({docState.size})
                                                                     </div>
-                                                                </label>
-                                                                {user?.role === 'super_admin' && (
-                                                                    <button className="p-3 bg-btn-sec rounded-xl text-secondary hover:text-primary transition-colors" title="View Document">
-                                                                        <FileText size={14} />
-                                                                    </button>
                                                                 )}
+                                                                <div className="flex gap-2">
+                                                                    <label className="flex-1 cursor-pointer">
+                                                                        <input 
+                                                                            type="file" 
+                                                                            className="hidden" 
+                                                                            accept="image/*,application/pdf" 
+                                                                            onChange={(e) => handleDocumentUpload(doc.id, e.target.files[0])} 
+                                                                        />
+                                                                        <div className="w-full py-3 bg-btn-sec border border-main rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all">
+                                                                            <Upload size={14} className="text-brand" />
+                                                                            <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">
+                                                                                {docState.status === 'missing' ? 'Upload (PDF/IMG)' : 'Re-Upload'}
+                                                                            </span>
+                                                                        </div>
+                                                                    </label>
+                                                                    {docState.fileData && (
+                                                                        <button 
+                                                                            onClick={() => handleViewDocument(docState)}
+                                                                            className="p-3 bg-btn-sec border border-main rounded-xl text-secondary hover:text-primary transition-colors flex items-center justify-center" 
+                                                                            title="View Document"
+                                                                        >
+                                                                            <FileText size={14} />
+                                                                        </button>
+                                                                    )}
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    ))}
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
                                         ))}
@@ -3950,20 +4319,66 @@ const ManagerDashboard = () => {
                                             <p className="text-secondary text-sm font-bold uppercase tracking-widest leading-none">Identity, Business Credentials & GPS Lockdown</p>
                                         </div>
                                         <button 
-                                            onClick={() => alert("MANIFEST SAVED: All credentials encrypted and synchronized.")}
+                                            onClick={handleSaveGlobalManifest}
                                             className="px-12 py-5 bg-brand text-dark-900 rounded-[2.5rem] text-xs font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all"
                                         >
                                             Save Global Manifest
                                         </button>
                                     </div>
 
-                                    <div className={`grid grid-cols-1 ${managerContext === 'FM' ? '' : 'lg:grid-cols-2'} gap-8`}>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                         {/* MANAGER PERSONAL DETAILS */}
                                         <div className="bg-btn-sec border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl">
                                             <div className="flex items-center gap-4">
                                                 <div className="p-4 rounded-2xl bg-violet-500/10 text-primary"><User size={24} /></div>
                                                 <h3 className="text-xl font-black italic uppercase tracking-tighter text-primary">Manager Identity</h3>
                                             </div>
+
+                                            {/* Profile Picture Uploader */}
+                                            <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-white/5">
+                                                <div className="relative group">
+                                                    <div className="w-24 h-24 rounded-3xl p-1 bg-gradient-to-tr from-brand to-violet-500 shadow-[0_0_20px_rgba(52,211,153,0.15)] overflow-hidden">
+                                                        <img 
+                                                            src={personalInfo.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${personalInfo.name}`} 
+                                                            alt="Profile Preview" 
+                                                            className="w-full h-full rounded-[1.3rem] object-cover bg-dark-900" 
+                                                        />
+                                                    </div>
+                                                    <label className="absolute -bottom-2 -right-2 p-2 bg-brand text-dark-900 rounded-xl cursor-pointer shadow-lg hover:scale-110 transition-transform">
+                                                        <Camera size={14} />
+                                                        <input 
+                                                            type="file" 
+                                                            className="hidden" 
+                                                            accept="image/*" 
+                                                            onChange={(e) => {
+                                                                const file = e.target.files[0];
+                                                                if (file) {
+                                                                    const reader = new FileReader();
+                                                                    reader.onloadend = () => {
+                                                                        setPersonalInfo(prev => ({ ...prev, profilePicture: reader.result }));
+                                                                    };
+                                                                    reader.readAsDataURL(file);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </label>
+                                                </div>
+                                                <div className="space-y-1 text-center sm:text-left">
+                                                    <h4 className="text-sm font-black italic uppercase text-primary">Manager Avatar</h4>
+                                                    <p className="text-[10px] text-secondary font-bold uppercase tracking-widest leading-relaxed">
+                                                        Upload a custom profile photo or use auto-generated vector seed.
+                                                    </p>
+                                                    {personalInfo.profilePicture && (
+                                                        <button 
+                                                            onClick={() => setPersonalInfo(prev => ({ ...prev, profilePicture: '' }))}
+                                                            className="text-[9px] font-black uppercase text-red-500 tracking-widest hover:text-red-400 mt-1 block"
+                                                        >
+                                                            Reset to Default Seed
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="col-span-2 space-y-1">
                                                     <label className="text-[9px] font-black text-secondary uppercase ml-1">Full Legal Name</label>
@@ -3974,143 +4389,116 @@ const ManagerDashboard = () => {
                                                         className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none transition-all" 
                                                     />
                                                 </div>
-                                                {managerContext === 'FM' ? (
-                                                    <>
-                                                        <div className="col-span-2 md:col-span-1 space-y-1">
-                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">Direct Email</label>
-                                                            <input 
-                                                                type="email" 
-                                                                value={personalInfo.email} 
-                                                                onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
-                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
-                                                            />
-                                                        </div>
-                                                        <div className="col-span-2 md:col-span-1 space-y-1">
-                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">Mobile Line</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={personalInfo.phone} 
-                                                                onChange={(e) => setPersonalInfo({...personalInfo, phone: e.target.value})}
-                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
-                                                            />
-                                                        </div>
-                                                        <div className="col-span-2 md:col-span-1 space-y-1">
-                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">Personal Address</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={personalInfo.address} 
-                                                                onChange={(e) => setPersonalInfo({...personalInfo, address: e.target.value})}
-                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">ZIP Code</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={personalInfo.zip} 
-                                                                onChange={(e) => setPersonalInfo({...personalInfo, zip: e.target.value})}
-                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">City</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={personalInfo.city} 
-                                                                onChange={(e) => setPersonalInfo({...personalInfo, city: e.target.value})}
-                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
-                                                            />
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <div className="space-y-1">
-                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">Direct Email</label>
-                                                            <input 
-                                                                type="email" 
-                                                                value={personalInfo.email} 
-                                                                onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
-                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <label className="text-[9px] font-black text-secondary uppercase ml-1">Mobile Line</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={personalInfo.phone} 
-                                                                onChange={(e) => setPersonalInfo({...personalInfo, phone: e.target.value})}
-                                                                className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
-                                                            />
-                                                        </div>
-                                                    </>
-                                                )}
+                                                <div className="col-span-2 md:col-span-1 space-y-1">
+                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Direct Email</label>
+                                                    <input 
+                                                        type="email" 
+                                                        value={personalInfo.email} 
+                                                        onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
+                                                        className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                    />
+                                                </div>
+                                                <div className="col-span-2 md:col-span-1 space-y-1">
+                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Mobile Line</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={personalInfo.phone} 
+                                                        onChange={(e) => setPersonalInfo({...personalInfo, phone: e.target.value})}
+                                                        className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                    />
+                                                </div>
+                                                <div className="col-span-2 md:col-span-1 space-y-1">
+                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Personal Address</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={personalInfo.address} 
+                                                        onChange={(e) => setPersonalInfo({...personalInfo, address: e.target.value})}
+                                                        className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">ZIP Code</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={personalInfo.zip} 
+                                                        onChange={(e) => setPersonalInfo({...personalInfo, zip: e.target.value})}
+                                                        className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">City</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={personalInfo.city} 
+                                                        onChange={(e) => setPersonalInfo({...personalInfo, city: e.target.value})}
+                                                        className="w-full bg-btn-sec border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-violet-400 outline-none" 
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
 
                                         {/* PASSWORD CHANGE TERMINAL */}
-                                        {managerContext === 'FM' && (
-                                            <div className="bg-btn-sec border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="p-4 rounded-2xl bg-brand/10 text-brand"><ShieldCheck size={24} /></div>
-                                                    <h3 className="text-xl font-black italic uppercase tracking-tighter text-primary">Console Security Password</h3>
-                                                </div>
-                                                
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                    <div className="space-y-1">
-                                                        <label className="text-[9px] font-black text-secondary uppercase ml-1">Current Password</label>
-                                                        <input 
-                                                            type="password" 
-                                                            placeholder="••••"
-                                                            value={currentPasswordInput}
-                                                            onChange={(e) => setCurrentPasswordInput(e.target.value)}
-                                                            className="w-full bg-dark-950 border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-1">
-                                                        <label className="text-[9px] font-black text-secondary uppercase ml-1">New Password</label>
-                                                        <input 
-                                                            type="password" 
-                                                            placeholder="••••"
-                                                            value={newPasswordInput}
-                                                            onChange={(e) => setNewPasswordInput(e.target.value)}
-                                                            className="w-full bg-dark-950 border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-1">
-                                                        <label className="text-[9px] font-black text-secondary uppercase ml-1">Confirm New Password</label>
-                                                        <input 
-                                                            type="password" 
-                                                            placeholder="••••"
-                                                            value={confirmPasswordInput}
-                                                            onChange={(e) => setConfirmPasswordInput(e.target.value)}
-                                                            className="w-full bg-dark-950 border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
-                                                        />
-                                                    </div>
-                                                </div>
-                                                
-                                                <button 
-                                                    onClick={() => {
-                                                        if (currentPasswordInput !== securityPassword) {
-                                                            return alert("Error: Current password is incorrect.");
-                                                        }
-                                                        if (!newPasswordInput) {
-                                                            return alert("Error: New password cannot be empty.");
-                                                        }
-                                                        if (newPasswordInput !== confirmPasswordInput) {
-                                                            return alert("Error: New passwords do not match.");
-                                                        }
-                                                        setSecurityPassword(newPasswordInput);
-                                                        setCurrentPasswordInput('');
-                                                        setNewPasswordInput('');
-                                                        setConfirmPasswordInput('');
-                                                        alert("PASSWORD CHANGED SUCCESSFULLY: Console security credentials updated.");
-                                                    }}
-                                                    className="px-6 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all"
-                                                >
-                                                    Update Security Password
-                                                </button>
+                                        <div className="bg-btn-sec border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl">
+                                            <div className="flex items-center gap-4">
+                                                <div className="p-4 rounded-2xl bg-brand/10 text-brand"><ShieldCheck size={24} /></div>
+                                                <h3 className="text-xl font-black italic uppercase tracking-tighter text-primary">Console Security Password</h3>
                                             </div>
-                                        )}
+                                            
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                <div className="space-y-1">
+                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Current Password</label>
+                                                    <input 
+                                                        type="password" 
+                                                        placeholder="••••"
+                                                        value={currentPasswordInput}
+                                                        onChange={(e) => setCurrentPasswordInput(e.target.value)}
+                                                        className="w-full bg-dark-950 border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">New Password</label>
+                                                    <input 
+                                                        type="password" 
+                                                        placeholder="••••"
+                                                        value={newPasswordInput}
+                                                        onChange={(e) => setNewPasswordInput(e.target.value)}
+                                                        className="w-full bg-dark-950 border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Confirm New Password</label>
+                                                    <input 
+                                                        type="password" 
+                                                        placeholder="••••"
+                                                        value={confirmPasswordInput}
+                                                        onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                                                        className="w-full bg-dark-950 border border-main rounded-xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" 
+                                                    />
+                                                </div>
+                                            </div>
+                                            
+                                            <button 
+                                                onClick={() => {
+                                                    if (currentPasswordInput !== securityPassword) {
+                                                        return alert("Error: Current password is incorrect.");
+                                                    }
+                                                    if (!newPasswordInput) {
+                                                        return alert("Error: New password cannot be empty.");
+                                                    }
+                                                    if (newPasswordInput !== confirmPasswordInput) {
+                                                        return alert("Error: New passwords do not match.");
+                                                    }
+                                                    setSecurityPassword(newPasswordInput);
+                                                    setCurrentPasswordInput('');
+                                                    setNewPasswordInput('');
+                                                    setConfirmPasswordInput('');
+                                                    alert("PASSWORD CHANGED SUCCESSFULLY: Console security credentials updated.");
+                                                }}
+                                                className="px-6 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all"
+                                            >
+                                                Update Security Password
+                                            </button>
+                                        </div>
 
                                         {/* BUSINESS CORE DETAILS */}
 
@@ -4355,7 +4743,7 @@ const ManagerDashboard = () => {
                                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${staffPermissions.compliance ? 'bg-violet-500 text-primary' : 'bg-btn-sec text-secondary'}`}><ShieldCheck size={20} /></div>
                                                                 <p className={`text-sm font-black italic uppercase ${staffPermissions.compliance ? 'text-primary' : 'text-secondary'}`}>Compliance</p>
                                                                 <p className="text-[8px] font-bold text-secondary uppercase mt-1">
-                                                                    {(managerContext === 'PM' || managerContext === 'WM') ? 'Access legal & business docs' : 'Access vault & legal docs'}
+                                                                    Access vault & legal docs
                                                                 </p>
                                                             </button>
                                                         </div>
@@ -4391,7 +4779,7 @@ const ManagerDashboard = () => {
                                             <div className="flex-1 md:flex-initial px-4 md:px-6 py-3 bg-btn-sec border border-main rounded-xl text-right">
                                                 <p className="text-[8px] font-black text-secondary uppercase tracking-widest">Global Availability</p>
                                                 <p className="text-sm md:text-xl font-black italic text-brand leading-none mt-1">
-                                                    {managerContext === 'CM' ? '4,820 Tickets' : '4,820 Seats'}
+                                                    {(managerContext === 'CM' || managerContext === 'VM') ? '4,820 Tickets' : '4,820 Seats'}
                                                 </p>
                                             </div>
                                             <button 
@@ -4540,7 +4928,7 @@ const ManagerDashboard = () => {
                                                                  </span>
                                                             </div>
                                                             <p className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">
-                                                                {event.date} • {event.time} • {managerContext === 'CM' ? 'Midnight Club & Lounge' : 'Green Stadium Arena'}
+                                                                {event.date} • {event.time} • {getBusinessName(managerContext)}
                                                             </p>
                                                         </div>
                                                         <div className="flex gap-3">
@@ -4752,56 +5140,152 @@ const ManagerDashboard = () => {
                                                                         </div>
 
                                                                         {/* PER-CATEGORY MANIFEST UPLOADER */}
-                                                                        <div className="pt-4 border-t border-white/5 text-left space-y-2">
-                                                                            <span className="text-[8px] font-black text-brand uppercase tracking-widest ml-2">Manifest Document ({tier.name || 'Category'})</span>
-                                                                            <div className="flex gap-3 items-center">
-                                                                                <input 
-                                                                                    type="file"
-                                                                                    id={`file-input-${idx}`}
-                                                                                    onChange={(e) => handleTierFileChange(idx, e)}
-                                                                                    accept=".pdf,image/*,.csv,.xlsx,.xml"
-                                                                                    className="hidden"
-                                                                                />
-                                                                                {tier.file ? (
-                                                                                    <div className="flex-1 p-3.5 bg-brand/5 border border-brand/20 rounded-xl flex items-center justify-between animate-fadeIn relative z-10 w-full">
-                                                                                        <div className="flex items-center gap-3">
-                                                                                            <div className="w-9 h-9 rounded-lg bg-brand/10 flex items-center justify-center text-brand text-xs font-bold border border-brand/20">
-                                                                                                {tier.file.name.endsWith('.pdf') ? <FileText size={16} className="text-red-400" /> : <FileText size={16} />}
-                                                                                            </div>
-                                                                                            <div>
-                                                                                                <p className="text-[10.5px] font-black uppercase text-primary truncate max-w-[180px]">{tier.file.name}</p>
-                                                                                                <p className="text-[7.5px] font-black text-brand uppercase tracking-widest">{tier.file.size} • {tier.verified ? 'VERIFIED ✓' : 'UNVERIFIED'}</p>
-                                                                                            </div>
+                                                                        {/* PER-CATEGORY MANIFEST UPLOADER */}
+                                                                        <div className="pt-4 border-t border-white/5 text-left space-y-3">
+                                                                            <span className="text-[8px] font-black text-brand uppercase tracking-widest ml-2">
+                                                                                {managerContext === 'CM' ? 'Manifest Documents / Pictures' : 'Manifest Document'} ({tier.name || 'Category'})
+                                                                            </span>
+                                                                            
+                                                                            <input 
+                                                                                type="file"
+                                                                                id={`file-input-${idx}`}
+                                                                                multiple={managerContext === 'CM'}
+                                                                                onChange={(e) => handleTierFileChange(idx, e)}
+                                                                                accept=".pdf,image/*,.csv,.xlsx,.xml"
+                                                                                className="hidden"
+                                                                            />
+
+                                                                            {managerContext === 'CM' ? (
+                                                                                /* Club Manager: Multi-file / picture layout */
+                                                                                <>
+                                                                                    {/* File Lists / Grid */}
+                                                                                    {((tier.files && tier.files.length > 0) || tier.file) && (
+                                                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                                                            {tier.file && (!tier.files || !tier.files.some(f => f.name === tier.file.name)) && (
+                                                                                                <div className="p-3 bg-brand/5 border border-brand/20 rounded-xl flex items-center justify-between animate-fadeIn relative z-10 w-full">
+                                                                                                    <div className="flex items-center gap-3 min-w-0">
+                                                                                                        {tier.file.url ? (
+                                                                                                            <img src={tier.file.url} className="w-10 h-10 rounded-lg object-cover border border-brand/20 shrink-0" alt="Preview" />
+                                                                                                        ) : (
+                                                                                                            <div className="w-10 h-10 rounded-lg bg-brand/10 flex items-center justify-center text-brand text-xs font-bold border border-brand/20 shrink-0">
+                                                                                                                <FileText size={16} className={tier.file.name.endsWith('.pdf') ? 'text-red-400' : ''} />
+                                                                                                            </div>
+                                                                                                        )}
+                                                                                                        <div className="min-w-0">
+                                                                                                            <p className="text-[10px] font-black uppercase text-primary truncate max-w-[140px]">{tier.file.name}</p>
+                                                                                                            <p className="text-[7.5px] font-black text-brand uppercase tracking-widest">{tier.file.size} • Legacy</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <button 
+                                                                                                        type="button"
+                                                                                                        onClick={() => handleRemoveTierFile(idx, -1)}
+                                                                                                        className="p-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all shrink-0"
+                                                                                                    >
+                                                                                                        <Trash2 size={12} />
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            )}
+
+                                                                                            {tier.files?.map((file, fIdx) => (
+                                                                                                <div key={fIdx} className="p-3 bg-brand/5 border border-brand/20 rounded-xl flex items-center justify-between animate-fadeIn relative z-10 w-full">
+                                                                                                    <div className="flex items-center gap-3 min-w-0">
+                                                                                                        {file.url ? (
+                                                                                                            <img src={file.url} className="w-10 h-10 rounded-lg object-cover border border-brand/20 shrink-0" alt="Preview" />
+                                                                                                        ) : (
+                                                                                                            <div className="w-10 h-10 rounded-lg bg-brand/10 flex items-center justify-center text-brand text-xs font-bold border border-brand/20 shrink-0">
+                                                                                                                <FileText size={16} className={file.name.endsWith('.pdf') ? 'text-red-400' : ''} />
+                                                                                                            </div>
+                                                                                                        )}
+                                                                                                        <div className="min-w-0">
+                                                                                                            <p className="text-[10px] font-black uppercase text-primary truncate max-w-[140px]">{file.name}</p>
+                                                                                                            <p className="text-[7.5px] font-black text-brand uppercase tracking-widest">{file.size}</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <button 
+                                                                                                        type="button"
+                                                                                                        onClick={() => handleRemoveTierFile(idx, fIdx)}
+                                                                                                        className="p-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all shrink-0"
+                                                                                                    >
+                                                                                                        <Trash2 size={12} />
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            ))}
                                                                                         </div>
-                                                                                        <div className="flex gap-2">
+                                                                                    )}
+
+                                                                                    {/* Action Buttons Area */}
+                                                                                    <div className="flex flex-col sm:flex-row gap-3 items-center">
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            onClick={() => document.getElementById(`file-input-${idx}`).click()}
+                                                                                            className="flex-1 py-3 border-2 border-dashed border-main hover:border-brand/40 hover:bg-brand/5 rounded-xl text-center transition-all flex items-center justify-center gap-2 group/upload w-full"
+                                                                                        >
+                                                                                            <Upload size={12} className="text-secondary group-hover/upload:text-brand" />
+                                                                                            <span className="text-[9px] font-black uppercase tracking-widest text-secondary group-hover/upload:text-brand">
+                                                                                                {((tier.files && tier.files.length > 0) || tier.file) ? 'Add More Pictures / Files' : `Upload ${tier.name || 'Category'} Manifest`}
+                                                                                            </span>
+                                                                                        </button>
+
+                                                                                        {((tier.files && tier.files.length > 0) || tier.file) && (
                                                                                             <button 
                                                                                                 type="button"
                                                                                                 onClick={() => handleSimulateTierUpload(idx)}
                                                                                                 disabled={tier.isSimulating}
-                                                                                                className={`px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${tier.verified ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-brand/15 hover:bg-brand/25 text-brand border border-brand/20'}`}
+                                                                                                className={`w-full sm:w-auto px-5 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                                                                                                    tier.verified 
+                                                                                                        ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                                                                                                        : 'bg-brand/15 hover:bg-brand/25 text-brand border border-brand/20'
+                                                                                                }`}
                                                                                             >
-                                                                                                {tier.isSimulating ? 'Processing...' : tier.verified ? 'Re-Verify' : 'Verify'}
+                                                                                                {tier.isSimulating ? 'Processing...' : tier.verified ? 'Verified ✓' : 'Verify Tickets'}
                                                                                             </button>
-                                                                                            <button 
-                                                                                                type="button"
-                                                                                                onClick={() => handleRemoveTierFile(idx)}
-                                                                                                className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
-                                                                                            >
-                                                                                                Remove
-                                                                                            </button>
-                                                                                        </div>
+                                                                                        )}
                                                                                     </div>
-                                                                                ) : (
-                                                                                    <button
-                                                                                        type="button"
-                                                                                        onClick={() => document.getElementById(`file-input-${idx}`).click()}
-                                                                                        className="w-full py-4 border-2 border-dashed border-main hover:border-brand/40 hover:bg-brand/5 rounded-xl text-center transition-all flex items-center justify-center gap-2 group/upload"
-                                                                                    >
-                                                                                        <Upload size={12} className="text-secondary group-hover/upload:text-brand" />
-                                                                                        <span className="text-[9px] font-black uppercase tracking-widest text-secondary group-hover/upload:text-brand">Upload {tier.name || 'Category'} Manifest Document (PDF, Photo, Spreadsheet)</span>
-                                                                                    </button>
-                                                                                )}
-                                                                            </div>
+                                                                                </>
+                                                                            ) : (
+                                                                                /* Other contexts (e.g. Stadium Manager): Single-file manifest layout */
+                                                                                <div className="flex gap-3 items-center w-full">
+                                                                                    {tier.file ? (
+                                                                                        <div className="flex-1 p-3.5 bg-brand/5 border border-brand/20 rounded-xl flex items-center justify-between animate-fadeIn relative z-10 w-full">
+                                                                                            <div className="flex items-center gap-3">
+                                                                                                <div className="w-9 h-9 rounded-lg bg-brand/10 flex items-center justify-center text-brand text-xs font-bold border border-brand/20">
+                                                                                                    {tier.file.name.endsWith('.pdf') ? <FileText size={16} className="text-red-400" /> : <FileText size={16} />}
+                                                                                                </div>
+                                                                                                <div>
+                                                                                                    <p className="text-[10.5px] font-black uppercase text-primary truncate max-w-[180px]">{tier.file.name}</p>
+                                                                                                    <p className="text-[7.5px] font-black text-brand uppercase tracking-widest">{tier.file.size} • {tier.verified ? 'VERIFIED ✓' : 'UNVERIFIED'}</p>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div className="flex gap-2">
+                                                                                                <button 
+                                                                                                    type="button"
+                                                                                                    onClick={() => handleSimulateTierUpload(idx)}
+                                                                                                    disabled={tier.isSimulating}
+                                                                                                    className={`px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${tier.verified ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-brand/15 hover:bg-brand/25 text-brand border border-brand/20'}`}
+                                                                                                >
+                                                                                                    {tier.isSimulating ? 'Processing...' : tier.verified ? 'Re-Verify' : 'Verify'}
+                                                                                                </button>
+                                                                                                <button 
+                                                                                                    type="button"
+                                                                                                    onClick={() => handleRemoveTierFile(idx, 0)}
+                                                                                                    className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
+                                                                                                >
+                                                                                                    Remove
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    ) : (
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            onClick={() => document.getElementById(`file-input-${idx}`).click()}
+                                                                                            className="w-full py-4 border-2 border-dashed border-main hover:border-brand/40 hover:bg-brand/5 rounded-xl text-center transition-all flex items-center justify-center gap-2 group/upload"
+                                                                                        >
+                                                                                            <Upload size={12} className="text-secondary group-hover/upload:text-brand" />
+                                                                                            <span className="text-[9px] font-black uppercase tracking-widest text-secondary group-hover/upload:text-brand">Upload {tier.name || 'Category'} Manifest Document (PDF, Photo, Spreadsheet)</span>
+                                                                                        </button>
+                                                                                    )}
+                                                                                </div>
+                                                                            )}
                                                                         </div>
                                                                     </div>
                                                                 ))}
@@ -4883,7 +5367,7 @@ const ManagerDashboard = () => {
                                                         } else if (isClean) {
                                                             statusColor = 'border-amber-500/30 hover:border-amber-500';
                                                             glowColor = 'shadow-[0_0_20px_rgba(245,158,11,0.05)]';
-                                                            badgeColor = 'bg-amber-500/10 text-amber-500 border border-amber-500/20';
+                                                                badgeColor = 'bg-amber-500/10 text-amber-500 border border-amber-500/20';
                                                         }
                                                         
                                                         return (
@@ -4896,9 +5380,30 @@ const ManagerDashboard = () => {
                                                                         <span className="text-[10px] font-black text-secondary tracking-widest uppercase">Room</span>
                                                                         <p className="text-2xl font-black italic text-primary leading-none mt-1">#{room.id}</p>
                                                                     </div>
-                                                                    <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider ${badgeColor}`}>
-                                                                        {room.status}
-                                                                    </span>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span 
+                                                                            onClick={() => handleToggleRoomStatus(room.id)}
+                                                                            className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider cursor-pointer select-none hover:scale-105 active:scale-95 transition-all ${badgeColor}`}
+                                                                            title="Click to toggle status"
+                                                                        >
+                                                                            {room.status}
+                                                                        </span>
+                                                                        {!pmsApiKey && (
+                                                                            <button 
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    if (confirm(`Remove Room #${room.id} from inventory?`)) {
+                                                                                        const updated = roomsData.filter(r => r.id !== room.id);
+                                                                                        saveRooms(updated);
+                                                                                    }
+                                                                                }}
+                                                                                className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-[10px] transition-all flex items-center justify-center shrink-0 w-6 h-6 border border-red-500/20"
+                                                                                title="Delete Room"
+                                                                            >
+                                                                                <X size={12} />
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
 
                                                                 <div className="space-y-4 pt-4 border-t border-white/5">
@@ -4906,6 +5411,11 @@ const ManagerDashboard = () => {
                                                                         <div>
                                                                             <p className="text-[8px] font-bold text-secondary uppercase">Room Category</p>
                                                                             <p className="text-xs font-black uppercase italic text-primary mt-0.5">{room.name}</p>
+                                                                            {room.bedLayout && (
+                                                                                <span className="text-[8px] font-black uppercase tracking-wider text-brand bg-brand/5 border border-brand/15 px-2 py-0.5 rounded-md mt-1.5 inline-block">
+                                                                                    {room.bedLayout} Bed
+                                                                                </span>
+                                                                            )}
                                                                         </div>
                                                                         <p className="text-xs font-black text-brand italic">€{room.price}<span className="text-[8px] text-secondary font-bold">/n</span></p>
                                                                     </div>
@@ -4937,8 +5447,10 @@ const ManagerDashboard = () => {
                                                     <div>
                                                         <h4 className="text-sm font-black italic uppercase text-primary">PMS Integration Bridge</h4>
                                                         <div className="flex items-center gap-2 mt-1">
-                                                            <div className="w-2 h-2 bg-brand rounded-full animate-ping" />
-                                                            <p className="text-[8px] font-black text-brand uppercase tracking-widest">ACTIVE & SYNCHRONIZED</p>
+                                                            <div className={`w-2 h-2 rounded-full ${pmsApiKey ? 'bg-brand animate-ping' : 'bg-amber-500'}`} />
+                                                            <p className={`text-[8px] font-black uppercase tracking-widest ${pmsApiKey ? 'text-brand' : 'text-amber-500'}`}>
+                                                                {pmsApiKey ? 'ACTIVE & SYNCHRONIZED' : 'OFFLINE / DIRECT MANUAL MODE'}
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -4947,7 +5459,7 @@ const ManagerDashboard = () => {
                                                     <div className="space-y-2">
                                                         <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Integration Provider</label>
                                                         <div className="px-6 py-4 bg-btn-sec border border-main rounded-2xl text-xs font-black uppercase text-primary">
-                                                            Mews Property Management (API v3)
+                                                            {pmsApiKey ? 'Mews Property Management (API v3)' : 'LOCAL MANUAL INVENTORY'}
                                                         </div>
                                                     </div>
 
@@ -4957,27 +5469,61 @@ const ManagerDashboard = () => {
                                                             type="text" 
                                                             value={pmsApiKey} 
                                                             onChange={(e) => setPmsApiKey(e.target.value)}
-                                                            className="w-full bg-btn-sec border border-main rounded-2xl p-4 text-[9px] font-mono text-brand focus:border-brand outline-none transition-all"
+                                                            placeholder="Clear key to add rooms manually"
+                                                            className="w-full bg-btn-sec border border-main rounded-2xl p-4 text-[9px] font-mono text-brand focus:border-brand outline-none transition-all placeholder:text-gray-600"
                                                         />
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Active Webhook Endpoint</label>
-                                                        <div className="px-4 py-3 bg-black/40 border border-main rounded-2xl text-[8px] font-mono text-secondary break-all">
-                                                            https://api.green-palace.com/v1/pms/webhook?id=grn-284m
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="pt-4 border-t border-white/5 space-y-2">
-                                                        <div className="px-6 py-4 bg-brand/5 border border-brand/20 rounded-2xl flex items-center justify-between">
-                                                            <div>
-                                                                <p className="text-[8px] font-black text-brand uppercase tracking-widest leading-none">Security Telemetry</p>
-                                                                <p className="text-[10px] font-black italic text-primary mt-1">SSL & Webhook Shield Active</p>
+                                                    {!pmsApiKey ? (
+                                                        <div className="space-y-3 pt-3 border-t border-white/5 animate-in fade-in duration-300">
+                                                            <p className="text-[9px] font-black text-brand uppercase tracking-widest">Manual Room Dispatch</p>
+                                                            <div className="grid grid-cols-2 gap-2">
+                                                                <input 
+                                                                    type="text" 
+                                                                    placeholder="Room #" 
+                                                                    value={newRoomNumber} 
+                                                                    onChange={(e) => setNewRoomNumber(e.target.value)} 
+                                                                    className="bg-btn-sec border border-main rounded-xl p-3 text-xs text-primary focus:border-brand outline-none" 
+                                                                />
+                                                                <input 
+                                                                    type="number" 
+                                                                    placeholder="Price (€)" 
+                                                                    value={newRoomPrice} 
+                                                                    onChange={(e) => setNewRoomPrice(e.target.value)} 
+                                                                    className="bg-btn-sec border border-main rounded-xl p-3 text-xs text-primary focus:border-brand outline-none" 
+                                                                />
                                                             </div>
-                                                            <div className="w-2.5 h-2.5 rounded-full bg-brand animate-pulse shadow-[0_0_8px_var(--brand)]" />
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="Category (e.g. Deluxe Room)" 
+                                                                value={newRoomCategory} 
+                                                                onChange={(e) => setNewRoomCategory(e.target.value)} 
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-3 text-xs text-primary focus:border-brand outline-none" 
+                                                            />
+                                                            <select 
+                                                                value={newRoomBedLayout}
+                                                                onChange={(e) => setNewRoomBedLayout(e.target.value)}
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-3 text-xs text-primary focus:border-brand outline-none appearance-none cursor-pointer"
+                                                            >
+                                                                <option value="Single" className="bg-dark-900 text-primary">Single Bed (Einzelbett)</option>
+                                                                <option value="Double" className="bg-dark-900 text-primary">Double Bed (Doppelbett)</option>
+                                                                <option value="Triple" className="bg-dark-900 text-primary">Triple Bed (Dreibett)</option>
+                                                            </select>
+                                                            <button 
+                                                                onClick={handleCreateManualRoom} 
+                                                                className="w-full py-3 bg-brand text-dark-900 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 shadow-md shadow-brand/10 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                                            >
+                                                                <PlusCircle size={10} /> Add Room
+                                                            </button>
                                                         </div>
-                                                    </div>
+                                                    ) : (
+                                                        <div className="pt-3 border-t border-white/5 space-y-1">
+                                                            <p className="text-[8px] font-black text-brand uppercase tracking-widest leading-none">Security Telemetry</p>
+                                                            <p className="text-[10px] font-black italic text-primary mt-1">SSL & Webhook Shield Active</p>
+                                                        </div>
+                                                    )}
                                                 </div>
+
 
                                                 {/* WEBHOOK TERMINAL LOGS */}
                                                 <div className="space-y-4 pt-4 border-t border-white/5">
@@ -4998,207 +5544,6 @@ const ManagerDashboard = () => {
                                     </div>
                                 </motion.div>
                             )}
-
-                                {view === 'parking-grid' && (
-                                    <motion.div key="parking" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8">
-                                        <div className="flex justify-between items-center bg-btn-sec p-8 rounded-[2.5rem] border border-main">
-                                            <div className="flex gap-10">
-                                                {parkingStructure.map(floor => (
-                                                    <div key={floor.floor}>
-                                                        <p className="text-[10px] font-black text-secondary uppercase tracking-widest">Floor {floor.floor}</p>
-                                                        <p className="text-2xl font-black italic text-primary">{floor.free}<span className="text-xs text-secondary"> / {floor.total}</span></p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <button 
-                                                onClick={() => setIsScanningStructure(true)}
-                                                className="px-8 py-4 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl"
-                                            >
-                                                AI Structure Audit 🤖
-                                            </button>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                                            {Array.from({ length: 24 }).map((_, i) => (
-                                                <div key={i} className="group relative bg-dark-900 border border-main rounded-2xl p-4 hover:border-brand/50 transition-all cursor-pointer">
-                                                    <div className="flex justify-between items-start mb-4">
-                                                        <span className="text-[8px] font-black text-secondary uppercase">P1-{100+i}</span>
-                                                        <div className={`w-2 h-2 rounded-full ${i % 5 === 0 ? 'bg-red-500' : 'bg-brand shadow-[0_0_10px_var(--brand)]'}`} />
-                                                    </div>
-                                                    <p className="text-[10px] font-black uppercase text-primary">VIP Valet</p>
-                                                    <p className="text-[8px] font-bold text-secondary mt-1">€12.50 / Hour</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                )}
-
-                                {view === 'wash-queue' && (
-                                    <motion.div key="carwash" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8">
-                                        <div className="flex justify-between items-end">
-                                            <div className="space-y-2">
-                                                <h1 className="text-4xl font-black italic uppercase tracking-tighter text-brand">Service Hub</h1>
-                                                <p className="text-secondary text-xs font-bold uppercase tracking-widest">Live Wash Queue</p>
-                                            </div>
-                                            <button className="px-6 py-3 bg-btn-sec border border-main text-primary rounded-xl text-[10px] font-black uppercase">Add Manual Service +</button>
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                            {carwashServices.map(service => (
-                                                <div key={service.id} className="p-8 bg-btn-sec border border-main rounded-[2.5rem] relative overflow-hidden group hover:border-brand/40 transition-all">
-                                                    <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                                                        <Droplets size={48} />
-                                                    </div>
-                                                    <p className="text-[8px] font-black text-brand uppercase tracking-widest mb-2">{service.type}</p>
-                                                    <h3 className="text-2xl font-black italic uppercase text-primary mb-4">{service.name}</h3>
-                                                    <div className="flex justify-between items-end">
-                                                        <div>
-                                                            <p className="text-[10px] font-black text-secondary uppercase tracking-widest">Duration</p>
-                                                            <p className="text-lg font-black text-primary">{service.duration}</p>
-                                                        </div>
-                                                        <p className="text-3xl font-black italic text-brand">€{service.price.toFixed(0)}</p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                )}
-
-                                {view === 'qr-dispatcher' && managerContext === 'PM' && (
-                                    <motion.div key="dispatcher-pm" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="h-full flex flex-col items-center justify-center p-6 md:p-12">
-
-                                        <div className="w-full max-w-2xl bg-dark-900 border-2 border-brand/20 rounded-[3.5rem] p-12 space-y-12 shadow-2xl relative overflow-hidden">
-                                            <div className="absolute top-0 right-0 w-64 h-64 bg-brand/5 blur-[100px] rounded-full" />
-                                            <div className="text-center space-y-4">
-                                                <div className="w-24 h-24 bg-brand/10 rounded-[2.5rem] flex items-center justify-center text-brand mx-auto shadow-[0_0_50px_rgba(33,255,165,0.2)]"><QrCode size={48} /></div>
-                                                <h2 className="text-4xl font-black italic uppercase tracking-tighter">Access <span className="text-brand">Dispatcher</span></h2>
-                                                <p className="text-[10px] font-black text-secondary uppercase tracking-[0.4em]">Encrypted QR Provisioning Hub</p>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                                <div className="space-y-3">
-                                                    <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-4">Vehicle Plate #</label>
-                                                    <input type="text" placeholder="e.g. B-G-2026" className="w-full bg-btn-sec border border-main rounded-2xl p-5 text-xl font-black italic focus:border-brand outline-none transition-all placeholder:text-gray-700" id="plateInput" />
-                                                </div>
-                                                <div className="space-y-3">
-                                                    <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-4">Pass Duration</label>
-                                                    <select className="w-full bg-btn-sec border border-main rounded-2xl p-5 text-sm font-black uppercase italic focus:border-brand outline-none transition-all appearance-none"><option>2 Hours Access</option><option>Match Day (8h)</option><option>Unlimited VIP</option></select>
-                                                </div>
-                                            </div>
-                                            <button onClick={() => {
-                                                const plate = document.getElementById('plateInput').value || 'GREEN-1';
-                                                localStorage.setItem('green_parking_pass', JSON.stringify({ id: 'PASS-' + Date.now(), plate, venue: 'Eco-Park Central', type: 'parking', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }));
-                                                alert('Access Pass Dispatched to Passenger Hub 🚀');
-                                            }} className="w-full py-6 bg-brand text-dark-900 rounded-[2.5rem] text-xs font-black uppercase tracking-[0.4em] shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4">Dispatch Access Pass <ChevronRight size={20} /></button>
-                                        </div>
-                                    </motion.div>
-                                )}
-
-                                {view === 'qr-dispatcher' && managerContext !== 'PM' && (
-                                    <motion.div key="qr-terminal" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="flex-1 flex flex-col items-center justify-center min-h-[60vh]">
-                                        <AnimatePresence mode="wait">
-                                            {qrScanStep === 'idle' && (
-                                                <motion.div key="idle" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="text-center space-y-8">
-                                                    <div className="w-48 h-48 bg-brand/10 rounded-[3rem] flex items-center justify-center text-brand border-2 border-dashed border-brand/30 shadow-[0_0_50px_rgba(52,211,153,0.1)] relative overflow-hidden group">
-                                                        <Zap size={80} className="group-hover:scale-110 transition-transform duration-500" fill="currentColor" />
-                                                        <motion.div animate={{ rotate: 360 }} transition={{ duration: 15, repeat: Infinity, ease: "linear" }} className="absolute inset-0 border border-brand/10 rounded-full" />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <h2 className="text-4xl font-black italic uppercase tracking-tighter">Ready to <span className="text-brand">Scan</span></h2>
-                                                        <p className="text-xs text-secondary font-bold uppercase tracking-widest">Awaiting ticket or voucher...</p>
-                                                    </div>
-                                                    <button 
-                                                        onClick={() => setQrScanStep('scanning')}
-                                                        className="px-12 py-6 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(52,211,153,0.3)]"
-                                                    >
-                                                        Open Scanner Hub
-                                                    </button>
-                                                </motion.div>
-                                            )}
-
-                                            {qrScanStep === 'scanning' && (
-                                                <motion.div key="scanning" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="relative w-full max-w-lg aspect-square bg-black rounded-[3rem] border-4 border-main overflow-hidden shadow-2xl">
-                                                    <div className="absolute inset-0 flex items-center justify-center">
-                                                        <div className="w-64 h-64 border-2 border-brand/50 rounded-[2rem] relative">
-                                                            <motion.div 
-                                                                animate={{ y: [0, 256, 0] }}
-                                                                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                                                                className="absolute left-0 right-0 h-1 bg-brand shadow-[0_0_15px_var(--brand)]"
-                                                            />
-                                                            <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-brand rounded-tl-xl" />
-                                                            <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-brand rounded-tr-xl" />
-                                                            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-brand rounded-bl-xl" />
-                                                            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-brand rounded-br-xl" />
-                                                        </div>
-                                                    </div>
-                                                    <div className="absolute bottom-8 left-0 right-0 text-center">
-                                                        <p className="text-[10px] font-black uppercase text-brand tracking-widest">Align QR Code within the frame</p>
-                                                    </div>
-                                                    <div 
-                                                        className="absolute inset-0 cursor-crosshair" 
-                                                        onClick={() => {
-                                                            setQrScanStep('result');
-                                                            setScannedData({
-                                                                id: 'TKT-9921',
-                                                                guest: 'Lukas M.',
-                                                                service: managerContext === 'SM' ? 'VVIP Sector A, Row 4, Seat 12' : 
-                                                                        managerContext === 'PM' ? 'Parking Level -1, Bay 104' :
-                                                                        managerContext === 'WM' ? 'Premium Wash + Wax' : 'Standard Service',
-                                                                payment: 'Verified (Mastercard)',
-                                                                timestamp: new Date().toLocaleTimeString()
-                                                            });
-                                                        }} 
-                                                    />
-                                                </motion.div>
-                                            )}
-
-                                            {qrScanStep === 'result' && scannedData && (
-                                                <motion.div key="result" initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm space-y-8">
-                                                    <div className="bg-dark-900 border border-brand/30 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden">
-                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 rounded-full blur-3xl" />
-                                                        <div className="flex flex-col items-center text-center space-y-6">
-                                                            <div className="w-20 h-20 bg-brand rounded-3xl flex items-center justify-center text-dark-900 shadow-[0_0_30px_rgba(52,211,153,0.3)]">
-                                                                <CheckCircle size={40} />
-                                                            </div>
-                                                            <div>
-                                                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-primary">Ticket Secured</h3>
-                                                                <p className="text-[10px] font-bold text-brand uppercase tracking-[0.3em] mt-1">Transaction Confirmed</p>
-                                                            </div>
-                                                            <div className="w-full space-y-4 pt-6 border-t border-main">
-                                                                <div className="flex justify-between items-center">
-                                                                    <span className="text-[10px] font-black uppercase text-secondary">Guest</span>
-                                                                    <span className="text-sm font-black italic uppercase text-primary">{scannedData.guest}</span>
-                                                                </div>
-                                                                <div className="flex justify-between items-center">
-                                                                    <span className="text-[10px] font-black uppercase text-secondary">Service</span>
-                                                                    <span className="text-sm font-black italic uppercase text-brand text-right">{scannedData.service}</span>
-                                                                </div>
-                                                                <div className="flex justify-between items-center">
-                                                                    <span className="text-[10px] font-black uppercase text-secondary">Status</span>
-                                                                    <div className="flex items-center gap-2">
-                                                                        <Shield size={12} className="text-brand" />
-                                                                        <span className="text-[10px] font-black text-brand uppercase">{scannedData.payment}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="grid grid-cols-1 gap-3">
-                                                        <button 
-                                                            onClick={() => setQrScanStep('scanning')}
-                                                            className="w-full h-16 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-[11px] hover:brightness-110 transition-all flex items-center justify-center gap-3"
-                                                        >
-                                                            <Zap size={18} fill="currentColor" />
-                                                            Scan Next Customer
-                                                        </button>
-                                                        <div className="grid grid-cols-2 gap-3">
-                                                            <button onClick={() => setQrScanStep('scanning')} className="h-14 bg-btn-sec border border-main rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary/60 hover:bg-white/10 transition-all">Try Again</button>
-                                                            <button onClick={() => setView('overview')} className="h-14 bg-btn-sec border border-main rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary/60 hover:bg-white/10 transition-all">Dashboard</button>
-                                                        </div>
-                                                    </div>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </motion.div>
-                                )}
                             </AnimatePresence>
                         )}
                     </div>
@@ -5223,112 +5568,7 @@ const ManagerDashboard = () => {
 
 
 
-                    {/* AI INFRASTRUCTURE AGENT OVERLAYS */}
-                    <AnimatePresence>
-                        {(isScanningStructure || isScanningWash) && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-[300] bg-dark-950/95 backdrop-blur-3xl flex flex-col items-center justify-center p-8">
-                                {!structureApprovalPending && !washApprovalPending ? (
-                                    <div className="text-center space-y-12">
-                                        <div className="relative w-48 h-48 mx-auto">
-                                            <div className="absolute inset-0 bg-brand/20 rounded-[3rem]" />
-                                            <motion.div 
-                                                animate={{ 
-                                                    rotate: 360,
-                                                    scale: [1, 1.1, 1]
-                                                }}
-                                                transition={{ duration: 3, repeat: Infinity }}
-                                                className="absolute inset-0 flex items-center justify-center text-brand"
-                                            >
-                                                <Bot size={80} />
-                                            </motion.div>
-                                            <div className="absolute inset-0 border-4 border-dashed border-brand/30 rounded-[3rem] animate-spin-slow" />
-                                        </div>
-                                        <div className="space-y-4">
-                                            <h2 className="text-4xl font-black italic uppercase tracking-tighter">AI <span className="text-brand">Auditor</span> Active</h2>
-                                            <p className="text-xs text-secondary font-bold uppercase tracking-[0.4em]">Parsing Physical Infrastructure...</p>
-                                        </div>
-                                        {/* Simulate Completion */}
-                                        <button 
-                                            onClick={() => {
-                                                if (isScanningStructure) setStructureApprovalPending(true);
-                                                if (isScanningWash) setWashApprovalPending(true);
-                                            }}
-                                            className="px-10 py-5 bg-btn-sec border border-main rounded-2xl text-[10px] font-black uppercase text-brand animate-bounce"
-                                        >
-                                            Analysis Complete
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <motion.div initial={{ scale: 0.9, y: 50 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-xl bg-dark-900 border border-brand/30 rounded-[3.5rem] p-12 shadow-[0_0_100px_rgba(52,211,153,0.1)] relative overflow-hidden">
-                                        <div className="absolute top-0 left-0 w-full h-1 bg-brand shadow-[0_0_20px_var(--brand)]" />
-                                        <div className="flex items-center gap-6 mb-10">
-                                            <div className="w-16 h-16 bg-brand rounded-2xl flex items-center justify-center text-dark-900 shadow-lg"><Sparkles size={32} /></div>
-                                            <div>
-                                                <h3 className="text-2xl font-black italic uppercase text-primary leading-none">Draft Generated</h3>
-                                                <p className="text-[10px] font-bold text-secondary uppercase tracking-widest mt-1">Found: {isScanningStructure ? '4 Floors, 200 Spaces' : '5 Wash Service Types'}</p>
-                                            </div>
-                                        </div>
 
-                                        <div className="space-y-6 mb-12">
-                                            {isScanningStructure ? (
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    {[
-                                                        { l: 'Floor 0 (Entry)', v: '50 Spaces' },
-                                                        { l: 'Floor 1 (VIP)', v: '50 Spaces' },
-                                                        { l: 'Floor -1', v: '50 Spaces' },
-                                                        { l: 'Pricing', v: 'Found 3 Tiers' }
-                                                    ].map((item, i) => (
-                                                        <div key={i} className="p-4 bg-btn-sec border border-main rounded-2xl">
-                                                            <p className="text-[8px] font-black text-secondary uppercase mb-1">{item.l}</p>
-                                                            <p className="text-sm font-black italic text-brand">{item.v}</p>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="space-y-3">
-                                                    {['Eco-Express', 'Premium Pearl', 'Ceramic Shield', 'Interior Deep', 'Wheel Detail'].map((wash, i) => (
-                                                        <div key={i} className="p-4 bg-btn-sec border border-main rounded-2xl flex justify-between items-center">
-                                                            <span className="text-xs font-black italic uppercase text-primary">{wash}</span>
-                                                            <span className="text-[10px] font-black text-brand uppercase tracking-widest">€{(i+1)*12}.00</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="grid grid-cols-1 gap-4">
-                                            <button 
-                                                onClick={() => {
-                                                    setIsScanningStructure(false);
-                                                    setIsScanningWash(false);
-                                                    setStructureApprovalPending(false);
-                                                    setWashApprovalPending(false);
-                                                    triggerNotification('success', 'Operations Online', 'AI Draft has been merged into Live Matrix.');
-                                                }}
-                                                className="w-full py-6 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-brand/20 hover:scale-[1.02] transition-all"
-                                            >
-                                                Accept All & Go Live 🚀
-                                            </button>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <button className="py-5 bg-btn-sec border border-main rounded-2xl text-[10px] font-black uppercase text-gray-400 hover:text-primary transition-all">Manual Edit</button>
-                                                <button 
-                                                    onClick={() => {
-                                                        setIsScanningStructure(false);
-                                                        setIsScanningWash(false);
-                                                        setStructureApprovalPending(false);
-                                                        setWashApprovalPending(false);
-                                                    }}
-                                                    className="py-5 bg-btn-sec border border-main rounded-2xl text-[10px] font-black uppercase text-red-500/50 hover:text-red-500 transition-all"
-                                                >
-                                                    Discard
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
                 </main>
             </div>
 
@@ -5533,229 +5773,101 @@ const ManagerDashboard = () => {
                                         </div>
                                         <div>
                                             <h2 className="text-3xl font-black italic uppercase text-primary tracking-tighter leading-none">
-                                                {stripeOnboardMode === 'connect' ? 'Connect Stripe' : 'Onboard Partner'}
+                                                Connect Stripe
                                             </h2>
                                             <p className="text-[9px] font-bold text-secondary uppercase tracking-[0.2em] mt-1.5 leading-none">Stripe Connect & Bank Settlements</p>
                                         </div>
                                     </div>
 
-                                    {stripeOnboardMode === 'connect' ? (
-                                        /* CONNECT EXISTING PROFILE FLOW */
-                                        <div className="space-y-6">
-                                            <p className="text-[10px] text-secondary font-bold uppercase tracking-wide leading-relaxed opacity-75">
-                                                Input your existing Stripe Connected Account ID to link payments directly from your venue sessions.
-                                            </p>
+                                    {/* CONNECT EXISTING PROFILE FLOW */}
+                                    <div className="space-y-6">
+                                        <p className="text-[10px] text-secondary font-bold uppercase tracking-wide leading-relaxed opacity-75">
+                                            Input your existing Stripe Connected Account ID to link payments directly from your venue sessions.
+                                        </p>
+                                        
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Stripe Account ID</label>
+                                            <input 
+                                                type="text"
+                                                value={stripeInputId}
+                                                onChange={(e) => setStripeInputId(e.target.value)}
+                                                placeholder="acct_1N8hXm2e..."
+                                                className="w-full bg-btn-sec border border-main rounded-2xl py-4 px-6 text-sm font-black text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40 shadow-inner"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-4 pt-4 border-t border-main">
+                                            <p className="text-[9px] font-black text-secondary uppercase tracking-widest ml-1">Configure Payout Bank Details</p>
                                             
-                                            <div className="space-y-2">
-                                                <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Stripe Account ID</label>
-                                                <input 
-                                                    type="text"
-                                                    value={stripeInputId}
-                                                    onChange={(e) => setStripeInputId(e.target.value)}
-                                                    placeholder="acct_1N8hXm2e..."
-                                                    className="w-full bg-btn-sec border border-main rounded-2xl py-4 px-6 text-sm font-black text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40 shadow-inner"
-                                                />
-                                            </div>
-
-                                            <div className="space-y-4 pt-4 border-t border-main">
-                                                <p className="text-[9px] font-black text-secondary uppercase tracking-widest ml-1">Configure Payout Bank Details</p>
-                                                
-                                                <div className="grid grid-cols-1 gap-4">
-                                                    <div className="space-y-2">
-                                                        <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Bank Name</label>
-                                                        <input 
-                                                            type="text"
-                                                            value={stripeFormBankName}
-                                                            onChange={(e) => setStripeFormBankName(e.target.value)}
-                                                            placeholder="e.g. Deutsche Bank"
-                                                            className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">IBAN / Account Number</label>
-                                                        <input 
-                                                            type="text"
-                                                            value={stripeFormIban}
-                                                            onChange={(e) => setStripeFormIban(e.target.value)}
-                                                            placeholder="DE89 3704 0044..."
-                                                            className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Routing Code / BIC</label>
-                                                        <input 
-                                                            type="text"
-                                                            value={stripeFormRouting}
-                                                            onChange={(e) => setStripeFormRouting(e.target.value)}
-                                                            placeholder="DEUTDEDBXXX"
-                                                            className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
-                                                        />
-                                                    </div>
+                                            <div className="grid grid-cols-1 gap-4">
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Bank Name</label>
+                                                    <input 
+                                                        type="text"
+                                                        value={stripeFormBankName}
+                                                        onChange={(e) => setStripeFormBankName(e.target.value)}
+                                                        placeholder="e.g. Deutsche Bank"
+                                                        className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">IBAN / Account Number</label>
+                                                    <input 
+                                                        type="text"
+                                                        value={stripeFormIban}
+                                                        onChange={(e) => setStripeFormIban(e.target.value)}
+                                                        placeholder="DE89 3704 0044..."
+                                                        className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Routing Code / BIC</label>
+                                                    <input 
+                                                        type="text"
+                                                        value={stripeFormRouting}
+                                                        onChange={(e) => setStripeFormRouting(e.target.value)}
+                                                        placeholder="DEUTDEDBXXX"
+                                                        className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
+                                                    />
                                                 </div>
                                             </div>
-
-                                            <button 
-                                                onClick={() => {
-                                                    if (!stripeInputId.trim() || !stripeFormIban.trim()) {
-                                                        alert("Validation Error:\nPlease provide a valid Stripe Account ID and Bank IBAN.");
-                                                        return;
-                                                    }
-                                                    setStripeLoading(true);
-                                                    setTimeout(() => {
-                                                        setStripeLoading(false);
-                                                        setStripeConnected(true);
-                                                        setStripeAccountId(stripeInputId);
-                                                        setStripeBankName(stripeFormBankName || 'Stripe Connected Bank');
-                                                        setStripeBankIban(stripeFormIban);
-                                                        setStripeBankRouting(stripeFormRouting);
-                                                        
-                                                        localStorage.setItem('green_partner_stripe_connected', 'true');
-                                                        localStorage.setItem('green_partner_stripe_acc_id', stripeInputId);
-                                                        localStorage.setItem('green_partner_bank_name', stripeFormBankName || 'Stripe Connected Bank');
-                                                        localStorage.setItem('green_partner_bank_iban', stripeFormIban);
-                                                        localStorage.setItem('green_partner_bank_routing', stripeFormRouting);
-                                                        
-                                                        setIsStripeModalOpen(false);
-                                                        alert("STRIPE SECURE CONNECT SUCCESSFUL\n-------------------------------\nPlatform Account Linked!\nBank Details verified for weekly settlement.");
-                                                    }, 1800);
-                                                }}
-                                                disabled={stripeLoading}
-                                                className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                                            >
-                                                {stripeLoading ? (
-                                                    <div className="w-5 h-5 border-2 border-dark-900 border-t-transparent rounded-full animate-spin" />
-                                                ) : (
-                                                    <span>Lock Connection Gateway</span>
-                                                )}
-                                            </button>
                                         </div>
-                                    ) : (
-                                        /* CREATE NEW CONNECTED PROFILE STEP-FLOW */
-                                        <div className="space-y-6">
-                                            {stripeOnboardStep === 1 ? (
-                                                <div className="space-y-5 animate-in slide-in-from-right-4 duration-300">
-                                                    <p className="text-[10px] text-secondary font-bold uppercase tracking-wide leading-relaxed opacity-75">
-                                                        Create a new secure Stripe Connected Account for your venue business directly within the gateway.
-                                                    </p>
+
+                                        <button 
+                                            onClick={() => {
+                                                if (!stripeInputId.trim() || !stripeFormIban.trim()) {
+                                                    alert("Validation Error:\nPlease provide a valid Stripe Account ID and Bank IBAN.");
+                                                    return;
+                                                }
+                                                setStripeLoading(true);
+                                                setTimeout(() => {
+                                                    setStripeLoading(false);
+                                                    setStripeConnected(true);
+                                                    setStripeAccountId(stripeInputId);
+                                                    setStripeBankName(stripeFormBankName || 'Stripe Connected Bank');
+                                                    setStripeBankIban(stripeFormIban);
+                                                    setStripeBankRouting(stripeFormRouting);
                                                     
-                                                    <div className="space-y-3">
-                                                        <div className="space-y-2">
-                                                            <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Business Registered Name</label>
-                                                            <input 
-                                                                type="text" 
-                                                                defaultValue={getBusinessName()}
-                                                                className="w-full bg-btn-sec border border-main rounded-2xl py-3.5 px-5 text-xs font-bold text-primary focus:outline-none focus:border-brand/40"
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Business Registration Number</label>
-                                                            <input 
-                                                                type="text" 
-                                                                placeholder="HRB 99281 (Amtsgericht)"
-                                                                className="w-full bg-btn-sec border border-main rounded-2xl py-3.5 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Authorized Contact E-Mail</label>
-                                                            <input 
-                                                                type="email" 
-                                                                defaultValue={user?.email || 'manager@green-palace.com'}
-                                                                className="w-full bg-btn-sec border border-main rounded-2xl py-3.5 px-5 text-xs font-bold text-primary focus:outline-none focus:border-brand/40"
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <button 
-                                                        onClick={() => setStripeOnboardStep(2)}
-                                                        className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                                                    >
-                                                        Continue to Payout Bank Details
-                                                    </button>
-                                                </div>
+                                                    localStorage.setItem('green_partner_stripe_connected', 'true');
+                                                    localStorage.setItem('green_partner_stripe_acc_id', stripeInputId);
+                                                    localStorage.setItem('green_partner_bank_name', stripeFormBankName || 'Stripe Connected Bank');
+                                                    localStorage.setItem('green_partner_bank_iban', stripeFormIban);
+                                                    localStorage.setItem('green_partner_bank_routing', stripeFormRouting);
+                                                    
+                                                    setIsStripeModalOpen(false);
+                                                    alert("STRIPE SECURE CONNECT SUCCESSFUL\n-------------------------------\nPlatform Account Linked!\nBank Details verified for weekly settlement.");
+                                                }, 1800);
+                                            }}
+                                            disabled={stripeLoading}
+                                            className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                        >
+                                            {stripeLoading ? (
+                                                <div className="w-5 h-5 border-2 border-dark-900 border-t-transparent rounded-full animate-spin" />
                                             ) : (
-                                                <div className="space-y-5 animate-in slide-in-from-right-4 duration-300">
-                                                    <div className="flex justify-between items-center">
-                                                        <p className="text-[10px] font-black text-brand uppercase tracking-widest">Step 2: Payout Settler Account</p>
-                                                        <button 
-                                                            onClick={() => setStripeOnboardStep(1)}
-                                                            className="text-[8px] font-black text-secondary uppercase hover:text-white"
-                                                        >
-                                                            Back
-                                                        </button>
-                                                    </div>
-
-                                                    <div className="grid grid-cols-1 gap-4">
-                                                        <div className="space-y-2">
-                                                            <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Bank Name</label>
-                                                            <input 
-                                                                type="text"
-                                                                value={stripeFormBankName}
-                                                                onChange={(e) => setStripeFormBankName(e.target.value)}
-                                                                placeholder="e.g. Sparkasse Düsseldorf"
-                                                                className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">IBAN / Account Number</label>
-                                                            <input 
-                                                                type="text"
-                                                                value={stripeFormIban}
-                                                                onChange={(e) => setStripeFormIban(e.target.value)}
-                                                                placeholder="DE12 3704 0000..."
-                                                                className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Routing Code / BIC</label>
-                                                            <input 
-                                                                type="text"
-                                                                value={stripeFormRouting}
-                                                                onChange={(e) => setStripeFormRouting(e.target.value)}
-                                                                placeholder="SPKDE12DXXX"
-                                                                className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <button 
-                                                        onClick={() => {
-                                                            if (!stripeFormIban.trim()) {
-                                                                alert("Validation Error:\nPlease provide a valid Bank Account IBAN.");
-                                                                return;
-                                                            }
-                                                            setStripeLoading(true);
-                                                            setTimeout(() => {
-                                                                const generatedId = 'acct_new_' + Math.random().toString(36).substring(2, 12);
-                                                                setStripeLoading(false);
-                                                                setStripeConnected(true);
-                                                                setStripeAccountId(generatedId);
-                                                                setStripeBankName(stripeFormBankName || 'Sparkasse Düsseldorf');
-                                                                setStripeBankIban(stripeFormIban);
-                                                                setStripeBankRouting(stripeFormRouting);
-                                                                
-                                                                localStorage.setItem('green_partner_stripe_connected', 'true');
-                                                                localStorage.setItem('green_partner_stripe_acc_id', generatedId);
-                                                                localStorage.setItem('green_partner_bank_name', stripeFormBankName || 'Sparkasse Düsseldorf');
-                                                                localStorage.setItem('green_partner_bank_iban', stripeFormIban);
-                                                                localStorage.setItem('green_partner_bank_routing', stripeFormRouting);
-                                                                
-                                                                setIsStripeModalOpen(false);
-                                                                alert(`STRIPE REGISTER SUCCESSFUL\n-------------------------------\nAccount Created: ${generatedId}\nBank settlements locked into your Stripe profile!`);
-                                                            }, 2000);
-                                                        }}
-                                                        disabled={stripeLoading}
-                                                        className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                                                    >
-                                                        {stripeLoading ? (
-                                                            <div className="w-5 h-5 border-2 border-dark-900 border-t-transparent rounded-full animate-spin" />
-                                                        ) : (
-                                                            <span>Onboard & Initialize Settlements</span>
-                                                        )}
-                                                    </button>
-                                                </div>
+                                                <span>Lock Connection Gateway</span>
                                             )}
-                                        </div>
-                                    )}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>

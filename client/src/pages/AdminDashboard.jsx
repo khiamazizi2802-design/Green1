@@ -19,7 +19,7 @@ import { useSocket } from '../context/SocketContext';
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
     const { drivers } = useSocket();
-    const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
+    const isDemo = user?.isDemo;
 
     // NOTCH & SAFE AREA INTEGRATION
     const useSafeArea = localStorage.getItem('green_manager_use_safe_area') !== 'false';
@@ -51,6 +51,113 @@ const AdminDashboard = () => {
     
     // --- STRIPE CONNECT SPLIT HUB & LIVE COMMAND OVERVIEW STATES ---
     const [stripeActiveSubTab, setStripeActiveSubTab] = useState('live-overview');
+
+    // Partner Compliance review states
+    const [complianceRefreshTicker, setComplianceRefreshTicker] = useState(0);
+
+    const getPartnerComplianceLogs = () => {
+        const logs = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('green_compliance_docs_')) {
+                const emailKey = key.replace('green_compliance_docs_', '');
+                try {
+                    const docs = JSON.parse(localStorage.getItem(key));
+                    const keys = Object.keys(docs).filter(k => k !== '_metadata');
+                    const uploadedDocs = keys.map(k => docs[k]).filter(d => d && d.status !== 'missing');
+                    if (uploadedDocs.length > 0 || docs._metadata) {
+                        const metadata = docs._metadata || { 
+                            email: emailKey.replace(/_/g, '@'), 
+                            name: 'Partner Manager', 
+                            businessName: 'Eco Partner', 
+                            context: 'FM' 
+                        };
+                        
+                        // Fill all required doc definitions if not present in the uploadedDocs
+                        const requiredIds = metadata.context === 'FM' 
+                            ? ['tl', 'fip', 'cc', 'vr', 'tuv', 'es', 'sepa', 'vatc', 'bankv']
+                            : ['reg', 'mid', 'tax', 'gast', 'liq', 'fire', 'sepa', 'vatc', 'bankv'];
+                        
+                        const fullDocs = requiredIds.map(id => {
+                            return docs[id] || { id, status: 'missing', name: 'Document ' + id };
+                        });
+
+                        logs.push({
+                            emailKey,
+                            metadata,
+                            docs: fullDocs
+                        });
+                    }
+                } catch(e) {
+                    console.error(e);
+                }
+            }
+        }
+        return logs;
+    };
+
+    const handleApprovePartnerDoc = (emailKey, docId) => {
+        const key = `green_compliance_docs_${emailKey}`;
+        try {
+            const docs = JSON.parse(localStorage.getItem(key) || '{}');
+            if (docs[docId]) {
+                docs[docId].status = 'approved';
+                docs[docId].verifiedAt = new Date().toISOString();
+                localStorage.setItem(key, JSON.stringify(docs));
+                setComplianceRefreshTicker(prev => prev + 1);
+                triggerNotification('success', 'Document Approved ✓', `Credential cleared for partner.`);
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    };
+
+    const handleRejectPartnerDoc = (emailKey, docId) => {
+        const key = `green_compliance_docs_${emailKey}`;
+        try {
+            const docs = JSON.parse(localStorage.getItem(key) || '{}');
+            if (docs[docId]) {
+                docs[docId].status = 'rejected';
+                docs[docId].verifiedAt = new Date().toISOString();
+                localStorage.setItem(key, JSON.stringify(docs));
+                setComplianceRefreshTicker(prev => prev + 1);
+                triggerNotification('warning', 'Document Rejected ✗', `Credential rejected.`);
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    };
+
+    const handleViewPartnerDoc = (docState) => {
+        if (!docState || !docState.fileData) return;
+        const newWindow = window.open();
+        if (newWindow) {
+            newWindow.document.title = docState.name || 'Document View';
+            newWindow.document.body.style.margin = '0';
+            newWindow.document.body.style.background = '#0a0a0a';
+            newWindow.document.body.style.display = 'flex';
+            newWindow.document.body.style.justifyContent = 'center';
+            newWindow.document.body.style.alignItems = 'center';
+            newWindow.document.body.style.height = '100vh';
+            
+            if (docState.fileData.startsWith('data:image/')) {
+                const img = newWindow.document.createElement('img');
+                img.src = docState.fileData;
+                img.style.maxWidth = '90%';
+                img.style.maxHeight = '90%';
+                img.style.borderRadius = '12px';
+                img.style.boxShadow = '0 20px 50px rgba(0,0,0,0.5)';
+                newWindow.document.body.appendChild(img);
+            } else {
+                const iframe = newWindow.document.createElement('iframe');
+                iframe.src = docState.fileData;
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.border = 'none';
+                newWindow.document.body.appendChild(iframe);
+            }
+        }
+    };
     const [selectedInvoiceForModal, setSelectedInvoiceForModal] = useState(null);
     const [isSimulatingPayoutFlow, setIsSimulatingPayoutFlow] = useState(false);
     const [simulationStep, setSimulationStep] = useState(0);
@@ -3079,11 +3186,12 @@ billing payouts are required.
                                     </div>
                                     
                                     {/* Glassmorphic Sub-Navigation bar */}
-                                    <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/5 gap-1.5 self-stretch xl:self-auto">
+                                    <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/5 gap-1.5 self-stretch xl:self-auto flex-wrap md:flex-nowrap">
                                         {[
                                             { id: 'live-overview', label: 'Live Split Overview', icon: Activity },
                                             { id: 'partners-directory', label: 'Connected Partners', icon: Users },
-                                            { id: 'kyc-dossier', label: 'BaFin KYC Dossier', icon: ShieldCheck }
+                                            { id: 'kyc-dossier', label: 'BaFin KYC Dossier', icon: ShieldCheck },
+                                            { id: 'partner-compliance', label: 'Partner Compliance Vaults', icon: ShieldAlert }
                                         ].map(tab => (
                                             <button
                                                 key={tab.id}
@@ -3671,6 +3779,135 @@ billing payouts are required.
                                                 )}
                                             </div>
                                         </div>
+                                    </div>
+                                )}
+
+                                {stripeActiveSubTab === 'partner-compliance' && (
+                                    <div className="space-y-8 bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
+                                        
+                                        <div>
+                                            <h3 className="text-3xl font-black italic uppercase text-white font-glow-green">Partner Compliance Vaults</h3>
+                                            <p className="text-xs text-gray-500 italic mt-1">
+                                                Audit and verify corporate credentials uploaded by fleet managers, hospitality partners, and event venues. Approve files to activate their operational dashboards.
+                                            </p>
+                                        </div>
+
+                                        {getPartnerComplianceLogs().length === 0 ? (
+                                            <div className="p-10 bg-white/5 rounded-2xl text-center border border-white/5 text-gray-400">
+                                                <ShieldCheck size={48} className="mx-auto mb-4 text-gray-600" />
+                                                <p className="font-black italic uppercase text-sm">No Active Compliance Portals Found</p>
+                                                <p className="text-[10px] text-gray-500 mt-2">When partners/managers upload verification documents in their dashboards, they will appear here for audit review.</p>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-10">
+                                                {getPartnerComplianceLogs().map((partner) => {
+                                                    const totalDocs = partner.docs.length;
+                                                    const approvedDocs = partner.docs.filter(d => d.status === 'approved').length;
+                                                    const pendingDocs = partner.docs.filter(d => d.status === 'pending').length;
+                                                    
+                                                    return (
+                                                        <div key={partner.emailKey} className="p-8 bg-white/5 border border-white/5 rounded-[2.5rem] space-y-6 hover:bg-white/10 hover:border-white/10 transition-all">
+                                                            <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 pb-4 border-b border-white/5">
+                                                                <div>
+                                                                    <span className="px-2 py-0.5 bg-brand/10 border border-brand/25 text-brand rounded text-[7px] font-black uppercase tracking-wider font-mono">
+                                                                        {partner.metadata.context === 'FM' ? 'Fleet Operator' : 'Service Venue'} ({partner.metadata.context})
+                                                                    </span>
+                                                                    <h4 className="text-xl font-black italic uppercase text-white tracking-tighter mt-1">{partner.metadata.businessName}</h4>
+                                                                    <p className="text-[9px] text-gray-500 font-mono mt-1">MANAGER: {partner.metadata.name} ({partner.metadata.email})</p>
+                                                                </div>
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="text-right">
+                                                                        <p className="text-[9px] text-gray-400 font-black uppercase">CLEARANCE STATUS</p>
+                                                                        <p className="text-sm font-black italic text-primary leading-none mt-1">
+                                                                            {approvedDocs} / {totalDocs} Approved
+                                                                        </p>
+                                                                    </div>
+                                                                    <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                                                                        approvedDocs === totalDocs 
+                                                                            ? 'bg-brand/20 text-brand border border-brand/30' 
+                                                                            : pendingDocs > 0 
+                                                                                ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30 animate-pulse'
+                                                                                : 'bg-red-500/20 text-red-500 border border-red-500/30'
+                                                                    }`}>
+                                                                        {approvedDocs === totalDocs ? 'APPROVED ✓' : 'AWAITING UPLOADS / REVIEW'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                                {partner.docs.map((doc) => {
+                                                                    const isVerified = doc.status === 'approved';
+                                                                    const isPending = doc.status === 'pending';
+                                                                    const isRejected = doc.status === 'rejected';
+                                                                    
+                                                                    return (
+                                                                        <div key={doc.id} className={`p-5 rounded-2xl border ${
+                                                                            isVerified ? 'bg-brand/5 border-brand/20' : 
+                                                                            isPending ? 'bg-amber-500/5 border-amber-500/20 animate-pulse' :
+                                                                            isRejected ? 'bg-red-500/5 border-red-500/20' :
+                                                                            'bg-black/30 border-white/5'
+                                                                        } space-y-4`}>
+                                                                            <div className="flex justify-between items-start">
+                                                                                <div>
+                                                                                    <h5 className="text-xs font-black uppercase text-white leading-tight">{doc.name}</h5>
+                                                                                    <span className="text-[7px] text-gray-500 font-mono block mt-1 uppercase">ID: {doc.id}</span>
+                                                                                </div>
+                                                                                <span className={`text-[7px] font-black uppercase px-2 py-0.5 rounded ${
+                                                                                    isVerified ? 'bg-brand/20 text-brand' :
+                                                                                    isPending ? 'bg-amber-500/25 text-amber-500' :
+                                                                                    isRejected ? 'bg-red-500/20 text-red-500' :
+                                                                                    'bg-white/5 text-gray-500'
+                                                                                }`}>
+                                                                                    {doc.status.toUpperCase()}
+                                                                                </span>
+                                                                            </div>
+
+                                                                            {doc.name && doc.status !== 'missing' && (
+                                                                                <div className="p-3 bg-white/5 border border-white/5 rounded-xl text-[8px] font-mono text-gray-400 truncate">
+                                                                                    FILENAME: {doc.name}
+                                                                                </div>
+                                                                            )}
+
+                                                                            {doc.fileData ? (
+                                                                                <div className="flex gap-2">
+                                                                                    <button 
+                                                                                        onClick={() => handleViewPartnerDoc(doc)}
+                                                                                        className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-[8px] font-black uppercase tracking-widest border border-white/5 hover:border-white/20 transition-all text-center flex items-center justify-center gap-1.5"
+                                                                                    >
+                                                                                        <Eye size={10} /> View Document
+                                                                                    </button>
+                                                                                    <button 
+                                                                                        onClick={() => handleApprovePartnerDoc(partner.emailKey, doc.id)}
+                                                                                        disabled={isVerified}
+                                                                                        className="p-2.5 bg-brand text-dark-900 rounded-xl hover:scale-105 transition-all disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center"
+                                                                                        title="Approve Document"
+                                                                                    >
+                                                                                        <CheckCircle2 size={12} />
+                                                                                    </button>
+                                                                                    <button 
+                                                                                        onClick={() => handleRejectPartnerDoc(partner.emailKey, doc.id)}
+                                                                                        disabled={isRejected}
+                                                                                        className="p-2.5 bg-red-500 text-white rounded-xl hover:scale-105 transition-all disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center"
+                                                                                        title="Reject Document"
+                                                                                    >
+                                                                                        <X size={12} />
+                                                                                    </button>
+                                                                                </div>
+                                                                            ) : (
+                                                                                <div className="py-2.5 text-center text-gray-600 italic text-[8px] border border-dashed border-white/5 rounded-xl uppercase">
+                                                                                    No File Uploaded Yet
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 

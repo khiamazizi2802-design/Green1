@@ -336,7 +336,7 @@ const DriverDashboard = () => {
     });
 
     useEffect(() => {
-        const isDemoUser = user?.email?.toLowerCase().endsWith('@green.de');
+        const isDemoUser = user?.isDemo;
         if (isDemoUser) {
             setTripHistory([
                 { id: 'TRIP-1024', date: '2026-03-08 14:20', from: 'Frankfurt Airport', to: 'Mainz Hbf', amount: 42.50, status: 'completed', distance: '32 km' },
@@ -384,7 +384,7 @@ const DriverDashboard = () => {
                     setVehicleInfo(data.vehicleInfo);
                     localStorage.setItem('driver_vehicle_data', JSON.stringify(data.vehicleInfo));
                 } else {
-                    const isDemoUser = user?.email?.toLowerCase().endsWith('@green.de');
+                    const isDemoUser = user?.isDemo;
                     if (!isDemoUser) {
                         setVehicleInfo({ plate: '', model: '', year: '', color: '', photo: null, status: 'unregistered' });
                         localStorage.removeItem('driver_vehicle_data');

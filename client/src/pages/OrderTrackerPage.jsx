@@ -38,7 +38,7 @@ const OrderTrackerPage = () => {
     const isHotel = venueName.toLowerCase().includes('hotel') || venueName.toLowerCase().includes('luxe');
     const isBooking = isHotel && cart.some(item => item.tags?.includes('Luxury') || item.tags?.includes('Elite'));
     const isStadium = venueName.toLowerCase().includes('stadium') || venueName.toLowerCase().includes('arena');
-    const isParking = venueName.toLowerCase().includes('park') || venueName.toLowerCase().includes('garage');
+    const isParking = false;
     const guestName = location.state?.guestName;
     const isGroupActive = localStorage.getItem('green_group_state') === 'active';
 

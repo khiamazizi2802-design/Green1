@@ -12,7 +12,7 @@ const RideHistoryHub = () => {
     const { user } = useAuth();
 
     const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
-    const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
+    const isDemo = user?.isDemo;
 
     const getServiceIcon = (service) => {
         const s = (service || '').toUpperCase();

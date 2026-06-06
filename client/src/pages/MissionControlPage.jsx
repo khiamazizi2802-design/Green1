@@ -51,7 +51,7 @@ const MissionControlPage = () => {
         return () => clearInterval(timer);
     }, []);
 
-    const isParking = order?.venueName?.toLowerCase().includes('park') || true; // Force true for demo
+    const isParking = false;
     const isReady = prepTime === 0;
 
     return (

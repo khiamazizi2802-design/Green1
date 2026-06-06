@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
 
 const MessagesPage = () => {
     const { user } = useAuth();
-    const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
+    const isDemo = user?.isDemo;
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('all'); // 'all', 'messages', 'offers', 'friends'
     const [selectedItem, setSelectedItem] = useState(null); // Full offer detail modal

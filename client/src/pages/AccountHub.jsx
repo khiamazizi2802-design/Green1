@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ArrowLeft, Shield, User, MapPin, Mail, 
@@ -8,10 +8,13 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { triggerNotification } from '../components/NotificationToast';
 import { updatePassword } from 'firebase/auth';
-import { auth as fbAuth } from '../config/firebase';
+import { auth as fbAuth, db as fbDb } from '../config/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
 
 const AccountHub = () => {
     const navigate = useNavigate();
+    const { user, setUser } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [showVerification, setShowVerification] = useState(false);
@@ -25,14 +28,56 @@ const AccountHub = () => {
         zip: '10115',
         city: 'Berlin',
         email: 'alex.p@uplink.net',
-        phone: '+49 151 2345678'
+        phone: '+49 151 2345678',
+        age: ''
     });
 
     const [profilePic, setProfilePic] = useState("https://api.dicebear.com/7.x/avataaars/svg?seed=Alex");
 
-    const handleSave = () => {
+    useEffect(() => {
+        if (user) {
+            const nameParts = (user.name || '').split(' ');
+            setProfile({
+                firstName: nameParts[0] || '',
+                lastName: nameParts.slice(1).join(' ') || '',
+                address: user.address || '',
+                zip: user.zip || '',
+                city: user.city || '',
+                email: user.email || '',
+                phone: user.phone || '',
+                age: user.age || ''
+            });
+            if (user.avatar) {
+                setProfilePic(user.avatar);
+            } else {
+                setProfilePic(`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name || 'Alex'}`);
+            }
+        }
+    }, [user]);
+
+    const handleSave = async () => {
         setIsEditing(false);
-        triggerNotification("PROFILE DATA SECURED", "SUCCESS");
+        if (user && user.email) {
+            try {
+                const userDocRef = doc(fbDb, 'users', user.email.toLowerCase());
+                const updatedData = {
+                    name: `${profile.firstName} ${profile.lastName}`.trim(),
+                    address: profile.address,
+                    zip: profile.zip,
+                    city: profile.city,
+                    phone: profile.phone,
+                    age: profile.age ? parseInt(profile.age) : null
+                };
+                await updateDoc(userDocRef, updatedData);
+                setUser({ ...user, ...updatedData });
+                triggerNotification("PROFILE DATA SECURED", "SUCCESS");
+            } catch (e) {
+                console.error("Failed to update profile in Firestore:", e);
+                triggerNotification("ERROR SECURING PROFILE", "DANGER");
+            }
+        } else {
+            triggerNotification("PROFILE DATA SECURED (LOCAL)", "SUCCESS");
+        }
     };
 
     const handlePasswordChange = () => {
@@ -64,9 +109,22 @@ const AccountHub = () => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfilePic(reader.result);
-                triggerNotification("PROFILE IMAGE UPDATED", "SUCCESS");
+            reader.onloadend = async () => {
+                const base64Data = reader.result;
+                setProfilePic(base64Data);
+                if (user && user.email) {
+                    try {
+                        const userDocRef = doc(fbDb, 'users', user.email.toLowerCase());
+                        await updateDoc(userDocRef, { avatar: base64Data });
+                        setUser({ ...user, avatar: base64Data });
+                        triggerNotification("PROFILE IMAGE SECURED", "SUCCESS");
+                    } catch (err) {
+                        console.error("Failed to save avatar in Firestore:", err);
+                        triggerNotification("IMAGE SECURED (LOCAL)", "SUCCESS");
+                    }
+                } else {
+                    triggerNotification("PROFILE IMAGE UPDATED", "SUCCESS");
+                }
             };
             reader.readAsDataURL(file);
         }
@@ -352,6 +410,22 @@ const AccountHub = () => {
                                         )}
                                     </div>
                                     <Phone size={18} className="text-gray-500 ml-4 shrink-0" />
+                                </div>
+                                <div className="col-span-2 p-8 bg-dark-900 border border-main rounded-[2.5rem] shadow-sm flex items-center justify-between text-left">
+                                    <div className="flex-1">
+                                        <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-1">Age / Alter</p>
+                                        {isEditing ? (
+                                            <input 
+                                                type="number"
+                                                value={profile.age}
+                                                onChange={(e) => setProfile({ ...profile, age: e.target.value })}
+                                                className="w-full bg-transparent border-none p-0 text-base font-black italic text-primary focus:ring-0 outline-none"
+                                            />
+                                        ) : (
+                                            <p className="text-base font-black italic text-primary">{profile.age || 'Not specified'}</p>
+                                        )}
+                                    </div>
+                                    <User size={18} className="text-gray-500 ml-4 shrink-0" />
                                 </div>
                             </div>
                         </section>

@@ -23,7 +23,7 @@ const FamilyHub = () => {
             const myInvites = allInvites.filter(inv => inv.parentEmail.toLowerCase() === user.email.toLowerCase());
             setInvitations(myInvites);
         } else {
-            const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
+            const isDemo = user?.isDemo;
             if (isDemo) {
                 // Seed a default pending invitation for testing/demo
                 const demoInvites = [

@@ -10,6 +10,8 @@ import Sheet from '../components/Sheet';
 
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
+import { db } from '../config/firebase';
+import { collection, getDocs, query, limit } from 'firebase/firestore';
 
 const GreenSPage = () => {
     const navigate = useNavigate();
@@ -50,24 +52,20 @@ const GreenSPage = () => {
     const [orderTimeLeft, setOrderTimeLeft] = useState("05:12");
     
     // --- State for Social Features ---
-    const { friends: mockFriends } = useRide(); // Note: useRide doesn't have friends yet, I should add them or use local
-    const [localFriends] = useState([
-        { id: 'f-1', name: 'Marcus V.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus', status: 'Online' },
-        { id: 'f-2', name: 'Elena R.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena', status: 'In Ride' },
-        { id: 'f-3', name: 'Julian K.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julian', status: 'Online' },
-        { id: 'f-4', name: 'Sophie L.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie', status: 'Offline' },
-        { id: 'f-5', name: 'Alex M.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AlexM', status: 'Online' }
-    ]);
+    const allFriends = mutualFriends.map(m => ({
+        id: m.id,
+        name: m.name,
+        avatar: m.avatar || m.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.name}`,
+        status: m.status || 'Online'
+    }));
 
-    const allFriends = [
-        ...localFriends,
-        ...mutualFriends.map(m => ({
-            id: m.id,
-            name: m.name,
-            avatar: m.image,
-            status: 'Online'
-        }))
-    ];
+    const defaultGroupFriends = React.useMemo(() => {
+        return user?.isDemo ? [
+            { name: 'Marcus V.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus' },
+            { name: 'Elena R.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena' },
+            { name: 'Julian K.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julian' }
+        ] : [];
+    }, [user]);
 
     // --- State for Fair-Split Budgeting ---
     const [totalBudget, setTotalBudget] = useState('12');
@@ -97,11 +95,13 @@ const GreenSPage = () => {
                 const key = `green_member_paid_${f.name.replace(/\s/g, '_')}`;
                 statusMap[f.name] = localStorage.getItem(key) === 'true';
             });
-            // Also check defaults
-            ['Marcus V.', 'Elena R.', 'Julian K.'].forEach(name => {
-                const key = `green_member_paid_${name.replace(/\s/g, '_')}`;
-                if (!(name in statusMap)) statusMap[name] = localStorage.getItem(key) === 'true';
-            });
+            // Also check defaults if demo user
+            if (user?.isDemo) {
+                ['Marcus V.', 'Elena R.', 'Julian K.'].forEach(name => {
+                    const key = `green_member_paid_${name.replace(/\s/g, '_')}`;
+                    if (!(name in statusMap)) statusMap[name] = localStorage.getItem(key) === 'true';
+                });
+            }
             setMemberPaidStatus(statusMap);
         };
         pollStatuses();
@@ -293,6 +293,39 @@ const GreenSPage = () => {
     const containerRef = React.useRef(null);
     const embeddedContainerRef = React.useRef(null);
 
+    // --- Promoted Event Selector ---
+    const promotedEvent = React.useMemo(() => {
+        const saved = localStorage.getItem('green_stadium_events');
+        if (saved) {
+            try {
+                const raw = JSON.parse(saved);
+                const published = raw.filter(e => e.published);
+                if (published.length > 0) {
+                    const first = published[0];
+                    return {
+                        title: first.name,
+                        image: first.image || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=800',
+                        status: 'Live Marketplace',
+                        actionText: 'SECURE TICKETS NOW'
+                    };
+                }
+            } catch (e) {
+                console.error('Failed to parse green_stadium_events:', e);
+            }
+        }
+        
+        if (user?.isDemo) {
+            return {
+                title: 'Champions League\nBox Office Open',
+                image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=800',
+                status: 'Live Marketplace',
+                actionText: 'SECURE TICKETS NOW'
+            };
+        }
+        
+        return null;
+    }, [user]);
+
     return (
         <div className="min-h-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative overflow-x-hidden">
             {/* Background Decor */}
@@ -337,34 +370,38 @@ const GreenSPage = () => {
                     </div>
                 </header>
                 {/* Promoted Stadium Event Banner */}
-                <section className="mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
-                    <button 
-                        onClick={() => navigate('/discovery', { state: { category: 'stadium' } })}
-                        className="w-full relative h-64 rounded-[3rem] overflow-hidden border border-white/20 group shadow-2xl"
-                    >
-                        <img 
-                            src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=800" 
-                            className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-[2s]" 
-                            alt="Stadium" 
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                        
-                        <div className="absolute top-6 left-6 px-4 py-1.5 bg-brand text-black text-[8px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg">
-                            Live Marketplace
-                        </div>
-                        
-                        <div className="absolute bottom-8 left-8 text-left">
-                            <h2 className="text-3xl font-black italic tracking-tighter uppercase text-white leading-tight">Champions League<br/>Box Office Open</h2>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-2 flex items-center gap-2">
-                                <Trophy size={12} /> SECURE TICKETS NOW
-                            </p>
-                        </div>
-                        
-                        <div className="absolute bottom-8 right-8 w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20 group-hover:bg-brand group-hover:text-black transition-all">
-                            <ArrowRight size={24} />
-                        </div>
-                    </button>
-                </section>
+                {promotedEvent && (
+                    <section className="mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
+                        <button 
+                            onClick={() => navigate('/discovery', { state: { category: 'stadium' } })}
+                            className="w-full relative h-64 rounded-[3rem] overflow-hidden border border-white/20 group shadow-2xl"
+                        >
+                            <img 
+                                src={promotedEvent.image} 
+                                className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-[2s]" 
+                                alt="Stadium" 
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                            
+                            <div className="absolute top-6 left-6 px-4 py-1.5 bg-brand text-black text-[8px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg">
+                                {promotedEvent.status}
+                            </div>
+                            
+                            <div className="absolute bottom-8 left-8 text-left">
+                                <h2 className="text-3xl font-black italic tracking-tighter uppercase text-white leading-tight whitespace-pre-line">
+                                    {promotedEvent.title}
+                                </h2>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-2 flex items-center gap-2">
+                                    <Trophy size={12} /> {promotedEvent.actionText}
+                                </p>
+                            </div>
+                            
+                            <div className="absolute bottom-8 right-8 w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20 group-hover:bg-brand group-hover:text-black transition-all">
+                                <ArrowRight size={24} />
+                            </div>
+                        </button>
+                    </section>
+                )}
 
                 {/* --- INNER CIRCLE HUB --- */}
                 <section className="mb-12">
@@ -673,9 +710,7 @@ const GreenSPage = () => {
                                                         </div>
 
                                                         {/* FRIENDS */}
-                                                        {(invitedFriends.length > 0 ? invitedFriends : [
-                                                            { name: 'Marcus V.' }, { name: 'Elena R.' }, { name: 'Julian K.' }
-                                                        ]).map((friend, i) => {
+                                                        {(invitedFriends.length > 0 ? invitedFriends : defaultGroupFriends).map((friend, i) => {
                                                             const isPaid = memberPaidStatus[friend.name];
                                                             const isCovered = groupTab.some(item => item.member === friend.name && item.payer === 'cover') || splitMode === 'cover_all';
                                                             return (
@@ -870,9 +905,7 @@ const GreenSPage = () => {
                             <div className="space-y-4 max-h-[220px] overflow-y-auto no-scrollbar pr-1">
                                 {/* Admin (YOU) */}
                                 {(() => {
-                                    const friendList = invitedFriends.length > 0 ? invitedFriends : [
-                                        { name: 'Marcus V.' }, { name: 'Elena R.' }, { name: 'Julian K.' }
-                                    ];
+                                    const friendList = invitedFriends.length > 0 ? invitedFriends : defaultGroupFriends;
                                     const grandTotal = groupTab.reduce((sum, item) => sum + item.price, 0);
                                     const memberCount = 1 + friendList.length;
                                     const equalShare = grandTotal / memberCount;
@@ -892,11 +925,7 @@ const GreenSPage = () => {
 
                                 {/* Friends mapping */}
                                 {(() => {
-                                    const friendList = invitedFriends.length > 0 ? invitedFriends : [
-                                        { name: 'Marcus V.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus' },
-                                        { name: 'Elena R.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena' },
-                                        { name: 'Julian K.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julian' }
-                                    ];
+                                    const friendList = invitedFriends.length > 0 ? invitedFriends : defaultGroupFriends;
                                     const grandTotal = groupTab.reduce((sum, item) => sum + item.price, 0);
                                     const memberCount = 1 + friendList.length;
                                     const equalShare = grandTotal / memberCount;
@@ -953,9 +982,7 @@ const GreenSPage = () => {
 
                         {/* Liability Breakdown */}
                         {(() => {
-                            const friendList = invitedFriends.length > 0 ? invitedFriends : [
-                                { name: 'Marcus V.' }, { name: 'Elena R.' }, { name: 'Julian K.' }
-                            ];
+                            const friendList = invitedFriends.length > 0 ? invitedFriends : defaultGroupFriends;
                             const grandTotal = groupTab.reduce((sum, item) => sum + item.price, 0);
                             const memberCount = 1 + friendList.length;
                             const equalShare = grandTotal / memberCount;
@@ -1241,11 +1268,7 @@ const GreenSPage = () => {
                                             € {groupTab.filter(item => item.member === 'YOU' || item.payer === 'cover').reduce((sum, i) => sum + i.price, 0).toFixed(2)}
                                         </span>
                                     </div>
-                                    {(invitedFriends.length > 0 ? invitedFriends : [
-                                        { name: 'Marcus V.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus' },
-                                        { name: 'Elena R.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena' },
-                                        { name: 'Julian K.', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julian' }
-                                    ]).map((f, i) => {
+                                    {(invitedFriends.length > 0 ? invitedFriends : defaultGroupFriends).map((f, i) => {
                                         const isCovered = groupTab.some(item => item.member === f.name && item.payer === 'cover');
                                         const friendSpent = groupTab.filter(item => item.member === f.name).reduce((sum, item) => sum + item.price, 0);
                                         return (

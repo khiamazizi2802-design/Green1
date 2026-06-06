@@ -91,9 +91,13 @@ const Signup = () => {
 
             const loggedUser = res.user;
 
-            // Staff and drivers go to the pending page to see their Green ID
+            // Staff and drivers go to the pending page, unless they registered via invite link (which automates onboarding)
             if (loggedUser.role === 'staff' || loggedUser.role === 'driver') {
-                navigate('/green-id-pending');
+                if (inviteEmail) {
+                    navigate(loggedUser.role === 'driver' ? '/driver' : '/manager');
+                } else {
+                    navigate('/green-id-pending');
+                }
             } else if (loggedUser.role === 'passenger') {
                 navigate('/home');
             } else {

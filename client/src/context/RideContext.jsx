@@ -5,7 +5,7 @@ const RideContext = createContext();
 
 export const RideProvider = ({ children }) => {
     const { user } = useAuth();
-    const isDemo = user?.email?.toLowerCase().endsWith('@green.de');
+    const isDemo = user?.isDemo;
     const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
 
     const [activeRides, setActiveRides] = useState([]); 
@@ -28,6 +28,41 @@ export const RideProvider = ({ children }) => {
     }, [isDemo]);
 
     const [mutualFriends, setMutualFriends] = useState([]);
+
+    useEffect(() => {
+        if (!user?.email) {
+            setMutualFriends([]);
+            return;
+        }
+        const emailKey = user.email.replace(/[^a-zA-Z0-9]/g, '_');
+        const saved = localStorage.getItem(`green_mutual_friends_${emailKey}`);
+        if (saved) {
+            try {
+                setMutualFriends(JSON.parse(saved));
+            } catch (e) {
+                setMutualFriends([]);
+            }
+        } else if (user?.isDemo) {
+            const demoFriends = [
+                { id: 'u1', name: 'Marcus V.', username: '@marcus_v', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus', status: 'Online', mutuals: 12, rank: 'Green' },
+                { id: 'u2', name: 'Elena R.', username: '@elena_r', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena', status: 'Online', mutuals: 8, rank: 'Pioneer' },
+                { id: 'u3', name: 'Julian K.', username: '@julian_k', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julian', status: 'Offline', mutuals: 15, rank: 'Green' },
+                { id: 'u4', name: 'Sophie L.', username: '@sophie_l', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie', status: 'Online', mutuals: 5, rank: 'New Member' },
+                { id: 'u5', name: 'Alex M.', username: '@alex_m', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AlexM', status: 'Offline', mutuals: 21, rank: 'Legend' }
+            ];
+            setMutualFriends(demoFriends);
+            localStorage.setItem(`green_mutual_friends_${emailKey}`, JSON.stringify(demoFriends));
+        } else {
+            setMutualFriends([]);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (user?.email) {
+            const emailKey = user.email.replace(/[^a-zA-Z0-9]/g, '_');
+            localStorage.setItem(`green_mutual_friends_${emailKey}`, JSON.stringify(mutualFriends));
+        }
+    }, [mutualFriends, user]);
     
     // Global Ride Status for persistence
     const [rideStatus, setRideStatus] = useState(() => localStorage.getItem('green_ride_status') || 'idle');

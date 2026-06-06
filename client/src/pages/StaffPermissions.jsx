@@ -67,36 +67,6 @@ const StaffPermissions = () => {
         { 
             id: 'qr-terminal', 
             label: managerContext === 'HM' ? 'Keycard Dispatch' :
-                   managerContext === 'CM' ? 'Guestlist Scan' :
-                   (managerContext === 'PM' || managerContext === 'WM') ? 'Access Dispatcher' : 'Scan Terminal', 
-            icon: QrCode, 
-            category: 'Financial', 
-            hidden: ['FM', 'CB', 'RM', 'SM', 'BM'].includes(managerContext) 
-        },
-        { 
-            id: 'finance', 
-            label: managerContext === 'HM' ? 'Nightly Audit' : 
-                   managerContext === 'CM' ? 'Cover Revenue' : 'Financials', 
-            icon: Receipt, 
-            category: 'Financial' 
-        },
-        { 
-            id: 'revenue', 
-            icon: CreditCard, 
-            label: managerContext === 'HM' ? 'ADR Matrix' : "Money Earned", 
-            category: 'Financial' 
-        },
-
-        { id: 'staff', label: 'Team Hub', icon: Users, category: 'Admin' },
-        { id: 'documents', label: 'Compliance', icon: ShieldCheck, category: 'Admin' },
-        { id: 'sitting', label: 'Console Sitting', icon: Settings, category: 'Admin' },
-        { id: 'menu', label: 'Menu Catalog', icon: managerContext === 'SM' ? Trophy : Utensils, category: 'Admin', hidden: managerContext === 'FM' },
-        { id: 'business-docs', icon: Building2, label: "Company Documents", category: 'Admin' },
-        { id: 'network', icon: Handshake, label: "Partner Requests", category: 'Admin' },
-
-        { 
-            id: 'qr-terminal', 
-            label: managerContext === 'HM' ? 'Keycard Dispatch' :
                    managerContext === 'CM' ? 'Guestlist Scan' : 'Scan Terminal', 
             icon: QrCode, 
             category: 'Financial', 

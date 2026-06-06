@@ -14,26 +14,7 @@ const FriendsListPage = () => {
     const { mutualFriends } = useRide();
     const [searchQuery, setSearchQuery] = useState('');
 
-    const [mockFriends] = useState([
-        { id: 1, name: 'Marcus V.', username: '@marcus_v', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus', status: 'Online', mutuals: 12, rank: 'Green' },
-        { id: 2, name: 'Elena R.', username: '@elena_r', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena', status: 'Online', mutuals: 8, rank: 'Pioneer' },
-        { id: 3, name: 'Julian K.', username: '@julian_k', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Julian', status: 'Offline', mutuals: 15, rank: 'Green' },
-        { id: 4, name: 'Sophie L.', username: '@sophie_l', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie', status: 'Online', mutuals: 5, rank: 'New Member' },
-        { id: 5, name: 'Alex M.', username: '@alex_m', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AlexM', status: 'Offline', mutuals: 21, rank: 'Legend' },
-    ]);
-
-    const friends = [
-        ...mockFriends,
-        ...mutualFriends.map(m => ({
-            id: m.id,
-            name: m.name,
-            username: `@${m.name.toLowerCase().replace(' ', '_')}`,
-            avatar: m.image,
-            status: 'Online',
-            mutuals: Math.floor(Math.random() * 10) + 1,
-            rank: 'New Connection'
-        }))
-    ];
+    const friends = mutualFriends;
 
     const filteredFriends = friends.filter(f => 
         f.name.toLowerCase().includes(searchQuery.toLowerCase()) || 

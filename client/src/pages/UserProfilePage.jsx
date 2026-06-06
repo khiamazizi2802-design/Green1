@@ -13,7 +13,7 @@ const UserProfilePage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { id } = useParams();
-    const { rideStatus } = useRide();
+    const { rideStatus, mutualFriends, setMutualFriends } = useRide();
     
     // Fallback if no state passed
     const friend = location.state?.friend || { 
@@ -27,7 +27,8 @@ const UserProfilePage = () => {
 
     const [activeTab, setActiveTab] = useState('posts');
     const [showRedFlagModal, setShowRedFlagModal] = useState(false);
-    const [friendStatus, setFriendStatus] = useState('none'); // 'none', 'pending', 'added'
+    const isAlreadyFriend = mutualFriends.some(m => m.id === friend.id || m.name === friend.name);
+    const [friendStatus, setFriendStatus] = useState(() => isAlreadyFriend ? 'added' : 'none');
     const [flagReason, setFlagReason] = useState('');
 
     // Social Interaction State
@@ -127,9 +128,29 @@ const UserProfilePage = () => {
                         <div className="flex gap-4">
                             <button 
                                 onClick={() => {
-                                    if (friendStatus === 'none') setFriendStatus('pending');
-                                    else if (friendStatus === 'pending') setFriendStatus('added');
-                                    else setFriendStatus('none');
+                                    if (friendStatus === 'none') {
+                                        setFriendStatus('pending');
+                                    } else if (friendStatus === 'pending') {
+                                        setFriendStatus('added');
+                                        const isAlreadyFriend = mutualFriends.some(m => m.id === friend.id || m.name === friend.name);
+                                        if (!isAlreadyFriend) {
+                                            setMutualFriends(prev => [
+                                                ...prev,
+                                                {
+                                                    id: friend.id || `u-${Date.now()}`,
+                                                    name: friend.name,
+                                                    username: friend.username || `@${friend.name.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
+                                                    avatar: friend.avatar || friend.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.name}`,
+                                                    status: friend.status || 'Online',
+                                                    mutuals: friend.mutuals || 5,
+                                                    rank: friend.rank || 'New Member'
+                                                }
+                                            ]);
+                                        }
+                                    } else {
+                                        setFriendStatus('none');
+                                        setMutualFriends(prev => prev.filter(m => m.id !== friend.id && m.name !== friend.name));
+                                    }
                                 }}
                                 className={`flex-[2] py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] italic transition-all flex items-center justify-center gap-2 shadow-xl ${
                                     friendStatus === 'added' ? 'bg-white text-dark-950 shadow-white/20' : 

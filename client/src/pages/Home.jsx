@@ -115,9 +115,9 @@ const Home = () => {
         const timer = setTimeout(() => {
             setNearbyVenue({
                 id: 'V-SKY-01',
-                name: "Eco-Park Central",
-                offer: "Premium Parking Slot Reserved",
-                type: "High-Capacity Parking"
+                name: "Neon Bistro",
+                offer: "20% OFF TOTAL BILL",
+                type: "Organic Bistro"
             });
         }, 3000);
         return () => clearTimeout(timer);
@@ -369,7 +369,7 @@ const Home = () => {
     const [favoriteDrivers, setFavoriteDrivers] = useState([]);
 
     const memberSince = React.useMemo(() => {
-        const isDemoUser = user?.email?.toLowerCase().endsWith('@green.de');
+        const isDemoUser = user?.isDemo;
         if (isDemoUser) return "JAN '24";
         if (user?.createdAt) {
             try {
@@ -384,8 +384,22 @@ const Home = () => {
     }, [user]);
 
     useEffect(() => {
-        const isDemoUser = user?.email?.toLowerCase().endsWith('@green.de');
+        const isDemoUser = user?.isDemo;
         const emailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+
+        if (user) {
+            const nameParts = (user.name || '').split(' ');
+            setUserInfo({
+                firstName: nameParts[0] || 'Member',
+                lastName: nameParts.slice(1).join(' ') || '',
+                address: user.address || '',
+                zipCode: user.zip || '',
+                city: user.city || '',
+                email: user.email || '',
+                phone: user.phone || '',
+                age: user.age || ''
+            });
+        }
 
         if (isDemoUser) {
             setFavoriteDrivers([
@@ -404,7 +418,16 @@ const Home = () => {
                 totalSaved: 312.20
             });
         } else {
-            setFavoriteDrivers([]);
+            try {
+                const storedFavs = localStorage.getItem(`green_favorite_drivers_${emailKey}`);
+                if (storedFavs) {
+                    setFavoriteDrivers(JSON.parse(storedFavs));
+                } else {
+                    setFavoriteDrivers([]);
+                }
+            } catch (e) {
+                setFavoriteDrivers([]);
+            }
             setPaymentMethods([
                 { id: 4, type: 'Cash', provider: 'Physical Cash', status: 'Always Active', icon: Coins }
             ]);
@@ -439,7 +462,12 @@ const Home = () => {
     }, [user]);
 
     const removeDriver = (name) => {
-        setFavoriteDrivers(prev => prev.filter(d => d.name !== name));
+        setFavoriteDrivers(prev => {
+            const updated = prev.filter(d => d.name !== name);
+            const emailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+            localStorage.setItem(`green_favorite_drivers_${emailKey}`, JSON.stringify(updated));
+            return updated;
+        });
     };
 
     const addDriverFromHistory = () => {
@@ -453,7 +481,12 @@ const Home = () => {
         const candidates = pool.filter(d => !currentNames.includes(d.name));
         
         if (candidates.length > 0) {
-            setFavoriteDrivers(prev => [...prev, candidates[0]]);
+            setFavoriteDrivers(prev => {
+                const updated = [...prev, candidates[0]];
+                const emailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+                localStorage.setItem(`green_favorite_drivers_${emailKey}`, JSON.stringify(updated));
+                return updated;
+            });
         } else {
             alert("All drivers from history are already in your favorites list!");
         }
@@ -813,7 +846,7 @@ const Home = () => {
                                 <div className="flex items-center gap-6">
                                     <div className="w-20 h-20 rounded-3xl p-1 shadow-xl relative group overflow-hidden"
                                         style={{ background: 'var(--accent-primary)', boxShadow: '0 0 24px var(--accent-primary-glow)' }}>
-                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Me" className="w-full h-full rounded-2xl transition-transform group-hover:scale-110" style={{ background: 'var(--bg-secondary)' }} />
+                                        <img src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`} alt="Me" className="w-full h-full rounded-2xl transition-transform group-hover:scale-110" style={{ background: 'var(--bg-secondary)' }} />
                                     </div>
                                     <div>
                                         <h3 className="text-2xl font-black italic tracking-tighter uppercase">{userInfo.firstName} <span className="text-[10px] ml-2 opacity-50 font-bold tracking-widest leading-none align-middle border border-white/10 px-2 py-0.5 rounded-md">#{user?.id || '482X'}</span></h3>
@@ -868,7 +901,7 @@ const Home = () => {
                                         <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">Favorite Drivers (FTD)</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[7px] font-black bg-danger/10 text-danger px-2 py-0.5 rounded-full uppercase">3 Saved</span>
+                                        <span className="text-[7px] font-black bg-danger/10 text-danger px-2 py-0.5 rounded-full uppercase">{favoriteDrivers.length} Saved</span>
                                         <ChevronRight size={18} className="text-gray-600 group-hover:translate-x-1 transition-transform" />
                                     </div>
                                 </button>
@@ -1096,7 +1129,7 @@ const Home = () => {
                                 + Add New Favorite from History
                             </button>
                         </div>
-                    ) : (profileSubView === 'perks' && user?.email?.toLowerCase().endsWith('@green.de')) ? (
+                    ) : (profileSubView === 'perks' && user?.isDemo) ? (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 pb-12">
                             {/* Perks Header */}
                             <div className="flex items-center gap-4 mb-2">
@@ -1808,7 +1841,7 @@ const Home = () => {
                             {/* Profile Customization Section */}
                             <div className="flex gap-4 p-4 bg-[var(--bg-secondary)]/50 border border-white/5 rounded-3xl">
                                 <div className="w-20 h-20 rounded-2xl bg-dark-900 border-2 border-brand/20 overflow-hidden shrink-0">
-                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Me" className="w-full h-full" />
+                                    <img src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`} alt="Me" className="w-full h-full" />
                                 </div>
                                 <div className="flex flex-col justify-center gap-3 flex-1">
                                     <div className="grid grid-cols-1 gap-2">
