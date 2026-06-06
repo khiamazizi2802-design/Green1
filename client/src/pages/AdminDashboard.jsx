@@ -2586,7 +2586,11 @@ billing payouts are required.
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                                     <div className="lg:col-span-2 space-y-10">
                                         <div className="grid grid-cols-3 gap-8">
-                                            {[{ l: 'Daily Flow', v: '€42,120', c: 'text-white' }, { l: 'Pending Clear', v: '€8,140', c: 'text-amber-500' }, { l: 'Tax Reserve', v: '€12,050', c: 'text-brand' }].map((s, i) => (
+                                            {[
+                                                { l: 'Daily Flow', v: `€${(stripeConnectedPartners.reduce((acc, p) => acc + p.grossContribution, 0) * 0.25).toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, c: 'text-white' },
+                                                { l: 'Pending Clear', v: `€${stripeConnectedPartners.reduce((acc, p) => acc + p.balance, 0).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, c: 'text-amber-500' },
+                                                { l: 'Tax Reserve', v: `€${(stripeConnectedPartners.reduce((acc, p) => acc + p.totalPaidOut, 0) * 0.1).toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, c: 'text-brand' }
+                                            ].map((s, i) => (
                                                 <div key={i} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/5">
                                                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{s.l}</p>
                                                     <p className={`text-3xl font-black italic tracking-tighter ${s.c}`}>{s.v}</p>
@@ -2605,12 +2609,7 @@ billing payouts are required.
                                                 </div>
                                             </div>
                                             <div className="space-y-4">
-                                                {[
-                                                    { name: 'Hessen EcoFleet', amount: '€14,240.00', id: 'P-100', industry: 'Logistics' },
-                                                    { name: 'Saffron Fine Dining', amount: '€8,120.50', id: 'P-202', industry: 'Restaurant' },
-                                                    { name: 'Blue Velvet Bar', amount: '€5,440.00', id: 'P-088', industry: 'Nightlife' },
-                                                    { name: 'Green Stadium Arena', amount: '€22,900.00', id: 'P-505', industry: 'Events' }
-                                                ].map((p, i) => (
+                                                {stripeConnectedPartners.map((p, i) => (
                                                     <div key={i} className="p-6 bg-white/5 rounded-[2.5rem] border border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 hover:bg-white/10 transition-all group">
                                                         <div className="flex items-center gap-6">
                                                             <div className="w-14 h-14 rounded-2xl bg-dark-800 flex items-center justify-center text-gray-600 group-hover:text-brand transition-colors"><Database size={28} /></div>
@@ -2621,13 +2620,11 @@ billing payouts are required.
                                                         </div>
                                                         <div className="flex items-center gap-10">
                                                             <div className="text-right">
-                                                                <p className="text-2xl font-black italic text-brand tracking-tighter">{p.amount}</p>
+                                                                <p className="text-2xl font-black italic text-brand tracking-tighter">€{p.balance.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                                                 <p className="text-[8px] font-black text-amber-500 uppercase tracking-widest">PENDING RELEASE</p>
                                                             </div>
                                                             <button 
-                                                                onClick={() => {
-                                                                    triggerNotification('success', 'Settlement Released', `€${p.amount} has been successfully dispatched to ${p.name}`);
-                                                                }}
+                                                                onClick={() => triggerPartnerDisbursement(p.id)}
                                                                 className="px-8 py-4 bg-brand text-dark-900 rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-brand/10 hover:scale-105 active:scale-95 transition-all"
                                                             >
                                                                 Approve Payout
