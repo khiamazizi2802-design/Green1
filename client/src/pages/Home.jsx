@@ -89,7 +89,12 @@ const Home = () => {
         return localStorage.getItem('green_manager_use_safe_area') !== 'false';
     });
     const [notchAdjustment, setNotchAdjustment] = useState(() => {
-        return parseInt(localStorage.getItem('green_manager_notch_adjustment') || (window.innerWidth < 768 ? '16' : '0'), 10);
+        const saved = localStorage.getItem('green_manager_notch_adjustment');
+        if (saved) {
+            const parsed = parseInt(saved, 10);
+            if (!isNaN(parsed)) return parsed;
+        }
+        return window.innerWidth < 768 ? 16 : 0;
     });
     const [isNotchPanelOpen, setIsNotchPanelOpen] = useState(false);
 
@@ -502,12 +507,17 @@ const Home = () => {
 
     const { isFTDOnly, setIsFTDOnly } = useRide();
 
+    const safeNotch = isNaN(notchAdjustment) ? 0 : notchAdjustment;
+    const safeTopStyle = useSafeArea ? `calc(var(--safe-top, 0px) + ${safeNotch}px)` : `${safeNotch}px`;
+    const safeHeightStyle = useSafeArea ? `calc(100% - (var(--safe-top, 0px) + ${safeNotch}px))` : `calc(100% - ${safeNotch}px)`;
+
     return (
         <div 
             className="absolute left-0 right-0 bottom-0 overflow-hidden font-sans text-[var(--text-primary)] flex flex-col bg-[var(--bg-primary)] transition-all duration-300"
             style={{
-                top: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`,
-                height: `calc(100% - (${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px))`
+                top: safeTopStyle,
+                height: safeHeightStyle,
+                minHeight: '100%'
             }}
         >
             {/* Account Deletion Protocol Grace Period Lockdown Screen */}

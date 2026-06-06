@@ -25,8 +25,8 @@ const ProtectedRoute = ({ roles }) => {
         return <Navigate to="/" replace />;
     }
 
-    // Force redirection to Green ID pending page if staff or driver is not yet onboarded by a manager
-    if ((user.role === 'staff' || user.role === 'driver') && user.onboarded !== true) {
+    // Force redirection to Green ID pending page if staff is not yet onboarded by a manager
+    if (user.role === 'staff' && user.onboarded !== true) {
         return <Navigate to="/green-id-pending" replace />;
     }
 

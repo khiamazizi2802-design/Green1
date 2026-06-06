@@ -132,7 +132,12 @@ const DriverDashboard = () => {
         return localStorage.getItem('green_manager_use_safe_area') !== 'false';
     });
     const [notchAdjustment, setNotchAdjustment] = useState(() => {
-        return parseInt(localStorage.getItem('green_manager_notch_adjustment') || (window.innerWidth < 768 ? '16' : '0'), 10);
+        const saved = localStorage.getItem('green_manager_notch_adjustment');
+        if (saved) {
+            const parsed = parseInt(saved, 10);
+            if (!isNaN(parsed)) return parsed;
+        }
+        return window.innerWidth < 768 ? 16 : 0;
     });
     const [isNotchPanelOpen, setIsNotchPanelOpen] = useState(false);
 
@@ -147,7 +152,7 @@ const DriverDashboard = () => {
     const [activeTab, setActiveTab] = useState('day');
     const [showPosts, setShowPosts] = useState(false);
     const [incomingRide, setIncomingRide] = useState(null);
-    const [isOnline, setIsOnline] = useState(true);
+    const [isOnline, setIsOnline] = useState(false); // Default offline, will be set online for demo in useEffect
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [hasUpdates, setHasUpdates] = useState(true);
     const [view, setView] = useState('dashboard'); // 'dashboard' or 'verification'
@@ -156,35 +161,56 @@ const DriverDashboard = () => {
     // Driver Identity Profile States
     const [profileSheetOpen, setProfileSheetOpen] = useState(false);
     const [profileData, setProfileData] = useState({
-        firstName: user?.name?.split(' ')[0] || 'Parsa',
-        lastName: user?.name?.split(' ')[1] || 'Azizi',
-        address: 'Mainzer Landstraße 123',
-        email: user?.email || 'driver@greenride.com',
-        zipCode: '60327',
-        city: 'Frankfurt am Main',
-        phoneNumber: '+49 176 12345678',
+        firstName: '',
+        lastName: '',
+        address: '',
+        email: user?.email || '',
+        zipCode: '',
+        city: '',
+        phoneNumber: '',
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Parsa'}`
     });
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [chatMessages, setChatMessages] = useState([{ sender: 'ai', text: 'Hello! I am the Super Admin AI assistant. How can I help you today?' }]);
+    const [chatMessages, setChatMessages] = useState([{ sender: 'ai', text: 'Hello! I am the Support assistant. How can I help you today?' }]);
     const [chatInput, setChatInput] = useState('');
 
     const [documentsSheetOpen, setDocumentsSheetOpen] = useState(false);
+    
+    // Defensive useState initializers to prevent crashes on invalid localStorage states
     const [driverDocs, setDriverDocs] = useState(() => {
-        const saved = localStorage.getItem('driver_compliance_docs');
-        return saved ? JSON.parse(saved) : [
+        try {
+            const saved = localStorage.getItem('driver_compliance_docs');
+            if (saved && saved !== 'undefined') {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) return parsed;
+            }
+        } catch (e) {
+            console.error("Error parsing driver compliance docs:", e);
+        }
+        return [
             { id: 'avatar', name: 'Profile Photo', status: 'missing', requirement: 'High-resolution headshot for driver profile ID', file: null },
-            { id: 'license', name: 'Driving License', status: 'verified', requirement: 'Class B EU License (Front & Back)', file: null },
+            { id: 'license', name: 'Driving License', status: 'missing', requirement: 'Class B EU License (Front & Back)', file: null },
             { id: 'idcard', name: 'Passport / ID Card', status: 'missing', requirement: 'Government-issued biometric passport or national identity card', file: null },
             { id: 'pschein', name: 'P-Schein (Passenger Permit)', status: 'missing', requirement: 'Passenger Transport License (Personenbeförderungsschein)', file: null },
             { id: 'terms', name: 'Terms & Conditions', status: 'missing', requirement: 'Accept Platform Partnership & Data Usage Agreement', file: null }
         ];
     });
 
-    const [vehicleDocs, setVehicleDocs] = useState([
-        { id: 'tuv', name: 'HU/AU (TÜV)', status: 'verified', requirement: 'Valid main inspection certificate' },
-        { id: 'insurance', name: 'Commercial Insurance', status: 'missing', requirement: 'PBefG-compliant passenger insurance coverage' }
-    ]);
+    const [vehicleDocs, setVehicleDocs] = useState(() => {
+        try {
+            const saved = localStorage.getItem('driver_vehicle_docs');
+            if (saved && saved !== 'undefined') {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) return parsed;
+            }
+        } catch (e) {
+            console.error("Error parsing driver vehicle docs:", e);
+        }
+        return [
+            { id: 'tuv', name: 'HU/AU (TÜV)', status: 'missing', requirement: 'Valid main inspection certificate' },
+            { id: 'insurance', name: 'Commercial Insurance', status: 'missing', requirement: 'PBefG-compliant passenger insurance coverage' }
+        ];
+    });
     const [mapPreference, setMapPreference] = useState('google'); // 'google' or 'apple'
     const { theme, setTheme } = useTheme();
     const [userEmail, setUserEmail] = useState(user?.email || 'driver@green.com');
@@ -216,8 +242,16 @@ const DriverDashboard = () => {
     // Vehicle Registration States
     const [vehicleSheetOpen, setVehicleSheetOpen] = useState(false);
     const [vehicleInfo, setVehicleInfo] = useState(() => {
-        const saved = localStorage.getItem('driver_vehicle_data');
-        return saved ? JSON.parse(saved) : { plate: '', model: '', year: '', color: '', photo: null, status: 'unregistered' };
+        try {
+            const saved = localStorage.getItem('driver_vehicle_data');
+            if (saved && saved !== 'undefined' && saved !== 'null') {
+                const parsed = JSON.parse(saved);
+                if (parsed) return parsed;
+            }
+        } catch (e) {
+            console.error("Error parsing vehicle info:", e);
+        }
+        return { plate: '', model: '', year: '', color: '', photo: null, status: 'unregistered' };
     });
     const [timeRange, setTimeRange] = useState('week');
     const [selectedMonth, setSelectedMonth] = useState('April 2026');
@@ -239,18 +273,30 @@ const DriverDashboard = () => {
     const notifiedMissions = React.useRef(new Set());
     const [dismissingMission, setDismissingMission] = useState(null); // { id: string, customer: string }
 
+    const isDemo = user?.email?.toLowerCase() === 'driver@green.de';
+    const hasUnverifiedDocs = !isDemo && (
+        driverDocs.some(d => d.status !== 'verified') || 
+        vehicleDocs.some(v => v.status !== 'verified') || 
+        vehicleInfo?.status !== 'approved'
+    );
+
     React.useEffect(() => {
         const syncVehicleData = () => {
             const saved = localStorage.getItem('driver_vehicle_data');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                setVehicleInfo(prev => {
-                    // Only update if status or values changed to avoid re-renders
-                    if (prev.status !== parsed.status || prev.plate !== parsed.plate || prev.model !== parsed.model || prev.photo !== parsed.photo) {
-                        return parsed;
+            if (saved && saved !== 'undefined' && saved !== 'null') {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed) {
+                        setVehicleInfo(prev => {
+                            if (!prev || prev.status !== parsed.status || prev.plate !== parsed.plate || prev.model !== parsed.model || prev.photo !== parsed.photo) {
+                                return parsed;
+                            }
+                            return prev;
+                        });
                     }
-                    return prev;
-                });
+                } catch (e) {
+                    console.error("Error parsing syncVehicleData:", e);
+                }
             }
         };
         window.addEventListener('storage', syncVehicleData);
@@ -264,14 +310,36 @@ const DriverDashboard = () => {
     React.useEffect(() => {
         const syncDocsData = () => {
             const saved = localStorage.getItem('driver_compliance_docs');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                setDriverDocs(prev => {
-                    if (JSON.stringify(prev) !== JSON.stringify(parsed)) {
-                        return parsed;
+            if (saved && saved !== 'undefined' && saved !== 'null') {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        setDriverDocs(prev => {
+                            if (JSON.stringify(prev) !== JSON.stringify(parsed)) {
+                                return parsed;
+                            }
+                            return prev;
+                        });
                     }
-                    return prev;
-                });
+                } catch (e) {
+                    console.error("Error parsing compliance docs in sync:", e);
+                }
+            }
+            const savedVehicleDocs = localStorage.getItem('driver_vehicle_docs');
+            if (savedVehicleDocs && savedVehicleDocs !== 'undefined' && savedVehicleDocs !== 'null') {
+                try {
+                    const parsedVehicle = JSON.parse(savedVehicleDocs);
+                    if (Array.isArray(parsedVehicle) && parsedVehicle.length > 0) {
+                        setVehicleDocs(prev => {
+                            if (JSON.stringify(prev) !== JSON.stringify(parsedVehicle)) {
+                                return parsedVehicle;
+                            }
+                            return prev;
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error parsing vehicle docs in sync:", e);
+                }
             }
         };
         window.addEventListener('storage', syncDocsData);
@@ -302,12 +370,19 @@ const DriverDashboard = () => {
     };
 
     const handleUploadDocument = (id) => {
-        setDriverDocs(prev => {
-            const updated = prev.map(doc => doc.id === id ? { ...doc, status: 'pending' } : doc);
-            localStorage.setItem('driver_compliance_docs', JSON.stringify(updated));
-            return updated;
-        });
-        setVehicleDocs(prev => prev.map(doc => doc.id === id ? { ...doc, status: 'pending' } : doc));
+        if (driverDocs.some(d => d.id === id)) {
+            setDriverDocs(prev => {
+                const updated = prev.map(doc => doc.id === id ? { ...doc, status: 'pending' } : doc);
+                localStorage.setItem('driver_compliance_docs', JSON.stringify(updated));
+                return updated;
+            });
+        } else if (vehicleDocs.some(v => v.id === id)) {
+            setVehicleDocs(prev => {
+                const updated = prev.map(doc => doc.id === id ? { ...doc, status: 'pending' } : doc);
+                localStorage.setItem('driver_vehicle_docs', JSON.stringify(updated));
+                return updated;
+            });
+        }
         alert("Photo upload initiated (Simulated)");
     };
 
@@ -336,8 +411,20 @@ const DriverDashboard = () => {
     });
 
     useEffect(() => {
-        const isDemoUser = user?.isDemo;
-        if (isDemoUser) {
+        if (!user) return;
+        const isDemo = user?.email?.toLowerCase() === 'driver@green.de';
+        if (isDemo) {
+            setIsOnline(true);
+            setProfileData({
+                firstName: 'Mick',
+                lastName: 'Driver',
+                address: 'Mainzer Landstraße 123',
+                email: 'driver@green.de',
+                zipCode: '60327',
+                city: 'Frankfurt am Main',
+                phoneNumber: '+49 176 12345678',
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=Mick`
+            });
             setTripHistory([
                 { id: 'TRIP-1024', date: '2026-03-08 14:20', from: 'Frankfurt Airport', to: 'Mainz Hbf', amount: 42.50, status: 'completed', distance: '32 km' },
                 { id: 'TRIP-1025', date: '2026-03-08 16:45', from: 'Zeil 10', to: 'Bornheim', amount: 18.20, status: 'completed', distance: '5.4 km' },
@@ -356,7 +443,39 @@ const DriverDashboard = () => {
                 month: { earnings: 3250.00, trips: 245, hours: 162, rating: 4.85 },
                 year: { earnings: 38540.00, trips: 2840, hours: 1920, rating: 4.88 }
             });
+            
+            const demoDocs = [
+                { id: 'avatar', name: 'Profile Photo', status: 'missing', requirement: 'High-resolution headshot for driver profile ID', file: null },
+                { id: 'license', name: 'Driving License', status: 'verified', requirement: 'Class B EU License (Front & Back)', file: null },
+                { id: 'idcard', name: 'Passport / ID Card', status: 'missing', requirement: 'Government-issued biometric passport or national identity card', file: null },
+                { id: 'pschein', name: 'P-Schein (Passenger Permit)', status: 'missing', requirement: 'Passenger Transport License (Personenbeförderungsschein)', file: null },
+                { id: 'terms', name: 'Terms & Conditions', status: 'missing', requirement: 'Accept Platform Partnership & Data Usage Agreement', file: null }
+            ];
+            setDriverDocs(demoDocs);
+            localStorage.setItem('driver_compliance_docs', JSON.stringify(demoDocs));
+
+            const demoVehicleDocs = [
+                { id: 'tuv', name: 'HU/AU (TÜV)', status: 'verified', requirement: 'Valid main inspection certificate' },
+                { id: 'insurance', name: 'Commercial Insurance', status: 'missing', requirement: 'PBefG-compliant passenger insurance coverage' }
+            ];
+            setVehicleDocs(demoVehicleDocs);
+            localStorage.setItem('driver_vehicle_docs', JSON.stringify(demoVehicleDocs));
+            
+            const demoVehicleInfo = { plate: 'F-GR 2026E', model: 'Tesla Model Y', year: '2024', color: 'Midnight Green', photo: null, status: 'verified' };
+            setVehicleInfo(demoVehicleInfo);
+            localStorage.setItem('driver_vehicle_data', JSON.stringify(demoVehicleInfo));
         } else {
+            setIsOnline(false);
+            setProfileData({
+                firstName: user?.name?.split(' ')[0] || '',
+                lastName: user?.name?.split(' ')[1] || '',
+                address: '',
+                email: user?.email || '',
+                zipCode: '',
+                city: '',
+                phoneNumber: '',
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'NewDriver'}`
+            });
             setTripHistory([]);
             setInboxMessages([]);
             setStats({
@@ -366,11 +485,55 @@ const DriverDashboard = () => {
                 year: { earnings: 0.00, trips: 0, hours: 0.0, rating: 5.0 }
             });
             setDriverDocs(prev => {
-                const reset = prev.map(d => ({ ...d, status: 'missing' }));
+                const saved = localStorage.getItem('driver_compliance_docs');
+                if (saved && saved !== 'undefined') {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            return parsed;
+                        }
+                    } catch (e) {
+                        console.error("Error parsing saved driver docs:", e);
+                    }
+                }
+                const arr = Array.isArray(prev) ? prev : [];
+                const reset = arr.map(d => ({ ...d, status: 'missing' }));
                 localStorage.setItem('driver_compliance_docs', JSON.stringify(reset));
                 return reset;
             });
-            setVehicleDocs(prev => prev.map(d => ({ ...d, status: 'missing' })));
+            setVehicleDocs(prev => {
+                const saved = localStorage.getItem('driver_vehicle_docs');
+                if (saved && saved !== 'undefined') {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            return parsed;
+                        }
+                    } catch (e) {
+                        console.error("Error parsing saved vehicle docs:", e);
+                    }
+                }
+                const arr = Array.isArray(prev) ? prev : [];
+                const reset = arr.map(d => ({ ...d, status: 'missing' }));
+                localStorage.setItem('driver_vehicle_docs', JSON.stringify(reset));
+                return reset;
+            });
+            setVehicleInfo(prev => {
+                const saved = localStorage.getItem('driver_vehicle_data');
+                if (saved && saved !== 'undefined') {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        if (parsed && parsed.status) {
+                            return parsed;
+                        }
+                    } catch (e) {
+                        console.error("Error parsing saved vehicle info:", e);
+                    }
+                }
+                const reset = { plate: '', model: '', year: '', color: '', photo: null, status: 'unregistered' };
+                localStorage.setItem('driver_vehicle_data', JSON.stringify(reset));
+                return reset;
+            });
         }
     }, [user]);
 
@@ -384,8 +547,8 @@ const DriverDashboard = () => {
                     setVehicleInfo(data.vehicleInfo);
                     localStorage.setItem('driver_vehicle_data', JSON.stringify(data.vehicleInfo));
                 } else {
-                    const isDemoUser = user?.isDemo;
-                    if (!isDemoUser) {
+                    const isDemo = user?.email?.toLowerCase() === 'driver@green.de';
+                    if (!isDemo) {
                         setVehicleInfo({ plate: '', model: '', year: '', color: '', photo: null, status: 'unregistered' });
                         localStorage.removeItem('driver_vehicle_data');
                     }
@@ -401,6 +564,12 @@ const DriverDashboard = () => {
 
     useEffect(() => {
         if (!socket || !isOnline) return;
+
+        // Block receipt of ride requests if documents are not fully verified (real drivers only)
+        if (hasUnverifiedDocs) {
+            console.log("Documents compliance pending or missing: Blocked from receiving real-time trip requests.");
+            return;
+        }
 
         const handleNewRequest = (request) => {
             console.log('Incoming Real-Time Request:', request);
@@ -435,7 +604,7 @@ const DriverDashboard = () => {
             socket.off('new-ride-request', handleNewRequest);
             socket.off('active-requests-list', handleRequestsList);
         };
-    }, [socket, isOnline, incomingRide]);
+    }, [socket, isOnline, incomingRide, driverDocs, vehicleDocs, vehicleInfo, user]);
 
 
 
@@ -780,7 +949,18 @@ const DriverDashboard = () => {
     };
 
     const handleOfflineRequest = () => {
+        const isDemo = user?.email?.toLowerCase() === 'driver@green.de';
+        const hasUnverifiedDocs = !isDemo && (
+            driverDocs.some(d => d.status !== 'verified') || 
+            vehicleDocs.some(v => v.status !== 'verified') || 
+            vehicleInfo?.status !== 'approved'
+        );
+
         if (!isOnline) {
+            if (hasUnverifiedDocs) {
+                alert("ACCESS DENIED: You cannot go online until all documents are uploaded and verified by the admin dashboard.");
+                return;
+            }
             setIsOnline(true);
             return;
         }
@@ -790,8 +970,6 @@ const DriverDashboard = () => {
             // If there are active missions, show the report sheet
             setEarlyDropOffs(activeMissions);
             setShowOfflineReport(true);
-            // We stay "online" until they submit the report, or maybe set to false immediately if that's the desired flow
-            // The user's previous code set it to false immediately in the report flow.
             setIsOnline(false);
         } else {
             setIsOnline(false);
@@ -807,7 +985,16 @@ const DriverDashboard = () => {
     };
 
     const simulateGroupRide = () => {
-        const isPremiumEligible = vehicleInfo.year >= 2024;
+        const isDemo = user?.email?.toLowerCase() === 'driver@green.de';
+        const hasUnverifiedDriverDocs = !isDemo && driverDocs.some(d => d.status !== 'verified');
+        const hasUnverifiedVehicleDocs = !isDemo && (vehicleDocs.some(v => v.status !== 'verified') || vehicleInfo?.status !== 'approved');
+
+        if (hasUnverifiedDriverDocs || hasUnverifiedVehicleDocs) {
+            alert("ACCESS DENIED: You cannot launch shared-rides until all documents have been uploaded and verified.");
+            return;
+        }
+
+        const isPremiumEligible = vehicleInfo?.year >= 2024;
         
         // Scenario 1: Mixed Shared Ride (Green/Max)
         const mixedMissions = [
@@ -881,12 +1068,17 @@ const DriverDashboard = () => {
         }
     };
 
+    const safeNotch = isNaN(notchAdjustment) ? 0 : notchAdjustment;
+    const safeTopStyle = useSafeArea ? `calc(var(--safe-top, 0px) + ${safeNotch}px)` : `${safeNotch}px`;
+    const safeHeightStyle = useSafeArea ? `calc(100% - (var(--safe-top, 0px) + ${safeNotch}px))` : `calc(100% - ${safeNotch}px)`;
+
     return (
         <div 
             className="absolute left-0 right-0 bottom-0 overflow-hidden bg-dark-950 font-sans text-primary flex flex-col items-center transition-all duration-300"
             style={{
-                top: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`,
-                height: `calc(100% - (${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px))`
+                top: safeTopStyle,
+                height: safeHeightStyle,
+                minHeight: '100%'
             }}
         >
             {/* Arrival Notification Top Sheet */}
@@ -1026,9 +1218,6 @@ const DriverDashboard = () => {
                                 className="p-2 md:p-3 bg-surface backdrop-blur-md border border-main rounded-2xl text-brand hover:bg-brand/10 transition-all shadow-lg relative group"
                             >
                                 <Menu size={20} className="md:w-[22px] md:h-[22px]" />
-                                {driverDocs.some(d => d.status === 'missing') && (
-                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-[var(--bg-primary)]" />
-                                )}
                             </button>
                             
                             {view !== 'dashboard' && (
@@ -1374,7 +1563,76 @@ const DriverDashboard = () => {
                                 </button>
                             </div>
 
-                            {/* Map Removed - Space reserved for Mission Cards */}
+                            {/* --- GLOBAL LIVE NAVIGATION HUB (MAP) --- */}
+                            <div className="relative h-[35vh] min-h-[250px] bg-dark-900/40 border-2 border-white/5 rounded-[3.5rem] overflow-hidden shadow-2xl group z-0">
+                                {/* Objective HUD Overlay */}
+                                {currentSequence.length > 0 && (
+                                    <div className="absolute top-6 left-6 right-6 z-[1000] flex justify-between items-start pointer-events-none">
+                                        <div className="bg-dark-950/90 backdrop-blur-md border border-brand/40 p-4 rounded-3xl shadow-2xl max-w-[240px] pointer-events-auto ring-4 ring-black/40">
+                                            <p className="text-[8px] font-black text-brand uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-brand"></div> Next Objective
+                                            </p>
+                                            <h4 className="text-sm font-black italic uppercase text-white truncate">{currentSequence[0].label}</h4>
+                                            <div className="mt-2 flex items-center gap-2">
+                                                <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                    <motion.div 
+                                                        animate={{ width: ['20%', '95%', '20%'] }}
+                                                        transition={{ duration: 8, repeat: Infinity }}
+                                                        className="h-full bg-brand shadow-[0_0_10px_var(--brand)]" 
+                                                    />
+                                                </div>
+                                                <span className="text-[8px] font-black text-brand uppercase">ETA 4 MIN</span>
+                                            </div>
+                                        </div>
+
+                                        <button 
+                                            onClick={() => {
+                                                setRideStatus('none');
+                                                setActiveMissions([]);
+                                                setCurrentSequence([]);
+                                            }}
+                                            className="pointer-events-auto p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 hover:bg-red-500/20 shadow-xl transition-all"
+                                            title="Abort All Missions"
+                                        >
+                                            <X size={20} />
+                                        </button>
+                                    </div>
+                                )}
+                                <MapContainer 
+                                    center={[currentPos.lat, currentPos.lng]} 
+                                    zoom={14} 
+                                    zoomControl={false}
+                                    style={{ height: '100%', width: '100%', background: '#0B121E' }}
+                                >
+                                    <TileLayer
+                                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                                    />
+                                    
+                                    <MapRecenter pos={currentPos} />
+
+                                    {/* Driver Marker */}
+                                    <Marker position={[currentPos.lat, currentPos.lng]} icon={driverIcon} />
+
+                                    {/* Path Polyline */}
+                                    {currentSequence.length > 0 && (
+                                        <Polyline 
+                                            positions={[
+                                                [currentPos.lat, currentPos.lng],
+                                                ...currentSequence.map(s => [s.coord.lat, s.coord.lng])
+                                            ]}
+                                            color="var(--brand)"
+                                            weight={4}
+                                            opacity={0.6}
+                                            dashArray="10, 10"
+                                        />
+                                    )}
+
+                                </MapContainer>
+
+                                <div className="absolute inset-0 pointer-events-none z-10 opacity-10 bg-gradient-to-t from-brand/20 to-transparent"></div>
+                                <div className="absolute inset-0 pointer-events-none z-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
+                            </div>
 
 
                             {/* --- ACTION HUD: MISSION COMMAND CENTER --- */}
@@ -1650,12 +1908,38 @@ const DriverDashboard = () => {
                         </motion.div>
                     ) : (
                         <motion.div 
-                            key="radar"
+                            key="cockpit-map"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className={`relative w-full h-[45vh] md:h-[600px] flex items-center justify-center transition-opacity duration-1000 ${isOnline || hasUpdates ? 'opacity-90' : 'opacity-40'}`}
+                            className="relative w-full h-[45vh] md:h-[600px] border-2 border-white/5 rounded-[3.5rem] overflow-hidden shadow-2xl z-0"
                         >
-                            <Radar isOnline={isOnline} hasUpdates={hasUpdates} showLogos={false} />
+                            <MapContainer 
+                                center={[currentPos.lat, currentPos.lng]} 
+                                zoom={14} 
+                                zoomControl={false}
+                                style={{ height: '100%', width: '100%', background: '#0B121E' }}
+                            >
+                                <TileLayer
+                                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                                />
+                                
+                                <MapRecenter pos={currentPos} />
+
+                                {/* Driver Marker */}
+                                <Marker position={[currentPos.lat, currentPos.lng]} icon={driverIcon} />
+
+                            </MapContainer>
+
+                            {/* Radar sweep overlay if online */}
+                            {isOnline && (
+                                <div className="absolute inset-0 pointer-events-none z-10">
+                                    <Radar isOnline={isOnline} hasUpdates={hasUpdates} showLogos={false} />
+                                </div>
+                            )}
+
+                            <div className="absolute inset-0 pointer-events-none z-10 opacity-10 bg-gradient-to-t from-brand/20 to-transparent"></div>
+                            <div className="absolute inset-0 pointer-events-none z-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -1678,21 +1962,53 @@ const DriverDashboard = () => {
                                 ))}
                             </div>
                         )}
-                        {rideStatus === 'none' && isOnline && sharedTripsEnabled && (
-                            <button
-                                onClick={simulateGroupRide}
-                                className="w-full py-4 bg-brand/10 border border-brand/40 rounded-2xl font-black uppercase tracking-[0.2em] italic text-brand text-[10px] shadow-lg shadow-brand/10"
-                            >
-                                Launch Shared-Ride Hub
-                            </button>
+                        {rideStatus === 'none' && isOnline && (
+                            (() => {
+                                if (hasUnverifiedDocs) {
+                                    return (
+                                        <div className="w-full py-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-center shadow-lg shadow-red-500/5 px-4 animate-pulse">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-red-500 flex items-center justify-center gap-2">
+                                                <AlertCircle size={14} /> Verification Required
+                                            </p>
+                                            <p className="text-[8px] font-bold text-gray-400 uppercase mt-1">
+                                                Upload and verify all documents in the sidebar menu to receive trip requests.
+                                            </p>
+                                        </div>
+                                    );
+                                }
+                                
+                                if (sharedTripsEnabled) {
+                                    return (
+                                        <button
+                                            onClick={simulateGroupRide}
+                                            className="w-full py-4 bg-brand/10 border border-brand/40 rounded-2xl font-black uppercase tracking-[0.2em] italic text-brand text-[10px] shadow-lg shadow-brand/10"
+                                        >
+                                            Launch Shared-Ride Hub
+                                        </button>
+                                    );
+                                }
+                                return null;
+                            })()
                         )}
                         {rideStatus === 'none' && (
                             <button
                                 onClick={handleOfflineRequest}
-                                className={`w-full py-4 md:py-5 rounded-2xl md:rounded-[2rem] font-black uppercase tracking-[0.25em] italic transition-all shadow-xl flex items-center justify-center gap-3 border-2 md:border-4 ${isOnline ? 'bg-brand text-dark-900 border-white/20 shadow-brand/20' : 'bg-[#1F2937] text-muted border-main shadow-black/40'}`}
+                                className={`w-full py-4 md:py-5 rounded-2xl md:rounded-[2rem] font-black uppercase tracking-[0.25em] italic transition-all shadow-xl flex items-center justify-center gap-3 border-2 md:border-4 ${
+                                    isOnline 
+                                        ? 'bg-brand text-dark-900 border-white/20 shadow-brand/20' 
+                                        : hasUnverifiedDocs 
+                                            ? 'bg-red-950/25 text-red-500/80 border-red-500/30 shadow-red-950/20 hover:bg-red-950/40' 
+                                            : 'bg-[#1F2937] text-muted border-main shadow-black/40'
+                                }`}
                             >
-                                <Zap size={22} className={`md:w-[24px] md:h-[24px] ${isOnline ? 'animate-pulse' : ''}`} />
-                                {isOnline ? 'Go Offline' : 'Go Online'}
+                                {isOnline ? (
+                                    <Zap size={22} className="md:w-[24px] md:h-[24px] animate-pulse" />
+                                ) : hasUnverifiedDocs ? (
+                                    <Lock size={22} className="md:w-[24px] md:h-[24px] text-red-500" />
+                                ) : (
+                                    <Zap size={22} className="md:w-[24px] md:h-[24px]" />
+                                )}
+                                {isOnline ? 'Go Offline' : hasUnverifiedDocs ? 'Vault Locked' : 'Go Online'}
                             </button>
                         )}
                     </div>
@@ -2006,7 +2322,7 @@ const DriverDashboard = () => {
                                     <div className="bg-surface border border-main rounded-[2.5rem] p-8 space-y-6">
                                         <div className="flex flex-col items-center text-center space-y-4">
                                             <div className="w-full aspect-[16/9] bg-dark-950 border-2 border-dashed border-main rounded-3xl flex flex-col items-center justify-center relative overflow-hidden group">
-                                                {vehicleInfo.photo ? (
+                                                {vehicleInfo?.photo ? (
                                                     <img src={vehicleInfo.photo} className="w-full h-full object-cover" alt="Vehicle" />
                                                 ) : (
                                                     <div className="flex flex-col items-center space-y-3">
@@ -2026,7 +2342,7 @@ const DriverDashboard = () => {
                                                         const file = e.target.files[0];
                                                         if (file) {
                                                             const reader = new FileReader();
-                                                            reader.onloadend = () => setVehicleInfo(prev => ({ ...prev, photo: reader.result }));
+                                                            reader.onloadend = () => setVehicleInfo(prev => ({ ...(prev || {}), photo: reader.result }));
                                                             reader.readAsDataURL(file);
                                                         }
                                                     }}
@@ -2055,8 +2371,8 @@ const DriverDashboard = () => {
                                                     <label className="text-[7px] font-black text-gray-600 uppercase tracking-[0.2em] ml-1">{item.label}</label>
                                                     <input 
                                                         type="text"
-                                                        value={vehicleInfo[item.field] || ''}
-                                                        onChange={(e) => setVehicleInfo(prev => ({ ...prev, [item.field]: e.target.value }))}
+                                                        value={vehicleInfo?.[item.field] || ''}
+                                                        onChange={(e) => setVehicleInfo(prev => ({ ...(prev || {}), [item.field]: e.target.value }))}
                                                         placeholder={item.placeholder}
                                                         className="w-full bg-dark-950 border border-main rounded-xl px-4 py-3 text-[10px] font-bold text-primary outline-none focus:border-brand/50 transition-all placeholder:text-gray-700"
                                                     />
@@ -2840,11 +3156,11 @@ const DriverDashboard = () => {
                     <div className="p-4 rounded-2xl flex items-center justify-between border transition-all duration-300 bg-black/45 border-white/10">
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-secondary mb-1">Asset Verification Status</p>
-                            {vehicleInfo.status === 'approved' ? (
+                            {vehicleInfo?.status === 'approved' ? (
                                 <p className="text-[12px] font-black text-brand flex items-center gap-1.5 uppercase tracking-wider">
                                     <ShieldCheck size={14} className="text-brand animate-bounce" /> Verified by Khiam Azizi
                                 </p>
-                            ) : vehicleInfo.status === 'pending' ? (
+                            ) : vehicleInfo?.status === 'pending' ? (
                                 <p className="text-[12px] font-black text-amber-400 flex items-center gap-1.5 uppercase tracking-wider animate-pulse">
                                     <Clock size={14} className="text-amber-400" /> Awaiting Approval by Khiam Azizi
                                 </p>
@@ -2855,20 +3171,20 @@ const DriverDashboard = () => {
                             )}
                         </div>
                         <div className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-md ${
-                            vehicleInfo.status === 'approved' ? 'bg-brand/10 border border-brand/20 text-brand' :
-                            vehicleInfo.status === 'pending' ? 'bg-amber-400/10 border border-amber-400/20 text-amber-400' :
+                            vehicleInfo?.status === 'approved' ? 'bg-brand/10 border border-brand/20 text-brand' :
+                            vehicleInfo?.status === 'pending' ? 'bg-amber-400/10 border border-amber-400/20 text-amber-400' :
                             'bg-white/5 border border-white/10 text-white/40'
                         }`}>
-                            {vehicleInfo.status === 'approved' ? 'Active Duty' : vehicleInfo.status === 'pending' ? 'Pending Director' : 'Inactive'}
+                            {vehicleInfo?.status === 'approved' ? 'Active Duty' : vehicleInfo?.status === 'pending' ? 'Pending Director' : 'Inactive'}
                         </div>
                     </div>
 
                     {/* Vehicle Photo Area */}
                     <div className="w-full aspect-[16/9] bg-white/5 border-2 border-dashed border-white/10 rounded-[2rem] flex flex-col items-center justify-center relative overflow-hidden group">
-                        {vehicleInfo.photo ? (
+                        {vehicleInfo?.photo ? (
                             <>
                                 <img src={vehicleInfo.photo} className="w-full h-full object-cover" alt="Vehicle preview" />
-                                {vehicleInfo.status === 'unregistered' && (
+                                {vehicleInfo?.status === 'unregistered' && (
                                     <label htmlFor="vehicle-photo-upload" className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                         <Upload size={20} className="text-brand" />
                                         <span className="text-[8px] font-black uppercase tracking-widest text-white">Upload New Shot</span>
@@ -2886,7 +3202,7 @@ const DriverDashboard = () => {
                                 </div>
                             </div>
                         )}
-                        {vehicleInfo.status === 'unregistered' && (
+                        {vehicleInfo?.status === 'unregistered' && (
                             <input 
                                 type="file" 
                                 id="vehicle-photo-upload" 
@@ -2898,7 +3214,7 @@ const DriverDashboard = () => {
                                         const reader = new FileReader();
                                         reader.onloadend = () => {
                                             setVehicleInfo(prev => {
-                                                const updated = { ...prev, photo: reader.result };
+                                                const updated = { ...(prev || {}), photo: reader.result };
                                                 localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
                                                 return updated;
                                             });
@@ -2917,10 +3233,10 @@ const DriverDashboard = () => {
                             <input 
                                 type="text" 
                                 placeholder="e.g. Tesla Model Y"
-                                disabled={vehicleInfo.status !== 'unregistered'}
-                                value={vehicleInfo.model || ''}
+                                disabled={vehicleInfo?.status !== 'unregistered'}
+                                value={vehicleInfo?.model || ''}
                                 onChange={(e) => setVehicleInfo(prev => {
-                                    const updated = { ...prev, model: e.target.value };
+                                    const updated = { ...(prev || {}), model: e.target.value };
                                     localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
                                     return updated;
                                 })}
@@ -2934,10 +3250,10 @@ const DriverDashboard = () => {
                                 <input 
                                     type="text" 
                                     placeholder="e.g. F-GR-2026"
-                                    disabled={vehicleInfo.status !== 'unregistered'}
-                                    value={vehicleInfo.plate || ''}
+                                    disabled={vehicleInfo?.status !== 'unregistered'}
+                                    value={vehicleInfo?.plate || ''}
                                     onChange={(e) => setVehicleInfo(prev => {
-                                        const updated = { ...prev, plate: e.target.value.toUpperCase() };
+                                        const updated = { ...(prev || {}), plate: e.target.value.toUpperCase() };
                                         localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
                                         return updated;
                                     })}
@@ -2949,10 +3265,10 @@ const DriverDashboard = () => {
                                 <input 
                                     type="text" 
                                     placeholder="e.g. 2025"
-                                    disabled={vehicleInfo.status !== 'unregistered'}
-                                    value={vehicleInfo.year || ''}
+                                    disabled={vehicleInfo?.status !== 'unregistered'}
+                                    value={vehicleInfo?.year || ''}
                                     onChange={(e) => setVehicleInfo(prev => {
-                                        const updated = { ...prev, year: e.target.value };
+                                        const updated = { ...(prev || {}), year: e.target.value };
                                         localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
                                         return updated;
                                     })}
@@ -2966,10 +3282,10 @@ const DriverDashboard = () => {
                             <input 
                                 type="text" 
                                 placeholder="e.g. Midnight Blue"
-                                disabled={vehicleInfo.status !== 'unregistered'}
-                                value={vehicleInfo.color || ''}
+                                disabled={vehicleInfo?.status !== 'unregistered'}
+                                value={vehicleInfo?.color || ''}
                                 onChange={(e) => setVehicleInfo(prev => {
-                                    const updated = { ...prev, color: e.target.value };
+                                    const updated = { ...(prev || {}), color: e.target.value };
                                     localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
                                     return updated;
                                 })}
@@ -2980,7 +3296,7 @@ const DriverDashboard = () => {
 
                     {/* Actions */}
                     <div className="pt-2">
-                        {vehicleInfo.status === 'approved' ? (
+                        {vehicleInfo?.status === 'approved' ? (
                             <div className="space-y-3">
                                 <div className="p-4 bg-brand/5 border border-brand/20 rounded-2xl text-center">
                                     <p className="text-[10px] font-bold text-brand uppercase tracking-wider">⚡ ASSET REGISTERED & TELEMETRY LIVE</p>
@@ -2989,7 +3305,7 @@ const DriverDashboard = () => {
                                 <button 
                                     onClick={() => {
                                         if (confirm("Are you sure you want to reset this registration? This will revoke active verification status!")) {
-                                            const updated = { ...vehicleInfo, status: 'unregistered' };
+                                            const updated = { ...(vehicleInfo || {}), status: 'unregistered' };
                                             setVehicleInfo(updated);
                                             localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
                                             if (user?.email) {
@@ -3004,7 +3320,7 @@ const DriverDashboard = () => {
                                     Reset Registration
                                 </button>
                             </div>
-                        ) : vehicleInfo.status === 'pending' ? (
+                        ) : vehicleInfo?.status === 'pending' ? (
                             <div className="space-y-3">
                                 <div className="p-4 bg-amber-400/5 border border-amber-400/20 rounded-2xl text-center animate-pulse">
                                     <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">⏳ PENDING VERIFICATION</p>
@@ -3012,7 +3328,7 @@ const DriverDashboard = () => {
                                 </div>
                                 <button 
                                     onClick={() => {
-                                        const updated = { ...vehicleInfo, status: 'unregistered' };
+                                        const updated = { ...(vehicleInfo || {}), status: 'unregistered' };
                                         setVehicleInfo(updated);
                                         localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
                                         if (user?.email) {
@@ -3037,11 +3353,11 @@ const DriverDashboard = () => {
                                 </button>
                                 <button 
                                     onClick={() => {
-                                        if (!vehicleInfo.model || !vehicleInfo.plate || !vehicleInfo.year || !vehicleInfo.color) {
+                                        if (!vehicleInfo?.model || !vehicleInfo?.plate || !vehicleInfo?.year || !vehicleInfo?.color) {
                                             alert("Please fill out all fields before requesting approval.");
                                             return;
                                         }
-                                        const updated = { ...vehicleInfo, status: 'pending', driverName: `${profileData.firstName} ${profileData.lastName}` };
+                                        const updated = { ...(vehicleInfo || {}), status: 'pending', driverName: `${profileData.firstName} ${profileData.lastName}` };
                                         setVehicleInfo(updated);
                                         localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
                                         if (user?.email) {
@@ -3197,6 +3513,29 @@ const DriverDashboard = () => {
                                 <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider">⚠️ COMPLIANCE DEFICIT DETECTED</p>
                                 <p className="text-[8px] font-semibold text-white/40 mt-1 uppercase">Upload all required credentials to activate dispatch access</p>
                             </div>
+                        )}
+
+                        {user?.email?.toLowerCase() !== 'driver@green.de' && (
+                            <button
+                                onClick={() => {
+                                    const verifiedDocs = driverDocs.map(d => ({ ...d, status: 'verified' }));
+                                    setDriverDocs(verifiedDocs);
+                                    localStorage.setItem('driver_compliance_docs', JSON.stringify(verifiedDocs));
+                                    
+                                    const verifiedVehicleDocs = vehicleDocs.map(v => ({ ...v, status: 'verified' }));
+                                    setVehicleDocs(verifiedVehicleDocs);
+                                    localStorage.setItem('driver_vehicle_docs', JSON.stringify(verifiedVehicleDocs));
+
+                                    const verifiedVehicleInfo = { ...(vehicleInfo || {}), status: 'approved' };
+                                    setVehicleInfo(verifiedVehicleInfo);
+                                    localStorage.setItem('driver_vehicle_data', JSON.stringify(verifiedVehicleInfo));
+
+                                    alert("SANDBOX BYPASS: All compliance documents & vehicle assets have been instantly APPROVED/VERIFIED!");
+                                }}
+                                className="w-full py-3 bg-[var(--brand)]/10 border border-[var(--brand)]/35 text-[var(--brand)] rounded-2xl font-black text-[10px] uppercase tracking-wider hover:bg-[var(--brand)] hover:text-dark-900 transition-all mb-2"
+                            >
+                                Sandbox: Approve All Credentials
+                            </button>
                         )}
 
                         <button 

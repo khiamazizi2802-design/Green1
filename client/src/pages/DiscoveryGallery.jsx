@@ -143,6 +143,7 @@ const DiscoveryGallery = () => {
                         else if (data.businessType === 'CM') category = 'club';
                         else if (data.businessType === 'HM') category = 'hotel';
                         else if (data.businessType === 'SM') category = 'stadium';
+                        else if (data.businessType === 'VM') category = 'event';
 
                         const emailKey = data.email ? data.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
 

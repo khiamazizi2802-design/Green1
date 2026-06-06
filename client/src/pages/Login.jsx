@@ -57,11 +57,7 @@ const Login = () => {
                     if (loggedUser.role === 'passenger') {
                         navigate('/home');
                     } else if (loggedUser.role === 'driver') {
-                        if (loggedUser.onboarded !== true) {
-                            navigate('/green-id-pending');
-                        } else {
-                            navigate('/driver');
-                        }
+                        navigate('/driver');
                     } else if (loggedUser.role === 'staff') {
                         if (loggedUser.onboarded !== true) {
                             navigate('/green-id-pending');
