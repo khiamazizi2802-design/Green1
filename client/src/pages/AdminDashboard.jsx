@@ -3106,17 +3106,27 @@ billing payouts are required.
                                 <div className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 overflow-hidden">
                                     <div className="grid grid-cols-7 gap-4 mb-10">
                                         {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => <div key={d} className="text-center text-[10px] font-black text-gray-600 uppercase tracking-widest">{d}</div>)}
-                                        {[...Array(31)].map((_, i) => (
-                                            <div key={i} className={`h-24 rounded-2xl border border-white/5 p-4 flex flex-col justify-between hover:bg-brand/5 transition-all group cursor-pointer ${[12, 14, 21].includes(i+1) ? 'bg-brand/10 border-brand/20' : 'bg-white/5'}`}>
-                                                <span className="text-xs font-black italic text-gray-500 group-hover:text-white transition-colors">{i + 1}</span>
-                                                {[12, 14, 21].includes(i+1) && <div className="w-full h-1 bg-brand rounded-full shadow-[0_0_10px_rgba(255,255,255,0.1)]" />}
-                                            </div>
-                                        ))}
+                                        {[...Array(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate())].map((_, i) => {
+                                            const isToday = (i + 1) === new Date().getDate();
+                                            return (
+                                                <div key={i} className={`h-24 rounded-2xl border border-white/5 p-4 flex flex-col justify-between hover:bg-brand/5 transition-all group cursor-pointer ${isToday ? 'bg-brand/10 border-brand/20' : 'bg-white/5'}`}>
+                                                    <span className={`text-xs font-black italic ${isToday ? 'text-brand' : 'text-gray-500'} group-hover:text-white transition-colors`}>{i + 1}</span>
+                                                    {isToday && <div className="w-full h-1 bg-brand rounded-full shadow-[0_0_10px_rgba(255,255,255,0.1)]" />}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                    <div className="p-8 bg-brand/10 border border-brand/20 rounded-[2.5rem] flex items-center gap-8">
-                                        <div className="w-16 h-16 bg-brand rounded-[1.5rem] flex items-center justify-center text-dark-900"><Calendar size={32} /></div>
-                                        <div><p className="text-2xl font-black italic uppercase text-white tracking-tighter">Stadium Main Event</p><p className="text-[10px] font-black text-brand uppercase tracking-widest mt-1">May 14th | Deployment: Full Fleet</p></div>
-                                    </div>
+                                    {isDemo ? (
+                                        <div className="p-8 bg-brand/10 border border-brand/20 rounded-[2.5rem] flex items-center gap-8">
+                                            <div className="w-16 h-16 bg-brand rounded-[1.5rem] flex items-center justify-center text-dark-900"><Calendar size={32} /></div>
+                                            <div><p className="text-2xl font-black italic uppercase text-white tracking-tighter">Stadium Main Event</p><p className="text-[10px] font-black text-brand uppercase tracking-widest mt-1">Demo Deployment — Full Fleet Simulation</p></div>
+                                        </div>
+                                    ) : (
+                                        <div className="p-8 bg-white/5 border border-white/5 rounded-[2.5rem] flex items-center gap-8">
+                                            <div className="w-16 h-16 bg-white/5 rounded-[1.5rem] flex items-center justify-center text-gray-500"><Calendar size={32} /></div>
+                                            <div><p className="text-xl font-black italic uppercase text-gray-500 tracking-tighter">No Scheduled Events</p><p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mt-1">Events will appear here once created via Ticket Hub.</p></div>
+                                        </div>
+                                    )}
                                 </div>
                             </motion.div>
                         )}
@@ -4056,17 +4066,17 @@ billing payouts are required.
                                             <input placeholder="Search by Name or PRIME-ID (e.g. P-100)..." className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-sm outline-none focus:border-brand/50" />
                                         </div>
                                         <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
-                                            {['P-100-22 (Hessen)', 'D-044-01 (Berlin)', 'P-202-09 (Zeil)'].map(id => <span key={id} className="px-4 py-2 bg-white/5 rounded-xl text-[8px] font-black text-gray-500 border border-white/5 cursor-pointer hover:text-brand transition-colors whitespace-nowrap">{id}</span>)}
+                                            {stripeConnectedPartners.map(p => <span key={p.id} className="px-4 py-2 bg-white/5 rounded-xl text-[8px] font-black text-gray-500 border border-white/5 cursor-pointer hover:text-brand transition-colors whitespace-nowrap">{p.name}</span>)}
                                         </div>
                                     </div>
                                     <div className="p-8 bg-dark-900 border border-white/10 rounded-[3.5rem] space-y-6 group hover:border-white/30 transition-all">
                                         <div className="flex items-center gap-4"><UserIcon size={24} className="text-white" /><h3 className="text-xl font-black italic uppercase text-white">Customer Intelligence</h3></div>
                                         <div className="relative">
                                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                                            <input placeholder="Search by Name or C-ID (e.g. C-404)..." className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-sm outline-none focus:border-white/50" />
+                                            <input placeholder="Search by Name or C-ID..." className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-sm outline-none focus:border-white/50" />
                                         </div>
                                         <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
-                                            {['C-992-01 (Sarah)', 'C-404-12 (Marcus)', 'C-112-88 (Elena)'].map(id => <span key={id} className="px-4 py-2 bg-white/5 rounded-xl text-[8px] font-black text-gray-500 border border-white/5 cursor-pointer hover:text-white transition-colors whitespace-nowrap">{id}</span>)}
+                                            <span className="px-4 py-2 bg-white/5 rounded-xl text-[8px] font-black text-gray-600 border border-white/5 italic whitespace-nowrap">No recent searches</span>
                                         </div>
                                     </div>
                                 </div>
@@ -4078,11 +4088,11 @@ billing payouts are required.
                                             <div className="px-3 py-1 bg-brand/20 text-brand text-[8px] font-black rounded-full">ACTIVE SESSION</div>
                                         </div>
                                         <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-4">
-                                            {[
+                                            {(isDemo ? [
                                                 { id: 'P-100-22', user: 'Marc K.', type: 'Partner', subject: 'Payout Delay', time: '2m ago', wait: '12m' },
                                                 { id: 'C-992-01', user: 'Sarah L.', type: 'Customer', subject: 'LOST ITEM: IPHONE', time: '15m ago', wait: '4m', category: 'lost-item' },
                                                 { id: 'D-044-01', user: 'Hessen Fleet', type: 'Partner', subject: 'API Handshake Error', time: '1h ago', wait: '1h' }
-                                            ].map((msg, i) => (
+                                            ] : []).map((msg, i) => (
                                                 <button key={i} className={`w-full p-6 rounded-[2.5rem] border transition-all text-left group relative ${msg.category === 'lost-item' ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/5 hover:border-white/30'}`}>
                                                     <div className="flex justify-between items-start mb-2">
                                                         <div>
@@ -4104,55 +4114,34 @@ billing payouts are required.
                                                     </div>
                                                 </button>
                                             ))}
+                                            {!isDemo && (
+                                                <div className="p-10 border-2 border-dashed border-white/5 rounded-[2.5rem] text-center">
+                                                    <MessageSquare size={32} className="text-gray-700 mx-auto mb-4" />
+                                                    <p className="text-[10px] font-black text-gray-600 uppercase italic">No Active Support Tickets.</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex-1 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col overflow-hidden relative">
                                         <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
                                             <div className="flex items-center gap-6">
-                                                <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 p-1">
-                                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" className="w-full h-full rounded-2xl shadow-2xl" />
+                                                <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center">
+                                                    <MessageSquare size={28} className="text-gray-600" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-3xl font-black italic uppercase text-white tracking-tighter">Sarah L.</p>
-                                                    <p className="text-[10px] font-black text-white uppercase tracking-[0.4em] mt-1">PRIME-ID: C-992-01</p>
-                                                    <div className="flex gap-4 mt-2">
-                                                        <span className="text-[8px] font-black text-gray-500 uppercase">Customer Tier: <span className="text-amber-500">PLATINUM</span></span>
-                                                        <span className="text-[8px] font-black text-gray-500 uppercase">Protocol: <span className="text-red-500">LOST ITEM ACTIVE</span></span>
-                                                    </div>
+                                                    <p className="text-xl font-black italic uppercase text-gray-500 tracking-tighter">Select a Case</p>
+                                                    <p className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mt-1">Choose a ticket from the left panel</p>
                                                 </div>
-                                            </div>
-                                            <div className="flex gap-4">
-                                                <button className="px-6 py-3 bg-white/10 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-white/20 transition-all">
-                                                    <Phone size={14} /> CALL (INVISIBLE)
-                                                </button>
-                                                <button className="px-6 py-3 bg-amber-500 text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all">
-                                                    LOST ITEM INVESTIGATION
-                                                </button>
                                             </div>
                                         </div>
-                                        <div className="flex-1 p-12 overflow-y-auto space-y-8 no-scrollbar">
-                                            <div className="p-8 bg-amber-500/10 border border-amber-500/20 rounded-[2.5rem] space-y-6">
-                                                <div className="flex items-center gap-4 text-amber-500"><Shield size={24} /><h4 className="text-xl font-black italic uppercase">Asset Recovery Protocol</h4></div>
-                                                <div className="grid grid-cols-2 gap-6">
-                                                    <div className="p-6 bg-white/5 rounded-2xl border border-white/5">
-                                                        <p className="text-[8px] font-black text-gray-500 uppercase mb-2">Target Vehicle</p>
-                                                        <p className="text-sm font-black italic text-white uppercase">V-882 (Hessen Fleet)</p>
-                                                        <button className="mt-4 w-full py-3 bg-amber-500 text-dark-900 rounded-xl text-[8px] font-black uppercase tracking-widest">Instruct Driver: Keep Safe</button>
-                                                    </div>
-                                                    <div className="p-6 bg-white/5 rounded-2xl border border-white/5">
-                                                        <p className="text-[8px] font-black text-gray-500 uppercase mb-2">Venue Match</p>
-                                                        <p className="text-sm font-black italic text-white uppercase">Midnight Neon Bar</p>
-                                                        <button className="mt-4 w-full py-3 bg-white/10 text-white rounded-xl text-[8px] font-black uppercase tracking-widest">Verify Found Status</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="space-y-6 italic font-medium text-gray-400">
-                                                <div className="flex justify-start"><div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] rounded-tl-none max-w-[70%] text-sm">Hello, I think I left my iPhone 15 in the car from Zeil District. It has a blue case. Please help!</div></div>
-                                                <div className="flex justify-end"><div className="bg-amber-500 text-dark-900 p-6 rounded-[2rem] rounded-tr-none max-w-[70%] text-sm font-black">Scanning vehicle telemetry... Driver P-044 confirms an object was found. I am instructing him to keep it safe at the Central Hub. You can retrieve it at any time.</div></div>
+                                        <div className="flex-1 p-12 overflow-y-auto space-y-8 no-scrollbar flex items-center justify-center">
+                                            <div className="text-center">
+                                                <Shield size={48} className="text-gray-800 mx-auto mb-6" />
+                                                <p className="text-[10px] font-black text-gray-700 uppercase tracking-widest italic">No Case Selected. All Channels Clear.</p>
                                             </div>
                                         </div>
                                         <div className="p-8 border-t border-white/5 flex gap-6 items-center">
-                                            <input placeholder="Coordinate return with customer..." className="flex-1 bg-white/5 border border-white/10 rounded-[1.5rem] p-5 text-sm outline-none focus:border-brand/50" />
+                                            <input placeholder="Type a message..." className="flex-1 bg-white/5 border border-white/10 rounded-[1.5rem] p-5 text-sm outline-none focus:border-brand/50" />
                                             <button className="p-5 bg-brand text-dark-900 rounded-2xl hover:scale-105 transition-all"><ArrowUpRight size={24} /></button>
                                         </div>
                                     </div>
@@ -4224,27 +4213,27 @@ billing payouts are required.
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                             <div className="space-y-6">
                                                 {[
-                                                    { label: 'Full Name', value: user?.name || 'Jordan Executive', icon: UserIcon },
-                                                    { label: 'Director Email', value: 'jordan@green.io', icon: Mail },
-                                                    { label: 'Secure Phone', value: '+49 152 4492 001', icon: Phone },
-                                                    { label: 'Operational Address', value: 'Sky Tower 1, Main Plaza, Frankfurt', icon: MapPin }
+                                                    { label: 'Full Name', value: user?.name || '', icon: UserIcon },
+                                                    { label: 'Director Email', value: user?.email || '', icon: Mail },
+                                                    { label: 'Secure Phone', value: user?.phone || '', icon: Phone },
+                                                    { label: 'Operational Address', value: '', icon: MapPin }
                                                 ].map((d, i) => (
                                                     <div key={i} className="p-6 bg-white/5 rounded-[2rem] border border-white/5 space-y-1">
                                                         <div className="flex items-center gap-2 text-gray-500 mb-2"><d.icon size={12} /><span className="text-[9px] font-black uppercase tracking-widest">{d.label}</span></div>
-                                                        <input defaultValue={d.value} className="bg-transparent text-sm font-black italic text-white outline-none w-full" />
+                                                        <input defaultValue={d.value} placeholder="—" className="bg-transparent text-sm font-black italic text-white outline-none w-full placeholder-gray-700" />
                                                     </div>
                                                 ))}
                                             </div>
                                             <div className="space-y-6">
                                                 {[
-                                                    { label: 'ZIP Code', value: '60311', icon: MapPin },
-                                                    { label: 'Bank (IBAN)', value: 'DE99 2004 0000 1294 55', icon: Wallet },
-                                                    { label: 'Tax ID', value: 'DE-88-129-44', icon: FileText },
-                                                    { label: 'Emergency Contact', value: 'Guardian AI Alpha', icon: ShieldCheck }
+                                                    { label: 'ZIP Code', value: '', icon: MapPin },
+                                                    { label: 'Bank (IBAN)', value: stripeKycIban || '', icon: Wallet },
+                                                    { label: 'Tax ID', value: stripeKycTaxId || '', icon: FileText },
+                                                    { label: 'Emergency Contact', value: '', icon: ShieldCheck }
                                                 ].map((d, i) => (
                                                     <div key={i} className="p-6 bg-white/5 rounded-[2rem] border border-white/5 space-y-1">
                                                         <div className="flex items-center gap-2 text-gray-500 mb-2"><d.icon size={12} /><span className="text-[9px] font-black uppercase tracking-widest">{d.label}</span></div>
-                                                        <input defaultValue={d.value} className="bg-transparent text-sm font-black italic text-white outline-none w-full" />
+                                                        <input defaultValue={d.value} placeholder="—" className="bg-transparent text-sm font-black italic text-white outline-none w-full placeholder-gray-700" />
                                                     </div>
                                                 ))}
                                             </div>
