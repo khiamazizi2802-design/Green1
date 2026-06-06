@@ -357,6 +357,20 @@ const AdminDashboard = () => {
     const [todayEarnings, setTodayEarnings] = useState(() => parseFloat(localStorage.getItem('green_admin_today_earnings')) || 642.45);
     const [isEarningsIncrementing, setIsEarningsIncrementing] = useState(false);
     const [earningsPulseColor, setEarningsPulseColor] = useState('text-brand');
+
+    // Stable metrics for VIP hotels and clubs to replace volatile Math.random() calls
+    const [hotelActiveBookings, setHotelActiveBookings] = useState({
+        'Grand Frankfurt Palace': 7,
+        'The Steigenberger': 17,
+        'Marriott Executive': 17,
+        'River Main Suites': 18
+    });
+
+    const [clubCapacities, setClubCapacities] = useState({
+        'The Vault': { capacity: 74, fill: 74 },
+        'Neon Sky': { capacity: 92, fill: 92 },
+        'Green Club': { capacity: 61, fill: 61 }
+    });
     
     // --- PLATFORM PROVISIONS & REVENUE CONFIGURATION ---
     const [tripBaseProvision, setTripBaseProvision] = useState(() => parseFloat(localStorage.getItem('green_prov_trip_base')) || 3);
@@ -3051,7 +3065,7 @@ billing payouts are required.
                                                 <div><p className="text-2xl font-black italic uppercase text-white tracking-tighter">{hotel}</p><p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">Status: Premium Partner</p></div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-3xl font-black italic text-white tracking-tighter">{Math.floor(Math.random() * 20)}</p>
+                                                <p className="text-3xl font-black italic text-white tracking-tighter">{hotelActiveBookings[hotel] || 0}</p>
                                                 <p className="text-[8px] font-black text-white uppercase tracking-widest">Active Bookings</p>
                                             </div>
                                         </div>
@@ -3076,8 +3090,8 @@ billing payouts are required.
                                             <div key={i} className="p-8 bg-white/5 border border-white/5 rounded-[3rem] space-y-6">
                                                 <div className="flex justify-between items-center"><p className="text-xl font-black italic uppercase text-white">{club}</p><Zap size={18} className="text-brand" /></div>
                                                 <div className="space-y-2">
-                                                    <div className="flex justify-between text-[8px] font-black uppercase text-gray-500"><span>Capacity</span><span>{Math.floor(Math.random() * 40 + 60)}%</span></div>
-                                                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-brand" style={{ width: `${Math.random() * 100}%` }} /></div>
+                                                    <div className="flex justify-between text-[8px] font-black uppercase text-gray-500"><span>Capacity</span><span>{clubCapacities[club]?.capacity || 0}%</span></div>
+                                                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-brand" style={{ width: `${clubCapacities[club]?.fill || 0}%` }} /></div>
                                                 </div>
                                             </div>
                                         ))}
