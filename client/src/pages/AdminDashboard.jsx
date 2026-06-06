@@ -3022,22 +3022,23 @@ billing payouts are required.
                             <motion.div key="fleet" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
                                 <h2 className="text-5xl font-black italic uppercase tracking-tighter">Live <span className="text-white">Fleet</span> Telemetry</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                    {['Active Units', 'On Trip', 'Idle/Standby', 'Emergency'].map((label, i) => (
-                                        <div key={i} className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5">
-                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{label}</p>
-                                            <p className="text-4xl font-black italic text-white tracking-tighter">{[64, 42, 18, 4][i]}</p>
-                                        </div>
-                                    ))}
+                                    {['Active Units', 'On Trip', 'Idle/Standby', 'Emergency'].map((label, i) => {
+                                        const count = [
+                                            drivers.length,
+                                            drivers.filter(d => d.status === 'busy' || d.status === 'arrived').length,
+                                            drivers.filter(d => d.status === 'available').length,
+                                            drivers.filter(d => d.status === 'stalled').length
+                                        ][i];
+                                        return (
+                                            <div key={i} className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5">
+                                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{label}</p>
+                                                <p className="text-4xl font-black italic text-white tracking-tighter">{count}</p>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                                <div className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 h-[500px] relative overflow-hidden">
-                                    <div className="absolute inset-0 opacity-20 bg-[url('https://api.mapbox.com/styles/v1/mapbox/dark-v11/static/8.68,50.11,10/1000x500?access_token=pk.placeholder')] bg-cover" />
-                                    <div className="relative z-10 h-full flex items-center justify-center">
-                                        <div className="text-center">
-                                            <Car size={64} className="text-white mx-auto mb-6" />
-                                            <p className="text-xl font-black italic uppercase text-white">Grid Intelligence Loading...</p>
-                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-2 italic italic italic">Secure GPS Tunnel Established</p>
-                                        </div>
-                                    </div>
+                                <div className="bg-dark-950 border border-white/5 rounded-[3.5rem] p-12 h-[600px] flex items-center justify-center relative overflow-hidden">
+                                    <Radar drivers={drivers} />
                                 </div>
                             </motion.div>
                         )}
