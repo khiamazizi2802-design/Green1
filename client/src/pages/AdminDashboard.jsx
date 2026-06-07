@@ -405,11 +405,11 @@ const AdminDashboard = () => {
     // Feedback Filters
     const [feedbackFilter, setFeedbackFilter] = useState({ category: 'all', date: '', location: '' });
     const [isAddStaffModalOpen, setIsAddStaffModalOpen] = useState(false);
-    const [staffList, setStaffList] = useState([
-        { id: 'S-900-11', name: 'Elena Richter', role: 'Customer Service Alpha', email: 'elena.r@green.io', phone: '+49 152 4492 110', adress: 'Hauptstr 12, 60311 Frankfurt', zip: '60311', bank: 'DE44 5002 0000 1294 88', img: 'Elena' },
-        { id: 'S-900-12', name: 'Sven Weber', role: 'Partner Support Beta', email: 'sven.w@green.io', phone: '+49 176 8821 004', adress: 'Zeil 44, 60313 Frankfurt', zip: '60313', bank: 'DE91 2201 9922 4481 00', img: 'Sven' }
-    ]);
-    const [newStaff, setNewStaff] = useState({ name: '', email: '', phone: '', adress: '', zip: '', bank: '', role: 'Customer Service Staff' });
+    const [generatedInviteLink, setGeneratedInviteLink] = useState(null);
+    const [inviteCopied, setInviteCopied] = useState(false);
+    const [staffList, setStaffList] = useState([]);
+    const DEFAULT_PERMISSIONS = { fleet: false, hotel: false, ticket: false, finance: false, analytics: false, compliance: false };
+    const [newStaff, setNewStaff] = useState({ name: '', email: '', phone: '', adress: '', zip: '', bank: '', role: 'Customer Service Staff', permissions: { ...DEFAULT_PERMISSIONS } });
 
     // --- DSGVO COMPLIANCE & AI COMPLIANCE/SALES AGENT STATES ---
     const [anonymizedModeActive, setAnonymizedModeActive] = useState(true);
@@ -706,11 +706,39 @@ billing payouts are required.
         }
     }, [user, view]);
 
+    const generateInviteToken = (email) => {
+        const raw = `${email}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        return btoa(raw).replace(/=/g, '').slice(0, 32);
+    };
+
     const handleAddStaff = () => {
+        if (!newStaff.name || !newStaff.email) {
+            triggerNotification('error', 'Missing Fields', 'Name and email are required.');
+            return;
+        }
         const staffId = `S-900-${staffList.length + 11}`;
-        setStaffList([...staffList, { ...newStaff, id: staffId, img: newStaff.name.split(' ')[0] }]);
-        setIsAddStaffModalOpen(false);
-        setNewStaff({ name: '', email: '', phone: '', adress: '', zip: '', bank: '', role: 'Customer Service Staff' });
+        const inviteToken = generateInviteToken(newStaff.email);
+        const inviteLink = `${window.location.origin}/admin/staff-login?token=${inviteToken}&email=${encodeURIComponent(newStaff.email)}&role=${encodeURIComponent(newStaff.role)}`;
+        const staffEntry = { ...newStaff, id: staffId, img: newStaff.name.split(' ')[0], inviteToken, inviteLink, status: 'pending' };
+        setStaffList(prev => [...prev, staffEntry]);
+        setGeneratedInviteLink(inviteLink);
+        setNewStaff({ name: '', email: '', phone: '', adress: '', zip: '', bank: '', role: 'Customer Service Staff', permissions: { fleet: false, hotel: false, ticket: false, finance: false, analytics: false, compliance: false } });
+        triggerNotification('success', 'Staff Clearance Granted', `Invite link generated for ${staffEntry.name}.`);
+    };
+
+    const handleCopyInviteLink = (link) => {
+        navigator.clipboard.writeText(link).then(() => {
+            setInviteCopied(true);
+            setTimeout(() => setInviteCopied(false), 2500);
+            triggerNotification('success', 'Invite Link Copied', 'Share this secure link with your staff member.');
+        });
+    };
+
+    const handleToggleStaffPermission = (staffId, hub) => {
+        setStaffList(prev => prev.map(s => {
+            if (s.id !== staffId) return s;
+            return { ...s, permissions: { ...s.permissions, [hub]: !s.permissions?.[hub] } };
+        }));
     };
     
     // --- GREEN NEURAL CORE: AUTONOMOUS INTELLIGENCE ---
@@ -4158,35 +4186,91 @@ billing payouts are required.
                                     </div>
                                     <button onClick={() => setIsAddStaffModalOpen(true)} className="px-8 py-4 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20">+ ADD NEW STAFF</button>
                                 </div>
-                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                     {staffList.map((s, i) => (
-                                        <div key={i} className="p-8 bg-dark-900 border border-white/10 rounded-[3.5rem] space-y-8 group hover:border-white/30 transition-all relative overflow-hidden">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 p-1 relative overflow-hidden">
-                                                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${s.img}`} className="w-full h-full rounded-[1.5rem]" />
-                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
-                                                        <Upload size={20} className="text-brand" />
-                                                    </div>
+                                        <div key={i} className="p-8 bg-[#080C14] border border-white/8 rounded-[2.5rem] space-y-6 group hover:border-brand/20 transition-all relative overflow-hidden">
+                                            {/* Avatar + Name */}
+                                            <div className="flex items-center gap-5">
+                                                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 p-0.5 overflow-hidden shrink-0">
+                                                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${s.img}`} className="w-full h-full rounded-xl" alt={s.name} />
                                                 </div>
-                                                <div>
-                                                    <p className="text-2xl font-black italic uppercase text-white tracking-tighter">{s.name}</p>
-                                                    <p className="text-[10px] font-black text-brand uppercase tracking-widest mt-1">{s.role}</p>
-                                                    <p className="text-[8px] font-black text-gray-600 uppercase mt-1">ID: {s.id}</p>
+                                                <div className="min-w-0">
+                                                    <p className="text-base font-black italic uppercase text-white tracking-tighter truncate">{s.name}</p>
+                                                    <p className="text-[9px] font-black text-brand uppercase tracking-widest mt-0.5">{s.role}</p>
+                                                    <p className="text-[8px] font-black text-gray-700 uppercase mt-0.5">ID: {s.id}</p>
                                                 </div>
                                             </div>
-                                            <div className="space-y-4 pt-4 border-t border-white/5">
-                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600 italic">Email</span><span className="text-white">{s.email}</span></div>
-                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600 italic">Phone</span><span className="text-white">{s.phone}</span></div>
-                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600 italic">Address</span><span className="text-white text-right w-40">{s.adress}</span></div>
-                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600 italic">ZIP</span><span className="text-white">{s.zip}</span></div>
-                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600 italic">Bank PII</span><span className="text-brand text-[8px]">{s.bank}</span></div>
+
+                                            {/* Details */}
+                                            <div className="space-y-2 pt-4 border-t border-white/5">
+                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600">Email</span><span className="text-white truncate ml-2">{s.email}</span></div>
+                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600">Phone</span><span className="text-white">{s.phone}</span></div>
+                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600">Bank</span><span className="text-brand text-[8px] truncate ml-2">{s.bank}</span></div>
                                             </div>
-                                            <div className="flex gap-4 pt-4">
-                                                <button className="flex-1 py-4 bg-white/5 rounded-2xl text-[8px] font-black uppercase text-gray-500 hover:text-white transition-all">EDIT DOSSIER</button>
-                                                <button onClick={() => setStaffList(staffList.filter((_, idx) => idx !== i))} className="px-6 py-4 bg-red-500/10 text-red-500 rounded-2xl text-[8px] font-black uppercase hover:bg-red-500 hover:text-white transition-all">REVOKE</button>
+
+                                            {/* Hub Permission Badges */}
+                                            <div className="space-y-2.5 pt-4 border-t border-white/5">
+                                                <p className="text-[8px] font-black uppercase tracking-widest text-gray-600">Hub Access</p>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {[
+                                                        { key: 'fleet',      label: 'Fleet',    color: 'text-sky-400 bg-sky-400/10 border-sky-400/25' },
+                                                        { key: 'hotel',      label: 'Hotel',    color: 'text-violet-400 bg-violet-400/10 border-violet-400/25' },
+                                                        { key: 'ticket',     label: 'Ticket',   color: 'text-amber-400 bg-amber-400/10 border-amber-400/25' },
+                                                        { key: 'finance',    label: 'Finance',  color: 'text-brand bg-brand/10 border-brand/25' },
+                                                        { key: 'analytics',  label: 'Analytics',color: 'text-rose-400 bg-rose-400/10 border-rose-400/25' },
+                                                        { key: 'compliance', label: 'Comply',   color: 'text-teal-400 bg-teal-400/10 border-teal-400/25' },
+                                                    ].map(hub => {
+                                                        const granted = s.permissions?.[hub.key];
+                                                        return (
+                                                            <button
+                                                                key={hub.key}
+                                                                onClick={() => handleToggleStaffPermission(s.id, hub.key)}
+                                                                title={`Click to ${granted ? 'revoke' : 'grant'} ${hub.label} access`}
+                                                                className={`px-2.5 py-1 rounded-lg border text-[8px] font-black uppercase tracking-wide transition-all ${
+                                                                    granted ? hub.color : 'text-gray-700 bg-white/[0.02] border-white/8'
+                                                                }`}
+                                                            >
+                                                                {granted ? '✓' : '✗'} {hub.label}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            {/* Invite status + Resend */}
+                                            {s.inviteLink && (
+                                                <div className="pt-4 border-t border-white/5 flex items-center justify-between gap-3">
+                                                    <span className={`px-2.5 py-1 rounded-lg border text-[7px] font-black uppercase tracking-widest ${
+                                                        s.status === 'pending'
+                                                            ? 'text-amber-400 bg-amber-400/10 border-amber-400/20'
+                                                            : 'text-brand bg-brand/10 border-brand/20'
+                                                    }`}>
+                                                        {s.status === 'pending' ? '⏳ Invite Pending' : '✓ Active'}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => handleCopyInviteLink(s.inviteLink)}
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-brand/10 border border-white/8 hover:border-brand/30 rounded-lg text-[8px] font-black uppercase text-gray-500 hover:text-brand transition-all"
+                                                    >
+                                                        <ExternalLink size={10} /> Resend Invite
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {/* Actions */}
+                                            <div className="flex gap-3 pt-2">
+                                                <button className="flex-1 py-3 bg-white/5 rounded-xl text-[8px] font-black uppercase text-gray-500 hover:text-white transition-all">Edit</button>
+                                                <button onClick={() => setStaffList(staffList.filter((_, idx) => idx !== i))} className="px-5 py-3 bg-red-500/10 text-red-500 rounded-xl text-[8px] font-black uppercase hover:bg-red-500 hover:text-white transition-all">Revoke</button>
                                             </div>
                                         </div>
                                     ))}
+                                    {staffList.length === 0 && (
+                                        <div className="col-span-3 py-24 flex flex-col items-center justify-center gap-4 border border-dashed border-white/8 rounded-[2.5rem]">
+                                            <Users size={40} className="text-gray-700" />
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">No staff onboarded yet</p>
+                                            <button onClick={() => setIsAddStaffModalOpen(true)} className="mt-2 px-8 py-3 bg-brand/10 border border-brand/20 text-brand text-[9px] font-black uppercase rounded-xl hover:bg-brand/20 transition-all">+ Onboard First Staff Member</button>
+                                        </div>
+                                    )}
+                                </div>
                                 </div>
                             </motion.div>
                         )}
@@ -4257,87 +4341,165 @@ billing payouts are required.
             {/* ADD STAFF MODAL */}
             <AnimatePresence>
                 {isAddStaffModalOpen && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] flex items-center justify-center bg-dark-950/90 backdrop-blur-xl p-6">
-                        <motion.div initial={{ y: 50, scale: 0.9 }} animate={{ y: 0, scale: 1 }} exit={{ y: 50, scale: 0.9 }} className="w-full max-w-4xl bg-[#0D1421] border border-brand/30 rounded-[3.5rem] shadow-[0_0_100px_rgba(52,211,153,0.2)] overflow-hidden flex flex-col max-h-[90vh]">
-                            <div className="p-10 border-b border-white/5 flex justify-between items-center bg-white/5">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-16 h-16 rounded-2xl bg-brand/20 flex items-center justify-center text-brand"><Users size={32} /></div>
-                                    <div><h3 className="text-3xl font-black italic uppercase text-white">Onboard <span className="text-brand">Staff</span></h3><p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Personnel PII Collection</p></div>
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4"
+                    >
+                        <motion.div
+                            initial={{ y: 40, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: 40, scale: 0.95 }}
+                            className="w-full max-w-5xl bg-[#080C14] border border-brand/25 rounded-[2.5rem] shadow-[0_0_120px_rgba(52,211,153,0.15)] overflow-hidden flex flex-col max-h-[95vh]"
+                        >
+                            {/* ── HEADER ── */}
+                            <div className="px-10 py-8 border-b border-white/5 flex justify-between items-center">
+                                <div className="flex items-center gap-5">
+                                    <div className="w-14 h-14 rounded-2xl bg-brand/15 border border-brand/30 flex items-center justify-center">
+                                        <Users size={28} className="text-brand" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-2xl font-black italic uppercase text-white">Onboard <span className="text-brand">Staff</span></h3>
+                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.25em] mt-0.5">Personnel Clearance Terminal</p>
+                                    </div>
                                 </div>
-                                <button onClick={() => setIsAddStaffModalOpen(false)} className="p-4 bg-white/5 rounded-2xl text-gray-500 hover:text-white transition-all"><X size={24} /></button>
+                                <button onClick={() => { setIsAddStaffModalOpen(false); setGeneratedInviteLink(null); }} className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                                    <X size={18} />
+                                </button>
                             </div>
-                            <div className="flex-1 overflow-y-auto p-12 space-y-10 no-scrollbar">
-                                <div className="grid grid-cols-2 gap-10">
-                                    <div className="space-y-6">
+
+                            {/* ── BODY ── */}
+                            <div className="flex-1 overflow-y-auto no-scrollbar">
+
+                                {/* Generated invite link banner */}
+                                {generatedInviteLink && (
+                                    <div className="mx-10 mt-8 p-6 bg-brand/10 border border-brand/30 rounded-2xl">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-brand">✅ Staff Invite Link Generated</p>
+                                            <button
+                                                onClick={() => setGeneratedInviteLink(null)}
+                                                className="text-gray-500 hover:text-white text-xs"
+                                            >dismiss</button>
+                                        </div>
+                                        <div className="flex items-center gap-3 bg-black/40 border border-white/10 rounded-xl p-4">
+                                            <p className="flex-1 text-[10px] text-gray-300 font-mono truncate">{generatedInviteLink}</p>
+                                            <button
+                                                onClick={() => handleCopyInviteLink(generatedInviteLink)}
+                                                className={`shrink-0 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                                    inviteCopied
+                                                        ? 'bg-brand text-dark-900'
+                                                        : 'bg-white/10 text-white hover:bg-brand/20 hover:text-brand'
+                                                }`}
+                                            >
+                                                {inviteCopied ? '✓ Copied' : 'Copy Link'}
+                                            </button>
+                                        </div>
+                                        <p className="text-[9px] text-gray-500 mt-2">Send this link to your staff member. It grants direct access to the Admin Dashboard with their assigned hub permissions.</p>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-white/5">
+
+                                    {/* ── LEFT: PERSONNEL DETAILS ── */}
+                                    <div className="p-10 space-y-5">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-6">① Personnel Info</p>
                                         {[
-                                            { l: 'Full Name', f: 'name', ph: 'e.g. Jordan Weber', i: UserIcon },
-                                            { l: 'Operational Email', f: 'email', ph: 'staff@green.io', i: Mail },
-                                            { l: 'Secure Phone', f: 'phone', ph: '+49...', i: Phone },
-                                            { l: 'Residential Address', f: 'adress', ph: 'Street, Number, City', i: MapPin }
-                                        ].map((inp, idx) => (
-                                            <div key={idx} className="space-y-2">
-                                                <div className="flex items-center gap-2 text-gray-500"><inp.i size={12} /><span className="text-[10px] font-black uppercase tracking-widest">{inp.l}</span></div>
-                                                <input value={newStaff[inp.f]} onChange={e => setNewStaff({...newStaff, [inp.f]: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white text-sm outline-none focus:border-brand/50" placeholder={inp.ph} />
+                                            { l: 'Full Name', f: 'name', ph: 'e.g. Jordan Weber', i: UserIcon, t: 'text' },
+                                            { l: 'Operational Email', f: 'email', ph: 'staff@green.io', i: Mail, t: 'email' },
+                                            { l: 'Secure Phone', f: 'phone', ph: '+49 152 0000 000', i: Phone, t: 'tel' },
+                                            { l: 'Access Role', f: 'role', ph: 'Customer Service Staff', i: ShieldAlert, t: 'text' },
+                                            { l: 'Bank IBAN', f: 'bank', ph: 'DE99 2004 0000 ...', i: Wallet, t: 'text' },
+                                            { l: 'Residential Address', f: 'adress', ph: 'Street, Number, City', i: MapPin, t: 'text' },
+                                            { l: 'ZIP Code', f: 'zip', ph: '60311', i: MapPin, t: 'text' },
+                                        ].map((inp) => (
+                                            <div key={inp.f} className="space-y-1.5">
+                                                <div className="flex items-center gap-2">
+                                                    <inp.i size={11} className="text-gray-600" />
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">{inp.l}</span>
+                                                </div>
+                                                <input
+                                                    type={inp.t}
+                                                    value={newStaff[inp.f]}
+                                                    onChange={e => setNewStaff({ ...newStaff, [inp.f]: e.target.value })}
+                                                    className="w-full bg-white/[0.04] border border-white/8 rounded-xl px-5 py-3.5 text-white text-sm outline-none focus:border-brand/50 focus:bg-brand/5 transition-all placeholder-gray-600"
+                                                    placeholder={inp.ph}
+                                                />
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="space-y-6">
-                                        {[
-                                            { l: 'ZIP Code', f: 'zip', ph: '60311', i: MapPin },
-                                            { l: 'Bank (IBAN)', f: 'bank', ph: 'DE99...', i: Wallet },
-                                            { l: 'Access Role', f: 'role', ph: 'Customer Service Staff', i: ShieldAlert }
-                                        ].map((inp, idx) => (
-                                            <div key={idx} className="space-y-2">
-                                                <div className="flex items-center gap-2 text-gray-500"><inp.i size={12} /><span className="text-[10px] font-black uppercase tracking-widest">{inp.l}</span></div>
-                                                <input value={newStaff[inp.f]} onChange={e => setNewStaff({...newStaff, [inp.f]: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white text-sm outline-none focus:border-brand/50" placeholder={inp.ph} />
+
+                                    {/* ── RIGHT: HUB PERMISSIONS + INVITE ── */}
+                                    <div className="p-10 space-y-8">
+
+                                        {/* Hub Permission Toggles */}
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-6">② Hub Access Permissions</p>
+                                            <div className="space-y-3">
+                                                {[
+                                                    { key: 'fleet',      label: 'Fleet Hub',      icon: Car,         color: 'text-sky-400',    bg: 'bg-sky-400/10',    border: 'border-sky-400/20',    active: 'border-sky-400/50 bg-sky-400/15' },
+                                                    { key: 'hotel',      label: 'Hotel Hub',      icon: Building2,   color: 'text-violet-400', bg: 'bg-violet-400/10', border: 'border-violet-400/20', active: 'border-violet-400/50 bg-violet-400/15' },
+                                                    { key: 'ticket',     label: 'Ticket Hub',     icon: Ticket,      color: 'text-amber-400',  bg: 'bg-amber-400/10',  border: 'border-amber-400/20',  active: 'border-amber-400/50 bg-amber-400/15' },
+                                                    { key: 'finance',    label: 'Finance Hub',    icon: DollarSign,  color: 'text-brand',      bg: 'bg-brand/10',      border: 'border-brand/20',      active: 'border-brand/50 bg-brand/15' },
+                                                    { key: 'analytics',  label: 'Analytics Hub',  icon: BarChart3,   color: 'text-rose-400',   bg: 'bg-rose-400/10',   border: 'border-rose-400/20',   active: 'border-rose-400/50 bg-rose-400/15' },
+                                                    { key: 'compliance', label: 'Compliance Hub', icon: ShieldCheck, color: 'text-teal-400',   bg: 'bg-teal-400/10',   border: 'border-teal-400/20',   active: 'border-teal-400/50 bg-teal-400/15' },
+                                                ].map((hub) => {
+                                                    const HubIcon = hub.icon;
+                                                    const isOn = newStaff.permissions?.[hub.key] || false;
+                                                    return (
+                                                        <button
+                                                            key={hub.key}
+                                                            onClick={() => setNewStaff(prev => ({ ...prev, permissions: { ...prev.permissions, [hub.key]: !prev.permissions?.[hub.key] } }))}
+                                                            className={`w-full flex items-center justify-between px-5 py-4 rounded-xl border transition-all ${
+                                                                isOn ? hub.active : 'border-white/8 bg-white/[0.03] hover:bg-white/[0.06]'
+                                                            }`}
+                                                        >
+                                                            <div className="flex items-center gap-4">
+                                                                <div className={`w-9 h-9 rounded-lg ${isOn ? hub.bg : 'bg-white/5'} flex items-center justify-center transition-all`}>
+                                                                    <HubIcon size={16} className={isOn ? hub.color : 'text-gray-600'} />
+                                                                </div>
+                                                                <span className={`text-xs font-black uppercase tracking-widest transition-all ${isOn ? 'text-white' : 'text-gray-500'}`}>{hub.label}</span>
+                                                            </div>
+                                                            {/* Toggle pill */}
+                                                            <div className={`w-10 h-5 rounded-full border transition-all flex items-center ${
+                                                                isOn ? `border-current ${hub.color} bg-current/20` : 'border-white/15 bg-white/5'
+                                                            }`}>
+                                                                <div className={`w-3.5 h-3.5 rounded-full transition-all mx-0.5 ${
+                                                                    isOn ? `ml-[calc(100%-18px)] ${hub.color.replace('text-', 'bg-')}` : 'bg-gray-600'
+                                                                }`} />
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
                                             </div>
-                                        ))}
-                                        <div className="p-6 bg-brand/5 border border-brand/20 rounded-3xl mt-8">
-                                            <p className="text-[10px] font-black text-brand uppercase tracking-widest mb-2">Access Level: GAMMA</p>
-                                            <p className="text-xs text-gray-500 italic">"Staff added via this terminal will have restricted view access limited to the Customer Service Hub."</p>
                                         </div>
 
-                                        {/* Personnel Transfer Requests */}
-                                        <div className="mt-12 space-y-6">
-                                            <div className="flex items-center justify-between px-2">
-                                                <h3 className="text-xl font-black italic uppercase text-white">Personnel Transfers</h3>
-                                                <span className="px-2 py-0.5 bg-violet-500/10 text-violet-400 text-[8px] font-black rounded uppercase tracking-widest">Awaiting Approval</span>
+                                        {/* Invite Link section */}
+                                        <div className="p-6 bg-brand/5 border border-brand/15 rounded-2xl">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <ExternalLink size={14} className="text-brand" />
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-brand">Invitation Link</p>
                                             </div>
-                                            <div className="space-y-4">
-                                                {[
-                                                    { id: 'TR-01', name: 'Marcus H.', from: 'Green Fleet', to: 'Midnight Club', date: 'Just now' },
-                                                    { id: 'TR-02', name: 'Sarah K.', from: 'Grand Frankfurt Hotel', to: 'Blue Velvet Bar', date: '2h ago' }
-                                                ].map((req) => (
-                                                    <div key={req.id} className="p-6 bg-white/5 border border-white/5 rounded-[2rem] flex flex-col md:flex-row justify-between items-center gap-6 hover:border-violet-500/30 transition-all">
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400">
-                                                                <Users size={20} />
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-sm font-black italic uppercase text-white">{req.name}</p>
-                                                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Request: {req.from} → {req.to}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex gap-2">
-                                                            <button className="px-6 py-2 bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase rounded-xl hover:bg-red-500/20 transition-all">Decline</button>
-                                                            <button 
-                                                                onClick={() => {
-                                                                    triggerNotification('transfer', 'Transfer Approved', `${req.name} has been successfully moved to ${req.to}`);
-                                                                }}
-                                                                className="px-6 py-2 bg-brand text-dark-900 text-[9px] font-black uppercase rounded-xl shadow-lg shadow-brand/20 hover:scale-105 active:scale-95 transition-all"
-                                                            >
-                                                                Approve Transfer
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                            <p className="text-[10px] text-gray-400 leading-relaxed">
+                                                Clicking <strong className="text-white">Grant Staff Clearance</strong> will generate a secure one-time invite link. 
+                                                Share it with your staff member — it gives them direct access to the Admin Dashboard with only the hubs you enabled above.
+                                            </p>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
-                            <div className="p-10 border-t border-white/5 bg-white/5">
-                                <button onClick={handleAddStaff} className="w-full py-6 bg-brand text-dark-900 rounded-[2rem] text-xs font-black uppercase tracking-[0.4em] shadow-[0_0_50px_rgba(52,211,153,0.3)] hover:scale-[1.02] transition-all">GRANT STAFF CLEARANCE</button>
+
+                            {/* ── FOOTER ACTIONS ── */}
+                            <div className="px-10 py-7 border-t border-white/5 flex gap-4">
+                                <button
+                                    onClick={() => { setIsAddStaffModalOpen(false); setGeneratedInviteLink(null); }}
+                                    className="px-8 py-4 bg-white/5 border border-white/8 text-gray-400 rounded-2xl text-xs font-black uppercase tracking-[0.3em] hover:bg-white/10 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleAddStaff}
+                                    className="flex-1 py-4 bg-brand text-dark-900 rounded-2xl text-xs font-black uppercase tracking-[0.4em] shadow-[0_0_40px_rgba(52,211,153,0.25)] hover:scale-[1.01] active:scale-[0.99] transition-all"
+                                >
+                                    Grant Staff Clearance &amp; Generate Invite Link
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>
