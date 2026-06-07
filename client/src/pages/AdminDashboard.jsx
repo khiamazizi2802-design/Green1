@@ -4271,7 +4271,6 @@ billing payouts are required.
                                         </div>
                                     )}
                                 </div>
-                                </div>
                             </motion.div>
                         )}
 
