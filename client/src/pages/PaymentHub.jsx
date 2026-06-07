@@ -8,51 +8,61 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { triggerNotification } from '../components/NotificationToast';
 import { useAuth } from '../context/AuthContext';
+import { db as fbDb } from '../config/firebase';
+import {
+    collection, doc, getDocs, setDoc, deleteDoc, writeBatch
+} from 'firebase/firestore';
 
-const saveMethodsToStorage = (methods, userEmailKey) => {
-    try {
-        const cleaned = methods.map(m => {
-            const { icon, ...rest } = m;
-            return rest;
-        });
-        localStorage.setItem(`green_payment_methods_${userEmailKey}`, JSON.stringify(cleaned));
-    } catch (e) {
-        console.error(e);
+// --- Firestore helpers ---
+const getMethodsColRef = (email) =>
+    collection(fbDb, 'users', email.toLowerCase(), 'paymentMethods');
+
+// Strip sensitive fields before saving to Firestore
+const sanitizeForFirestore = (method) => {
+    const { icon, cvv, ...safe } = method;
+    // Mask IBAN: keep first 4 + last 4 chars only
+    if (safe.iban) {
+        const raw = safe.iban.replace(/\s/g, '');
+        safe.maskedIban = `${raw.slice(0, 4)} •••• •••• ${raw.slice(-4)}`;
+        delete safe.iban;
     }
+    return safe;
 };
 
-const loadMethodsFromStorage = (userEmailKey, user) => {
+// Restore icon component from stored type string
+const restoreIcon = (type) => {
+    if (type === 'Credit Card') return CreditCard;
+    if (type === 'Bank Account') return BankIcon;
+    if (type === 'PayPal') return Wallet;
+    if (type === 'Klarna') return Sparkles;
+    if (type === 'Revolut') return Zap;
+    return Coins;
+};
+
+// Load methods from Firestore, fallback to demo data
+const loadMethodsFromFirestore = async (email, user) => {
     try {
-        const saved = localStorage.getItem(`green_payment_methods_${userEmailKey}`);
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            return parsed.map(m => {
-                let iconComponent = CreditCard;
-                if (m.type === 'Credit Card') iconComponent = CreditCard;
-                else if (m.type === 'Bank Account') iconComponent = BankIcon;
-                else if (m.type === 'PayPal') iconComponent = Wallet;
-                else if (m.type === 'Klarna') iconComponent = Sparkles;
-                else if (m.type === 'Revolut') iconComponent = Zap;
-                
-                return {
-                    ...m,
-                    icon: iconComponent
-                };
-            });
+        const snap = await getDocs(getMethodsColRef(email));
+        if (!snap.empty) {
+            return snap.docs.map(d => ({
+                ...d.data(),
+                icon: restoreIcon(d.data().type)
+            }));
         }
-    } catch (e) {}
-    
-    const isDemo = user?.isDemo;
-    if (isDemo) {
+    } catch (e) {
+        console.error('Failed to load payment methods from Firestore:', e);
+    }
+
+    // Fallback: demo users get sample data, real users get Cash only
+    if (user?.isDemo) {
         return [
-            { id: 1, type: 'Credit Card', provider: 'Mastercard', last4: '4242 4242 4242 4242', icon: CreditCard, holder: 'Alex Passenger', expiry: '12/28', cvv: '999' },
-            { id: 2, type: 'Bank Account', provider: 'Deutsche Bank', iban: 'DE91 5007 0024 0123 4567 89', icon: BankIcon, holder: 'Alex Passenger', swift: 'DBANKDEMXXX' },
+            { id: 1, type: 'Credit Card', provider: 'Mastercard', last4: '•••• •••• •••• 4242', icon: CreditCard, holder: 'Alex Passenger', expiry: '12/28' },
+            { id: 2, type: 'Bank Account', provider: 'Deutsche Bank', maskedIban: 'DE91 •••• •••• 6789', icon: BankIcon, holder: 'Alex Passenger', swift: 'DBANKDEMXXX' },
             { id: 3, type: 'PayPal', provider: 'PayPal', email: 'alex.p@uplink.net', icon: Wallet }
         ];
     }
-    
     return [
-        { id: 4, type: 'Cash', provider: 'Physical Cash', status: 'Always Active', icon: Coins, holder: user?.name || 'Member' }
+        { id: 'cash', type: 'Cash', provider: 'Physical Cash', status: 'Always Active', icon: Coins, holder: user?.name || 'Member' }
     ];
 };
 
@@ -60,10 +70,12 @@ const PaymentHub = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
-    const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
+    const userEmail = user?.email ? user.email.toLowerCase() : null;
 
     const [editingPaymentId, setEditingPaymentId] = useState(null);
-    
+    const [isSaving, setIsSaving] = useState(false);
+    const [isLoadingMethods, setIsLoadingMethods] = useState(true);
+
     // Stripe & PayPal modal and form states
     const [showStripeModal, setShowStripeModal] = useState(false);
     const [showPayPalModal, setShowPayPalModal] = useState(false);
@@ -73,7 +85,7 @@ const PaymentHub = () => {
         cardNumber: '',
         expiry: '',
         cvv: '',
-        holder: 'Alex Passenger',
+        holder: user?.name || 'Member',
         postalCode: '10115',
         city: 'Berlin',
         country: 'DE'
@@ -83,41 +95,60 @@ const PaymentHub = () => {
         email: '',
         password: ''
     });
-    
-    const [activeMethodId, setActiveMethodId] = useState(4);
+
+    const [activeMethodId, setActiveMethodId] = useState('cash');
     const [paymentMethods, setPaymentMethods] = useState([]);
 
+    // Load payment methods from Firestore on mount
     React.useEffect(() => {
-        if (user) {
-            setPaymentMethods(loadMethodsFromStorage(userEmailKey, user));
-            setStripeForm(prev => ({
-                ...prev,
-                holder: user.name || 'Member'
-            }));
+        if (!userEmail) return;
+        setIsLoadingMethods(true);
+        loadMethodsFromFirestore(userEmail, user).then(methods => {
+            setPaymentMethods(methods);
+            // Set active method: prefer the one marked isActive, else first
+            const activeMeth = methods.find(m => m.isActive);
+            setActiveMethodId(activeMeth ? activeMeth.id : (methods[0]?.id ?? 'cash'));
+            setIsLoadingMethods(false);
+        });
+        setStripeForm(prev => ({ ...prev, holder: user?.name || 'Member' }));
+    }, [userEmail]);
 
-            const saved = localStorage.getItem(`green_active_payment_id_${userEmailKey}`);
-            if (saved) {
-                const parsed = Number(saved);
-                setActiveMethodId(isNaN(parsed) ? saved : parsed);
-            } else {
-                const isDemo = user?.isDemo;
-                setActiveMethodId(isDemo ? 1 : 4);
-            }
+    // Save a single method to Firestore
+    const saveMethodToFirestore = async (method) => {
+        if (!userEmail || user?.isDemo) return;
+        try {
+            const safe = sanitizeForFirestore(method);
+            const methodRef = doc(getMethodsColRef(userEmail), String(safe.id));
+            await setDoc(methodRef, safe, { merge: true });
+        } catch (e) {
+            console.error('Failed to save payment method:', e);
         }
-    }, [user, userEmailKey]);
+    };
 
-    // Auto-save when updated
-    React.useEffect(() => {
-        if (user && paymentMethods.length > 0) {
-            saveMethodsToStorage(paymentMethods, userEmailKey);
+    // Delete a method from Firestore
+    const deleteMethodFromFirestore = async (methodId) => {
+        if (!userEmail || user?.isDemo) return;
+        try {
+            await deleteDoc(doc(getMethodsColRef(userEmail), String(methodId)));
+        } catch (e) {
+            console.error('Failed to delete payment method:', e);
         }
-    }, [paymentMethods, user, userEmailKey]);
+    };
 
-    React.useEffect(() => {
-        if (user && activeMethodId) {
-            localStorage.setItem(`green_active_payment_id_${userEmailKey}`, String(activeMethodId));
+    // Update isActive flag across all methods in Firestore
+    const setActiveInFirestore = async (newActiveId) => {
+        if (!userEmail || user?.isDemo) return;
+        try {
+            const batch = writeBatch(fbDb);
+            paymentMethods.forEach(m => {
+                const ref = doc(getMethodsColRef(userEmail), String(m.id));
+                batch.set(ref, { isActive: String(m.id) === String(newActiveId) }, { merge: true });
+            });
+            await batch.commit();
+        } catch (e) {
+            console.error('Failed to update active method:', e);
         }
-    }, [activeMethodId, user, userEmailKey]);
+    };
 
     const activeMethod = paymentMethods.find(m => String(m.id) === String(activeMethodId)) || paymentMethods[0] || {
         type: 'Cash', provider: 'Physical Cash', status: 'Always Active', icon: Coins, holder: user?.name || 'Member'
@@ -171,21 +202,23 @@ const PaymentHub = () => {
         return parts.join(' ');
     };
 
-    const handleAddPayment = (type) => {
+    const handleAddPayment = async (type) => {
         const id = Date.now();
         const newMethod = {
             id,
             type,
             provider: type,
             icon: type === 'Credit Card' ? CreditCard : type === 'Bank Account' ? Landmark : type === 'PayPal' ? Wallet : type === 'Klarna' ? Sparkles : type === 'Revolut' ? Shield : Coins,
-            holder: 'Alex Passenger',
-            ...(type === 'Credit Card' ? { last4: '4242 4242 4242 4242', expiry: '12/28', cvv: '999' } : {}),
-            ...(type === 'Bank Account' ? { iban: 'DE91 5007 0024 0123 4567 89', swift: 'DBANKDEMXXX' } : {}),
-            ...(type === 'PayPal' ? { email: 'alex.p@uplink.net' } : {})
+            holder: user?.name || 'Member',
+            isActive: false,
+            createdAt: new Date().toISOString(),
+            ...(type === 'Bank Account' ? { maskedIban: 'DE•• •••• •••• ••••', swift: '' } : {}),
+            ...(type === 'PayPal' ? { email: '' } : {})
         };
-        setPaymentMethods([...paymentMethods, newMethod]);
+        setPaymentMethods(prev => [...prev, newMethod]);
         setActiveMethodId(id);
         setEditingPaymentId(id);
+        await saveMethodToFirestore(newMethod);
         triggerNotification(`${type.toUpperCase()} CHANNEL INITIALIZED`, "SUCCESS");
     };
 
@@ -209,54 +242,53 @@ const PaymentHub = () => {
         setIsProcessing(true);
         try {
             const backendUrl = getBackendUrl();
-            const response = await fetch(`${backendUrl}/api/payment/stripe/intent`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    amount: 100, // 1 EUR test authorization
-                    currency: 'eur'
-                })
-            });
-            const data = await response.json();
-            
-            // Simulating 3D Secure / PSD2 strong customer authentication check
+            let isMock = false;
+            try {
+                const response = await fetch(`${backendUrl}/api/payment/stripe/intent`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: 100, currency: 'eur' })
+                });
+                const data = await response.json();
+                isMock = data.isMock;
+            } catch (_) {
+                isMock = true; // backend offline — still create method
+            }
+
+            // PSD2 simulation delay
             await new Promise(resolve => setTimeout(resolve, 1800));
 
             const id = Date.now();
             const cardBrand = cleanCard.startsWith('4') ? 'Visa' : 'Mastercard';
             const last4Digits = cleanCard.slice(-4);
 
+            // NOTE: CVV and full card number are NOT stored
             const newMethod = {
                 id,
                 type: 'Credit Card',
                 provider: cardBrand,
                 last4: `•••• •••• •••• ${last4Digits}`,
                 icon: CreditCard,
-                holder: stripeForm.holder || 'Alex Passenger',
+                holder: stripeForm.holder || user?.name || 'Member',
                 expiry: stripeForm.expiry,
-                cvv: stripeForm.cvv
+                isActive: true,
+                createdAt: new Date().toISOString()
+                // cvv intentionally NOT stored
             };
 
             setPaymentMethods(prev => [...prev, newMethod]);
             setActiveMethodId(id);
             setShowStripeModal(false);
+            await saveMethodToFirestore(newMethod);
+            await setActiveInFirestore(id);
 
-            // Reset form
             setStripeForm({
-                cardNumber: '',
-                expiry: '',
-                cvv: '',
-                holder: 'Alex Passenger',
-                postalCode: '10115',
-                city: 'Berlin',
-                country: 'DE'
+                cardNumber: '', expiry: '', cvv: '',
+                holder: user?.name || 'Member',
+                postalCode: '10115', city: 'Berlin', country: 'DE'
             });
 
-            if (data.isMock) {
-                triggerNotification("STRIPE SECURED (SANDBOX SIMULATION)", "INFO");
-            } else {
-                triggerNotification("STRIPE SECURE CHANNEL ACTIVE", "SUCCESS");
-            }
+            triggerNotification(isMock ? "STRIPE SECURED (SANDBOX)" : "STRIPE SECURE CHANNEL ACTIVE", "SUCCESS");
         } catch (err) {
             console.error(err);
             triggerNotification("SECURE CONNECTIVITY ERROR", "ERROR");
@@ -273,17 +305,7 @@ const PaymentHub = () => {
         }
         setIsProcessing(true);
         try {
-            const backendUrl = getBackendUrl();
-            const response = await fetch(`${backendUrl}/api/payment/paypal/create-order`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    amount: 1.00
-                })
-            });
-            const data = await response.json();
-            
-            // Simulating secure wallet sync
+            // Simulate wallet sync
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             const id = Date.now();
@@ -292,19 +314,18 @@ const PaymentHub = () => {
                 type: 'PayPal',
                 provider: 'PayPal',
                 email: paypalForm.email,
-                icon: Wallet
+                icon: Wallet,
+                isActive: true,
+                createdAt: new Date().toISOString()
             };
 
             setPaymentMethods(prev => [...prev, newMethod]);
             setActiveMethodId(id);
             setShowPayPalModal(false);
+            await saveMethodToFirestore(newMethod);
+            await setActiveInFirestore(id);
 
-            // Reset form
-            setPaypalForm({
-                email: '',
-                password: ''
-            });
-
+            setPaypalForm({ email: '', password: '' });
             triggerNotification("PAYPAL ENDPOINT SYNCHRONIZED", "SUCCESS");
         } catch (err) {
             console.error(err);
@@ -409,6 +430,7 @@ const PaymentHub = () => {
                                         onClick={() => {
                                             if (editingPaymentId !== method.id) {
                                                 setActiveMethodId(method.id);
+                                                setActiveInFirestore(method.id);
                                                 triggerNotification(`${method.provider.toUpperCase()} ACTIVATED`, "SUCCESS");
                                             }
                                         }}
@@ -554,11 +576,13 @@ const PaymentHub = () => {
                                                             <Edit2 size={14} />
                                                         </button>
                                                         <button
-                                                            onClick={() => {
+                                                            onClick={async () => {
                                                                 setPaymentMethods(prev => prev.filter(m => m.id !== method.id));
+                                                                await deleteMethodFromFirestore(method.id);
                                                                 if (isActive && paymentMethods.length > 1) {
                                                                     const remaining = paymentMethods.filter(m => m.id !== method.id);
                                                                     setActiveMethodId(remaining[0].id);
+                                                                    await setActiveInFirestore(remaining[0].id);
                                                                 }
                                                                 triggerNotification("CHANNEL PURGED", "INFO");
                                                             }}

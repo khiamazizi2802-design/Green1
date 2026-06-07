@@ -3,18 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ArrowLeft, Settings, Heart, MessageSquare, Share2, MoreHorizontal, 
     Sparkles, Zap, Shield, ShieldCheck, Camera, Edit3, Star, LayoutGrid, Image as ImageIcon, Video, Plus,
-    ShieldAlert, Flag, Handshake, Users, Bell, UserPlus, Check, Trash2, X as CloseIcon
+    ShieldAlert, Flag, Handshake, Users, Bell, UserPlus, Check, Trash2, X as CloseIcon, Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
 import { triggerNotification } from '../components/NotificationToast';
-import { doc, updateDoc } from 'firebase/firestore';
-import { db as fbDb } from '../config/firebase';
+import { doc, updateDoc, collection, addDoc, getDocs, setDoc, query, orderBy } from 'firebase/firestore';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { db as fbDb, storage as fbStorage } from '../config/firebase';
 
 const MyProfilePage = () => {
     const navigate = useNavigate();
-    
     const { user, setUser } = useAuth();
 
     const [localAvatar, setLocalAvatar] = useState(() => {
@@ -26,145 +26,229 @@ const MyProfilePage = () => {
             setLocalAvatar(user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name || 'Alex'}`);
         }
     }, [user]);
-    
+
     const [mockComplaints, setMockComplaints] = useState([
         { id: 'GRN-421', business: 'Skyline Bar', reason: 'Unsafe Driving Report', date: '02.05.2026', status: 'Active' },
     ]);
 
     const [activeTab, setActiveTab] = useState('posts');
     const [showRequests, setShowRequests] = useState(false);
-    
+    const [uploadProgress, setUploadProgress] = useState(null); // 0-100 or null
+    const [isUploading, setIsUploading] = useState(false);
+
     const { incomingRequests, setIncomingRequests, setMutualFriends } = useRide();
 
     const [selectedPostId, setSelectedPostId] = useState(null);
     const [newCommentText, setNewCommentText] = useState("");
-
     const [myPosts, setMyPosts] = useState([]);
+    const [isLoadingPosts, setIsLoadingPosts] = useState(true);
 
+    // --- Load posts from Firestore on mount ---
     useEffect(() => {
-        if (user) {
-            const isDemoUser = user?.isDemo;
-            if (isDemoUser) {
-                setMyPosts(prev => {
-                    if (prev.length === 0) {
-                        return [
-                            { 
-                                id: 1, 
-                                type: 'image',
-                                img: "https://images.unsplash.com/photo-1574096079513-d8259312b785?w=800&q=80", 
-                                caption: "Nothing beats the atmosphere at Green Underground tonight. ⚡", 
-                                likes: 124, 
-                                comments: 2,
-                                time: "1h ago",
-                                liked: false,
-                                commentsList: [
-                                    { id: 1, author: "Alex S.", text: "This looks absolutely incredible! 🔥", time: "30m ago" },
-                                    { id: 2, author: "Sofia M.", text: "Best vibe in town!", time: "10m ago" }
-                                ]
-                            },
-                            { 
-                                id: 2, 
-                                type: 'video',
-                                img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&q=80", 
-                                caption: "Testing the new 'Midnight Neon' cocktail. Pure art. 🍸", 
-                                likes: 215, 
-                                comments: 1,
-                                time: "Yesterday",
-                                liked: false,
-                                commentsList: [
-                                    { id: 1, author: "Elena R.", text: "That cocktail is a masterpiece! 🍸", time: "4h ago" }
-                                ]
-                            }
-                        ];
-                    }
-                    return prev;
-                });
-            } else {
-                setMyPosts(prev => prev.filter(post => post.id !== 1 && post.id !== 2));
+        if (!user?.email) return;
+        const loadPosts = async () => {
+            setIsLoadingPosts(true);
+            try {
+                const postsCol = collection(fbDb, 'users', user.email.toLowerCase(), 'posts');
+                const q = query(postsCol, orderBy('createdAt', 'desc'));
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    setMyPosts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+                } else if (user?.isDemo) {
+                    // Demo users: seed sample posts into state (not Firestore)
+                    setMyPosts([
+                        {
+                            id: 'demo-1',
+                            type: 'image',
+                            img: "https://images.unsplash.com/photo-1574096079513-d8259312b785?w=800&q=80",
+                            caption: "Nothing beats the atmosphere at Green Underground tonight. ⚡",
+                            likes: 124, comments: 2, time: "1h ago", liked: false,
+                            commentsList: [
+                                { id: 1, author: "Alex S.", text: "This looks absolutely incredible! 🔥", time: "30m ago" },
+                                { id: 2, author: "Sofia M.", text: "Best vibe in town!", time: "10m ago" }
+                            ]
+                        },
+                        {
+                            id: 'demo-2',
+                            type: 'video',
+                            img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&q=80",
+                            caption: "Testing the new 'Midnight Neon' cocktail. Pure art. 🍸",
+                            likes: 215, comments: 1, time: "Yesterday", liked: false,
+                            commentsList: [
+                                { id: 1, author: "Elena R.", text: "That cocktail is a masterpiece! 🍸", time: "4h ago" }
+                            ]
+                        }
+                    ]);
+                }
+            } catch (e) {
+                console.error('Failed to load posts from Firestore:', e);
+            } finally {
+                setIsLoadingPosts(false);
             }
-        }
-    }, [user]);
+        };
+        loadPosts();
+    }, [user?.email]);
 
-    const selectedPost = myPosts.find(p => p.id === selectedPostId);
+    const selectedPost = myPosts.find(p => String(p.id) === String(selectedPostId));
 
-    const toggleLike = (postId) => {
+    const toggleLike = async (postId) => {
         setMyPosts(prevPosts => prevPosts.map(p => {
-            if (p.id === postId) {
+            if (String(p.id) === String(postId)) {
                 const liked = !p.liked;
-                return {
-                    ...p,
-                    liked,
-                    likes: liked ? p.likes + 1 : p.likes - 1
-                };
+                return { ...p, liked, likes: liked ? p.likes + 1 : p.likes - 1 };
             }
             return p;
         }));
+        // Persist like count to Firestore (skip for demo posts)
+        if (!user?.isDemo && user?.email && !String(postId).startsWith('demo-')) {
+            try {
+                const post = myPosts.find(p => String(p.id) === String(postId));
+                if (post) {
+                    const newLiked = !post.liked;
+                    await updateDoc(
+                        doc(fbDb, 'users', user.email.toLowerCase(), 'posts', String(postId)),
+                        { likes: newLiked ? post.likes + 1 : post.likes - 1, liked: newLiked }
+                    );
+                }
+            } catch (e) { console.error('Failed to update like:', e); }
+        }
     };
 
-    const handleAddComment = (postId) => {
+    const handleAddComment = async (postId) => {
         if (!newCommentText.trim()) return;
+        const newComment = {
+            id: Date.now(),
+            author: user.name || 'Member',
+            text: newCommentText,
+            time: 'Just now'
+        };
         setMyPosts(prevPosts => prevPosts.map(p => {
-            if (p.id === postId) {
+            if (String(p.id) === String(postId)) {
                 return {
                     ...p,
                     comments: p.comments + 1,
-                    commentsList: [
-                        ...p.commentsList,
-                        {
-                            id: Date.now(),
-                            author: user.name || "Alex",
-                            text: newCommentText,
-                            time: "Just now"
-                        }
-                    ]
+                    commentsList: [...(p.commentsList || []), newComment]
                 };
             }
             return p;
         }));
         setNewCommentText("");
         triggerNotification("COMMENT SECURELY POSTED", "SUCCESS");
-    };
-
-    const handleReelUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const videoUrl = URL.createObjectURL(file);
-            const newReel = {
-                id: Date.now(),
-                type: 'video',
-                img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
-                videoUrl: videoUrl,
-                caption: `New Reel: ${file.name.replace(/\.[^/.]+$/, "")} 🎬`,
-                likes: 0,
-                comments: 0,
-                time: "Just now",
-                liked: false,
-                commentsList: []
-            };
-            setMyPosts(prev => [newReel, ...prev]);
-            setActiveTab('reels');
-            triggerNotification("REEL SECURELY UPLOADED", "SUCCESS");
+        // Persist comment to Firestore
+        if (!user?.isDemo && user?.email && !String(postId).startsWith('demo-')) {
+            try {
+                const post = myPosts.find(p => String(p.id) === String(postId));
+                const updatedComments = [...(post?.commentsList || []), newComment];
+                await updateDoc(
+                    doc(fbDb, 'users', user.email.toLowerCase(), 'posts', String(postId)),
+                    { comments: (post?.comments || 0) + 1, commentsList: updatedComments }
+                );
+            } catch (e) { console.error('Failed to save comment:', e); }
         }
     };
 
-    const handleMomentUpload = (e) => {
+    // --- Upload helper: file → Firebase Storage → download URL ---
+    const uploadToStorage = (file, path) => {
+        return new Promise((resolve, reject) => {
+            const storageRef = ref(fbStorage, path);
+            const task = uploadBytesResumable(storageRef, file);
+            task.on(
+                'state_changed',
+                (snap) => {
+                    const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+                    setUploadProgress(pct);
+                },
+                reject,
+                async () => {
+                    const url = await getDownloadURL(task.snapshot.ref);
+                    resolve(url);
+                }
+            );
+        });
+    };
+
+    const handleReelUpload = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-            const imgUrl = URL.createObjectURL(file);
+        if (!file) return;
+        setIsUploading(true);
+        setUploadProgress(0);
+        try {
+            let mediaUrl;
+            const postId = String(Date.now());
+            if (user?.email && !user?.isDemo) {
+                mediaUrl = await uploadToStorage(
+                    file,
+                    `posts/${user.email.toLowerCase()}/${postId}/media`
+                );
+            } else {
+                mediaUrl = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80";
+            }
+            const newReel = {
+                id: postId,
+                type: 'video',
+                img: mediaUrl,
+                videoUrl: mediaUrl,
+                caption: `New Reel: ${file.name.replace(/\.[^/.]+$/, "")} 🎬`,
+                likes: 0, comments: 0,
+                time: 'Just now', liked: false, commentsList: [],
+                createdAt: new Date().toISOString()
+            };
+            setMyPosts(prev => [newReel, ...prev]);
+            setActiveTab('reels');
+            // Save metadata to Firestore
+            if (user?.email && !user?.isDemo) {
+                const postsCol = collection(fbDb, 'users', user.email.toLowerCase(), 'posts');
+                await setDoc(doc(postsCol, postId), newReel);
+            }
+            triggerNotification("REEL SECURELY UPLOADED", "SUCCESS");
+        } catch (err) {
+            console.error('Reel upload failed:', err);
+            triggerNotification("UPLOAD FAILED", "ERROR");
+        } finally {
+            setIsUploading(false);
+            setUploadProgress(null);
+        }
+    };
+
+    const handleMomentUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setIsUploading(true);
+        setUploadProgress(0);
+        try {
+            let mediaUrl;
+            const postId = String(Date.now());
+            if (user?.email && !user?.isDemo) {
+                mediaUrl = await uploadToStorage(
+                    file,
+                    `posts/${user.email.toLowerCase()}/${postId}/media`
+                );
+            } else {
+                mediaUrl = URL.createObjectURL(file);
+            }
             const newMoment = {
-                id: Date.now(),
+                id: postId,
                 type: 'image',
-                img: imgUrl,
+                img: mediaUrl,
                 caption: `New Moment: ${file.name.replace(/\.[^/.]+$/, "")} 📸`,
-                likes: 0,
-                comments: 0,
-                time: "Just now",
-                liked: false,
-                commentsList: []
+                likes: 0, comments: 0,
+                time: 'Just now', liked: false, commentsList: [],
+                createdAt: new Date().toISOString()
             };
             setMyPosts(prev => [newMoment, ...prev]);
             setActiveTab('posts');
+            // Save metadata to Firestore
+            if (user?.email && !user?.isDemo) {
+                const postsCol = collection(fbDb, 'users', user.email.toLowerCase(), 'posts');
+                await setDoc(doc(postsCol, postId), newMoment);
+            }
             triggerNotification("NEW MOMENT POSTED", "SUCCESS");
+        } catch (err) {
+            console.error('Moment upload failed:', err);
+            triggerNotification("UPLOAD FAILED", "ERROR");
+        } finally {
+            setIsUploading(false);
+            setUploadProgress(null);
         }
     };
 
@@ -238,28 +322,34 @@ const MyProfilePage = () => {
                         id="profile-pic-input" 
                         className="hidden" 
                         accept="image/*" 
-                        onChange={(e) => {
+                        onChange={async (e) => {
                             const file = e.target.files[0];
-                            if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = async () => {
-                                    const base64Data = reader.result;
-                                    setLocalAvatar(base64Data);
-                                    if (user && user.email) {
-                                        try {
-                                            const userDocRef = doc(fbDb, 'users', user.email.toLowerCase());
-                                            await updateDoc(userDocRef, { avatar: base64Data });
-                                            setUser({ ...user, avatar: base64Data });
-                                            triggerNotification("AVATAR SECURELY UPDATED", "SUCCESS");
-                                        } catch (err) {
-                                            console.error("Failed to save avatar in Firestore:", err);
-                                            triggerNotification("AVATAR UPDATED", "SUCCESS");
-                                        }
+                            if (file && user?.email) {
+                                setIsUploading(true);
+                                setUploadProgress(0);
+                                try {
+                                    let avatarUrl;
+                                    if (!user?.isDemo) {
+                                        avatarUrl = await uploadToStorage(
+                                            file,
+                                            `avatars/${user.email.toLowerCase()}/profile`
+                                        );
                                     } else {
-                                        triggerNotification("AVATAR UPDATED", "SUCCESS");
+                                        // Demo fallback: use object URL
+                                        avatarUrl = URL.createObjectURL(file);
                                     }
-                                };
-                                reader.readAsDataURL(file);
+                                    setLocalAvatar(avatarUrl);
+                                    const userDocRef = doc(fbDb, 'users', user.email.toLowerCase());
+                                    await updateDoc(userDocRef, { avatar: avatarUrl });
+                                    setUser({ ...user, avatar: avatarUrl });
+                                    triggerNotification("AVATAR SECURELY UPDATED", "SUCCESS");
+                                } catch (err) {
+                                    console.error("Failed to upload avatar:", err);
+                                    triggerNotification("AVATAR UPDATE FAILED", "ERROR");
+                                } finally {
+                                    setIsUploading(false);
+                                    setUploadProgress(null);
+                                }
                             }
                         }} 
                     />
@@ -315,6 +405,25 @@ const MyProfilePage = () => {
                         </button>
                     ))}
                 </div>
+
+                {/* Upload progress overlay */}
+                {isUploading && (
+                    <div className="fixed inset-0 z-[3000] bg-black/70 backdrop-blur-md flex flex-col items-center justify-center gap-6">
+                        <div className="w-20 h-20 rounded-full bg-brand/10 border border-brand/30 flex items-center justify-center">
+                            <Loader2 size={36} className="text-brand animate-spin" />
+                        </div>
+                        <div className="text-center space-y-2">
+                            <p className="text-sm font-black uppercase tracking-widest text-white">Uploading to Firebase</p>
+                            <p className="text-brand font-black text-2xl">{uploadProgress ?? 0}%</p>
+                        </div>
+                        <div className="w-64 h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-brand rounded-full transition-all duration-300"
+                                style={{ width: `${uploadProgress ?? 0}%` }}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 {/* Grid Content */}
                 <div className="w-full">
