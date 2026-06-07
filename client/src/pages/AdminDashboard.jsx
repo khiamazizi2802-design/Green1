@@ -1724,7 +1724,7 @@ billing payouts are required.
                                                 (() => {
                                                     const saved = localStorage.getItem('green_stadium_events');
                                                     const events = saved ? JSON.parse(saved) : [];
-                                                    return events.length > 0 ? events.length : 3;
+                                                    return events.length;
                                                 })()
                                             }</p>
                                         </div>
@@ -1739,8 +1739,7 @@ billing payouts are required.
                                                 (() => {
                                                     const saved = localStorage.getItem('green_stadium_events');
                                                     const events = saved ? JSON.parse(saved) : [];
-                                                    const count = events.filter(e => e.category === 'CM' || e.name.toLowerCase().includes('neon') || e.name.toLowerCase().includes('club')).length;
-                                                    return count > 0 ? count : 1;
+                                                    return events.filter(e => e.category === 'CM' || e.name.toLowerCase().includes('neon') || e.name.toLowerCase().includes('club')).length;
                                                 })()
                                             }</p>
                                         </div>
@@ -1755,8 +1754,7 @@ billing payouts are required.
                                                 (() => {
                                                     const saved = localStorage.getItem('green_stadium_events');
                                                     const events = saved ? JSON.parse(saved) : [];
-                                                    const count = events.filter(e => e.category === 'HM' || e.name.toLowerCase().includes('hotel') || e.name.toLowerCase().includes('gala')).length;
-                                                    return count > 0 ? count : 1;
+                                                    return events.filter(e => e.category === 'HM' || e.name.toLowerCase().includes('hotel') || e.name.toLowerCase().includes('gala')).length;
                                                 })()
                                             }</p>
                                         </div>
@@ -1771,8 +1769,7 @@ billing payouts are required.
                                                 (() => {
                                                     const saved = localStorage.getItem('green_stadium_events');
                                                     const events = saved ? JSON.parse(saved) : [];
-                                                    const count = events.filter(e => e.category === 'SM' || e.name.toLowerCase().includes('champions') || e.name.toLowerCase().includes('stadium')).length;
-                                                    return count > 0 ? count : 1;
+                                                    return events.filter(e => e.category === 'SM' || e.name.toLowerCase().includes('champions') || e.name.toLowerCase().includes('stadium')).length;
                                                 })()
                                             }</p>
                                         </div>
@@ -1882,13 +1879,7 @@ billing payouts are required.
                                                         <tbody className="divide-y divide-white/5">
                                                             {(() => {
                                                                 const saved = localStorage.getItem('green_stadium_events');
-                                                                const events = saved ? JSON.parse(saved) : [];
-                                                                const defaults = [
-                                                                    { id: 'evt-default-1', name: 'Champions League Final Match', date: '2026-05-24', time: '20:45', category: 'SM', published: true, tiers: [{ id: 't1', name: 'Standard Seating', price: 85, quantity: 500, sold: 120 }] },
-                                                                    { id: 'evt-default-2', name: 'Midnight Neon Club Festival', date: '2026-06-12', time: '22:00', category: 'CM', published: true, tiers: [{ id: 't1', name: 'General Admission', price: 35, quantity: 1500, sold: 940 }] },
-                                                                    { id: 'evt-default-3', name: 'Luxury Hotel Strategic Gala', date: '2026-07-04', time: '19:00', category: 'HM', published: true, tiers: [{ id: 't1', name: 'Elite Seat Pass', price: 250, quantity: 100, sold: 75 }] }
-                                                                ];
-                                                                const currentList = events.length > 0 ? events : defaults;
+                                                                const currentList = saved ? JSON.parse(saved) : [];
 
                                                                 const filtered = currentList.filter(e => {
                                                                     const isClub = ticketActiveFolder === 'club' && (e.category === 'CM' || e.name.toLowerCase().includes('neon') || e.name.toLowerCase().includes('club'));
