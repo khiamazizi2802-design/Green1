@@ -12,6 +12,69 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_key_51P8M1');
 
+// ── Health Check / Status Page ──────────────────────────────────────────────
+app.get('/', (req, res) => {
+    const uptime = process.uptime();
+    const hours = Math.floor(uptime / 3600);
+    const minutes = Math.floor((uptime % 3600) / 60);
+    const seconds = Math.floor(uptime % 60);
+    res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Green API Server</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#07101f;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .card{background:#0d1628;border:1px solid rgba(52,211,153,0.25);border-radius:24px;padding:48px;max-width:560px;width:90%;box-shadow:0 0 80px rgba(52,211,153,0.1)}
+    .dot{width:12px;height:12px;border-radius:50%;background:#34d399;display:inline-block;margin-right:10px;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(0.85)}}
+    h1{font-size:2rem;font-weight:900;letter-spacing:-0.03em;margin:16px 0 4px}
+    h1 span{color:#34d399}
+    .sub{color:#6b7280;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.25em;margin-bottom:32px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0}
+    .stat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px}
+    .stat-label{color:#6b7280;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:6px}
+    .stat-value{font-size:1.1rem;font-weight:800;color:#fff}
+    .endpoints{margin-top:24px;background:rgba(0,0,0,0.3);border-radius:14px;padding:16px}
+    .endpoints p{color:#6b7280;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:10px}
+    .ep{color:#34d399;font-size:0.75rem;font-family:'Courier New',monospace;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+    .ep:last-child{border:none}
+    .badge{display:inline-block;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);border-radius:8px;padding:2px 10px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:20px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div><span class="dot"></span><span class="badge">Live</span></div>
+    <h1>Green <span>Dispatch</span></h1>
+    <p class="sub">WebSocket &amp; API Server · Europe West 3</p>
+    <div class="grid">
+      <div class="stat"><div class="stat-label">Status</div><div class="stat-value" style="color:#34d399">● Online</div></div>
+      <div class="stat"><div class="stat-label">Uptime</div><div class="stat-value">${hours}h ${minutes}m ${seconds}s</div></div>
+      <div class="stat"><div class="stat-label">Environment</div><div class="stat-value">${process.env.NODE_ENV || 'development'}</div></div>
+      <div class="stat"><div class="stat-label">Node.js</div><div class="stat-value">${process.version}</div></div>
+    </div>
+    <div class="endpoints">
+      <p>Available Endpoints</p>
+      <div class="ep">POST /api/payment/stripe/intent</div>
+      <div class="ep">POST /api/payment/paypal/create-order</div>
+      <div class="ep">POST /api/auth/register-hash</div>
+      <div class="ep">POST /api/auth/login-verify</div>
+      <div class="ep">POST /api/auth/verify-token</div>
+      <div class="ep">POST /api/ai/scan-menu</div>
+      <div class="ep">WS   /socket.io (real-time fleet radar)</div>
+    </div>
+  </div>
+</body>
+</html>`);
+});
+
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', uptime: process.uptime(), env: process.env.NODE_ENV });
+});
+
+// ────────────────────────────────────────────────────────────────────────────
 app.post('/api/payment/stripe/intent', async (req, res) => {
     try {
         const { amount, currency, partnerStripeAccountId, applicationFeeAmount } = req.body;

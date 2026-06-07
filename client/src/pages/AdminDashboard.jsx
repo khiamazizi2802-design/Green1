@@ -4584,7 +4584,7 @@ billing payouts are required.
                     >
                         <motion.div
                             initial={{ y: 40, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: 40, scale: 0.95 }}
-                            className="w-full max-w-5xl bg-[#080C14] border border-brand/25 rounded-[2.5rem] shadow-[0_0_120px_rgba(52,211,153,0.15)] overflow-hidden flex flex-col max-h-[95vh]"
+                            className="w-full max-w-5xl bg-[#0D1628] border border-brand/30 rounded-[2.5rem] shadow-[0_0_120px_rgba(52,211,153,0.2)] overflow-hidden flex flex-col max-h-[95vh]"
                         >
                             {/* ── HEADER ── */}
                             <div className="px-10 py-8 border-b border-white/5 flex justify-between items-center">
@@ -4636,7 +4636,7 @@ billing payouts are required.
 
                                     {/* ── LEFT: PERSONNEL DETAILS ── */}
                                     <div className="p-10 space-y-5">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-6">① Personnel Info</p>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand/70 mb-6">① Personnel Info</p>
                                         {[
                                             { l: 'Full Name', f: 'name', ph: 'e.g. Jordan Weber', i: UserIcon, t: 'text' },
                                             { l: 'Operational Email', f: 'email', ph: 'staff@green.io', i: Mail, t: 'email' },
@@ -4648,14 +4648,14 @@ billing payouts are required.
                                         ].map((inp) => (
                                             <div key={inp.f} className="space-y-1.5">
                                                 <div className="flex items-center gap-2">
-                                                    <inp.i size={11} className="text-gray-600" />
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">{inp.l}</span>
+                                                    <inp.i size={11} className="text-brand/60" />
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-300">{inp.l}</span>
                                                 </div>
                                                 <input
                                                     type={inp.t}
                                                     value={newStaff[inp.f]}
                                                     onChange={e => setNewStaff({ ...newStaff, [inp.f]: e.target.value })}
-                                                    className="w-full bg-white/10 border border-white/20 rounded-xl px-5 py-3.5 text-white text-sm outline-none focus:border-brand focus:bg-brand/8 transition-all placeholder-gray-400"
+                                                    className="w-full bg-[#071020] border border-white/15 rounded-xl px-5 py-3.5 text-white text-sm outline-none focus:border-brand focus:shadow-[0_0_0_2px_rgba(52,211,153,0.15)] transition-all placeholder-gray-600"
                                                     placeholder={inp.ph}
                                                 />
                                             </div>
@@ -4667,8 +4667,8 @@ billing payouts are required.
 
                                         {/* Hub Permission Toggles */}
                                         <div>
-                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-6">② Hub Access Permissions</p>
-                                            <div className="space-y-3">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand/70 mb-6">② Hub Access Permissions</p>
+                                            <div className="space-y-2.5">
                                                 {[
                                                     { key: 'fleet',      label: 'Fleet Hub',      icon: Car,         color: 'text-sky-400',    bg: 'bg-sky-400/10',    border: 'border-sky-400/20',    active: 'border-sky-400/50 bg-sky-400/15' },
                                                     { key: 'hotel',      label: 'Hotel Hub',      icon: Building2,   color: 'text-violet-400', bg: 'bg-violet-400/10', border: 'border-violet-400/20', active: 'border-violet-400/50 bg-violet-400/15' },
@@ -4683,15 +4683,15 @@ billing payouts are required.
                                                         <button
                                                             key={hub.key}
                                                             onClick={() => setNewStaff(prev => ({ ...prev, permissions: { ...prev.permissions, [hub.key]: !prev.permissions?.[hub.key] } }))}
-                                                            className={`w-full flex items-center justify-between px-5 py-4 rounded-xl border transition-all ${
-                                                                isOn ? hub.active : 'border-white/8 bg-white/[0.03] hover:bg-white/[0.06]'
+                                                            className={`w-full flex items-center justify-between px-5 py-3.5 rounded-xl border transition-all ${
+                                                                isOn ? hub.active : 'border-white/12 bg-[#071020] hover:border-white/25 hover:bg-white/[0.06]'
                                                             }`}
                                                         >
                                                             <div className="flex items-center gap-4">
-                                                                <div className={`w-9 h-9 rounded-lg ${isOn ? hub.bg : 'bg-white/5'} flex items-center justify-center transition-all`}>
-                                                                    <HubIcon size={16} className={isOn ? hub.color : 'text-gray-600'} />
+                                                                <div className={`w-9 h-9 rounded-lg ${isOn ? hub.bg : 'bg-white/[0.06]'} flex items-center justify-center transition-all`}>
+                                                                    <HubIcon size={16} className={isOn ? hub.color : 'text-gray-500'} />
                                                                 </div>
-                                                                <span className={`text-xs font-black uppercase tracking-widest transition-all ${isOn ? 'text-white' : 'text-gray-500'}`}>{hub.label}</span>
+                                                                <span className={`text-xs font-black uppercase tracking-widest transition-all ${isOn ? 'text-white' : 'text-gray-400'}`}>{hub.label}</span>
                                                             </div>
                                                             {/* Toggle pill */}
                                                             <div className={`w-10 h-5 rounded-full border transition-all flex items-center ${
