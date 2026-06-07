@@ -7,7 +7,7 @@ import {
     Phone, Mail, MapPin, User as UserIcon, ExternalLink, ChevronDown, Shield, 
     ThumbsUp, ThumbsDown, Filter, FolderOpen, Quote, Bot, Sparkles, BarChart3, 
     ArrowLeft, Monitor, Radio, Target, Layers, Cpu, Database, Lock, Download, ShieldAlert,
-    Wallet, Landmark, Ticket, Tag, Percent, PlusCircle
+    Wallet, Landmark, Ticket, Tag, Percent, PlusCircle, FolderSearch, FileCheck2, FileClock, FileX2, FileWarning, CheckCircle, XCircle, AlertTriangle
 } from 'lucide-react';
 import { triggerNotification } from '../components/NotificationToast';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -410,6 +410,27 @@ const AdminDashboard = () => {
     const [staffList, setStaffList] = useState([]);
     const DEFAULT_PERMISSIONS = { fleet: false, hotel: false, ticket: false, finance: false, analytics: false, compliance: false };
     const [newStaff, setNewStaff] = useState({ name: '', email: '', phone: '', adress: '', zip: '', bank: '', role: 'Customer Service Staff', permissions: { ...DEFAULT_PERMISSIONS } });
+
+    // --- DOCUMENT HUB STATE ---
+    const [docHubFilter, setDocHubFilter] = useState('all');
+    const REQUIRED_DOCS = {
+        restaurant: ['Business Registration (Gewerbeanmeldung)', 'Tax ID Certificate (Steuernummer)', 'Food Hygiene Certificate', 'Liability Insurance', 'Bank Account Verification (IBAN)'],
+        hotel:      ['Business Registration (Gewerbeanmeldung)', 'Tax ID Certificate (Steuernummer)', 'Hotel Classification Certificate', 'Liability Insurance', 'Bank Account Verification (IBAN)', 'Fire Safety Compliance'],
+        fleet:      ['Business Registration (Gewerbeanmeldung)', 'Vehicle Registration (Fahrzeugschein)', 'Commercial Driver License', 'Fleet Insurance Policy', 'Bank Account Verification (IBAN)', 'TÜV Inspection Certificate'],
+        venue:      ['Business Registration (Gewerbeanmeldung)', 'Tax ID Certificate (Steuernummer)', 'Venue Operating License', 'Liability Insurance', 'Bank Account Verification (IBAN)'],
+    };
+    const [docPartners, setDocPartners] = useState(() => {
+        try {
+            const saved = localStorage.getItem('green_doc_partners');
+            if (saved) return JSON.parse(saved);
+        } catch(e) {}
+        return [];
+    });
+    useEffect(() => {
+        localStorage.setItem('green_doc_partners', JSON.stringify(docPartners));
+    }, [docPartners]);
+    const [isAddPartnerModalOpen, setIsAddPartnerModalOpen] = useState(false);
+    const [newPartnerForm, setNewPartnerForm] = useState({ name: '', type: 'restaurant', joinDate: '' });
 
     // --- DSGVO COMPLIANCE & AI COMPLIANCE/SALES AGENT STATES ---
     const [anonymizedModeActive, setAnonymizedModeActive] = useState(true);
@@ -1600,6 +1621,7 @@ billing payouts are required.
                         { id: 'events', label: 'Partys Events', icon: Calendar },
                         { id: 'system-doors', label: 'Portal Doors', icon: Monitor },
                         { id: 'customer-service', label: 'Customer Service', icon: Phone },
+                        { id: 'document-hub', label: 'Document Hub', icon: FolderSearch, badge: 'KYC' },
                         { id: 'staff-hub', label: 'Intelligence Staff', icon: Users },
                         { id: 'app-settings', label: 'System Config', icon: Settings }
                     ].map((item) => (
@@ -4265,6 +4287,149 @@ billing payouts are required.
                             </motion.div>
                         )}
 
+                        {view === 'document-hub' && (
+                            <motion.div key="dochub" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
+                                {/* Header */}
+                                <div className="flex justify-between items-end">
+                                    <div>
+                                        <h2 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Document <span className="text-brand">Hub</span></h2>
+                                        <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.5em] mt-2">Partner KYC & Compliance Files</p>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        {[{ label: 'All', key: 'all' }, { label: 'Pending', key: 'pending' }, { label: 'Approved', key: 'approved' }, { label: 'Missing', key: 'missing' }].map(f => (
+                                            <button key={f.key}
+                                                onClick={() => setDocHubFilter(f.key)}
+                                                className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                                                    docHubFilter === f.key ? 'bg-brand text-dark-900 shadow-lg shadow-brand/20' : 'bg-white/5 border border-white/8 text-gray-400 hover:text-white'
+                                                }`}>{f.label}</button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Stat strip */}
+                                {(() => {
+                                    const all = docPartners;
+                                    const approved = all.filter(p => p.docs.every(d => d.status === 'approved'));
+                                    const pending  = all.filter(p => p.docs.some(d => d.status === 'pending'));
+                                    const missing  = all.filter(p => p.docs.some(d => d.status === 'missing'));
+                                    return (
+                                        <div className="grid grid-cols-4 gap-6">
+                                            {[
+                                                { label: 'Total Partners', val: all.length,      color: 'border-white/10',    icon: FolderSearch, iconColor: 'text-gray-400' },
+                                                { label: 'Fully Approved', val: approved.length, color: 'border-brand/30',    icon: FileCheck2,   iconColor: 'text-brand' },
+                                                { label: 'Pending Review', val: pending.length,  color: 'border-amber-500/30',icon: FileClock,    iconColor: 'text-amber-400' },
+                                                { label: 'Missing Docs',   val: missing.length,  color: 'border-red-500/30',  icon: FileX2,       iconColor: 'text-red-400' },
+                                            ].map(s => {
+                                                const SIcon = s.icon;
+                                                return (
+                                                    <div key={s.label} className={`bg-dark-900 border ${s.color} rounded-[2rem] p-7 flex justify-between items-start`}>
+                                                        <div>
+                                                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-3">{s.label}</p>
+                                                            <p className="text-4xl font-black italic text-white">{s.val}</p>
+                                                        </div>
+                                                        <SIcon size={28} className={s.iconColor} />
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                })()}
+
+                                {/* Partner folder grid */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    {docPartners
+                                        .filter(p => {
+                                            if (docHubFilter === 'approved') return p.docs.every(d => d.status === 'approved');
+                                            if (docHubFilter === 'pending')  return p.docs.some(d => d.status === 'pending');
+                                            if (docHubFilter === 'missing')  return p.docs.some(d => d.status === 'missing');
+                                            return true;
+                                        })
+                                        .map((partner, pi) => {
+                                            const approved = partner.docs.filter(d => d.status === 'approved').length;
+                                            const pending  = partner.docs.filter(d => d.status === 'pending').length;
+                                            const missing  = partner.docs.filter(d => d.status === 'missing').length;
+                                            const allOk    = missing === 0 && pending === 0;
+                                            return (
+                                                <div key={pi} className="bg-dark-900 border border-white/8 rounded-[2.5rem] overflow-hidden">
+                                                    {/* Partner header */}
+                                                    <div className={`px-8 py-6 border-b border-white/5 flex items-center justify-between ${
+                                                        allOk ? 'bg-brand/5' : missing > 0 ? 'bg-red-500/5' : 'bg-amber-500/5'
+                                                    }`}>
+                                                        <div className="flex items-center gap-5">
+                                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                                                                allOk ? 'bg-brand/15 border border-brand/30' : missing > 0 ? 'bg-red-500/15 border border-red-500/30' : 'bg-amber-500/15 border border-amber-500/30'
+                                                            }`}>
+                                                                {partner.type === 'restaurant' ? <Zap size={20} className={allOk ? 'text-brand' : missing > 0 ? 'text-red-400' : 'text-amber-400'} />
+                                                                : partner.type === 'hotel'      ? <Building2 size={20} className={allOk ? 'text-brand' : missing > 0 ? 'text-red-400' : 'text-amber-400'} />
+                                                                : partner.type === 'fleet'      ? <Car size={20} className={allOk ? 'text-brand' : missing > 0 ? 'text-red-400' : 'text-amber-400'} />
+                                                                : <Calendar size={20} className={allOk ? 'text-brand' : missing > 0 ? 'text-red-400' : 'text-amber-400'} />}
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-base font-black italic uppercase text-white tracking-tight">{partner.name}</p>
+                                                                <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-0.5">{partner.type} · Joined {partner.joinDate}</p>
+                                                            </div>
+                                                        </div>
+                                                        <span className={`px-4 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest ${
+                                                            allOk ? 'bg-brand/15 text-brand' : missing > 0 ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400'
+                                                        }`}>
+                                                            {allOk ? '✓ Approved' : missing > 0 ? `${missing} Missing` : `${pending} Pending`}
+                                                        </span>
+                                                    </div>
+                                                    {/* Document rows */}
+                                                    <div className="p-6 space-y-3">
+                                                        {partner.docs.map((doc, di) => (
+                                                            <div key={di} className="flex items-center justify-between px-5 py-4 bg-white/[0.03] border border-white/5 rounded-2xl group">
+                                                                <div className="flex items-center gap-4">
+                                                                    {doc.status === 'approved' && <FileCheck2 size={16} className="text-brand shrink-0" />}
+                                                                    {doc.status === 'pending'  && <FileClock size={16} className="text-amber-400 shrink-0" />}
+                                                                    {doc.status === 'missing'  && <FileX2 size={16} className="text-red-400 shrink-0" />}
+                                                                    <div>
+                                                                        <p className="text-xs font-bold text-white">{doc.name}</p>
+                                                                        {doc.uploadedAt && <p className="text-[9px] text-gray-500 mt-0.5">Uploaded {doc.uploadedAt}</p>}
+                                                                        {doc.status === 'missing' && <p className="text-[9px] text-red-400 mt-0.5">Not uploaded yet</p>}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    {doc.status === 'pending' && (
+                                                                        <>
+                                                                            <button
+                                                                                onClick={() => setDocPartners(prev => prev.map((p, i) => i === pi ? { ...p, docs: p.docs.map((d, j) => j === di ? { ...d, status: 'approved' } : d) } : p))}
+                                                                                className="px-4 py-2 bg-brand/10 border border-brand/20 text-brand text-[8px] font-black uppercase rounded-xl hover:bg-brand/20 transition-all"
+                                                                            >Approve</button>
+                                                                            <button
+                                                                                onClick={() => setDocPartners(prev => prev.map((p, i) => i === pi ? { ...p, docs: p.docs.map((d, j) => j === di ? { ...d, status: 'missing' } : d) } : p))}
+                                                                                className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 text-[8px] font-black uppercase rounded-xl hover:bg-red-500/20 transition-all"
+                                                                            >Reject</button>
+                                                                        </>
+                                                                    )}
+                                                                    <span className={`text-[8px] font-black uppercase px-3 py-1.5 rounded-lg ${
+                                                                        doc.status === 'approved' ? 'bg-brand/10 text-brand'
+                                                                        : doc.status === 'pending' ? 'bg-amber-500/10 text-amber-400'
+                                                                        : 'bg-red-500/10 text-red-400'
+                                                                    }`}>{doc.status}</span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    }
+                                    {docPartners.filter(p => {
+                                        if (docHubFilter === 'approved') return p.docs.every(d => d.status === 'approved');
+                                        if (docHubFilter === 'pending')  return p.docs.some(d => d.status === 'pending');
+                                        if (docHubFilter === 'missing')  return p.docs.some(d => d.status === 'missing');
+                                        return true;
+                                    }).length === 0 && (
+                                        <div className="col-span-2 py-24 flex flex-col items-center justify-center gap-4 border border-dashed border-white/8 rounded-[2.5rem]">
+                                            <FolderSearch size={40} className="text-gray-700" />
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">No partners match this filter</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        )}
+
                         {view === 'personal-data' && (
                             <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
                                 <div className="flex items-center gap-10">
@@ -4327,6 +4492,88 @@ billing payouts are required.
                     </AnimatePresence>
                 </div>
             </main>
+
+            {/* ADD PARTNER MODAL */}
+            <AnimatePresence>
+                {isAddPartnerModalOpen && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4"
+                    >
+                        <motion.div initial={{ y: 40, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: 40, scale: 0.95 }}
+                            className="w-full max-w-2xl bg-[#0D1421] border border-brand/25 rounded-[2.5rem] shadow-[0_0_100px_rgba(52,211,153,0.15)] overflow-hidden"
+                        >
+                            <div className="px-10 py-8 border-b border-white/8 flex justify-between items-center">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-brand/15 border border-brand/30 flex items-center justify-center">
+                                        <FolderSearch size={22} className="text-brand" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black italic uppercase text-white">Register <span className="text-brand">Partner</span></h3>
+                                        <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.25em] mt-0.5">KYC Document Folder</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => { setIsAddPartnerModalOpen(false); setNewPartnerForm({ name: '', type: 'restaurant', joinDate: '' }); }}
+                                    className="w-9 h-9 rounded-xl bg-white/8 hover:bg-white/15 flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                                    <X size={16} />
+                                </button>
+                            </div>
+                            <div className="p-10 space-y-6">
+                                {/* Partner Name */}
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 flex items-center gap-2"><Building2 size={11} /> Partner / Business Name</label>
+                                    <input
+                                        value={newPartnerForm.name}
+                                        onChange={e => setNewPartnerForm(p => ({ ...p, name: e.target.value }))}
+                                        placeholder="e.g. Bella Napoli Restaurant"
+                                        className="w-full bg-white/10 border border-white/20 rounded-xl px-5 py-3.5 text-white text-sm outline-none focus:border-brand focus:bg-brand/8 transition-all placeholder-gray-400"
+                                    />
+                                </div>
+                                {/* Partner Type */}
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">Business Type</label>
+                                    <div className="grid grid-cols-4 gap-3">
+                                        {['restaurant', 'hotel', 'fleet', 'venue'].map(t => (
+                                            <button key={t} onClick={() => setNewPartnerForm(p => ({ ...p, type: t }))}
+                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
+                                                    newPartnerForm.type === t ? 'bg-brand text-dark-900 border-brand' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                                                }`}>{t}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                {/* Docs preview */}
+                                <div className="bg-white/[0.03] border border-white/8 rounded-2xl p-5">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-4">Required Documents for <span className="text-brand">{newPartnerForm.type}</span></p>
+                                    <div className="space-y-2">
+                                        {REQUIRED_DOCS[newPartnerForm.type].map((doc, i) => (
+                                            <div key={i} className="flex items-center gap-3 text-[10px] text-gray-400">
+                                                <FileX2 size={12} className="text-red-400 shrink-0" />
+                                                {doc}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        if (!newPartnerForm.name.trim()) return;
+                                        const docs = REQUIRED_DOCS[newPartnerForm.type].map(name => ({ name, status: 'missing', uploadedAt: null }));
+                                        const partner = {
+                                            name: newPartnerForm.name.trim(),
+                                            type: newPartnerForm.type,
+                                            joinDate: new Date().toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' }),
+                                            docs
+                                        };
+                                        setDocPartners(prev => [...prev, partner]);
+                                        setIsAddPartnerModalOpen(false);
+                                        setNewPartnerForm({ name: '', type: 'restaurant', joinDate: '' });
+                                        triggerNotification('success', 'Partner Registered', `${partner.name} folder created. ${docs.length} documents pending.`);
+                                    }}
+                                    className="w-full py-4 bg-brand text-dark-900 rounded-2xl text-xs font-black uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(52,211,153,0.25)] hover:scale-[1.01] active:scale-[0.99] transition-all"
+                                >Create KYC Folder</button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* ADD STAFF MODAL */}
             <AnimatePresence>
@@ -4408,7 +4655,7 @@ billing payouts are required.
                                                     type={inp.t}
                                                     value={newStaff[inp.f]}
                                                     onChange={e => setNewStaff({ ...newStaff, [inp.f]: e.target.value })}
-                                                    className="w-full bg-white/[0.04] border border-white/8 rounded-xl px-5 py-3.5 text-white text-sm outline-none focus:border-brand/50 focus:bg-brand/5 transition-all placeholder-gray-600"
+                                                    className="w-full bg-white/10 border border-white/20 rounded-xl px-5 py-3.5 text-white text-sm outline-none focus:border-brand focus:bg-brand/8 transition-all placeholder-gray-400"
                                                     placeholder={inp.ph}
                                                 />
                                             </div>
