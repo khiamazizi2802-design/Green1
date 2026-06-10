@@ -1,6 +1,6 @@
 workflows:
   android-workflow:
-    name: Green Android Workflow
+    name: Green Android Release Workflow
     max_build_duration: 120
     instance_type: mac_mini_m1
     environment:
@@ -22,12 +22,18 @@ workflows:
       - name: Sync Capacitor Android
         script: |
           npx cap sync android
-      - name: Build Android Package (Debug APK)
+      - name: Set up Android Keystore
+        script: |
+          if [ ! -z "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/release-key.jks
+          fi
+      - name: Build Android Release Package (AAB and APK)
         script: |
           cd android
-          ./gradlew assembleDebug
+          ./gradlew bundleRelease assembleRelease
     artifacts:
-      - android/app/build/outputs/apk/**/*.apk
+      - android/app/build/outputs/bundle/release/*.aab
+      - android/app/build/outputs/apk/release/*.apk
 
   ios-workflow:
     name: Green iOS Workflow
