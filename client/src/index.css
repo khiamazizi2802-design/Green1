@@ -94,6 +94,25 @@ body {
     overflow: hidden;
 }
 
+/* ── Global Resets for Mobile WebView & WebKit ─────── */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+    outline: none !important;
+}
+
+/* ── Premium button tap feedback globally ── */
+button, 
+[role="button"], 
+.interactive-btn {
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s, opacity 0.2s, border-color 0.2s !important;
+    will-change: transform;
+}
+button:active, 
+[role="button"]:active, 
+.interactive-btn:active {
+    transform: scale(0.95) !important;
+}
+
 /* ── Global Layering ───────────────────────────────── */
 .app-content-wrapper {
     position: relative;
@@ -103,6 +122,9 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    will-change: scroll-position;
+    transform: translate3d(0, 0, 0);
 }
 
 /* ── Iframe-friendly height overrides ──────────────── */

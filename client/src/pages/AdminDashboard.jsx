@@ -424,7 +424,77 @@ const AdminDashboard = () => {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const partners = [];
             snapshot.forEach((doc) => {
-                partners.push(doc.data());
+                const data = doc.data();
+                
+                let type = 'restaurant';
+                if (data.businessType === 'FM') type = 'fleet';
+                else if (data.businessType === 'HM') type = 'hotel';
+                else if (data.businessType === 'BM' || data.businessType === 'CM' || data.businessType === 'SM' || data.businessType === 'VM') type = 'venue';
+                
+                const complianceDocs = data.complianceDocs || {};
+                
+                const docSpecs = {
+                    restaurant: [
+                        { id: 'reg', name: 'Business Registration (Gewerbeanmeldung)' },
+                        { id: 'tax', name: 'Tax ID Certificate (Steuernummer)' },
+                        { id: 'gast', name: 'Food Hygiene Certificate' },
+                        { id: 'liq', name: 'Liability Insurance' },
+                        { id: 'bankv', name: 'Bank Account Verification (IBAN)' }
+                    ],
+                    hotel: [
+                        { id: 'reg', name: 'Business Registration (Gewerbeanmeldung)' },
+                        { id: 'tax', name: 'Tax ID Certificate (Steuernummer)' },
+                        { id: 'gast', name: 'Hotel Classification Certificate' },
+                        { id: 'liq', name: 'Liability Insurance' },
+                        { id: 'bankv', name: 'Bank Account Verification (IBAN)' },
+                        { id: 'fire', name: 'Fire Safety Compliance' }
+                    ],
+                    fleet: [
+                        { id: 'reg', name: 'Business Registration (Gewerbeanmeldung)' },
+                        { id: 'vr', name: 'Vehicle Registration (Fahrzeugschein)' },
+                        { id: 'cc', name: 'Commercial Driver License' },
+                        { id: 'fip', name: 'Fleet Insurance Policy' },
+                        { id: 'bankv', name: 'Bank Account Verification (IBAN)' },
+                        { id: 'tuv', name: 'TÜV Inspection Certificate' }
+                    ],
+                    venue: [
+                        { id: 'reg', name: 'Business Registration (Gewerbeanmeldung)' },
+                        { id: 'tax', name: 'Tax ID Certificate (Steuernummer)' },
+                        { id: 'gast', name: 'Venue Operating License' },
+                        { id: 'liq', name: 'Liability Insurance' },
+                        { id: 'bankv', name: 'Bank Account Verification (IBAN)' }
+                    ]
+                };
+                
+                const specs = docSpecs[type] || docSpecs.restaurant;
+                const docs = specs.map(spec => {
+                    const savedDoc = complianceDocs[spec.id] || {};
+                    return {
+                        id: spec.id,
+                        name: spec.name,
+                        status: savedDoc.status || 'missing',
+                        uploadedAt: savedDoc.uploadedAt || savedDoc.verifiedAt || null,
+                        fileUrl: savedDoc.fileUrl || savedDoc.fileData || null
+                    };
+                });
+
+                const parseDate = (val) => {
+                    if (!val) return 'N/A';
+                    if (typeof val.toDate === 'function') {
+                        return val.toDate().toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' });
+                    }
+                    const d = new Date(val);
+                    return isNaN(d.getTime()) ? 'N/A' : d.toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' });
+                };
+
+                partners.push({
+                    ...data,
+                    name: data.name || data.businessName || 'Partner Manager',
+                    type: type,
+                    joinDate: parseDate(data.createdAt),
+                    docs: docs,
+                    emailKey: data.email ? data.email.replace(/[^a-zA-Z0-9]/g, '_') : ''
+                });
             });
             setDocPartners(partners);
         }, (err) => {
@@ -4396,11 +4466,23 @@ billing payouts are required.
                                                                     {doc.status === 'pending' && (
                                                                         <>
                                                                             <button
-                                                                                onClick={() => setDocPartners(prev => prev.map((p, i) => i === pi ? { ...p, docs: p.docs.map((d, j) => j === di ? { ...d, status: 'approved' } : d) } : p))}
+                                                                                onClick={() => {
+                                                                                    if (partner.email) {
+                                                                                        handleApprovePartnerDoc(partner.emailKey || partner.email.replace(/[^a-zA-Z0-9]/g, '_'), doc.id);
+                                                                                    } else {
+                                                                                        setDocPartners(prev => prev.map((p, i) => i === pi ? { ...p, docs: p.docs.map((d, j) => j === di ? { ...d, status: 'approved' } : d) } : p));
+                                                                                    }
+                                                                                }}
                                                                                 className="px-4 py-2 bg-brand/10 border border-brand/20 text-brand text-[8px] font-black uppercase rounded-xl hover:bg-brand/20 transition-all"
                                                                             >Approve</button>
                                                                             <button
-                                                                                onClick={() => setDocPartners(prev => prev.map((p, i) => i === pi ? { ...p, docs: p.docs.map((d, j) => j === di ? { ...d, status: 'missing' } : d) } : p))}
+                                                                                onClick={() => {
+                                                                                    if (partner.email) {
+                                                                                        handleRejectPartnerDoc(partner.emailKey || partner.email.replace(/[^a-zA-Z0-9]/g, '_'), doc.id);
+                                                                                    } else {
+                                                                                        setDocPartners(prev => prev.map((p, i) => i === pi ? { ...p, docs: p.docs.map((d, j) => j === di ? { ...d, status: 'missing' } : d) } : p));
+                                                                                    }
+                                                                                }}
                                                                                 className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 text-[8px] font-black uppercase rounded-xl hover:bg-red-500/20 transition-all"
                                                                             >Reject</button>
                                                                         </>

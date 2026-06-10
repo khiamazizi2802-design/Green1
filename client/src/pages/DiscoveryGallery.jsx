@@ -256,12 +256,8 @@ const DiscoveryGallery = () => {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto no-scrollbar -mx-6 px-6 mb-10 cursor-grab active:cursor-grabbing">
-                    <motion.div 
-                        drag="x"
-                        dragConstraints={{ left: -500, right: 0 }}
-                        className="flex gap-6 pb-4 w-max"
-                    >
+                <div className="overflow-x-auto no-scrollbar -mx-6 px-6 mb-10 scroll-smooth">
+                    <div className="flex gap-6 pb-4 w-max">
                         {categories.map((cat) => (
                             <button
                                 key={cat.id}
@@ -276,7 +272,7 @@ const DiscoveryGallery = () => {
                                 </span>
                             </button>
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
 
                 <div className="space-y-6 pt-4 relative">

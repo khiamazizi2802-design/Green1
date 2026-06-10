@@ -451,13 +451,8 @@ const GreenSPage = () => {
                             <span className="text-[10px] font-black text-black uppercase tracking-[0.4em] italic">Hub Select</span>
                         </div>
                         
-                        <div className="px-2 overflow-hidden cursor-grab active:cursor-grabbing" ref={containerRef}>
-                            <motion.div 
-                                drag="x"
-                                dragConstraints={containerRef}
-                                dragElastic={0.1}
-                                className="flex gap-4 pb-6 w-fit pr-20"
-                            >
+                        <div className="px-2 overflow-x-auto no-scrollbar scroll-smooth" ref={containerRef}>
+                            <div className="flex gap-4 pb-6 w-fit pr-20">
                                 {lifestyleEntities.map((entity) => (
                                     <button
                                         key={entity.id}
@@ -473,7 +468,7 @@ const GreenSPage = () => {
                                         <span className="text-xs font-black uppercase tracking-widest text-black transition-colors">{entity.label}</span>
                                     </button>
                                 ))}
-                            </motion.div>
+                            </div>
                         </div>
                     </section>
                 )}
@@ -610,13 +605,8 @@ const GreenSPage = () => {
                                             <span className="text-[8px] font-bold text-black/60 uppercase tracking-widest">Active Group Link ⚡</span>
                                         </div>
                                         
-                                        <div className="overflow-hidden cursor-grab active:cursor-grabbing px-1" ref={embeddedContainerRef}>
-                                            <motion.div 
-                                                drag="x"
-                                                dragConstraints={embeddedContainerRef}
-                                                dragElastic={0.1}
-                                                className="flex gap-4 pb-2 w-fit pr-16"
-                                            >
+                                        <div className="overflow-x-auto no-scrollbar scroll-smooth px-1" ref={embeddedContainerRef}>
+                                            <div className="flex gap-4 pb-2 w-fit pr-16">
                                                 {lifestyleEntities.map((entity) => {
                                                     const isActive = isCategoryActive(entity.id);
                                                     return (
@@ -633,7 +623,7 @@ const GreenSPage = () => {
                                                         </button>
                                                     );
                                                 })}
-                                            </motion.div>
+                                            </div>
                                         </div>
                                     </div>
 

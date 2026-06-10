@@ -728,22 +728,13 @@ const GreenRidePage = () => {
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
-                                transition={{ duration: 0.4, ease: "circOut" }}
-                                className="w-full origin-top overflow-hidden relative cursor-grab active:cursor-grabbing"
+                                className="w-full origin-top overflow-x-auto no-scrollbar relative scroll-smooth"
                                 style={{
                                     maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
                                     WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'
                                 }}
                             >
-                                <motion.div 
-                                    drag="x"
-                                    dragConstraints={{ left: -320, right: 0 }}
-                                    dragElastic={0}
-                                    dragMomentum={true}
-                                    dragTransition={{ power: 0.2, timeConstant: 200 }}
-                                    
-                                    className="flex gap-6 px-12 w-max pb-6 items-center"
-                                >
+                                <div className="flex gap-6 px-12 w-max pb-6 items-center">
                                     {brands.map((brand, index) => {
                                         const isSelected = selectedBrand === brand.name;
                                         return (
@@ -778,7 +769,7 @@ const GreenRidePage = () => {
                                             </button>
                                         );
                                     })}
-                                </motion.div>
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
