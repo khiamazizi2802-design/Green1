@@ -15,6 +15,8 @@ import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 import Radar from '../components/Radar';
 import { useSocket } from '../context/SocketContext';
+import { db } from '../config/firebase';
+import { collection, doc, query, where, onSnapshot, updateDoc } from 'firebase/firestore';
 
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
@@ -57,79 +59,75 @@ const AdminDashboard = () => {
 
     const getPartnerComplianceLogs = () => {
         const logs = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('green_compliance_docs_')) {
-                const emailKey = key.replace('green_compliance_docs_', '');
-                try {
-                    const docs = JSON.parse(localStorage.getItem(key));
-                    const keys = Object.keys(docs).filter(k => k !== '_metadata');
-                    const uploadedDocs = keys.map(k => docs[k]).filter(d => d && d.status !== 'missing');
-                    if (uploadedDocs.length > 0 || docs._metadata) {
-                        const metadata = docs._metadata || { 
-                            email: emailKey.replace(/_/g, '@'), 
-                            name: 'Partner Manager', 
-                            businessName: 'Eco Partner', 
-                            context: 'FM' 
-                        };
-                        
-                        // Fill all required doc definitions if not present in the uploadedDocs
-                        const requiredIds = metadata.context === 'FM' 
-                            ? ['tl', 'fip', 'cc', 'vr', 'tuv', 'es', 'sepa', 'vatc', 'bankv']
-                            : ['reg', 'mid', 'tax', 'gast', 'liq', 'fire', 'sepa', 'vatc', 'bankv'];
-                        
-                        const fullDocs = requiredIds.map(id => {
-                            return docs[id] || { id, status: 'missing', name: 'Document ' + id };
-                        });
+        docPartners.forEach(partner => {
+            const emailKey = partner.email ? partner.email.replace(/[^a-zA-Z0-9]/g, '_') : '';
+            if (!emailKey) return;
+            
+            const docs = partner.complianceDocs || {};
+            const context = partner.businessType || 'RM';
+            const requiredIds = context === 'FM'
+                ? ['tl', 'fip', 'cc', 'vr', 'tuv', 'es', 'sepa', 'vatc', 'bankv']
+                : ['reg', 'mid', 'tax', 'gast', 'liq', 'fire', 'sepa', 'vatc', 'bankv'];
 
-                        logs.push({
-                            emailKey,
-                            metadata,
-                            docs: fullDocs
-                        });
-                    }
-                } catch(e) {
-                    console.error(e);
-                }
-            }
-        }
+            const fullDocs = requiredIds.map(id => {
+                return docs[id] || { id, status: 'missing', name: 'Document ' + id };
+            });
+
+            logs.push({
+                emailKey,
+                metadata: {
+                    email: partner.email,
+                    name: partner.name || 'Partner Manager',
+                    businessName: partner.businessName || 'Eco Partner',
+                    context: context
+                },
+                docs: fullDocs
+            });
+        });
         return logs;
     };
 
-    const handleApprovePartnerDoc = (emailKey, docId) => {
-        const key = `green_compliance_docs_${emailKey}`;
+    const handleApprovePartnerDoc = async (emailKey, docId) => {
+        const partner = docPartners.find(p => (p.email ? p.email.replace(/[^a-zA-Z0-9]/g, '_') : '') === emailKey);
+        if (!partner) {
+            triggerNotification('error', 'Error', 'Partner not found.');
+            return;
+        }
+        const userRef = doc(db, 'users', partner.email.toLowerCase());
         try {
-            const docs = JSON.parse(localStorage.getItem(key) || '{}');
-            if (docs[docId]) {
-                docs[docId].status = 'approved';
-                docs[docId].verifiedAt = new Date().toISOString();
-                localStorage.setItem(key, JSON.stringify(docs));
-                setComplianceRefreshTicker(prev => prev + 1);
-                triggerNotification('success', 'Document Approved ✓', `Credential cleared for partner.`);
-            }
+            await updateDoc(userRef, {
+                [`complianceDocs.${docId}.status`]: 'approved',
+                [`complianceDocs.${docId}.verifiedAt`]: new Date().toISOString()
+            });
+            triggerNotification('success', 'Document Approved ✓', `Credential cleared for partner.`);
         } catch(e) {
-            console.error(e);
+            console.error('Failed to approve doc:', e);
+            triggerNotification('error', 'Error', 'Failed to approve document.');
         }
     };
 
-    const handleRejectPartnerDoc = (emailKey, docId) => {
-        const key = `green_compliance_docs_${emailKey}`;
+    const handleRejectPartnerDoc = async (emailKey, docId) => {
+        const partner = docPartners.find(p => (p.email ? p.email.replace(/[^a-zA-Z0-9]/g, '_') : '') === emailKey);
+        if (!partner) {
+            triggerNotification('error', 'Error', 'Partner not found.');
+            return;
+        }
+        const userRef = doc(db, 'users', partner.email.toLowerCase());
         try {
-            const docs = JSON.parse(localStorage.getItem(key) || '{}');
-            if (docs[docId]) {
-                docs[docId].status = 'rejected';
-                docs[docId].verifiedAt = new Date().toISOString();
-                localStorage.setItem(key, JSON.stringify(docs));
-                setComplianceRefreshTicker(prev => prev + 1);
-                triggerNotification('warning', 'Document Rejected ✗', `Credential rejected.`);
-            }
+            await updateDoc(userRef, {
+                [`complianceDocs.${docId}.status`]: 'rejected',
+                [`complianceDocs.${docId}.verifiedAt`]: new Date().toISOString()
+            });
+            triggerNotification('warning', 'Document Rejected ✗', `Credential rejected.`);
         } catch(e) {
-            console.error(e);
+            console.error('Failed to reject doc:', e);
+            triggerNotification('error', 'Error', 'Failed to reject document.');
         }
     };
 
     const handleViewPartnerDoc = (docState) => {
-        if (!docState || !docState.fileData) return;
+        const url = docState?.fileUrl || docState?.fileData;
+        if (!url) return;
         const newWindow = window.open();
         if (newWindow) {
             newWindow.document.title = docState.name || 'Document View';
@@ -140,9 +138,10 @@ const AdminDashboard = () => {
             newWindow.document.body.style.alignItems = 'center';
             newWindow.document.body.style.height = '100vh';
             
-            if (docState.fileData.startsWith('data:image/')) {
+            const isImage = url.startsWith('data:image/') || url.includes('.png') || url.includes('.jpg') || url.includes('.jpeg') || url.includes('alt=media');
+            if (isImage) {
                 const img = newWindow.document.createElement('img');
-                img.src = docState.fileData;
+                img.src = url;
                 img.style.maxWidth = '90%';
                 img.style.maxHeight = '90%';
                 img.style.borderRadius = '12px';
@@ -150,7 +149,7 @@ const AdminDashboard = () => {
                 newWindow.document.body.appendChild(img);
             } else {
                 const iframe = newWindow.document.createElement('iframe');
-                iframe.src = docState.fileData;
+                iframe.src = url;
                 iframe.style.width = '100%';
                 iframe.style.height = '100%';
                 iframe.style.border = 'none';
@@ -419,16 +418,20 @@ const AdminDashboard = () => {
         fleet:      ['Business Registration (Gewerbeanmeldung)', 'Vehicle Registration (Fahrzeugschein)', 'Commercial Driver License', 'Fleet Insurance Policy', 'Bank Account Verification (IBAN)', 'TÜV Inspection Certificate'],
         venue:      ['Business Registration (Gewerbeanmeldung)', 'Tax ID Certificate (Steuernummer)', 'Venue Operating License', 'Liability Insurance', 'Bank Account Verification (IBAN)'],
     };
-    const [docPartners, setDocPartners] = useState(() => {
-        try {
-            const saved = localStorage.getItem('green_doc_partners');
-            if (saved) return JSON.parse(saved);
-        } catch(e) {}
-        return [];
-    });
+    const [docPartners, setDocPartners] = useState([]);
     useEffect(() => {
-        localStorage.setItem('green_doc_partners', JSON.stringify(docPartners));
-    }, [docPartners]);
+        const q = query(collection(db, 'users'), where('role', '==', 'manager'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const partners = [];
+            snapshot.forEach((doc) => {
+                partners.push(doc.data());
+            });
+            setDocPartners(partners);
+        }, (err) => {
+            console.error("Error listening to B2B managers:", err);
+        });
+        return () => unsubscribe();
+    }, []);
     const [isAddPartnerModalOpen, setIsAddPartnerModalOpen] = useState(false);
     const [newPartnerForm, setNewPartnerForm] = useState({ name: '', type: 'restaurant', joinDate: '' });
 

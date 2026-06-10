@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db as fbDb } from '../config/firebase';
+import { db as fbDb, storage } from '../config/firebase';
 import { doc, getDoc, updateDoc, setDoc, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import {
     TrendingUp,
     History,
@@ -252,29 +253,24 @@ const ManagerDashboard = () => {
     });
 
     // Compliance Document States
-    const [complianceDocs, setComplianceDocs] = useState(() => {
-        const saved = localStorage.getItem(`green_compliance_docs_${userEmailKey}`);
-        if (saved) return JSON.parse(saved);
-        return {};
-    });
+    const [complianceDocs, setComplianceDocs] = useState({});
 
-    // Save and load compliance states and sync metadata
+    // Real-time Firestore sync for compliance documents
     useEffect(() => {
-        if (user?.email) {
-            const saved = localStorage.getItem(`green_compliance_docs_${userEmailKey}`);
-            const currentDocs = saved ? JSON.parse(saved) : {};
-            // Sync metadata
-            currentDocs._metadata = {
-                email: user.email,
-                name: user.name || 'Partner Manager',
-                businessName: user.businessName || 'Green Fleet Ops',
-                context: managerContext,
-                updatedAt: new Date().toISOString()
-            };
-            localStorage.setItem(`green_compliance_docs_${userEmailKey}`, JSON.stringify(currentDocs));
-            setComplianceDocs(currentDocs);
-        }
-    }, [user?.email, userEmailKey, managerContext]);
+        if (!user?.email) return;
+        const userRef = doc(fbDb, 'users', user.email.toLowerCase());
+        const unsubscribe = onSnapshot(userRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.complianceDocs) {
+                    setComplianceDocs(data.complianceDocs);
+                } else {
+                    setComplianceDocs({});
+                }
+            }
+        });
+        return () => unsubscribe();
+    }, [user?.email]);
 
     const requiredDocIds = managerContext === 'FM' 
         ? ['tl', 'fip', 'cc', 'vr', 'tuv', 'es', 'sepa', 'vatc', 'bankv']
@@ -307,37 +303,66 @@ const ManagerDashboard = () => {
     };
 
     const handleDocumentUpload = (docId, file) => {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const fileData = e.target.result;
-            const updatedDocs = {
-                ...complianceDocs,
-                [docId]: {
-                    id: docId,
-                    name: file.name,
-                    size: (file.size / 1024).toFixed(1) + ' KB',
-                    status: 'pending',
-                    uploadedAt: new Date().toISOString(),
-                    fileData: fileData
+        if (!file || !user?.email) return;
+        
+        setUploadStatus('processing');
+        setUploadProgress(0);
+        
+        const storagePath = `compliance_docs/${user.email.toLowerCase()}/${docId}_${file.name}`;
+        const storageRef = ref(storage, storagePath);
+        
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        
+        uploadTask.on('state_changed', 
+            (snapshot) => {
+                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                setUploadProgress(progress);
+            }, 
+            (error) => {
+                console.error("Document upload failed: ", error);
+                setUploadStatus('error');
+                alert(`❌ Upload failed: ${error.message}`);
+            }, 
+            async () => {
+                try {
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                    const userRef = doc(fbDb, 'users', user.email.toLowerCase());
+                    
+                    await updateDoc(userRef, {
+                        [`complianceDocs.${docId}`]: {
+                            id: docId,
+                            name: file.name,
+                            size: (file.size / 1024).toFixed(1) + ' KB',
+                            status: 'pending',
+                            uploadedAt: new Date().toISOString(),
+                            fileUrl: downloadURL
+                        },
+                        [`complianceDocs._metadata`]: {
+                            email: user.email,
+                            name: user.name || 'Partner Manager',
+                            businessName: getBusinessName(),
+                            context: managerContext,
+                            updatedAt: new Date().toISOString()
+                        }
+                    });
+                    
+                    setUploadStatus('complete');
+                    setTimeout(() => {
+                        setUploadStatus(null);
+                        setUploadProgress(0);
+                    }, 2000);
+                    
+                } catch (err) {
+                    console.error("Error saving uploaded doc URL to Firestore: ", err);
+                    setUploadStatus('error');
                 }
-            };
-            // Ensure metadata is updated
-            updatedDocs._metadata = {
-                email: user?.email || 'unknown',
-                name: user?.name || 'Partner Manager',
-                businessName: user?.businessName || 'Green Fleet Ops',
-                context: managerContext,
-                updatedAt: new Date().toISOString()
-            };
-            setComplianceDocs(updatedDocs);
-            localStorage.setItem(`green_compliance_docs_${userEmailKey}`, JSON.stringify(updatedDocs));
-        };
-        reader.readAsDataURL(file);
+            }
+        );
     };
 
     const handleViewDocument = (docState) => {
-        if (!docState || !docState.fileData) return;
+        const url = docState?.fileUrl || docState?.fileData;
+        if (!url) return;
         const newWindow = window.open();
         if (newWindow) {
             newWindow.document.title = docState.name || 'Document View';
@@ -348,9 +373,10 @@ const ManagerDashboard = () => {
             newWindow.document.body.style.alignItems = 'center';
             newWindow.document.body.style.height = '100vh';
             
-            if (docState.fileData.startsWith('data:image/')) {
+            const isImage = url.startsWith('data:image/') || url.includes('.png') || url.includes('.jpg') || url.includes('.jpeg') || url.includes('alt=media');
+            if (isImage) {
                 const img = newWindow.document.createElement('img');
-                img.src = docState.fileData;
+                img.src = url;
                 img.style.maxWidth = '90%';
                 img.style.maxHeight = '90%';
                 img.style.borderRadius = '12px';
@@ -358,7 +384,7 @@ const ManagerDashboard = () => {
                 newWindow.document.body.appendChild(img);
             } else {
                 const iframe = newWindow.document.createElement('iframe');
-                iframe.src = docState.fileData;
+                iframe.src = url;
                 iframe.style.width = '100%';
                 iframe.style.height = '100%';
                 iframe.style.border = 'none';
@@ -368,8 +394,10 @@ const ManagerDashboard = () => {
     };
 
     // A helper to auto-approve all documents for developer testing
-    const handleDevAutoApprove = () => {
-        const autoDocs = { ...complianceDocs };
+    const handleDevAutoApprove = async () => {
+        if (!user?.email) return;
+        const userRef = doc(fbDb, 'users', user.email.toLowerCase());
+        const autoDocs = {};
         requiredDocIds.forEach(id => {
             autoDocs[id] = {
                 id,
@@ -380,15 +408,25 @@ const ManagerDashboard = () => {
                 fileData: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 100 100"><rect width="100" height="100" fill="%2310b981"/><text x="50" y="50" font-family="sans-serif" font-size="8" fill="white" text-anchor="middle">APPROVED DOCUMENT</text></svg>'
             };
         });
-        autoDocs._metadata = {
-            email: user?.email || 'unknown',
-            name: user?.name || 'Partner Manager',
-            businessName: user?.businessName || 'Green Fleet Ops',
-            context: managerContext,
-            updatedAt: new Date().toISOString()
-        };
-        setComplianceDocs(autoDocs);
-        localStorage.setItem(`green_compliance_docs_${userEmailKey}`, JSON.stringify(autoDocs));
+        
+        try {
+            await updateDoc(userRef, {
+                complianceDocs: {
+                    ...autoDocs,
+                    _metadata: {
+                        email: user.email,
+                        name: user.name || 'Partner Manager',
+                        businessName: getBusinessName(),
+                        context: managerContext,
+                        updatedAt: new Date().toISOString()
+                    }
+                }
+            });
+            alert('✅ Developer Auto-Approve: All documents created and approved successfully in Firestore!');
+        } catch (err) {
+            console.error('Failed to auto approve compliance docs: ', err);
+            alert('❌ Failed to update Firestore with approved documents.');
+        }
     };
 
     // Dynamic Commission and Payout Calculations based on business type
