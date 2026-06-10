@@ -4463,6 +4463,12 @@ billing payouts are required.
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex items-center gap-2">
+                                                                    {doc.fileUrl && (
+                                                                        <button
+                                                                            onClick={() => handleViewPartnerDoc(doc)}
+                                                                            className="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-[8px] font-black uppercase rounded-xl transition-all"
+                                                                        >View</button>
+                                                                    )}
                                                                     {doc.status === 'pending' && (
                                                                         <>
                                                                             <button
