@@ -52,6 +52,8 @@ const Login = () => {
                 setSuccessMsg('Signature Matched. Initiating tunnel...');
                 setIsAuthenticating(false);
 
+                sessionStorage.removeItem('registration_pending_verification');
+
                 setTimeout(() => {
                     const loggedUser = res.user;
                     if (loggedUser.role === 'passenger') {

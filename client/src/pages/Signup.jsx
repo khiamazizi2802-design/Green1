@@ -89,21 +89,8 @@ const Signup = () => {
                 return;
             }
 
-            const loggedUser = res.user;
-
-            if (loggedUser.role === 'driver') {
-                navigate('/driver');
-            } else if (loggedUser.role === 'staff') {
-                if (inviteEmail) {
-                    navigate('/manager');
-                } else {
-                    navigate('/green-id-pending');
-                }
-            } else if (loggedUser.role === 'passenger') {
-                navigate('/home');
-            } else {
-                navigate('/manager');
-            }
+            sessionStorage.setItem('registration_pending_verification', 'true');
+            navigate('/verify');
         } catch (err) {
             console.error('Signup error:', err);
             setSignupError('Registration failed. Please check network connectivity.');

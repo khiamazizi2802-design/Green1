@@ -14,12 +14,10 @@ const ProtectedRoute = ({ roles }) => {
         return <Navigate to="/login" replace />;
     }
 
-    // Identity Verification Check (Bypassed for Review)
-    /*
-    if (!isVerified && window.location.pathname !== '/verify') {
+    // Identity Verification Check (Only enforced for new registrations)
+    if (sessionStorage.getItem('registration_pending_verification') === 'true' && window.location.pathname !== '/verify') {
         return <Navigate to="/verify" replace />;
     }
-    */
 
     if (allowedRoles && !allowedRoles.includes(user.role)) {
         return <Navigate to="/" replace />;

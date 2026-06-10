@@ -61,7 +61,25 @@ const VerificationPage = () => {
         const finalCode = code.join('');
         if (finalCode === verificationCode) {
             verify();
-            navigate('/' + (user?.role === 'super_admin' ? 'super-admin' : user?.role === 'manager' ? 'manager' : 'home'));
+            sessionStorage.removeItem('registration_pending_verification');
+            
+            // Redirect to correct page based on user role
+            const role = user?.role;
+            if (role === 'passenger') {
+                navigate('/home');
+            } else if (role === 'driver') {
+                navigate('/driver');
+            } else if (role === 'staff') {
+                if (user?.onboarded !== true) {
+                    navigate('/green-id-pending');
+                } else {
+                    navigate('/manager');
+                }
+            } else if (role === 'super_admin') {
+                navigate('/admin');
+            } else {
+                navigate('/manager');
+            }
         } else {
             setError('Invalid Verification Code. Please try again.');
             setIsVerifying(false);
