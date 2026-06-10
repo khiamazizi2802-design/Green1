@@ -10,7 +10,8 @@ import {
 import { 
     doc, 
     getDoc, 
-    setDoc 
+    setDoc,
+    onSnapshot
 } from 'firebase/firestore';
 
 const AuthContext = createContext();
@@ -178,13 +179,20 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
+        let unsubscribeDoc = null;
+        
         // Core Authentication Listener (Synched with Live Firebase Auth State)
-        const unsubscribe = onAuthStateChanged(fbAuth, async (firebaseUser) => {
+        const unsubscribeAuth = onAuthStateChanged(fbAuth, async (firebaseUser) => {
+            if (unsubscribeDoc) {
+                unsubscribeDoc();
+                unsubscribeDoc = null;
+            }
+
             if (firebaseUser) {
                 const email = firebaseUser.email.toLowerCase();
-                try {
-                    const docRef = doc(fbDb, 'users', email);
-                    const docSnap = await getDoc(docRef);
+                const docRef = doc(fbDb, 'users', email);
+                
+                unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
                         const profile = docSnap.data();
                         setUser({ ...profile, isDemo: isDemoEmail(profile.email) });
@@ -208,20 +216,25 @@ export const AuthProvider = ({ children }) => {
                         };
                         setUser({ ...fallbackUser, isDemo: isDemoEmail(fallbackUser.email) });
                     }
-                } catch (e) {
-                    console.error('Failed to load user profile from Firestore:', e);
-                }
+                    setLoading(false);
+                }, (error) => {
+                    console.error('Failed to sync user profile from Firestore:', error);
+                    setLoading(false);
+                });
             } else {
                 setUser(null);
                 setIsVerified(false);
+                setLoading(false);
             }
-            setLoading(false);
         });
 
         // Run auto-seeder on boot
         // seedDefaultUsers();
 
-        return () => unsubscribe();
+        return () => {
+            unsubscribeAuth();
+            if (unsubscribeDoc) unsubscribeDoc();
+        };
     }, []);
 
     const login = async (email, password) => {

@@ -3,13 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ArrowLeft, Shield, User, MapPin, Mail, 
     Phone, Lock, Camera, Image as ImageIcon,
-    Edit3, Check, ShieldCheck
+    Edit3, Check, ShieldCheck, Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { triggerNotification } from '../components/NotificationToast';
 import { updatePassword } from 'firebase/auth';
-import { auth as fbAuth, db as fbDb } from '../config/firebase';
+import { auth as fbAuth, db as fbDb, storage as fbStorage } from '../config/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useAuth } from '../context/AuthContext';
 
 const AccountHub = () => {
@@ -18,6 +19,8 @@ const AccountHub = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [showVerification, setShowVerification] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     
@@ -105,28 +108,48 @@ const AccountHub = () => {
         setConfirmPassword('');
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-                const base64Data = reader.result;
-                setProfilePic(base64Data);
-                if (user && user.email) {
-                    try {
-                        const userDocRef = doc(fbDb, 'users', user.email.toLowerCase());
-                        await updateDoc(userDocRef, { avatar: base64Data });
-                        setUser({ ...user, avatar: base64Data });
-                        triggerNotification("PROFILE IMAGE SECURED", "SUCCESS");
-                    } catch (err) {
-                        console.error("Failed to save avatar in Firestore:", err);
-                        triggerNotification("IMAGE SECURED (LOCAL)", "SUCCESS");
-                    }
+        if (file && user?.email) {
+            setIsUploading(true);
+            setUploadProgress(0);
+            try {
+                let avatarUrl;
+                if (!user?.isDemo) {
+                    const storageRef = ref(fbStorage, `avatars/${user.email.toLowerCase()}/profile`);
+                    const task = uploadBytesResumable(storageRef, file);
+                    
+                    await new Promise((resolve, reject) => {
+                        task.on(
+                            'state_changed',
+                            (snap) => {
+                                const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+                                setUploadProgress(pct);
+                            },
+                            reject,
+                            async () => {
+                                avatarUrl = await getDownloadURL(task.snapshot.ref);
+                                resolve();
+                            }
+                        );
+                    });
                 } else {
-                    triggerNotification("PROFILE IMAGE UPDATED", "SUCCESS");
+                    // Demo fallback: use object URL
+                    avatarUrl = URL.createObjectURL(file);
                 }
-            };
-            reader.readAsDataURL(file);
+                
+                setProfilePic(avatarUrl);
+                const userDocRef = doc(fbDb, 'users', user.email.toLowerCase());
+                await updateDoc(userDocRef, { avatar: avatarUrl });
+                setUser({ ...user, avatar: avatarUrl });
+                triggerNotification("PROFILE IMAGE SECURED", "SUCCESS");
+            } catch (err) {
+                console.error("Failed to upload avatar:", err);
+                triggerNotification("AVATAR UPDATE FAILED", "ERROR");
+            } finally {
+                setIsUploading(false);
+                setUploadProgress(null);
+            }
         }
     };
 
@@ -278,8 +301,8 @@ const AccountHub = () => {
                         {/* Profile Customization */}
                         <section className="bg-dark-900 border border-main p-8 rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] space-y-8 relative overflow-hidden group">
                             <div className="flex items-center gap-8 relative z-10">
-                                <div className="w-28 h-28 rounded-[2rem] bg-dark-950 border-2 border-main overflow-hidden shrink-0 shadow-xl group-hover:scale-105 transition-transform duration-500">
-                                    <img src={profilePic} alt="Me" className="w-full h-full object-cover" />
+                                <div className="w-28 h-28 rounded-full bg-dark-950 border-4 border-brand/20 p-1 overflow-hidden shrink-0 shadow-[0_0_30px_rgba(52,211,153,0.25)] group-hover:scale-105 transition-transform duration-500 relative">
+                                    <img src={profilePic} alt="Me" className="w-full h-full rounded-full object-cover" />
                                 </div>
                                 <div className="flex flex-col gap-3 flex-1 text-left">
                                     <p className="text-[8px] font-black uppercase tracking-[0.2em] text-secondary">Update Profile Picture</p>
@@ -455,6 +478,31 @@ const AccountHub = () => {
                     Confirm & Return
                 </button>
             </div>
+            {/* Upload progress overlay */}
+            <AnimatePresence>
+                {isUploading && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[3000] bg-black/70 backdrop-blur-md flex flex-col items-center justify-center gap-6"
+                    >
+                        <div className="w-20 h-20 rounded-full bg-brand/10 border border-brand/30 flex items-center justify-center">
+                            <Loader2 size={36} className="text-brand animate-spin" />
+                        </div>
+                        <div className="text-center space-y-2">
+                            <p className="text-sm font-black uppercase tracking-widest text-white">Uploading to Firebase</p>
+                            <p className="text-brand font-black text-2xl text-glow-green">{uploadProgress ?? 0}%</p>
+                        </div>
+                        <div className="w-64 h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-brand rounded-full transition-all duration-300 shadow-[0_0_15px_var(--brand-glow)]"
+                                style={{ width: `${uploadProgress ?? 0}%` }}
+                            />
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
