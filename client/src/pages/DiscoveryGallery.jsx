@@ -151,8 +151,8 @@ const DiscoveryGallery = () => {
                             id: doc.id,
                             category: category,
                             name: data.businessInfo?.legalName || data.businessName || data.name || "Unnamed Partner",
-                            offer: data.businessInfo?.offer || (data.businessType === 'HM' ? "LATE CHECKOUT 2PM" : data.businessType === 'CM' ? "FREE ENTRY + 1 DRINK" : "20% OFF TOTAL BILL"),
-                            discount: (data.businessInfo?.discount !== undefined && data.businessInfo?.discount !== '') ? data.businessInfo.discount : (data.businessType === 'HM' ? null : "20%"),
+                            offer: data.businessInfo?.offer || "Exclusive Member Access",
+                            discount: (data.businessInfo?.discount !== undefined && data.businessInfo?.discount !== '') ? data.businessInfo.discount : null,
                             rating: 4.8,
                             dist: "1.2km",
                             img: category === 'club' 
