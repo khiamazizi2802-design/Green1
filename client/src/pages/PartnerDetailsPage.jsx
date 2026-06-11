@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ArrowLeft, BedDouble, ShieldCheck, Sparkles, MapPin, Clock, Info, ChevronRight, 
-    Play, Heart, Share2, Menu, Box, ShoppingBag 
+    Play, Heart, Share2, Menu, Box, ShoppingBag, LayoutGrid 
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { db } from '../config/firebase';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
 
 const PartnerDetailsPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { user } = useAuth();
+    const isDemo = user?.isDemo;
     
     const venue = location.state?.venue || {
         name: "The Skyline Club",
@@ -18,6 +23,93 @@ const PartnerDetailsPage = () => {
     };
 
     const [isLiked, setIsLiked] = useState(false);
+    const [mediaItems, setMediaItems] = useState([]);
+    const [activeMedia, setActiveMedia] = useState(null);
+    const [isLoadingFeed, setIsLoadingFeed] = useState(true);
+
+    // Dynamic Live Feed sync
+    useEffect(() => {
+        if (!venue.email) {
+            setIsLoadingFeed(false);
+            return;
+        }
+
+        // Demo fallback data if user is demo and venue is default
+        const isDemoVenue = ['manager@green.de', 'restaurant@green.de', 'club@green.de', 'hotel@green.de', 'stadium@green.de'].includes(venue.email.toLowerCase());
+        
+        if (isDemo && isDemoVenue) {
+            const demoFeed = [
+                {
+                    id: 1,
+                    type: 'image',
+                    url: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=600&q=80",
+                    title: "Last Friday's Neon Glow",
+                    description: "A breathtaking night with DJ Neon. The energy was electric from start to finish!",
+                    managerNote: "Next week we're doubling the laser count. Don't miss it!"
+                },
+                {
+                    id: 2,
+                    type: 'video',
+                    url: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80",
+                    title: "Signature Cocktail Prep",
+                    description: "Behind the scenes: Crafting the 'Green Emerald' - our top-rated mix.",
+                    managerNote: "Our mixologists use only organic mint from our local greenhouse."
+                },
+                {
+                    id: 3,
+                    type: 'image',
+                    url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&q=80",
+                    title: "Vibe Check: Rooftop Lounge",
+                    description: "Unparalleled views and premium atmosphere. The perfect sunset spot.",
+                    managerNote: "Happy hour starts at 6:00 PM precisely. Get there early for the best view."
+                },
+                {
+                    id: 4,
+                    type: 'image',
+                    url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80",
+                    title: "The Gold Leaf Burger",
+                    description: "Our world-famous Wagyu burger with 24k gold leaf. A taste of luxury.",
+                    managerNote: "Available only on weekends. Booking highly recommended."
+                }
+            ];
+            setMediaItems(demoFeed);
+            setActiveMedia(demoFeed[0]);
+            setIsLoadingFeed(false);
+            return;
+        }
+
+        // Real Firestore query for non-demo users or custom accounts
+        setIsLoadingFeed(true);
+        const postsCol = collection(db, 'users', venue.email.toLowerCase(), 'posts');
+        const q = query(postsCol, orderBy('createdAt', 'desc'));
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const items = [];
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                items.push({
+                    id: docSnap.id,
+                    type: data.type || 'image',
+                    url: data.url || data.fileUrl || '',
+                    title: data.title || data.caption || 'Partner Update',
+                    description: data.description || data.caption || 'No description provided.',
+                    managerNote: data.managerNote || 'Active Operations'
+                });
+            });
+            setMediaItems(items);
+            if (items.length > 0) {
+                setActiveMedia(items[0]);
+            } else {
+                setActiveMedia(null);
+            }
+            setIsLoadingFeed(false);
+        }, (err) => {
+            console.error("Failed to fetch partner live feed:", err);
+            setIsLoadingFeed(false);
+        });
+
+        return () => unsubscribe();
+    }, [venue.email, isDemo]);
 
     const handleShare = () => {
         if (venue && navigator.share) {
@@ -31,48 +123,8 @@ const PartnerDetailsPage = () => {
         }
     };
 
-    const [mediaItems] = useState([
-        {
-            id: 1,
-            type: 'image',
-            url: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=600&q=80",
-            title: "Last Friday's Neon Glow",
-            description: "A breathtaking night with DJ Neon. The energy was electric from start to finish!",
-            managerNote: "Next week we're doubling the laser count. Don't miss it!"
-        },
-        {
-            id: 2,
-            type: 'video',
-            url: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80",
-            title: "Signature Cocktail Prep",
-            description: "Behind the scenes: Crafting the 'Green Emerald' - our top-rated mix.",
-            managerNote: "Our mixologists use only organic mint from our local greenhouse."
-        },
-        {
-            id: 3,
-            type: 'image',
-            url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&q=80",
-            title: "Vibe Check: Rooftop Lounge",
-            description: "Unparalleled views and premium atmosphere. The perfect sunset spot.",
-            managerNote: "Happy hour starts at 6:00 PM precisely. Get there early for the best view."
-        },
-        {
-            id: 4,
-            type: 'image',
-            url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80",
-            title: "The Gold Leaf Burger",
-            description: "Our world-famous Wagyu burger with 24k gold leaf. A taste of pure luxury.",
-            managerNote: "Available only on weekends. Booking highly recommended."
-        }
-    ]);
-
-    const [activeMedia, setActiveMedia] = useState(mediaItems[0]);
-
-    const isWashHub = venue.name.toLowerCase().includes('wash');
-    const isHotel = venue.category === 'hotel' || venue.name.toLowerCase().includes('luxe') || venue.name.toLowerCase().includes('hotel');
-
-
-
+    const isWashHub = venue.name?.toLowerCase().includes('wash');
+    const isHotel = venue.category === 'hotel' || venue.name?.toLowerCase().includes('luxe') || venue.name?.toLowerCase().includes('hotel');
 
     return (
         <div className="min-h-screen bg-[var(--bg-primary)] text-primary font-sans relative pb-24">
@@ -115,15 +167,25 @@ const PartnerDetailsPage = () => {
                         </div>
                     </div>
                     <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">{venue.name}</h1>
-                    <div className="flex items-center gap-4 mt-3 text-gray-400">
-                        <div className="flex items-center gap-1.5">
-                            <MapPin size={12} className="text-brand" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">1.2 km away</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                            <Clock size={12} className="text-brand" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Open until 04:00 AM</span>
-                        </div>
+                    
+                    <div className="flex flex-col gap-2 mt-3 text-gray-400">
+                        {venue.address ? (
+                            <div className="flex items-center gap-1.5">
+                                <MapPin size={12} className="text-brand" />
+                                <span className="text-[9px] font-bold uppercase tracking-widest">{venue.address}</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1.5">
+                                <MapPin size={12} className="text-brand" />
+                                <span className="text-[9px] font-bold uppercase tracking-widest">Digital Network Partner</span>
+                            </div>
+                        )}
+                        {venue.workingHours && (
+                            <div className="flex items-center gap-1.5">
+                                <Clock size={12} className="text-brand" />
+                                <span className="text-[9px] font-bold uppercase tracking-widest">{venue.workingHours}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -162,41 +224,60 @@ const PartnerDetailsPage = () => {
                 <section className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
-                            <Play size={20} className="text-brand fill-brand" /> Live Feed
+                            <LayoutGrid size={20} className="text-brand" /> Live Feed
                         </h3>
                         <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Updates from Manager</span>
                     </div>
 
-                    <motion.div key={activeMedia.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="relative rounded-[3rem] overflow-hidden bg-[var(--bg-secondary)] border border-white/5 aspect-video shadow-2xl">
-                        <img src={activeMedia.url} alt={activeMedia.title} className="w-full h-full object-cover" />
-                        {activeMedia.type === 'video' && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-16 h-16 rounded-full bg-brand/90 flex items-center justify-center text-dark-950 shadow-2xl"><Play size={32} className="ml-1" /></div>
-                            </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                        <div className="absolute bottom-0 left-0 w-full p-6">
-                            <h4 className="text-lg font-black italic uppercase text-white leading-tight drop-shadow-md">{activeMedia.title}</h4>
-                            <p className="text-[9px] font-bold text-gray-200 mt-1 uppercase tracking-wider line-clamp-2 drop-shadow-sm">{activeMedia.description}</p>
+                    {isLoadingFeed ? (
+                        <div className="py-12 text-center text-xs text-gray-500 font-bold uppercase tracking-widest">
+                            Syncing Feed...
                         </div>
-                    </motion.div>
+                    ) : mediaItems.length > 0 && activeMedia ? (
+                        <>
+                            <motion.div key={activeMedia.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="relative rounded-[3rem] overflow-hidden bg-[var(--bg-secondary)] border border-white/5 aspect-video shadow-2xl">
+                                <img src={activeMedia.url} alt={activeMedia.title} className="w-full h-full object-cover" />
+                                {activeMedia.type === 'video' && (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-16 h-16 rounded-full bg-brand/90 flex items-center justify-center text-dark-950 shadow-2xl"><Play size={32} className="ml-1" /></div>
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                                <div className="absolute bottom-0 left-0 w-full p-6">
+                                    <h4 className="text-lg font-black italic uppercase text-white leading-tight drop-shadow-md">{activeMedia.title}</h4>
+                                    <p className="text-[9px] font-bold text-gray-200 mt-1 uppercase tracking-wider line-clamp-2 drop-shadow-sm">{activeMedia.description}</p>
+                                </div>
+                            </motion.div>
 
-                    <div className="p-6 bg-dark-900 border border-main rounded-[2.5rem] relative">
-                        <div className="absolute -top-3 left-8 px-3 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-widest">Manager's Dispatch 💬</div>
-                        <p className="text-[11px] font-bold italic text-primary leading-relaxed">{activeMedia.managerNote}</p>
-                    </div>
+                            <div className="p-6 bg-dark-900 border border-white/5 rounded-[2.5rem] relative">
+                                <div className="absolute -top-3 left-8 px-3 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-widest">Manager's Dispatch 💬</div>
+                                <p className="text-[11px] font-bold italic text-primary leading-relaxed">{activeMedia.managerNote}</p>
+                            </div>
 
-                    <div className="flex gap-4 overflow-x-auto no-scrollbar px-2">
-                        {mediaItems.map((item) => (
-                            <button key={item.id} onClick={() => setActiveMedia(item)} className={`flex-shrink-0 w-24 h-24 rounded-3xl overflow-hidden border-2 transition-all ${activeMedia.id === item.id ? 'border-brand scale-105 shadow-lg shadow-brand/20' : 'border-main opacity-70 hover:opacity-100'}`}><img src={item.url} className="w-full h-full object-cover" /></button>
-                        ))}
-                    </div>
+                            <div className="flex gap-4 overflow-x-auto no-scrollbar px-2">
+                                {mediaItems.map((item) => (
+                                    <button 
+                                        key={item.id} 
+                                        onClick={() => setActiveMedia(item)} 
+                                        className={`flex-shrink-0 w-24 h-24 rounded-3xl overflow-hidden border-2 transition-all ${activeMedia.id === item.id ? 'border-brand scale-105 shadow-lg shadow-brand/20' : 'border-white/10 opacity-70 hover:opacity-100'}`}
+                                    >
+                                        <img src={item.url} className="w-full h-full object-cover" alt="Thumbnail" />
+                                    </button>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="py-16 text-center space-y-4 bg-[var(--bg-secondary)]/25 rounded-[3rem] border border-dashed border-white/10">
+                            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto text-gray-600">
+                                <Info size={30} />
+                            </div>
+                            <div>
+                                <p className="text-xs font-black uppercase tracking-widest text-gray-400">No updates yet</p>
+                                <p className="text-[8px] font-bold uppercase tracking-widest text-gray-600 mt-2 px-8">The manager has not published any live updates or feeds for this location.</p>
+                            </div>
+                        </div>
+                    )}
                 </section>
-
-
-                
-
-
             </div>
         </div>
     );

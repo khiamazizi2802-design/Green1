@@ -166,7 +166,9 @@ const DiscoveryGallery = () => {
                                 : "https://images.unsplash.com/photo-1550966841-3ee7adac1af0?w=800&q=80",
                             tags: category === 'club' ? ["VIP", "Nightlife"] : ["Verified"],
                             emailKey: emailKey,
-                            email: data.email
+                            email: data.email,
+                            address: data.businessInfo?.address || data.address || '',
+                            workingHours: data.businessInfo?.workingHours || data.workingHours || ''
                         });
                     });
                     
