@@ -313,16 +313,6 @@ const GreenSPage = () => {
                 console.error('Failed to parse green_stadium_events:', e);
             }
         }
-        
-        if (user?.isDemo) {
-            return {
-                title: 'Champions League\nBox Office Open',
-                image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=800',
-                status: 'Live Marketplace',
-                actionText: 'SECURE TICKETS NOW'
-            };
-        }
-        
         return null;
     }, [user]);
 
@@ -355,7 +345,21 @@ const GreenSPage = () => {
                                     boxShadow: ['0 0 20px rgba(255,255,255,0.1)', '0 0 40px rgba(255,255,255,0.2)', '0 0 20px rgba(255,255,255,0.1)']
                                 }}
                                 transition={{ duration: 2, repeat: Infinity }}
-                                onClick={() => navigate('/order/tracker')}
+                                onClick={() => {
+                                    const activeTicket = venueTickets[0];
+                                    navigate('/order/tracker', {
+                                        state: {
+                                            cart: activeTicket.items || [],
+                                            venueName: activeTicket.venueName || "The Skyline Club",
+                                            venueOffer: activeTicket.venueOffer || "",
+                                            orderId: activeTicket.id,
+                                            tableId: activeTicket.tableId || "Unknown",
+                                            paymentStatus: activeTicket.paymentStatus || "PAID",
+                                            orderStatus: activeTicket.orderStatus || "PENDING",
+                                            guestName: activeTicket.guestName || ""
+                                        }
+                                    });
+                                }}
                                 className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/30 text-brand flex items-center justify-center relative transition-all shadow-lg active:scale-90"
                             >
                                 <Ticket size={22} />
