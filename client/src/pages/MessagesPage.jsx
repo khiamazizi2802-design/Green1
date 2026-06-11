@@ -193,8 +193,9 @@ const MessagesPage = () => {
         }
     }, [isDemo]);
 
-    // Load custom offers from localStorage on mount
+    // Load custom offers from localStorage on mount (demo only)
     useEffect(() => {
+        if (!isDemo) return;
         const savedCustom = localStorage.getItem('green_custom_offers');
         if (savedCustom) {
             const parsed = JSON.parse(savedCustom);
@@ -203,7 +204,7 @@ const MessagesPage = () => {
                 return [...parsed, ...staticItems];
             });
         }
-    }, []);
+    }, [isDemo]);
 
     const filteredItems = inboxItems.filter(item => {
         if (activeTab === 'messages') return item.type === 'message';
