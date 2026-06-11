@@ -619,7 +619,7 @@ const Home = () => {
                         onClick={() => setActiveSheet('profile')}
                         className="w-14 h-14 rounded-2xl border-2 border-[var(--accent-primary)] flex flex-col items-center justify-center p-0 overflow-hidden shadow-xl hover:scale-105 active:scale-95 transition-all"
                     >
-                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`} alt="Profile" className="w-full h-full object-cover relative z-10" />
+                        <img src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`} alt="Profile" className="w-full h-full object-cover relative z-10" />
                     </button>
 
                     <div>

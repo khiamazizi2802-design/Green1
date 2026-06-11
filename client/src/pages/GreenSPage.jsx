@@ -365,7 +365,7 @@ const GreenSPage = () => {
                             </motion.button>
                         )}
                         <div className="w-12 h-12 rounded-full border-2 border-brand/20 p-1 overflow-hidden">
-                            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`} className="w-full h-full rounded-full" alt="profile" />
+                             <img src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`} className="w-full h-full rounded-full" alt="profile" />
                         </div>
                     </div>
                 </header>
