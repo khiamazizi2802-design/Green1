@@ -63,5 +63,13 @@ service cloud.firestore {
       // Only the business owner (manager) or admin can write
       allow write: if isOwner(email) || isAdmin();
     }
+
+    // Vehicles Collection rules
+    match /vehicles/{vehicleId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (
+        getUserData().role == 'manager' || isAdmin()
+      );
+    }
   }
 }

@@ -1352,11 +1352,30 @@ const ManagerDashboard = () => {
         holder: isDemo ? getBusinessName() : ''
     });
 
-    const [fleetVehicles, setFleetVehicles] = useState(() => {
-        const saved = localStorage.getItem(`green_fleet_vehicles_${userEmailKey}`);
-        if (saved) return JSON.parse(saved);
-        return ['Tesla Model 3', 'Tesla Model Y', 'VW ID.4', 'Polestar 2', 'BMW i4', 'None'];
-    });
+    const [fleetVehicles, setFleetVehicles] = useState(['Tesla Model 3', 'Tesla Model Y', 'VW ID.4', 'Polestar 2', 'BMW i4', 'None']);
+
+    useEffect(() => {
+        if (!user?.email) return;
+        const managerId = user.email.toLowerCase();
+        
+        const q = query(collection(fbDb, 'vehicles'), where('managerId', '==', managerId));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const list = [];
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                if (data.model) {
+                    list.push(data.model);
+                }
+            });
+            const defaultCatalog = ['Tesla Model 3', 'Tesla Model Y', 'VW ID.4', 'Polestar 2', 'BMW i4'];
+            const combinedModels = Array.from(new Set([...list, ...defaultCatalog])).filter(m => m && m !== 'None');
+            setFleetVehicles([...combinedModels, 'None']);
+        }, (error) => {
+            console.error("Error fetching vehicles snapshot:", error);
+        });
+
+        return () => unsubscribe();
+    }, [user?.email]);
 
     useEffect(() => {
         if (user) {
@@ -4382,22 +4401,45 @@ const ManagerDashboard = () => {
                                                 </div>
 
                                                 <button 
-                                                    onClick={() => {
+                                                    onClick={async () => {
                                                         if (newVehicleData.model) {
-                                                            const updatedPool = [...fleetVehicles.filter(v => v !== 'None'), newVehicleData.model, 'None'];
-                                                            setFleetVehicles(updatedPool);
-                                                            localStorage.setItem(`green_fleet_vehicles_${userEmailKey}`, JSON.stringify(updatedPool));
-                                                            
-                                                            // Auto-assign driver if selected
-                                                            if (newVehicleData.assignedDriver && newVehicleData.assignedDriver !== 'None') {
-                                                                const updatedDrivers = driverDeployments.map(d => 
-                                                                    d.name === newVehicleData.assignedDriver ? { ...d, current: newVehicleData.model } : d
-                                                                );
-                                                                setDriverDeployments(updatedDrivers);
-                                                                localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(updatedDrivers));
+                                                            try {
+                                                                const managerId = user.email.toLowerCase();
+                                                                const vehicleDocId = (newVehicleData.plate || 'V-' + Math.floor(100 + Math.random() * 900)).replace(/\s+/g, '-').toUpperCase();
+                                                                const newVehicleRef = doc(fbDb, 'vehicles', vehicleDocId);
+                                                                const newVehicleDoc = {
+                                                                    id: vehicleDocId,
+                                                                    managerId: managerId,
+                                                                    model: newVehicleData.model,
+                                                                    plate: newVehicleData.plate || 'F-GR ' + Math.floor(1000 + Math.random() * 9000) + 'E',
+                                                                    year: newVehicleData.year || '2024',
+                                                                    color: newVehicleData.color || 'Midnight Green',
+                                                                    status: 'approved',
+                                                                    assignedDriver: newVehicleData.assignedDriver || 'None'
+                                                                };
+                                                                await setDoc(newVehicleRef, newVehicleDoc);
+
+                                                                // Auto-assign driver if selected
+                                                                if (newVehicleData.assignedDriver && newVehicleData.assignedDriver !== 'None') {
+                                                                    const driverObj = driverDeployments.find(d => d.name === newVehicleData.assignedDriver);
+                                                                    if (driverObj && driverObj.email) {
+                                                                        await updateDoc(doc(fbDb, 'users', driverObj.email.toLowerCase()), {
+                                                                            vehicleInfo: {
+                                                                                model: newVehicleDoc.model,
+                                                                                plate: newVehicleDoc.plate,
+                                                                                year: newVehicleDoc.year,
+                                                                                color: newVehicleDoc.color,
+                                                                                status: 'approved'
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                }
+                                                                alert(`FLEET ASSET REGISTERED IN FIRESTORE\n----------------------\nModel: ${newVehicleDoc.model}\nPlate: ${newVehicleDoc.plate}\nAssigned Driver: ${newVehicleDoc.assignedDriver}`);
+                                                            } catch (err) {
+                                                                console.error("Error registering vehicle in Firestore:", err);
+                                                                alert("❌ Failed to register vehicle in Firestore.");
                                                             }
                                                         }
-                                                        alert(`FLEET ASSET REGISTERED\n----------------------\nModel: ${newVehicleData.model}\nPlate: ${newVehicleData.plate}\nConcession: ${newVehicleData.concession || 'N/A'}\nAssigned Driver: ${newVehicleData.assignedDriver || 'None'}\n\nStatus: Pending Final Inspection`);
                                                         setIsAddingVehicle(false);
                                                     }}
                                                     className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-brand/20 active:scale-95 transition-all"
