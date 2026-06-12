@@ -613,17 +613,32 @@ const ManagerDashboard = () => {
 
     const applyTemplate = (templateId) => {
         setActiveTemplate(templateId);
-        switch(templateId) {
-            case 'pilot':
-                setStaffPermissions({ orders: true, terminal: true, marketing: true, finance: false, compliance: false });
-                break;
-            case 'supervisor':
-                setStaffPermissions({ orders: true, terminal: true, marketing: true, finance: true, compliance: false });
-                break;
-            case 'accountant':
-                setStaffPermissions({ orders: false, terminal: false, marketing: false, finance: true, compliance: true });
-                break;
-            default: break;
+        if (managerContext === 'FM') {
+            switch(templateId) {
+                case 'pilot':
+                    setStaffPermissions({ orders: true, terminal: false, marketing: false, finance: false, compliance: true });
+                    break;
+                case 'supervisor':
+                    setStaffPermissions({ orders: true, terminal: true, marketing: false, finance: true, compliance: true });
+                    break;
+                case 'accountant':
+                    setStaffPermissions({ orders: false, terminal: false, marketing: false, finance: true, compliance: true });
+                    break;
+                default: break;
+            }
+        } else {
+            switch(templateId) {
+                case 'pilot':
+                    setStaffPermissions({ orders: true, terminal: true, marketing: true, finance: false, compliance: false });
+                    break;
+                case 'supervisor':
+                    setStaffPermissions({ orders: true, terminal: true, marketing: true, finance: true, compliance: false });
+                    break;
+                case 'accountant':
+                    setStaffPermissions({ orders: false, terminal: false, marketing: false, finance: true, compliance: true });
+                    break;
+                default: break;
+            }
         }
     };
 
@@ -4731,9 +4746,9 @@ const ManagerDashboard = () => {
                                                         <p className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] ml-2">Quick Templates</p>
                                                         <div className="grid grid-cols-3 gap-3">
                                                             {[
-                                                                { id: 'pilot', label: 'Standard Pilot', icon: Zap },
-                                                                { id: 'supervisor', label: 'Supervisor', icon: ShieldCheck },
-                                                                { id: 'accountant', label: 'Accountant', icon: Receipt }
+                                                                { id: 'pilot', label: managerContext === 'FM' ? 'Standard Driver' : 'Standard Pilot', icon: Zap },
+                                                                { id: 'supervisor', label: managerContext === 'FM' ? 'Fleet Dispatcher' : 'Supervisor', icon: ShieldCheck },
+                                                                { id: 'accountant', label: managerContext === 'FM' ? 'Fleet Accountant' : 'Accountant', icon: Receipt }
                                                             ].map(t => (
                                                                 <button 
                                                                     key={t.id}
@@ -4755,33 +4770,47 @@ const ManagerDashboard = () => {
                                                                 className={`p-6 rounded-[2rem] border transition-all text-left group ${staffPermissions.orders ? 'bg-brand/10 border-brand' : 'bg-btn-sec border-main'}`}
                                                             >
                                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${staffPermissions.orders ? 'bg-brand text-dark-900' : 'bg-btn-sec text-secondary'}`}><ShoppingBag size={20} /></div>
-                                                                <p className={`text-sm font-black italic uppercase ${staffPermissions.orders ? 'text-primary' : 'text-secondary'}`}>Orders & Queue</p>
-                                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">Process live service requests</p>
+                                                                <p className={`text-sm font-black italic uppercase ${staffPermissions.orders ? 'text-primary' : 'text-secondary'}`}>
+                                                                    {managerContext === 'FM' ? 'Rides & Dispatches' : 'Orders & Queue'}
+                                                                </p>
+                                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">
+                                                                    {managerContext === 'FM' ? 'Process live ride dispatches' : 'Process live service requests'}
+                                                                </p>
                                                             </button>
                                                             <button 
                                                                 onClick={() => setStaffPermissions(prev => ({ ...prev, terminal: !prev.terminal }))}
                                                                 className={`p-6 rounded-[2rem] border transition-all text-left group ${staffPermissions.terminal ? 'bg-brand/10 border-brand' : 'bg-btn-sec border-main'}`}
                                                             >
                                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${staffPermissions.terminal ? 'bg-brand text-dark-900' : 'bg-btn-sec text-secondary'}`}><QrCode size={20} /></div>
-                                                                <p className={`text-sm font-black italic uppercase ${staffPermissions.terminal ? 'text-primary' : 'text-secondary'}`}>Scan Terminal</p>
-                                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">Verify tickets & vouchers</p>
+                                                                <p className={`text-sm font-black italic uppercase ${staffPermissions.terminal ? 'text-primary' : 'text-secondary'}`}>
+                                                                    {managerContext === 'FM' ? 'Driver Compliance' : 'Scan Terminal'}
+                                                                </p>
+                                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">
+                                                                    {managerContext === 'FM' ? 'Verify driver permits & logs' : 'Verify tickets & vouchers'}
+                                                                </p>
                                                             </button>
                                                             <button 
                                                                 onClick={() => setStaffPermissions(prev => ({ ...prev, finance: !prev.finance }))}
                                                                 className={`p-6 rounded-[2rem] border transition-all text-left group ${staffPermissions.finance ? 'bg-brand/10 border-brand' : 'bg-btn-sec border-main'}`}
                                                             >
                                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${staffPermissions.finance ? 'bg-brand text-dark-900' : 'bg-btn-sec text-secondary'}`}><Receipt size={20} /></div>
-                                                                <p className={`text-sm font-black italic uppercase ${staffPermissions.finance ? 'text-primary' : 'text-secondary'}`}>Financial Intel</p>
-                                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">View revenue & exports</p>
+                                                                <p className={`text-sm font-black italic uppercase ${staffPermissions.finance ? 'text-primary' : 'text-secondary'}`}>
+                                                                    {managerContext === 'FM' ? 'Fleet Billing' : 'Financial Intel'}
+                                                                </p>
+                                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">
+                                                                    {managerContext === 'FM' ? 'View fleet revenue & exports' : 'View revenue & exports'}
+                                                                </p>
                                                             </button>
                                                             <button 
                                                                 onClick={() => setStaffPermissions(prev => ({ ...prev, compliance: !prev.compliance }))}
                                                                 className={`p-6 rounded-[2rem] border transition-all text-left group ${staffPermissions.compliance ? 'bg-violet-500/10 border-violet-500 shadow-[0_0_30px_rgba(139,92,246,0.1)]' : 'bg-btn-sec border-main'}`}
                                                             >
                                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${staffPermissions.compliance ? 'bg-violet-500 text-primary' : 'bg-btn-sec text-secondary'}`}><ShieldCheck size={20} /></div>
-                                                                <p className={`text-sm font-black italic uppercase ${staffPermissions.compliance ? 'text-primary' : 'text-secondary'}`}>Compliance</p>
+                                                                <p className={`text-sm font-black italic uppercase ${staffPermissions.compliance ? 'text-primary' : 'text-secondary'}`}>
+                                                                    {managerContext === 'FM' ? 'Vehicle & Driver Vault' : 'Compliance'}
+                                                                </p>
                                                                 <p className="text-[8px] font-bold text-secondary uppercase mt-1">
-                                                                    Access vault & legal docs
+                                                                    {managerContext === 'FM' ? 'Access vehicle & driver docs' : 'Access vault & legal docs'}
                                                                 </p>
                                                             </button>
                                                         </div>

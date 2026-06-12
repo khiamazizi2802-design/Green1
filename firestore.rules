@@ -24,7 +24,13 @@ service cloud.firestore {
     // Users Collection rules
     match /users/{email} {
       allow read: if isAuthenticated();
-      allow write: if isOwner(email) || isAdmin();
+      allow create, delete: if isOwner(email) || isAdmin();
+      allow update: if isOwner(email) || isAdmin() || (
+        isAuthenticated() &&
+        getUserData().role == 'manager' &&
+        (resource.data.role == 'driver' || resource.data.role == 'staff') &&
+        (resource.data.onboarded == false || resource.data.managerId == request.auth.token.email.lower())
+      );
       
       // Subcollection: paymentMethods
       match /paymentMethods/{methodId} {
@@ -45,7 +51,8 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated() && (
         isOwner(resource.data.email) || 
         isOwner(resource.data.managerId) || 
-        isAdmin()
+        isAdmin() ||
+        (getUserData().role == 'manager' && (resource.data.onboarded == false || resource.data.managerId == request.auth.token.email.lower()))
       );
     }
 
