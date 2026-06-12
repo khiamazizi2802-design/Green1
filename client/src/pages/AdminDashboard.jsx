@@ -435,34 +435,48 @@ const AdminDashboard = () => {
                 
                 const docSpecs = {
                     restaurant: [
-                        { id: 'reg', name: 'Business Registration (Gewerbeanmeldung)' },
-                        { id: 'tax', name: 'Tax ID Certificate (Steuernummer)' },
-                        { id: 'gast', name: 'Food Hygiene Certificate' },
-                        { id: 'liq', name: 'Liability Insurance' },
-                        { id: 'bankv', name: 'Bank Account Verification (IBAN)' }
+                        { id: 'reg', name: 'Commercial Register' },
+                        { id: 'mid', name: 'Manager ID' },
+                        { id: 'tax', name: 'Tax Registration' },
+                        { id: 'gast', name: 'Gastronomy License' },
+                        { id: 'liq', name: 'Liquor License' },
+                        { id: 'fire', name: 'Fire Safety' },
+                        { id: 'sepa', name: 'SEPA Mandate' },
+                        { id: 'vatc', name: 'VAT Certification' },
+                        { id: 'bankv', name: 'Bank Validation' }
                     ],
                     hotel: [
-                        { id: 'reg', name: 'Business Registration (Gewerbeanmeldung)' },
-                        { id: 'tax', name: 'Tax ID Certificate (Steuernummer)' },
-                        { id: 'gast', name: 'Hotel Classification Certificate' },
-                        { id: 'liq', name: 'Liability Insurance' },
-                        { id: 'bankv', name: 'Bank Account Verification (IBAN)' },
-                        { id: 'fire', name: 'Fire Safety Compliance' }
+                        { id: 'reg', name: 'Commercial Register' },
+                        { id: 'mid', name: 'Manager ID' },
+                        { id: 'tax', name: 'Tax Registration' },
+                        { id: 'gast', name: 'Gastronomy License' },
+                        { id: 'liq', name: 'Liquor License' },
+                        { id: 'fire', name: 'Fire Safety' },
+                        { id: 'sepa', name: 'SEPA Mandate' },
+                        { id: 'vatc', name: 'VAT Certification' },
+                        { id: 'bankv', name: 'Bank Validation' }
                     ],
                     fleet: [
-                        { id: 'reg', name: 'Business Registration (Gewerbeanmeldung)' },
-                        { id: 'vr', name: 'Vehicle Registration (Fahrzeugschein)' },
-                        { id: 'cc', name: 'Commercial Driver License' },
+                        { id: 'tl', name: 'Transport License (P-Schein)' },
                         { id: 'fip', name: 'Fleet Insurance Policy' },
-                        { id: 'bankv', name: 'Bank Account Verification (IBAN)' },
-                        { id: 'tuv', name: 'TÜV Inspection Certificate' }
+                        { id: 'cc', name: 'Chauffeur Certification' },
+                        { id: 'vr', name: 'Vehicle Registration (V5C)' },
+                        { id: 'tuv', name: 'Roadworthiness Cert (TÜV)' },
+                        { id: 'es', name: 'Emission Standards' },
+                        { id: 'sepa', name: 'SEPA Mandate' },
+                        { id: 'vatc', name: 'VAT Certification' },
+                        { id: 'bankv', name: 'Bank Validation' }
                     ],
                     venue: [
-                        { id: 'reg', name: 'Business Registration (Gewerbeanmeldung)' },
-                        { id: 'tax', name: 'Tax ID Certificate (Steuernummer)' },
-                        { id: 'gast', name: 'Venue Operating License' },
-                        { id: 'liq', name: 'Liability Insurance' },
-                        { id: 'bankv', name: 'Bank Account Verification (IBAN)' }
+                        { id: 'reg', name: 'Commercial Register' },
+                        { id: 'mid', name: 'Manager ID' },
+                        { id: 'tax', name: 'Tax Registration' },
+                        { id: 'gast', name: 'Gastronomy License' },
+                        { id: 'liq', name: 'Liquor License' },
+                        { id: 'fire', name: 'Fire Safety' },
+                        { id: 'sepa', name: 'SEPA Mandate' },
+                        { id: 'vatc', name: 'VAT Certification' },
+                        { id: 'bankv', name: 'Bank Validation' }
                     ]
                 };
                 
