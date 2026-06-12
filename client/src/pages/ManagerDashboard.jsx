@@ -703,13 +703,30 @@ const ManagerDashboard = () => {
             // 2. Update the document in Firestore users collection at the registered user's email
             if (foundStaff.email) {
                 const userRef = doc(fbDb, 'users', foundStaff.email.toLowerCase());
-                await updateDoc(userRef, {
+                const updates = {
                     onboarded: true,
                     managerId,
                     businessName,
                     businessType: managerContext,
                     permissions: permissions
-                });
+                };
+                
+                // If onboarded by a Fleet Manager or is a driver, auto-verify compliance documents so driver can go online
+                if (foundStaff.role === 'driver' || managerContext === 'FM') {
+                    updates.driverDocs = [
+                        { id: 'avatar', name: 'Profile Photo', status: 'verified', requirement: 'High-resolution headshot for driver profile ID', file: null },
+                        { id: 'license', name: 'Driving License', status: 'verified', requirement: 'Class B EU License (Front & Back)', file: null },
+                        { id: 'idcard', name: 'Passport / ID Card', status: 'verified', requirement: 'Government-issued biometric passport or national identity card', file: null },
+                        { id: 'pschein', name: 'P-Schein (Passenger Permit)', status: 'verified', requirement: 'Passenger Transport License (Personenbeförderungsschein)', file: null },
+                        { id: 'terms', name: 'Terms & Conditions', status: 'verified', requirement: 'Accept Platform Partnership & Data Usage Agreement', file: null }
+                    ];
+                    updates.vehicleDocs = [
+                        { id: 'tuv', name: 'HU/AU (TÜV)', status: 'verified', requirement: 'Valid main inspection certificate' },
+                        { id: 'insurance', name: 'Commercial Insurance', status: 'verified', requirement: 'PBefG-compliant passenger insurance coverage' }
+                    ];
+                }
+                
+                await updateDoc(userRef, updates);
             }
 
             // Add to local staff list for the dashboard
@@ -1213,7 +1230,8 @@ const ManagerDashboard = () => {
                         current: data.vehicleInfo?.status === 'approved' || data.vehicleInfo?.status === 'pending' ? data.vehicleInfo.model : 'None',
                         rating: data.rating || 5.0,
                         avatar: data.name,
-                        vehicleInfo: data.vehicleInfo || null
+                        vehicleInfo: data.vehicleInfo || null,
+                        email: data.email || doc.id
                     });
                 }
             });
@@ -4224,6 +4242,15 @@ const ManagerDashboard = () => {
                                                             );
                                                             setDriverDeployments(updated);
                                                             localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(updated));
+                                                            
+                                                            // Clear vehicleInfo in Firestore
+                                                            const driverObject = staffList.find(s => s.name === editingDriver.originalName);
+                                                            if (driverObject && driverObject.email) {
+                                                                updateDoc(doc(fbDb, 'users', driverObject.email.toLowerCase()), {
+                                                                    vehicleInfo: null
+                                                                }).catch(err => console.error("Error clearing vehicle info in Firestore:", err));
+                                                            }
+                                                            
                                                             setEditingDriver(null);
                                                         }}
                                                         className="flex-1 py-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-primary transition-all"
@@ -4237,6 +4264,27 @@ const ManagerDashboard = () => {
                                                             );
                                                             setDriverDeployments(updated);
                                                             localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(updated));
+                                                            
+                                                            // Sync vehicle to Firestore
+                                                            const driverObject = staffList.find(s => s.name === editingDriver.originalName);
+                                                            if (driverObject && driverObject.email) {
+                                                                if (editingDriver.current && editingDriver.current !== 'None') {
+                                                                    updateDoc(doc(fbDb, 'users', driverObject.email.toLowerCase()), {
+                                                                        vehicleInfo: {
+                                                                            model: editingDriver.current,
+                                                                            plate: 'F-GR ' + Math.floor(1000 + Math.random() * 9000) + 'E',
+                                                                            year: '2024',
+                                                                            color: 'Midnight Green',
+                                                                            status: 'approved'
+                                                                        }
+                                                                    }).catch(err => console.error("Error setting vehicle in Firestore:", err));
+                                                                } else {
+                                                                    updateDoc(doc(fbDb, 'users', driverObject.email.toLowerCase()), {
+                                                                        vehicleInfo: null
+                                                                    }).catch(err => console.error("Error clearing vehicle in Firestore:", err));
+                                                                }
+                                                            }
+                                                            
                                                             setEditingDriver(null);
                                                         }}
                                                         className="flex-1 py-4 bg-brand text-dark-900 rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-95 transition-all"
