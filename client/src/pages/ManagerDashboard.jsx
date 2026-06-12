@@ -4244,9 +4244,8 @@ const ManagerDashboard = () => {
                                                             localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(updated));
                                                             
                                                             // Clear vehicleInfo in Firestore
-                                                            const driverObject = staffList.find(s => s.name === editingDriver.originalName);
-                                                            if (driverObject && driverObject.email) {
-                                                                updateDoc(doc(fbDb, 'users', driverObject.email.toLowerCase()), {
+                                                            if (editingDriver && editingDriver.email) {
+                                                                updateDoc(doc(fbDb, 'users', editingDriver.email.toLowerCase()), {
                                                                     vehicleInfo: null
                                                                 }).catch(err => console.error("Error clearing vehicle info in Firestore:", err));
                                                             }
@@ -4266,10 +4265,9 @@ const ManagerDashboard = () => {
                                                             localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(updated));
                                                             
                                                             // Sync vehicle to Firestore
-                                                            const driverObject = staffList.find(s => s.name === editingDriver.originalName);
-                                                            if (driverObject && driverObject.email) {
+                                                            if (editingDriver && editingDriver.email) {
                                                                 if (editingDriver.current && editingDriver.current !== 'None') {
-                                                                    updateDoc(doc(fbDb, 'users', driverObject.email.toLowerCase()), {
+                                                                    updateDoc(doc(fbDb, 'users', editingDriver.email.toLowerCase()), {
                                                                         vehicleInfo: {
                                                                             model: editingDriver.current,
                                                                             plate: 'F-GR ' + Math.floor(1000 + Math.random() * 9000) + 'E',
@@ -4279,7 +4277,7 @@ const ManagerDashboard = () => {
                                                                         }
                                                                     }).catch(err => console.error("Error setting vehicle in Firestore:", err));
                                                                 } else {
-                                                                    updateDoc(doc(fbDb, 'users', driverObject.email.toLowerCase()), {
+                                                                    updateDoc(doc(fbDb, 'users', editingDriver.email.toLowerCase()), {
                                                                         vehicleInfo: null
                                                                     }).catch(err => console.error("Error clearing vehicle in Firestore:", err));
                                                                 }
