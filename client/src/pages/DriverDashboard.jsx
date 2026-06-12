@@ -2318,12 +2318,60 @@ const DriverDashboard = () => {
 
                             {view === 'vehicle-hub' && (
                                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    {/* STATUS BANNER */}
+                                    <div className="bg-surface border border-main rounded-[2.5rem] p-8 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-[8px] font-black uppercase tracking-widest text-secondary mb-1">Asset Verification Status</p>
+                                            {vehicleInfo?.status === 'approved' ? (
+                                                <p className="text-[11px] font-black text-brand flex items-center gap-1.5 uppercase tracking-wider">
+                                                    <ShieldCheck size={14} className="text-brand animate-bounce" /> Verified by Admin Portal
+                                                </p>
+                                            ) : vehicleInfo?.status === 'pending' ? (
+                                                <p className="text-[11px] font-black text-amber-400 flex items-center gap-1.5 uppercase tracking-wider animate-pulse">
+                                                    <Clock size={14} className="text-amber-400" /> Awaiting Manager Approval
+                                                </p>
+                                            ) : (
+                                                <p className="text-[11px] font-black text-white/50 flex items-center gap-1.5 uppercase tracking-wider">
+                                                    <AlertCircle size={14} className="text-white/30" /> Unregistered Asset
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-md ${
+                                            vehicleInfo?.status === 'approved' ? 'bg-brand/10 border border-brand/20 text-brand' :
+                                            vehicleInfo?.status === 'pending' ? 'bg-amber-400/10 border border-amber-400/20 text-amber-400' :
+                                            'bg-white/5 border border-white/10 text-white/40'
+                                        }`}>
+                                            {vehicleInfo?.status === 'approved' ? 'Active Duty' : vehicleInfo?.status === 'pending' ? 'Pending Director' : 'Inactive'}
+                                        </div>
+                                    </div>
+
                                     {/* VEHICLE PHOTO UPLOAD AREA */}
                                     <div className="bg-surface border border-main rounded-[2.5rem] p-8 space-y-6">
                                         <div className="flex flex-col items-center text-center space-y-4">
                                             <div className="w-full aspect-[16/9] bg-dark-950 border-2 border-dashed border-main rounded-3xl flex flex-col items-center justify-center relative overflow-hidden group">
                                                 {vehicleInfo?.photo ? (
-                                                    <img src={vehicleInfo.photo} className="w-full h-full object-cover" alt="Vehicle" />
+                                                    <>
+                                                        <img src={vehicleInfo.photo} className="w-full h-full object-cover" alt="Vehicle" />
+                                                        {(!vehicleInfo?.status || vehicleInfo?.status === 'unregistered') && (
+                                                            <label className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                                                <Upload size={20} className="text-brand" />
+                                                                <span className="text-[8px] font-black uppercase tracking-widest text-white">Upload New Shot</span>
+                                                                <input 
+                                                                    type="file" 
+                                                                    accept="image/*"
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files[0];
+                                                                        if (file) {
+                                                                            const reader = new FileReader();
+                                                                            reader.onloadend = () => setVehicleInfo(prev => ({ ...(prev || {}), photo: reader.result }));
+                                                                            reader.readAsDataURL(file);
+                                                                        }
+                                                                    }}
+                                                                    className="hidden" 
+                                                                />
+                                                            </label>
+                                                        )}
+                                                    </>
                                                 ) : (
                                                     <div className="flex flex-col items-center space-y-3">
                                                         <div className="w-16 h-16 rounded-full bg-surface flex items-center justify-center">
@@ -2333,21 +2381,21 @@ const DriverDashboard = () => {
                                                             <p className="text-[10px] font-black uppercase tracking-widest text-primary">Upload Vehicle Shot</p>
                                                             <p className="text-[8px] font-bold text-secondary uppercase tracking-tight">Gallery or Camera roll</p>
                                                         </div>
+                                                        <input 
+                                                            type="file" 
+                                                            accept="image/*"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files[0];
+                                                                if (file) {
+                                                                    const reader = new FileReader();
+                                                                    reader.onloadend = () => setVehicleInfo(prev => ({ ...(prev || {}), photo: reader.result }));
+                                                                    reader.readAsDataURL(file);
+                                                                }
+                                                            }}
+                                                            className="absolute inset-0 opacity-0 cursor-pointer" 
+                                                        />
                                                     </div>
                                                 )}
-                                                <input 
-                                                    type="file" 
-                                                    accept="image/*"
-                                                    onChange={(e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file) {
-                                                            const reader = new FileReader();
-                                                            reader.onloadend = () => setVehicleInfo(prev => ({ ...(prev || {}), photo: reader.result }));
-                                                            reader.readAsDataURL(file);
-                                                        }
-                                                    }}
-                                                    className="absolute inset-0 opacity-0 cursor-pointer" 
-                                                />
                                             </div>
                                             <div className="flex gap-4 w-full">
                                                 <div className="flex-1 p-4 bg-brand/5 border border-brand/20 rounded-2xl flex items-center justify-center gap-3">
@@ -2371,18 +2419,86 @@ const DriverDashboard = () => {
                                                     <label className="text-[7px] font-black text-gray-600 uppercase tracking-[0.2em] ml-1">{item.label}</label>
                                                     <input 
                                                         type="text"
+                                                        disabled={vehicleInfo?.status === 'approved' || vehicleInfo?.status === 'pending'}
                                                         value={vehicleInfo?.[item.field] || ''}
                                                         onChange={(e) => setVehicleInfo(prev => ({ ...(prev || {}), [item.field]: e.target.value }))}
                                                         placeholder={item.placeholder}
-                                                        className="w-full bg-dark-950 border border-main rounded-xl px-4 py-3 text-[10px] font-bold text-primary outline-none focus:border-brand/50 transition-all placeholder:text-gray-700"
+                                                        className="w-full bg-dark-950 border border-main rounded-xl px-4 py-3 text-[10px] font-bold text-primary outline-none focus:border-brand/50 transition-all placeholder:text-gray-700 disabled:opacity-50"
                                                     />
                                                 </div>
                                             ))}
                                         </div>
 
-                                        <button className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-brand/10 hover:shadow-brand/20 active:scale-[0.98] transition-all">
-                                            Update Vehicle Profile
-                                        </button>
+                                        {vehicleInfo?.status === 'approved' ? (
+                                            <button 
+                                                onClick={() => {
+                                                    if (confirm("Are you sure you want to reset this registration? This will revoke active verification status!")) {
+                                                        const updated = { ...(vehicleInfo || {}), status: 'unregistered' };
+                                                        setVehicleInfo(updated);
+                                                        localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
+                                                        if (user?.email) {
+                                                            updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                                                                vehicleInfo: null
+                                                            }).catch(err => console.error("Error resetting vehicle in Firestore:", err));
+                                                        }
+                                                    }
+                                                }}
+                                                className="w-full py-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-red-500 hover:text-white transition-all"
+                                            >
+                                                Reset Registration
+                                            </button>
+                                        ) : vehicleInfo?.status === 'pending' ? (
+                                            <button 
+                                                onClick={() => {
+                                                    const updated = { ...(vehicleInfo || {}), status: 'unregistered' };
+                                                    setVehicleInfo(updated);
+                                                    localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
+                                                    if (user?.email) {
+                                                        updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                                                            vehicleInfo: null
+                                                        }).catch(err => console.error("Error recalling vehicle in Firestore:", err));
+                                                    }
+                                                    alert("APPROVAL REQUEST RECALLED: Reverted back to draft status.");
+                                                }}
+                                                className="w-full py-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-red-500 hover:text-white transition-all"
+                                            >
+                                                Recall Approval Request
+                                            </button>
+                                        ) : (
+                                            <button 
+                                                onClick={() => {
+                                                    if (!vehicleInfo?.model || !vehicleInfo?.plate || !vehicleInfo?.year || !vehicleInfo?.color) {
+                                                        alert("Please fill out all fields before requesting approval.");
+                                                        return;
+                                                    }
+                                                    const updated = { 
+                                                        ...(vehicleInfo || {}), 
+                                                        status: 'pending', 
+                                                        driverName: `placeHolderName` 
+                                                    };
+                                                    const dName = `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim() || user?.name || 'Driver';
+                                                    updated.driverName = dName;
+                                                    
+                                                    setVehicleInfo(updated);
+                                                    localStorage.setItem('driver_vehicle_data', JSON.stringify(updated));
+                                                    if (user?.email) {
+                                                        updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                                                            vehicleInfo: updated
+                                                        })
+                                                        .then(() => {
+                                                            alert("VEHICLE REGISTRATION INITIATED • Secure approval request dispatched to the GreenRide Admin Portal!");
+                                                        })
+                                                        .catch(err => {
+                                                            console.error("Error updating vehicle in Firestore:", err);
+                                                            alert("❌ Failed to request approval.");
+                                                        });
+                                                    }
+                                                }}
+                                                className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-brand/10 hover:shadow-brand/20 active:scale-[0.98] transition-all"
+                                            >
+                                                Request Admin Approval
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             )}
