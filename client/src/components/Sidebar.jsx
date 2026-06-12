@@ -248,7 +248,10 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                             <div>
                                 <h2 className="text-2xl font-black italic tracking-tighter text-white uppercase">Green</h2>
                                 <p className="text-[10px] font-black uppercase tracking-[0.25em] text-brand mt-1 italic">
-                                    {user?.businessName || `${currentRole === 'staff' ? (localStorage.getItem('green_staff_template') || 'Staff').replace('_', ' ') : currentRole.replace('_', ' ')} GRID SYSTEM`}
+                                    {currentRole === 'driver' 
+                                        ? (user?.greenId || "GRN-MICK-DRIV")
+                                        : (user?.businessName || `${currentRole === 'staff' ? (localStorage.getItem('green_staff_template') || 'Staff').replace('_', ' ') : currentRole.replace('_', ' ')} GRID SYSTEM`)
+                                    }
                                 </p>
                             </div>
                             <button

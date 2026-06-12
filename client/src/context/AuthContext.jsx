@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }) => {
 
     const defaultUsers = [
         { name: 'Alex Passenger', email: 'passenger@green.de', password: 'green2026', role: 'passenger', greenFlags: 124, redFlags: 0 },
-        { name: 'Mick Driver', email: 'driver@green.de', password: 'green2026', role: 'driver', greenFlags: 842, redFlags: 1, onboarded: true },
+        { name: 'Mick Driver', email: 'driver@green.de', password: 'green2026', role: 'driver', greenId: 'GRN-MICK-DRIV', greenFlags: 842, redFlags: 1, onboarded: true },
         { 
             name: 'Sam Personnel (Universal Staff)', 
             email: 'staff@green.de', 
