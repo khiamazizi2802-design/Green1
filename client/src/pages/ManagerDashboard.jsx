@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db as fbDb, storage } from '../config/firebase';
-import { doc, getDoc, updateDoc, setDoc, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc, deleteDoc, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import {
     TrendingUp,
@@ -1353,6 +1353,7 @@ const ManagerDashboard = () => {
     });
 
     const [fleetVehicles, setFleetVehicles] = useState(['Tesla Model 3', 'Tesla Model Y', 'VW ID.4', 'Polestar 2', 'BMW i4', 'None']);
+    const [registeredVehicles, setRegisteredVehicles] = useState([]);
 
     useEffect(() => {
         if (!user?.email) return;
@@ -1361,12 +1362,19 @@ const ManagerDashboard = () => {
         const q = query(collection(fbDb, 'vehicles'), where('managerId', '==', managerId));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const list = [];
+            const vehiclesList = [];
             snapshot.forEach((doc) => {
                 const data = doc.data();
+                vehiclesList.push({
+                    id: doc.id,
+                    ...data
+                });
                 if (data.model) {
                     list.push(data.model);
                 }
             });
+            setRegisteredVehicles(vehiclesList);
+            
             const defaultCatalog = ['Tesla Model 3', 'Tesla Model Y', 'VW ID.4', 'Polestar 2', 'BMW i4'];
             const combinedModels = Array.from(new Set([...list, ...defaultCatalog])).filter(m => m && m !== 'None');
             setFleetVehicles([...combinedModels, 'None']);
@@ -4105,7 +4113,12 @@ const ManagerDashboard = () => {
                                                             <div className="space-y-1">
                                                                 <label className="text-[7px] font-black text-secondary uppercase tracking-widest ml-1">Assigned Vehicle</label>
                                                                 <div 
-                                                                    onClick={() => !driver.isLocked && setEditingDriver({ ...driver, originalName: driver.name })}
+                                                                    onClick={() => !driver.isLocked && setEditingDriver({ 
+                                                                        ...driver, 
+                                                                        originalName: driver.name,
+                                                                        currentPlate: driver.vehicleInfo?.plate || null,
+                                                                        selectedVehicle: driver.vehicleInfo || null
+                                                                    })}
                                                                     className="w-full p-4 bg-dark-950 border border-main rounded-2xl flex items-center justify-between group cursor-pointer hover:border-brand/50 transition-all"
                                                                 >
                                                                     <div className="flex items-center gap-3">
@@ -4120,7 +4133,12 @@ const ManagerDashboard = () => {
                                                                 <button disabled={driver.isLocked} className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] font-black uppercase tracking-widest text-gray-400 hover:text-primary hover:bg-white/10 transition-all">History</button>
                                                                 <button 
                                                                     disabled={driver.isLocked}
-                                                                    onClick={() => !driver.isLocked && setEditingDriver({ ...driver, originalName: driver.name })}
+                                                                    onClick={() => !driver.isLocked && setEditingDriver({ 
+                                                                        ...driver, 
+                                                                        originalName: driver.name,
+                                                                        currentPlate: driver.vehicleInfo?.plate || null,
+                                                                        selectedVehicle: driver.vehicleInfo || null
+                                                                    })}
                                                                     className="flex-1 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[9px] font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all"
                                                                 >
                                                                     Switch Asset
@@ -4131,6 +4149,107 @@ const ManagerDashboard = () => {
                                                 ))}
                                             </div>
                                         </div>
+                                    </div>
+
+                                    {/* --- REGISTERED VEHICLES DIRECTORY --- */}
+                                    <div className="bg-glass border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-96 h-96 bg-brand/5 rounded-full blur-[100px] pointer-events-none" />
+                                        
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="p-2 rounded-xl bg-brand/10 text-brand">
+                                                        <Car size={20} />
+                                                    </span>
+                                                    <h2 className="text-xl font-black italic uppercase tracking-wider text-white">Registered Fleet Assets</h2>
+                                                </div>
+                                                <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">
+                                                    Active database records of vehicles registered in your business pool
+                                                </p>
+                                            </div>
+                                            <div className="px-4 py-2 rounded-full bg-brand/10 border border-brand/20 text-brand text-[9px] font-black uppercase tracking-widest">
+                                                {registeredVehicles.length} Vehicles Total
+                                            </div>
+                                        </div>
+
+                                        {registeredVehicles.length === 0 ? (
+                                            <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+                                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-secondary border border-white/10">
+                                                    <Car size={28} className="opacity-40" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-sm font-bold text-white uppercase tracking-wider">No Fleet Assets Registered</p>
+                                                    <p className="text-[10px] text-secondary max-w-sm">
+                                                        Use the registration portal below to register vehicles. Once added, they will appear in this directory and become assignable to drivers.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                {registeredVehicles.map((vehicle) => (
+                                                    <div key={vehicle.id} className="group relative bg-dark-900/50 border border-white/5 hover:border-brand/30 rounded-[2rem] p-6 space-y-6 transition-all duration-300 hover:shadow-lg hover:shadow-brand/5">
+                                                        {/* Card Background gradient shift on hover */}
+                                                        <div className="absolute inset-0 bg-gradient-to-br from-brand/0 to-brand/5 opacity-0 group-hover:opacity-100 rounded-[2rem] transition-opacity duration-300 pointer-events-none" />
+
+                                                        {/* Vehicle Image / Placeholder */}
+                                                        <div className="relative aspect-video w-full rounded-2xl bg-dark-800/80 border border-white/5 overflow-hidden flex items-center justify-center">
+                                                            {vehicle.photo ? (
+                                                                <img 
+                                                                    src={vehicle.photo} 
+                                                                    alt={`${vehicle.color} ${vehicle.model}`} 
+                                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                                />
+                                                            ) : (
+                                                                <div className="flex flex-col items-center gap-2 text-secondary/40">
+                                                                    <Car size={32} />
+                                                                    <span className="text-[8px] font-bold uppercase tracking-widest">No Image Available</span>
+                                                                </div>
+                                                            )}
+                                                            <div className="absolute bottom-3 left-3 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-white text-[8px] font-bold uppercase tracking-widest">
+                                                                {vehicle.year || 'N/A'}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Vehicle Metadata */}
+                                                        <div className="space-y-4 relative z-10">
+                                                            <div className="space-y-1">
+                                                                <h3 className="text-md font-extrabold text-white tracking-tight leading-tight uppercase">
+                                                                    {vehicle.model}
+                                                                </h3>
+                                                                <div className="flex items-center gap-2 text-[10px] text-secondary">
+                                                                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: vehicle.color || '#fff', border: '1px solid rgba(255,255,255,0.2)' }} />
+                                                                    <span className="capitalize font-medium">{vehicle.color || 'Unknown Color'}</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                                                                <div className="space-y-0.5">
+                                                                    <span className="text-[8px] font-bold text-secondary uppercase tracking-wider block">License Plate</span>
+                                                                    <span className="text-xs font-black tracking-widest text-brand uppercase">{vehicle.plate || vehicle.id}</span>
+                                                                </div>
+                                                                <button 
+                                                                    onClick={async () => {
+                                                                        if (window.confirm(`Are you sure you want to deregister vehicle with plate ${vehicle.plate || vehicle.id}? This will remove it from the asset directory and pool.`)) {
+                                                                            try {
+                                                                                await deleteDoc(doc(fbDb, 'vehicles', vehicle.id));
+                                                                                alert(`Vehicle ${vehicle.plate || vehicle.id} successfully removed from the fleet.`);
+                                                                            } catch (err) {
+                                                                                console.error(err);
+                                                                                alert(`Failed to delete vehicle: ${err.message}`);
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 hover:bg-red-500 hover:text-white transition-all duration-200"
+                                                                    title="Deregister Vehicle"
+                                                                >
+                                                                    <Trash2 size={14} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}
