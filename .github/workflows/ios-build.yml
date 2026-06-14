@@ -101,6 +101,10 @@ jobs:
                    -sdk iphoneos \
                    -configuration Release \
                    -archivePath $RUNNER_TEMP/App.xcarchive \
+                   CODE_SIGN_STYLE=Manual \
+                   DEVELOPMENT_TEAM=NH892VUQXX \
+                   PROVISIONING_PROFILE_SPECIFIER="Green Nightlife App Store" \
+                   CODE_SIGN_IDENTITY="Apple Distribution" \
                    archive
 
     - name: Export IPA
