@@ -66,9 +66,7 @@ jobs:
 
         # apply provisioning profile
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        security cms -D -i $PP_PATH > $RUNNER_TEMP/profile.plist
-        UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" $RUNNER_TEMP/profile.plist)
-        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
+        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/c7143afa-b8e4-4ece-82c8-6d3e2517d3b2.mobileprovision
 
     - name: Create Export Options Plist
       run: |
