@@ -455,7 +455,33 @@ const GreenSPage = () => {
                             <span className="text-[10px] font-black text-black uppercase tracking-[0.4em] italic">Hub Select</span>
                         </div>
                         
-                        <div className="px-2 overflow-x-auto no-scrollbar scroll-smooth" ref={containerRef}>
+                        <div 
+                            className="px-2 overflow-x-auto no-scrollbar scroll-smooth cursor-grab" 
+                            ref={containerRef}
+                            onMouseDown={(e) => {
+                                const ele = e.currentTarget;
+                                ele.style.cursor = 'grabbing';
+                                ele.style.userSelect = 'none';
+                                const startX = e.pageX - ele.offsetLeft;
+                                const scrollLeft = ele.scrollLeft;
+                                
+                                const handleMouseMove = (moveEvent) => {
+                                    const x = moveEvent.pageX - ele.offsetLeft;
+                                    const walk = (x - startX) * 1.5;
+                                    ele.scrollLeft = scrollLeft - walk;
+                                };
+                                
+                                const handleMouseUp = () => {
+                                    ele.style.cursor = 'grab';
+                                    ele.style.removeProperty('user-select');
+                                    document.removeEventListener('mousemove', handleMouseMove);
+                                    document.removeEventListener('mouseup', handleMouseUp);
+                                };
+                                
+                                document.addEventListener('mousemove', handleMouseMove);
+                                document.addEventListener('mouseup', handleMouseUp);
+                            }}
+                        >
                             <div className="flex gap-4 pb-6 w-fit pr-20">
                                 {lifestyleEntities.map((entity) => (
                                     <button

@@ -258,7 +258,32 @@ const DiscoveryGallery = () => {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto no-scrollbar -mx-6 px-6 mb-10 scroll-smooth">
+                <div 
+                    className="overflow-x-auto no-scrollbar -mx-6 px-6 mb-10 scroll-smooth cursor-grab"
+                    onMouseDown={(e) => {
+                        const ele = e.currentTarget;
+                        ele.style.cursor = 'grabbing';
+                        ele.style.userSelect = 'none';
+                        const startX = e.pageX - ele.offsetLeft;
+                        const scrollLeft = ele.scrollLeft;
+                        
+                        const handleMouseMove = (moveEvent) => {
+                            const x = moveEvent.pageX - ele.offsetLeft;
+                            const walk = (x - startX) * 1.5;
+                            ele.scrollLeft = scrollLeft - walk;
+                        };
+                        
+                        const handleMouseUp = () => {
+                            ele.style.cursor = 'grab';
+                            ele.style.removeProperty('user-select');
+                            document.removeEventListener('mousemove', handleMouseMove);
+                            document.removeEventListener('mouseup', handleMouseUp);
+                        };
+                        
+                        document.addEventListener('mousemove', handleMouseMove);
+                        document.addEventListener('mouseup', handleMouseUp);
+                    }}
+                >
                     <div className="flex gap-6 pb-4 w-max">
                         {categories.map((cat) => (
                             <button

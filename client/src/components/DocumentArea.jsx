@@ -4,6 +4,7 @@ import { FileText, CheckCircle2, AlertCircle, Clock, Upload, Edit3 } from 'lucid
 const DocumentArea = ({ title, description, documents, onUpload, onAccept, onDeny }) => {
     const [uploadingId, setUploadingId] = React.useState(null);
     const [previewDoc, setPreviewDoc] = React.useState(null);
+    const [showTermsModal, setShowTermsModal] = React.useState(false);
     const fileInputRef = React.useRef(null);
 
     const handleUploadClick = (id) => {
@@ -14,12 +15,18 @@ const DocumentArea = ({ title, description, documents, onUpload, onAccept, onDen
 
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
-            // Simulate a delay for visual feedback
-            setTimeout(() => {
-                if (onUpload) onUpload(uploadingId);
-                setUploadingId(null);
-                e.target.value = null; // Reset input
-            }, 1500);
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64 = reader.result;
+                // Simulate a small network delay for visual spinner feedback
+                setTimeout(() => {
+                    if (onUpload) onUpload(uploadingId, base64);
+                    setUploadingId(null);
+                    e.target.value = null; // Reset input
+                }, 800);
+            };
+            reader.readAsDataURL(file);
         } else {
             setUploadingId(null);
         }
@@ -44,8 +51,19 @@ const DocumentArea = ({ title, description, documents, onUpload, onAccept, onDen
                 {documents.map((doc, idx) => (
                     <div key={idx} className="bg-white/5 border border-white/10 rounded-3xl p-6 transition-all hover:border-brand/30 group">
                         <div className="flex justify-between items-start mb-4">
-                            <div className={`p-3 rounded-2xl ${doc.status === 'verified' ? 'bg-emerald-500/10 text-emerald-500' : doc.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'}`}>
-                                <FileText size={24} />
+                            <div className="flex items-center gap-3">
+                                <div className={`p-3 rounded-2xl ${doc.status === 'verified' ? 'bg-emerald-500/10 text-emerald-500' : doc.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'}`}>
+                                    <FileText size={24} />
+                                </div>
+                                {doc.file && (
+                                    <div 
+                                        onClick={() => setPreviewDoc(doc)}
+                                        className="w-12 h-12 rounded-xl overflow-hidden border border-white/10 bg-black/40 cursor-pointer hover:border-brand/40 hover:scale-105 active:scale-95 transition-all shadow-md"
+                                        title="Click to preview photo"
+                                    >
+                                        <img src={doc.file} className="w-full h-full object-cover" alt="Thumbnail" />
+                                    </div>
+                                )}
                             </div>
                             <div className="flex items-center gap-2">
                                 {doc.status === 'verified' ? (
@@ -71,26 +89,34 @@ const DocumentArea = ({ title, description, documents, onUpload, onAccept, onDen
 
                         <div className="flex gap-2">
                             {doc.id === 'terms' ? (
-                                doc.status === 'verified' ? (
-                                    <div className="flex-1 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest text-emerald-500 text-center">
-                                        Agreement Accepted
-                                    </div>
-                                ) : (
-                                    <>
-                                        <button
-                                            onClick={() => onAccept && onAccept(doc.id)}
-                                            className="flex-1 py-3 bg-brand text-dark-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-brand/20"
-                                        >
-                                            Accept Terms
-                                        </button>
-                                        <button
-                                            onClick={() => onDeny && onDeny(doc.id)}
-                                            className="flex-1 py-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500/20 transition-all"
-                                        >
-                                            Deny
-                                        </button>
-                                    </>
-                                )
+                                <div className="flex flex-col gap-2 w-full">
+                                    <button
+                                        onClick={() => setShowTermsModal(true)}
+                                        className="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
+                                    >
+                                        Read Agreement
+                                    </button>
+                                    {doc.status === 'verified' ? (
+                                        <div className="w-full py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest text-emerald-500 text-center">
+                                            Agreement Accepted
+                                        </div>
+                                    ) : (
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => onAccept && onAccept(doc.id)}
+                                                className="flex-1 py-3 bg-brand text-dark-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-brand/20"
+                                            >
+                                                Accept Terms
+                                            </button>
+                                            <button
+                                                onClick={() => onDeny && onDeny(doc.id)}
+                                                className="flex-1 py-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500/20 transition-all"
+                                            >
+                                                Deny
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             ) : doc.status === 'missing' ? (
                                 <button
                                     onClick={() => handleUploadClick(doc.id)}
@@ -136,26 +162,32 @@ const DocumentArea = ({ title, description, documents, onUpload, onAccept, onDen
                         className="absolute inset-0 bg-black/90 backdrop-blur-sm cursor-pointer"
                         onClick={() => setPreviewDoc(null)}
                     />
-                    <div className="relative w-full max-w-[400px] bg-dark-900 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col p-6 space-y-6">
-                        <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                    <div className="relative w-full max-w-[400px] bg-neutral-950 border border-neutral-800 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col p-6 space-y-6">
+                        <div className="flex justify-between items-center pb-4 border-b border-neutral-800/60">
                             <h4 className="font-black italic uppercase tracking-tighter text-white">{previewDoc.name}</h4>
-                            <button onClick={() => setPreviewDoc(null)} className="text-gray-500 hover:text-white"><CheckCircle2 size={24} /></button>
+                            <button onClick={() => setPreviewDoc(null)} className="text-white/50 hover:text-white"><CheckCircle2 size={24} /></button>
                         </div>
-                        <div className="aspect-[4/3] bg-dark-800 rounded-2xl flex items-center justify-center overflow-hidden border border-white/5 relative">
-                            {/* Simulated Document Photo */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-brand/10 to-transparent" />
-                            <FileText size={64} className="text-brand/20" />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white/50 italic text-center px-8">
-                                    [ Document Photo Preview ]<br /><br />
-                                    {previewDoc.name}<br />
-                                    Status: {previewDoc.status.toUpperCase()}
-                                </p>
-                            </div>
+                        <div className="aspect-[4/3] bg-[#1e2520] rounded-2xl flex items-center justify-center overflow-hidden border border-neutral-800/40 relative">
+                            {previewDoc.file ? (
+                                <img src={previewDoc.file} className="w-full h-full object-cover animate-fade-in" alt={previewDoc.name} />
+                            ) : (
+                                <>
+                                    {/* Simulated Document Photo */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-brand/10 to-transparent" />
+                                    <FileText size={64} className="text-brand/20" />
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/50 italic text-center px-8">
+                                            [ Document Photo Preview ]<br /><br />
+                                            {previewDoc.name}<br />
+                                            Status: {previewDoc.status.toUpperCase()}
+                                        </p>
+                                    </div>
+                                </>
+                            )}
                         </div>
                         <div className="space-y-4">
-                            <div className="p-4 bg-white/5 rounded-2xl space-y-2">
-                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Requirement</p>
+                            <div className="p-4 bg-[#1e2520] rounded-2xl space-y-2">
+                                <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">Requirement</p>
                                 <p className="text-xs text-white/70 font-medium leading-relaxed">{previewDoc.requirement}</p>
                             </div>
                             <button
@@ -163,6 +195,61 @@ const DocumentArea = ({ title, description, documents, onUpload, onAccept, onDen
                                 className="w-full py-4 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-xs"
                             >
                                 Close Preview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Terms & Conditions Modal */}
+            {showTermsModal && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center px-6">
+                    <div
+                        className="absolute inset-0 bg-black/90 backdrop-blur-sm cursor-pointer"
+                        onClick={() => setShowTermsModal(false)}
+                    />
+                    <div className="relative w-full max-w-[500px] max-h-[80vh] bg-neutral-950 border border-neutral-800 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col p-6 space-y-6">
+                        <div className="flex justify-between items-center pb-4 border-b border-neutral-800/60">
+                            <h4 className="font-black italic uppercase tracking-tighter text-white">Partner Terms & Data Agreement</h4>
+                            <button onClick={() => setShowTermsModal(false)} className="text-white/50 hover:text-white text-lg font-bold">✕</button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto pr-2 space-y-4 text-xs text-white/70 leading-relaxed font-medium">
+                            <p className="text-brand font-bold uppercase tracking-wider">Last Updated: June 2026</p>
+                            <p>
+                                Welcome to the GreenRide Platform. Please review the terms and conditions carefully before accepting. By accepting, you agree to enter a binding partnership agreement with GreenRide.
+                            </p>
+                            
+                            <h5 className="font-black text-white uppercase tracking-tight">1. Partner Relationship & Scope</h5>
+                            <p>
+                                As a registered fleet driver partner on the GreenRide platform, you act as an independent service provider or an employee of an affiliated fleet manager. You agree to comply with all regional passenger transport permits, vehicle inspection schedules, and platform quality benchmarks.
+                            </p>
+
+                            <h5 className="font-black text-white uppercase tracking-tight">2. Compliance & Verification</h5>
+                            <p>
+                                Drivers must maintain valid and active driving credentials, passenger transport licenses (P-Schein), and registration documents. Any lapse in license validity or failure of safety standards will lead to immediate temporary suspension of dispatch access.
+                            </p>
+
+                            <h5 className="font-black text-white uppercase tracking-tight">3. Data Usage & Location Tracking</h5>
+                            <p>
+                                To enable rides dispatch, route optimization, and safety monitoring, the GreenRide app collects real-time location and GPS data while you are active or online. By accepting these terms, you grant consent for location streaming, telemetry analytics, and storage of dispatch histories.
+                            </p>
+
+                            <h5 className="font-black text-white uppercase tracking-tight">4. Safety & Standards</h5>
+                            <p>
+                                You agree to operate vehicles in a safe, lawful manner, adhering to traffic speed regulations and the platform’s zero-tolerance policy on substance abuse. Cleanliness, vehicle care, and professional customer etiquette must be upheld at all times.
+                            </p>
+
+                            <h5 className="font-black text-white uppercase tracking-tight">5. Commission & Settlement</h5>
+                            <p>
+                                Platform service fees, passenger fares, and driver/fleet manager payouts are calculated dynamically and cleared weekly through the Settlement Ledger, subject to verified ride compliance and platform provisions.
+                            </p>
+                        </div>
+                        <div className="pt-4 border-t border-neutral-800/60">
+                            <button
+                                onClick={() => setShowTermsModal(false)}
+                                className="w-full py-4 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all"
+                            >
+                                Close & Return
                             </button>
                         </div>
                     </div>

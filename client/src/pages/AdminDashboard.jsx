@@ -16,7 +16,7 @@ import Sidebar from '../components/Sidebar';
 import Radar from '../components/Radar';
 import { useSocket } from '../context/SocketContext';
 import { db } from '../config/firebase';
-import { collection, doc, query, where, onSnapshot, updateDoc } from 'firebase/firestore';
+import { collection, doc, query, where, onSnapshot, updateDoc, getDoc } from 'firebase/firestore';
 
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
@@ -93,6 +93,75 @@ const AdminDashboard = () => {
             triggerNotification('error', 'Error', 'Partner not found.');
             return;
         }
+
+        if (partner.isDriver || partner.role === 'driver') {
+            const userRef = doc(db, 'users', partner.email.toLowerCase());
+            try {
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    let driverComplianceDocs = userData.driverComplianceDocs || [];
+                    let driverVehicleDocs = userData.driverVehicleDocs || [];
+                    let found = false;
+                    driverComplianceDocs = driverComplianceDocs.map(d => {
+                        if (d.id === docId) {
+                            found = true;
+                            return { ...d, status: 'verified' };
+                        }
+                        return d;
+                    });
+                    if (!found) {
+                        driverVehicleDocs = driverVehicleDocs.map(d => {
+                            if (d.id === docId) {
+                                return { ...d, status: 'verified' };
+                            }
+                            return d;
+                        });
+                    }
+                    await updateDoc(userRef, {
+                        driverComplianceDocs,
+                        driverVehicleDocs
+                    });
+                    if (partner.email.toLowerCase() === 'driver@green.de') {
+                        localStorage.setItem('driver_compliance_docs', JSON.stringify(driverComplianceDocs));
+                        localStorage.setItem('driver_vehicle_docs', JSON.stringify(driverVehicleDocs));
+                    }
+                    triggerNotification('success', 'Driver Document Approved ✓', `Credential cleared for driver.`);
+                }
+            } catch (e) {
+                console.error('Failed to approve driver doc:', e);
+                triggerNotification('error', 'Error', 'Failed to approve driver document.');
+            }
+            return;
+        }
+
+        if (emailKey === 'driver_green_de') {
+            const driverDocsRaw = localStorage.getItem('driver_compliance_docs');
+            const vehicleDocsRaw = localStorage.getItem('driver_vehicle_docs');
+            let driverDocs = driverDocsRaw ? JSON.parse(driverDocsRaw) : [];
+            let vehicleDocs = vehicleDocsRaw ? JSON.parse(vehicleDocsRaw) : [];
+            let found = false;
+            driverDocs = driverDocs.map(d => {
+                if (d.id === docId) {
+                    found = true;
+                    return { ...d, status: 'verified' };
+                }
+                return d;
+            });
+            if (found) {
+                localStorage.setItem('driver_compliance_docs', JSON.stringify(driverDocs));
+            } else {
+                vehicleDocs = vehicleDocs.map(d => {
+                    if (d.id === docId) {
+                        return { ...d, status: 'verified' };
+                    }
+                    return d;
+                });
+                localStorage.setItem('driver_vehicle_docs', JSON.stringify(vehicleDocs));
+            }
+            triggerNotification('success', 'Driver Document Approved ✓', `Credential cleared for driver.`);
+            return;
+        }
         const userRef = doc(db, 'users', partner.email.toLowerCase());
         try {
             await updateDoc(userRef, {
@@ -110,6 +179,75 @@ const AdminDashboard = () => {
         const partner = docPartners.find(p => (p.email ? p.email.replace(/[^a-zA-Z0-9]/g, '_') : '') === emailKey);
         if (!partner) {
             triggerNotification('error', 'Error', 'Partner not found.');
+            return;
+        }
+
+        if (partner.isDriver || partner.role === 'driver') {
+            const userRef = doc(db, 'users', partner.email.toLowerCase());
+            try {
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    let driverComplianceDocs = userData.driverComplianceDocs || [];
+                    let driverVehicleDocs = userData.driverVehicleDocs || [];
+                    let found = false;
+                    driverComplianceDocs = driverComplianceDocs.map(d => {
+                        if (d.id === docId) {
+                            found = true;
+                            return { ...d, status: 'rejected' };
+                        }
+                        return d;
+                    });
+                    if (!found) {
+                        driverVehicleDocs = driverVehicleDocs.map(d => {
+                            if (d.id === docId) {
+                                return { ...d, status: 'rejected' };
+                            }
+                            return d;
+                        });
+                    }
+                    await updateDoc(userRef, {
+                        driverComplianceDocs,
+                        driverVehicleDocs
+                    });
+                    if (partner.email.toLowerCase() === 'driver@green.de') {
+                        localStorage.setItem('driver_compliance_docs', JSON.stringify(driverComplianceDocs));
+                        localStorage.setItem('driver_vehicle_docs', JSON.stringify(driverVehicleDocs));
+                    }
+                    triggerNotification('warning', 'Driver Document Rejected ✗', `Credential rejected.`);
+                }
+            } catch (e) {
+                console.error('Failed to reject driver doc:', e);
+                triggerNotification('error', 'Error', 'Failed to reject driver document.');
+            }
+            return;
+        }
+
+        if (emailKey === 'driver_green_de') {
+            const driverDocsRaw = localStorage.getItem('driver_compliance_docs');
+            const vehicleDocsRaw = localStorage.getItem('driver_vehicle_docs');
+            let driverDocs = driverDocsRaw ? JSON.parse(driverDocsRaw) : [];
+            let vehicleDocs = vehicleDocsRaw ? JSON.parse(vehicleDocsRaw) : [];
+            let found = false;
+            driverDocs = driverDocs.map(d => {
+                if (d.id === docId) {
+                    found = true;
+                    return { ...d, status: 'rejected' };
+                }
+                return d;
+            });
+            if (found) {
+                localStorage.setItem('driver_compliance_docs', JSON.stringify(driverDocs));
+            } else {
+                vehicleDocs = vehicleDocs.map(d => {
+                    if (d.id === docId) {
+                        return { ...d, status: 'rejected' };
+                    }
+                    return d;
+                });
+                localStorage.setItem('driver_vehicle_docs', JSON.stringify(vehicleDocs));
+            }
+            triggerNotification('warning', 'Driver Document Rejected ✗', `Credential rejected.`);
             return;
         }
         const userRef = doc(db, 'users', partner.email.toLowerCase());
@@ -420,77 +558,149 @@ const AdminDashboard = () => {
     };
     const [docPartners, setDocPartners] = useState([]);
     useEffect(() => {
-        const q = query(collection(db, 'users'), where('role', '==', 'manager'));
+        let firebasePartners = [];
+        const syncWithLocal = () => {
+            const driverDocsRaw = localStorage.getItem('driver_compliance_docs');
+            const vehicleDocsRaw = localStorage.getItem('driver_vehicle_docs');
+            const driverDocs = driverDocsRaw ? JSON.parse(driverDocsRaw) : [];
+            const vehicleDocs = vehicleDocsRaw ? JSON.parse(vehicleDocsRaw) : [];
+            
+            const merged = [...firebasePartners];
+            const hasDriver = merged.some(p => p.emailKey === 'driver_green_de' || p.isDriver);
+            
+            if (!hasDriver && (driverDocs.length > 0 || vehicleDocs.length > 0)) {
+                const virtualDriver = {
+                    id: 'driver_green_de',
+                    name: 'Driver: Parsa (GRN-101C)',
+                    type: 'fleet',
+                    joinDate: 'Just now',
+                    email: 'driver@green.de',
+                    emailKey: 'driver_green_de',
+                    isDriver: true,
+                    docs: [
+                        ...driverDocs.map(d => ({
+                            id: d.id,
+                            name: d.name,
+                            status: d.status === 'verified' ? 'approved' : d.status,
+                            uploadedAt: d.file ? 'Recent' : null,
+                            fileUrl: d.file || null
+                        })),
+                        ...vehicleDocs.map(d => ({
+                            id: d.id,
+                            name: d.name,
+                            status: d.status === 'verified' ? 'approved' : d.status,
+                            uploadedAt: 'Recent',
+                            fileUrl: d.file || null
+                        }))
+                    ]
+                };
+                merged.push(virtualDriver);
+            }
+            setDocPartners(merged);
+        };
+
+        const q = query(collection(db, 'users'), where('role', 'in', ['manager', 'driver', 'staff']));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const partners = [];
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 
                 let type = 'restaurant';
-                if (data.businessType === 'FM') type = 'fleet';
-                else if (data.businessType === 'HM') type = 'hotel';
-                else if (data.businessType === 'BM' || data.businessType === 'CM' || data.businessType === 'SM' || data.businessType === 'VM') type = 'venue';
+                if (data.role === 'driver') {
+                    type = 'fleet';
+                } else if (data.role === 'staff') {
+                    type = 'staff';
+                } else {
+                    if (data.businessType === 'FM') type = 'fleet';
+                    else if (data.businessType === 'HM') type = 'hotel';
+                    else if (data.businessType === 'BM' || data.businessType === 'CM' || data.businessType === 'SM' || data.businessType === 'VM') type = 'venue';
+                }
                 
-                const complianceDocs = data.complianceDocs || {};
-                
-                const docSpecs = {
-                    restaurant: [
-                        { id: 'reg', name: 'Commercial Register' },
-                        { id: 'mid', name: 'Manager ID' },
-                        { id: 'tax', name: 'Tax Registration' },
-                        { id: 'gast', name: 'Gastronomy License' },
-                        { id: 'liq', name: 'Liquor License' },
-                        { id: 'fire', name: 'Fire Safety' },
-                        { id: 'sepa', name: 'SEPA Mandate' },
-                        { id: 'vatc', name: 'VAT Certification' },
-                        { id: 'bankv', name: 'Bank Validation' }
-                    ],
-                    hotel: [
-                        { id: 'reg', name: 'Commercial Register' },
-                        { id: 'mid', name: 'Manager ID' },
-                        { id: 'tax', name: 'Tax Registration' },
-                        { id: 'gast', name: 'Gastronomy License' },
-                        { id: 'liq', name: 'Liquor License' },
-                        { id: 'fire', name: 'Fire Safety' },
-                        { id: 'sepa', name: 'SEPA Mandate' },
-                        { id: 'vatc', name: 'VAT Certification' },
-                        { id: 'bankv', name: 'Bank Validation' }
-                    ],
-                    fleet: [
-                        { id: 'tl', name: 'Transport License (P-Schein)' },
-                        { id: 'fip', name: 'Fleet Insurance Policy' },
-                        { id: 'cc', name: 'Chauffeur Certification' },
-                        { id: 'vr', name: 'Vehicle Registration (V5C)' },
-                        { id: 'tuv', name: 'Roadworthiness Cert (TÜV)' },
-                        { id: 'es', name: 'Emission Standards' },
-                        { id: 'sepa', name: 'SEPA Mandate' },
-                        { id: 'vatc', name: 'VAT Certification' },
-                        { id: 'bankv', name: 'Bank Validation' }
-                    ],
-                    venue: [
-                        { id: 'reg', name: 'Commercial Register' },
-                        { id: 'mid', name: 'Manager ID' },
-                        { id: 'tax', name: 'Tax Registration' },
-                        { id: 'gast', name: 'Gastronomy License' },
-                        { id: 'liq', name: 'Liquor License' },
-                        { id: 'fire', name: 'Fire Safety' },
-                        { id: 'sepa', name: 'SEPA Mandate' },
-                        { id: 'vatc', name: 'VAT Certification' },
-                        { id: 'bankv', name: 'Bank Validation' }
-                    ]
-                };
-                
-                const specs = docSpecs[type] || docSpecs.restaurant;
-                const docs = specs.map(spec => {
-                    const savedDoc = complianceDocs[spec.id] || {};
-                    return {
-                        id: spec.id,
-                        name: spec.name,
-                        status: savedDoc.status || 'missing',
-                        uploadedAt: savedDoc.uploadedAt || savedDoc.verifiedAt || null,
-                        fileUrl: savedDoc.fileUrl || savedDoc.fileData || null
+                let docs = [];
+                if (data.role === 'driver') {
+                    const driverDocs = data.driverComplianceDocs || [];
+                    const vehicleDocs = data.driverVehicleDocs || [];
+                    docs = [
+                        ...driverDocs.map(d => ({
+                            id: d.id,
+                            name: d.name,
+                            status: d.status === 'verified' ? 'approved' : d.status,
+                            uploadedAt: d.file ? 'Recent' : null,
+                            fileUrl: d.file || null
+                        })),
+                        ...vehicleDocs.map(d => ({
+                            id: d.id,
+                            name: d.name,
+                            status: d.status === 'verified' ? 'approved' : d.status,
+                            uploadedAt: 'Recent',
+                            fileUrl: d.file || null
+                        }))
+                    ];
+                } else {
+                    const complianceDocs = data.complianceDocs || {};
+                    const docSpecs = {
+                        staff: [
+                            { id: 'passport_id', name: 'Passport / ID Card' },
+                            { id: 'work_permit', name: 'Work Permit' },
+                            { id: 'bank_details', name: 'Bank Details (for Tips)' }
+                        ],
+                        restaurant: [
+                            { id: 'reg', name: 'Commercial Register' },
+                            { id: 'mid', name: 'Manager ID' },
+                            { id: 'tax', name: 'Tax Registration' },
+                            { id: 'gast', name: 'Gastronomy License' },
+                            { id: 'liq', name: 'Liquor License' },
+                            { id: 'fire', name: 'Fire Safety' },
+                            { id: 'sepa', name: 'SEPA Mandate' },
+                            { id: 'vatc', name: 'VAT Certification' },
+                            { id: 'bankv', name: 'Bank Validation' }
+                        ],
+                        hotel: [
+                            { id: 'reg', name: 'Commercial Register' },
+                            { id: 'mid', name: 'Manager ID' },
+                            { id: 'tax', name: 'Tax Registration' },
+                            { id: 'gast', name: 'Gastronomy License' },
+                            { id: 'liq', name: 'Liquor License' },
+                            { id: 'fire', name: 'Fire Safety' },
+                            { id: 'sepa', name: 'SEPA Mandate' },
+                            { id: 'vatc', name: 'VAT Certification' },
+                            { id: 'bankv', name: 'Bank Validation' }
+                        ],
+                        fleet: [
+                            { id: 'tl', name: 'Transport License (P-Schein)' },
+                            { id: 'fip', name: 'Fleet Insurance Policy' },
+                            { id: 'cc', name: 'Chauffeur Certification' },
+                            { id: 'vr', name: 'Vehicle Registration (V5C)' },
+                            { id: 'tuv', name: 'Roadworthiness Cert (TÜV)' },
+                            { id: 'es', name: 'Emission Standards' },
+                            { id: 'sepa', name: 'SEPA Mandate' },
+                            { id: 'vatc', name: 'VAT Certification' },
+                            { id: 'bankv', name: 'Bank Validation' }
+                        ],
+                        venue: [
+                            { id: 'reg', name: 'Commercial Register' },
+                            { id: 'mid', name: 'Manager ID' },
+                            { id: 'tax', name: 'Tax Registration' },
+                            { id: 'gast', name: 'Gastronomy License' },
+                            { id: 'liq', name: 'Liquor License' },
+                            { id: 'fire', name: 'Fire Safety' },
+                            { id: 'sepa', name: 'SEPA Mandate' },
+                            { id: 'vatc', name: 'VAT Certification' },
+                            { id: 'bankv', name: 'Bank Validation' }
+                        ]
                     };
-                });
+                    const specs = docSpecs[type] || docSpecs.restaurant;
+                    docs = specs.map(spec => {
+                        const savedDoc = complianceDocs[spec.id] || {};
+                        return {
+                            id: spec.id,
+                            name: spec.name,
+                            status: savedDoc.status || 'missing',
+                            uploadedAt: savedDoc.uploadedAt || savedDoc.verifiedAt || null,
+                            fileUrl: savedDoc.fileUrl || savedDoc.fileData || null
+                        };
+                    });
+                }
 
                 const parseDate = (val) => {
                     if (!val) return 'N/A';
@@ -503,18 +713,29 @@ const AdminDashboard = () => {
 
                 partners.push({
                     ...data,
-                    name: data.name || data.businessName || 'Partner Manager',
+                    name: data.role === 'driver' ? `Driver: ${data.name || 'Driver'}` : data.role === 'staff' ? `Staff: ${data.name || 'Staff'}` : (data.name || data.businessName || 'Partner Manager'),
                     type: type,
                     joinDate: parseDate(data.createdAt),
                     docs: docs,
-                    emailKey: data.email ? data.email.replace(/[^a-zA-Z0-9]/g, '_') : ''
+                    emailKey: data.email ? data.email.replace(/[^a-zA-Z0-9]/g, '_') : '',
+                    isDriver: data.role === 'driver',
+                    isStaff: data.role === 'staff'
                 });
             });
-            setDocPartners(partners);
+            firebasePartners = partners;
+            syncWithLocal();
         }, (err) => {
             console.error("Error listening to B2B managers:", err);
         });
-        return () => unsubscribe();
+
+        const interval = setInterval(syncWithLocal, 1000);
+        window.addEventListener('storage', syncWithLocal);
+
+        return () => {
+            unsubscribe();
+            clearInterval(interval);
+            window.removeEventListener('storage', syncWithLocal);
+        };
     }, []);
     const [isAddPartnerModalOpen, setIsAddPartnerModalOpen] = useState(false);
     const [newPartnerForm, setNewPartnerForm] = useState({ name: '', type: 'restaurant', joinDate: '' });
@@ -4449,6 +4670,7 @@ billing payouts are required.
                                                                 {partner.type === 'restaurant' ? <Zap size={20} className={allOk ? 'text-brand' : missing > 0 ? 'text-red-400' : 'text-amber-400'} />
                                                                 : partner.type === 'hotel'      ? <Building2 size={20} className={allOk ? 'text-brand' : missing > 0 ? 'text-red-400' : 'text-amber-400'} />
                                                                 : partner.type === 'fleet'      ? <Car size={20} className={allOk ? 'text-brand' : missing > 0 ? 'text-red-400' : 'text-amber-400'} />
+                                                                : partner.type === 'staff'      ? <Users size={20} className={allOk ? 'text-brand' : missing > 0 ? 'text-red-400' : 'text-amber-400'} />
                                                                 : <Calendar size={20} className={allOk ? 'text-brand' : missing > 0 ? 'text-red-400' : 'text-amber-400'} />}
                                                             </div>
                                                             <div>

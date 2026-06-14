@@ -197,8 +197,9 @@ const ManagerDashboard = () => {
     const hasPermission = (viewId) => {
         if (simRole === 'manager') return true; // Managers have global access
         if (simRole === 'staff') {
-            // Mock permissions for Staff (these would come from the database in production)
-            const staffPermissions = user?.permissions || ['overview', 'orders'];
+            const defaultStaffHubs = ['overview', 'documents', 'feed', 'reputation', 'sitting'];
+            if (defaultStaffHubs.includes(viewId)) return true;
+            const staffPermissions = user?.permissions || [];
             return staffPermissions.includes(viewId);
         }
         return false;
@@ -272,9 +273,11 @@ const ManagerDashboard = () => {
         return () => unsubscribe();
     }, [user?.email]);
 
-    const requiredDocIds = managerContext === 'FM' 
-        ? ['tl', 'fip', 'cc', 'vr', 'tuv', 'es', 'sepa', 'vatc', 'bankv']
-        : ['reg', 'mid', 'tax', 'gast', 'liq', 'fire', 'sepa', 'vatc', 'bankv'];
+    const requiredDocIds = simRole === 'staff'
+        ? ['passport_id', 'work_permit', 'bank_details']
+        : (managerContext === 'FM' 
+            ? ['tl', 'fip', 'cc', 'vr', 'tuv', 'es', 'sepa', 'vatc', 'bankv']
+            : ['reg', 'mid', 'tax', 'gast', 'liq', 'fire', 'sepa', 'vatc', 'bankv']);
 
     const getComplianceStatus = () => {
         const missing = [];
@@ -2173,8 +2176,8 @@ const ManagerDashboard = () => {
                     { id: 'menu', label: 'Menu Catalog', icon: managerContext === 'SM' ? Trophy : Utensils, badge: 'New', hidden: (managerContext === 'FM') }
                 ].filter(item => {
                     if (item.hidden) return false;
-                    if (item.visible !== undefined) return item.visible;
-                    return true;
+                    if (item.visible !== undefined && !item.visible) return false;
+                    return hasPermission(item.id);
                 }).map(item => (
                     <button
                         key={item.id}
@@ -2560,9 +2563,11 @@ const ManagerDashboard = () => {
                                         </div>
                                         {requiredDocIds.map(id => {
                                             const docState = complianceDocs[id];
-                                            const name = managerContext === 'FM' 
-                                                ? (id === 'tl' ? 'Transport License' : id === 'fip' ? 'Fleet Insurance' : id === 'cc' ? 'Chauffeur Cert' : id === 'vr' ? 'Vehicle Reg' : id === 'tuv' ? 'TÜV Certification' : id === 'es' ? 'Emissions standard' : id === 'sepa' ? 'SEPA Mandate' : id === 'vatc' ? 'VAT Certification' : 'Bank Validation')
-                                                : (id === 'reg' ? 'Commercial Register' : id === 'mid' ? 'Manager ID' : id === 'tax' ? 'Tax Registration' : id === 'gast' ? 'Gastronomy License' : id === 'liq' ? 'Liquor License' : id === 'fire' ? 'Fire Safety' : id === 'sepa' ? 'SEPA Mandate' : id === 'vatc' ? 'VAT Certification' : 'Bank Validation');
+                                            const name = simRole === 'staff'
+                                                ? (id === 'passport_id' ? 'Passport / ID Card' : id === 'work_permit' ? 'Work Permit' : 'Bank Details (for tips)')
+                                                : (managerContext === 'FM' 
+                                                    ? (id === 'tl' ? 'Transport License' : id === 'fip' ? 'Fleet Insurance' : id === 'cc' ? 'Chauffeur Cert' : id === 'vr' ? 'Vehicle Reg' : id === 'tuv' ? 'TÜV Certification' : id === 'es' ? 'Emissions standard' : id === 'sepa' ? 'SEPA Mandate' : id === 'vatc' ? 'VAT Certification' : 'Bank Validation')
+                                                    : (id === 'reg' ? 'Commercial Register' : id === 'mid' ? 'Manager ID' : id === 'tax' ? 'Tax Registration' : id === 'gast' ? 'Gastronomy License' : id === 'liq' ? 'Liquor License' : id === 'fire' ? 'Fire Safety' : id === 'sepa' ? 'SEPA Mandate' : id === 'vatc' ? 'VAT Certification' : 'Bank Validation'));
                                             
                                             let statusColor = 'text-red-400';
                                             let statusText = 'MISSING';
@@ -3844,7 +3849,11 @@ const ManagerDashboard = () => {
                                     </div>
                                     
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                        {[
+                                        {(simRole === 'staff' ? [
+                                            { group: 'Identity Vault', docs: [{id: 'passport_id', name: 'Passport / ID Card'}], icon: ShieldCheck, color: 'text-brand' },
+                                            { group: 'Employment Status', docs: [{id: 'work_permit', name: 'Work Permit / Visa'}], icon: FileText, color: 'text-primary' },
+                                            { group: 'Compensation Vault', docs: [{id: 'bank_details', name: 'Bank Details (for tips)'}], icon: Building2, color: 'text-primary' }
+                                        ] : [
                                             managerContext === 'FM' ? (
                                                 { group: 'Fleet Credentials', docs: [{id: 'tl', name: 'Transport License (P-Schein)'}, {id: 'fip', name: 'Fleet Insurance Policy'}, {id: 'cc', name: 'Chauffeur Certification'}], icon: ShieldCheck, color: 'text-brand' }
                                             ) : (
@@ -3856,7 +3865,7 @@ const ManagerDashboard = () => {
                                                 { group: 'Licenses', docs: [{id: 'gast', name: 'Gastronomy License'}, {id: 'liq', name: 'Liquor License'}, {id: 'fire', name: 'Fire Safety'}], icon: FileText, color: 'text-primary' }
                                             ),
                                             { group: 'Banking & VAT', docs: [{id: 'sepa', name: 'SEPA Mandate'}, {id: 'vatc', name: 'VAT Certification'}, {id: 'bankv', name: 'Bank Validation'}], icon: Building2, color: 'text-primary' }
-                                        ].map((group, i) => (
+                                        ]).map((group, i) => (
                                             <div key={group.group} className="bg-btn-sec border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl relative overflow-hidden group">
                                                 <div className="absolute -top-10 -right-10 opacity-5 group-hover:opacity-10 transition-opacity"><group.icon size={120} /></div>
                                                 <div className="flex items-center gap-4 relative z-10">
@@ -4350,42 +4359,69 @@ const ManagerDashboard = () => {
                                                     {/* VEHICLE PICKER */}
                                                     <div className="space-y-3">
                                                         <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Swap / Assign Vehicle</label>
-                                                        <div className="grid grid-cols-2 gap-3">
-                                                            {fleetVehicles.map((veh) => {
-                                                                const isSelected = editingDriver.current === veh;
+                                                        <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto no-scrollbar pr-1">
+                                                            {registeredVehicles.map((veh) => {
+                                                                const isSelected = editingDriver.selectedVehicle?.plate === veh.plate;
                                                                 return (
                                                                     <button
-                                                                        key={veh}
-                                                                        onClick={() => setEditingDriver(prev => ({ ...prev, current: veh }))}
+                                                                        key={veh.id}
+                                                                        onClick={() => setEditingDriver(prev => ({ 
+                                                                            ...prev, 
+                                                                            current: veh.model,
+                                                                            selectedVehicle: veh
+                                                                        }))}
                                                                         className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all ${
                                                                             isSelected 
                                                                                 ? 'bg-brand/10 border-brand text-brand' 
                                                                                 : 'bg-dark-950 border-main text-secondary hover:border-brand/30 hover:text-primary'
                                                                         }`}
                                                                     >
-                                                                        <Car size={16} className={isSelected ? 'text-brand' : 'text-secondary'} />
-                                                                        <span className="text-[9px] font-black uppercase italic tracking-wider mt-3 truncate">{veh}</span>
+                                                                        <div className="flex justify-between items-start w-full">
+                                                                            <Car size={16} className={isSelected ? 'text-brand' : 'text-secondary'} />
+                                                                            <span className="text-[7px] font-mono font-black uppercase opacity-65">{veh.plate}</span>
+                                                                        </div>
+                                                                        <span className="text-[9px] font-black uppercase italic tracking-wider mt-3 truncate">{veh.model}</span>
                                                                     </button>
                                                                 );
                                                             })}
+                                                            
+                                                            <button
+                                                                onClick={() => setEditingDriver(prev => ({ 
+                                                                    ...prev, 
+                                                                    current: 'None',
+                                                                    selectedVehicle: null
+                                                                }))}
+                                                                className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all ${
+                                                                    editingDriver.current === 'None' || !editingDriver.selectedVehicle
+                                                                        ? 'bg-brand/10 border-brand text-brand' 
+                                                                        : 'bg-dark-950 border-main text-secondary hover:border-brand/30 hover:text-primary'
+                                                                }`}
+                                                            >
+                                                                <X size={16} className={editingDriver.current === 'None' || !editingDriver.selectedVehicle ? 'text-brand' : 'text-secondary'} />
+                                                                <span className="text-[9px] font-black uppercase italic tracking-wider mt-3 truncate">None</span>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div className="flex gap-3 pt-4 border-t border-white/5">
                                                     <button 
-                                                        onClick={() => {
+                                                        onClick={async () => {
                                                             const updated = driverDeployments.map(d => 
-                                                                d.name === editingDriver.originalName ? { ...d, name: editingDriver.name, status: editingDriver.status, rating: editingDriver.rating, avatar: editingDriver.avatar, current: 'None' } : d
+                                                                d.name === editingDriver.originalName ? { ...d, name: editingDriver.name, status: editingDriver.status, rating: editingDriver.rating, avatar: editingDriver.avatar, current: 'None', selectedVehicle: null } : d
                                                             );
                                                             setDriverDeployments(updated);
                                                             localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(updated));
                                                             
                                                             // Clear vehicleInfo in Firestore
                                                             if (editingDriver && editingDriver.email) {
-                                                                updateDoc(doc(fbDb, 'users', editingDriver.email.toLowerCase()), {
-                                                                    vehicleInfo: null
-                                                                }).catch(err => console.error("Error clearing vehicle info in Firestore:", err));
+                                                                try {
+                                                                    await updateDoc(doc(fbDb, 'users', editingDriver.email.toLowerCase()), {
+                                                                        vehicleInfo: null
+                                                                    });
+                                                                } catch (err) {
+                                                                    console.error("Error clearing vehicle info in Firestore:", err);
+                                                                }
                                                             }
                                                             
                                                             setEditingDriver(null);
@@ -4395,29 +4431,38 @@ const ManagerDashboard = () => {
                                                         Unassign Vehicle
                                                     </button>
                                                     <button 
-                                                        onClick={() => {
+                                                        onClick={async () => {
                                                             const updated = driverDeployments.map(d => 
-                                                                d.name === editingDriver.originalName ? { ...d, name: editingDriver.name, status: editingDriver.status, rating: editingDriver.rating, avatar: editingDriver.avatar, current: editingDriver.current } : d
+                                                                d.name === editingDriver.originalName ? { ...d, name: editingDriver.name, status: editingDriver.status, rating: editingDriver.rating, avatar: editingDriver.avatar, current: editingDriver.current, selectedVehicle: editingDriver.selectedVehicle } : d
                                                             );
                                                             setDriverDeployments(updated);
                                                             localStorage.setItem(`green_driver_deployments_${userEmailKey}`, JSON.stringify(updated));
                                                             
                                                             // Sync vehicle to Firestore
                                                             if (editingDriver && editingDriver.email) {
-                                                                if (editingDriver.current && editingDriver.current !== 'None') {
-                                                                    updateDoc(doc(fbDb, 'users', editingDriver.email.toLowerCase()), {
-                                                                        vehicleInfo: {
-                                                                            model: editingDriver.current,
-                                                                            plate: 'F-GR ' + Math.floor(1000 + Math.random() * 9000) + 'E',
-                                                                            year: '2024',
-                                                                            color: 'Midnight Green',
-                                                                            status: 'approved'
-                                                                        }
-                                                                    }).catch(err => console.error("Error setting vehicle in Firestore:", err));
+                                                                if (editingDriver.selectedVehicle) {
+                                                                    try {
+                                                                        await updateDoc(doc(fbDb, 'users', editingDriver.email.toLowerCase()), {
+                                                                            vehicleInfo: {
+                                                                                model: editingDriver.selectedVehicle.model,
+                                                                                plate: editingDriver.selectedVehicle.plate,
+                                                                                year: editingDriver.selectedVehicle.year,
+                                                                                color: editingDriver.selectedVehicle.color,
+                                                                                photo: editingDriver.selectedVehicle.photo || null,
+                                                                                status: 'approved'
+                                                                            }
+                                                                        });
+                                                                    } catch (err) {
+                                                                        console.error("Error setting vehicle in Firestore:", err);
+                                                                    }
                                                                 } else {
-                                                                    updateDoc(doc(fbDb, 'users', editingDriver.email.toLowerCase()), {
-                                                                        vehicleInfo: null
-                                                                    }).catch(err => console.error("Error clearing vehicle in Firestore:", err));
+                                                                    try {
+                                                                        await updateDoc(doc(fbDb, 'users', editingDriver.email.toLowerCase()), {
+                                                                            vehicleInfo: null
+                                                                        });
+                                                                    } catch (err) {
+                                                                        console.error("Error clearing vehicle in Firestore:", err);
+                                                                    }
                                                                 }
                                                             }
                                                             
@@ -4533,6 +4578,7 @@ const ManagerDashboard = () => {
                                                                     plate: newVehicleData.plate || 'F-GR ' + Math.floor(1000 + Math.random() * 9000) + 'E',
                                                                     year: newVehicleData.year || '2024',
                                                                     color: newVehicleData.color || 'Midnight Green',
+                                                                    photo: newVehicleData.photo || null,
                                                                     status: 'approved',
                                                                     assignedDriver: newVehicleData.assignedDriver || 'None'
                                                                 };
@@ -4548,6 +4594,7 @@ const ManagerDashboard = () => {
                                                                                 plate: newVehicleDoc.plate,
                                                                                 year: newVehicleDoc.year,
                                                                                 color: newVehicleDoc.color,
+                                                                                photo: newVehicleDoc.photo || null,
                                                                                 status: 'approved'
                                                                             }
                                                                         });
@@ -4763,7 +4810,7 @@ const ManagerDashboard = () => {
                                         {/* BUSINESS CORE DETAILS */}
 
                                         {/* GPS Lockdown (Relocated) */}
-                                        {(managerContext !== 'FM' && managerContext !== 'SM') && (
+                                        {(managerContext !== 'FM' && managerContext !== 'SM' && simRole !== 'staff') && (
                                             <div className="lg:col-span-2 bg-dark-900 border border-main rounded-[3rem] p-10 space-y-8 shadow-2xl relative overflow-hidden group">
                                                 <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 <div className="flex items-center gap-4 relative z-10">

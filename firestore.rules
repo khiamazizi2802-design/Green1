@@ -68,7 +68,9 @@ service cloud.firestore {
     match /vehicles/{vehicleId} {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated() && (
-        getUserData().role == 'manager' || isAdmin()
+        getUserData().role == 'manager' || 
+        getUserData().role == 'driver' || 
+        isAdmin()
       );
     }
   }

@@ -50,7 +50,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { db as fbDb } from '../config/firebase';
-import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
 import Radar from '../components/Radar';
 import Button from '../components/Button';
 import Sheet from '../components/Sheet';
@@ -253,6 +253,7 @@ const DriverDashboard = () => {
         }
         return { plate: '', model: '', year: '', color: '', photo: null, status: 'unregistered' };
     });
+    const [driverManagerId, setDriverManagerId] = useState(null);
     const [timeRange, setTimeRange] = useState('week');
     const [selectedMonth, setSelectedMonth] = useState('April 2026');
     const [selectedWeek, setSelectedWeek] = useState('Week 17');
@@ -369,27 +370,42 @@ const DriverDashboard = () => {
         }, 1000);
     };
 
-    const handleUploadDocument = (id) => {
+    const handleUploadDocument = (id, base64) => {
         if (driverDocs.some(d => d.id === id)) {
             setDriverDocs(prev => {
-                const updated = prev.map(doc => doc.id === id ? { ...doc, status: 'pending' } : doc);
+                const updated = prev.map(doc => doc.id === id ? { ...doc, status: 'pending', file: base64 || null } : doc);
                 localStorage.setItem('driver_compliance_docs', JSON.stringify(updated));
+                if (user?.email) {
+                    updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                        driverComplianceDocs: updated
+                    }).catch(err => console.error("Error updating driverComplianceDocs in Firestore:", err));
+                }
                 return updated;
             });
         } else if (vehicleDocs.some(v => v.id === id)) {
             setVehicleDocs(prev => {
-                const updated = prev.map(doc => doc.id === id ? { ...doc, status: 'pending' } : doc);
+                const updated = prev.map(doc => doc.id === id ? { ...doc, status: 'pending', file: base64 || null } : doc);
                 localStorage.setItem('driver_vehicle_docs', JSON.stringify(updated));
+                if (user?.email) {
+                    updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                        driverVehicleDocs: updated
+                    }).catch(err => console.error("Error updating driverVehicleDocs in Firestore:", err));
+                }
                 return updated;
             });
         }
-        alert("Photo upload initiated (Simulated)");
+        alert("Photo uploaded successfully!");
     };
 
     const handleAcceptTerms = (id) => {
         setDriverDocs(prev => {
             const updated = prev.map(doc => doc.id === id ? { ...doc, status: 'verified' } : doc);
             localStorage.setItem('driver_compliance_docs', JSON.stringify(updated));
+            if (user?.email) {
+                updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                    driverComplianceDocs: updated
+                }).catch(err => console.error("Error accepting terms in Firestore:", err));
+            }
             return updated;
         });
         setTermsDenied(false);
@@ -461,9 +477,24 @@ const DriverDashboard = () => {
             setVehicleDocs(demoVehicleDocs);
             localStorage.setItem('driver_vehicle_docs', JSON.stringify(demoVehicleDocs));
             
-            const demoVehicleInfo = { plate: 'F-GR 2026E', model: 'Tesla Model Y', year: '2024', color: 'Midnight Green', photo: null, status: 'verified' };
-            setVehicleInfo(demoVehicleInfo);
-            localStorage.setItem('driver_vehicle_data', JSON.stringify(demoVehicleInfo));
+            // For demo user, check if we have a saved vehicleInfo in localStorage (e.g. from Firestore). If not, use the demo default.
+            const savedVehicle = localStorage.getItem('driver_vehicle_data');
+            let initialVehicleInfo = null;
+            if (savedVehicle && savedVehicle !== 'undefined' && savedVehicle !== 'null') {
+                try {
+                    const parsed = JSON.parse(savedVehicle);
+                    if (parsed && parsed.status) {
+                        initialVehicleInfo = parsed;
+                    }
+                } catch (e) {
+                    console.error("Error parsing saved vehicle info:", e);
+                }
+            }
+            if (!initialVehicleInfo) {
+                initialVehicleInfo = { plate: 'F-GR 2026E', model: 'Tesla Model Y', year: '2024', color: 'Midnight Green', photo: null, status: 'verified' };
+                localStorage.setItem('driver_vehicle_data', JSON.stringify(initialVehicleInfo));
+            }
+            setVehicleInfo(initialVehicleInfo);
         } else {
             setIsOnline(false);
             setProfileData({
@@ -535,7 +566,7 @@ const DriverDashboard = () => {
                 return reset;
             });
         }
-    }, [user]);
+    }, [user?.email]);
 
     useEffect(() => {
         if (!user?.email) return;
@@ -551,7 +582,20 @@ const DriverDashboard = () => {
                     if (!isDemo) {
                         setVehicleInfo({ plate: '', model: '', year: '', color: '', photo: null, status: 'unregistered' });
                         localStorage.removeItem('driver_vehicle_data');
+                    } else {
+                        const demoVehicleInfo = { plate: 'F-GR 2026E', model: 'Tesla Model Y', year: '2024', color: 'Midnight Green', photo: null, status: 'verified' };
+                        setVehicleInfo(demoVehicleInfo);
+                        localStorage.setItem('driver_vehicle_data', JSON.stringify(demoVehicleInfo));
                     }
+                }
+                
+                if (data.driverComplianceDocs) {
+                    setDriverDocs(data.driverComplianceDocs);
+                    localStorage.setItem('driver_compliance_docs', JSON.stringify(data.driverComplianceDocs));
+                }
+                if (data.driverVehicleDocs) {
+                    setVehicleDocs(data.driverVehicleDocs);
+                    localStorage.setItem('driver_vehicle_docs', JSON.stringify(data.driverVehicleDocs));
                 }
             }
         });
@@ -1907,40 +1951,9 @@ const DriverDashboard = () => {
                             </div>
                         </motion.div>
                     ) : (
-                        <motion.div 
-                            key="cockpit-map"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="relative w-full h-[45vh] md:h-[600px] border-2 border-white/5 rounded-[3.5rem] overflow-hidden shadow-2xl z-0"
-                        >
-                            <MapContainer 
-                                center={[currentPos.lat, currentPos.lng]} 
-                                zoom={14} 
-                                zoomControl={false}
-                                style={{ height: '100%', width: '100%', background: '#0B121E' }}
-                            >
-                                <TileLayer
-                                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                                />
-                                
-                                <MapRecenter pos={currentPos} />
-
-                                {/* Driver Marker */}
-                                <Marker position={[currentPos.lat, currentPos.lng]} icon={driverIcon} />
-
-                            </MapContainer>
-
-                            {/* Radar sweep overlay if online */}
-                            {isOnline && (
-                                <div className="absolute inset-0 pointer-events-none z-10">
-                                    <Radar isOnline={isOnline} hasUpdates={hasUpdates} showLogos={false} />
-                                </div>
-                            )}
-
-                            <div className="absolute inset-0 pointer-events-none z-10 opacity-10 bg-gradient-to-t from-brand/20 to-transparent"></div>
-                            <div className="absolute inset-0 pointer-events-none z-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
-                        </motion.div>
+                        <div className="relative w-full h-[45vh] md:h-[600px] border border-gray-100 rounded-[3.5rem] overflow-hidden shadow-sm z-0 bg-white flex items-center justify-center">
+                            <Radar />
+                        </div>
                     )}
                 </AnimatePresence>
 
@@ -1948,7 +1961,7 @@ const DriverDashboard = () => {
                 {/* Online Toggle & Sector Intelligence - Only visible on main dashboard */}
                 {view === 'dashboard' && (
                     <div className="absolute bottom-6 w-full max-w-[420px] px-6 space-y-6 z-[60]">
-                        {rideStatus === 'none' && isOnline && (
+                        {rideStatus === 'none' && isOnline && isDemo && (
                             <div className="grid grid-cols-3 gap-2 md:gap-4 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
                                 {[
                                     { label: 'Station', load: 'HIGH', color: 'text-orange-500', icon: '🚉' },
@@ -1977,7 +1990,7 @@ const DriverDashboard = () => {
                                     );
                                 }
                                 
-                                if (sharedTripsEnabled) {
+                                if (sharedTripsEnabled && isDemo) {
                                     return (
                                         <button
                                             onClick={simulateGroupRide}
@@ -3553,6 +3566,11 @@ const DriverDashboard = () => {
                                                         );
                                                         setDriverDocs(updatedDocs);
                                                         localStorage.setItem('driver_compliance_docs', JSON.stringify(updatedDocs));
+                                                        if (user?.email) {
+                                                            updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                                                                driverComplianceDocs: updatedDocs
+                                                            }).catch(err => console.error("Error updating driverComplianceDocs in Firestore:", err));
+                                                        }
                                                         alert(`Document uploaded for ${doc.name} • Dispatched for manual audit!`);
                                                     };
                                                     reader.readAsDataURL(file);
@@ -3600,6 +3618,11 @@ const DriverDashboard = () => {
                                                 );
                                                 setDriverDocs(updatedDocs);
                                                 localStorage.setItem('driver_compliance_docs', JSON.stringify(updatedDocs));
+                                                if (user?.email) {
+                                                    updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                                                        driverComplianceDocs: updatedDocs
+                                                    }).catch(err => console.error("Error updating terms in Firestore:", err));
+                                                }
                                             }}
                                             className="w-4 h-4 mt-0.5 rounded border-white/10 bg-white/5 text-brand focus:ring-0 focus:ring-offset-0"
                                         />
