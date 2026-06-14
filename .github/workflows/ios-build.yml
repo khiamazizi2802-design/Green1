@@ -52,8 +52,9 @@ jobs:
         KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
         # import certificate and provisioning profile from secrets
-        echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-        echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+        # stripping any potential carriage returns, newlines, and spaces
+        echo -n "$BUILD_CERTIFICATE_BASE64" | tr -d '\r' | tr -d '\n' | tr -d ' ' | base64 --decode -o $CERTIFICATE_PATH
+        echo -n "$BUILD_PROVISION_PROFILE_BASE64" | tr -d '\r' | tr -d '\n' | tr -d ' ' | base64 --decode -o $PP_PATH
 
         # create temporary keychain
         security create-keychain -p "" $KEYCHAIN_PATH
@@ -65,9 +66,11 @@ jobs:
         security list-keychains -d user -s $KEYCHAIN_PATH /Library/Keychains/System.keychain ~/Library/Keychains/login.keychain-db
         security set-key-partition-list -S apple-tool:,apple: -s -k "" $KEYCHAIN_PATH
 
-        # apply provisioning profile
+        # apply provisioning profile dynamically using its UUID
         mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
-        cp $PP_PATH "$HOME/Library/MobileDevice/Provisioning Profiles/c7143afa-b8e4-4ece-82c8-6d3e2517d3b2.mobileprovision"
+        security cms -D -i $PP_PATH > $RUNNER_TEMP/profile.plist
+        UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" $RUNNER_TEMP/profile.plist)
+        cp $PP_PATH "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
 
     - name: Create Export Options Plist
       run: |
