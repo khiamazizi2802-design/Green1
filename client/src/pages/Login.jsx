@@ -112,7 +112,7 @@ const Login = () => {
                         />
                         <div className={`w-24 h-24 rounded-[2rem] flex items-center justify-center relative z-10 glass-panel border transition-all duration-500 ${
                             isBlocked ? 'border-red-500 text-red-500 shadow-[0_0_30px_rgba(239,68,68,0.3)]' :
-                            successMsg ? 'border-brand text-brand shadow-[0_0_30px_rgba(52,211,153,0.3)]' :
+                            successMsg ? 'border-brand text-brand shadow-[0_0_30px_rgba(var(--accent-primary-rgb),0.2)]' :
                             isAuthenticating ? 'border-brand text-brand animate-pulse' : 'border-white/10 text-brand'
                         }`}>
                             {isBlocked ? (
@@ -127,7 +127,7 @@ const Login = () => {
                                     initial={{ y: -40 }}
                                     animate={{ y: 40 }}
                                     transition={{ duration: 1, repeat: Infinity, repeatType: 'reverse' }}
-                                    className="absolute left-0 right-0 h-0.5 bg-brand shadow-[0_0_10px_#10B981]"
+                                    className="absolute left-0 right-0 h-0.5 bg-brand shadow-[0_0_10px_currentColor]"
                                 />
                             )}
                         </div>
