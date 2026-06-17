@@ -4231,6 +4231,47 @@ const ManagerDashboard = () => {
                                                                 </div>
                                                             </div>
 
+                                                            {/* Sharing Capacity Selector */}
+                                                            <div className="space-y-2">
+                                                                <div className="flex justify-between items-center px-1">
+                                                                    <span className="text-[8px] font-black text-secondary uppercase tracking-widest">Sharing Option Capacity</span>
+                                                                    <span className="text-[9px] font-black text-brand uppercase tracking-wider">Option {vehicle.sharingType || 4}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5">
+                                                                    {[1, 2, 3, 4, 5, 6, 7].map((num) => {
+                                                                        const isSelected = (vehicle.sharingType || 4) === num;
+                                                                        return (
+                                                                            <button
+                                                                                key={num}
+                                                                                onClick={async () => {
+                                                                                    try {
+                                                                                        // Update vehicle doc in Firestore
+                                                                                        await updateDoc(doc(fbDb, 'vehicles', vehicle.id), { sharingType: num });
+                                                                                        // Find assigned driver and sync
+                                                                                        const assignedDriver = driverDeployments.find(d => d.vehicleInfo?.plate === vehicle.plate);
+                                                                                        if (assignedDriver && assignedDriver.email) {
+                                                                                            const updatedVehicleInfo = { ...assignedDriver.vehicleInfo, sharingType: num };
+                                                                                            await updateDoc(doc(fbDb, 'users', assignedDriver.email.toLowerCase()), {
+                                                                                                vehicleInfo: updatedVehicleInfo
+                                                                                            });
+                                                                                        }
+                                                                                    } catch (err) {
+                                                                                        console.error("Failed to update sharing type:", err);
+                                                                                    }
+                                                                                }}
+                                                                                className={`flex-1 aspect-square rounded-xl text-[9px] font-black transition-all flex items-center justify-center ${
+                                                                                    isSelected 
+                                                                                        ? 'bg-white text-black scale-105 shadow-md' 
+                                                                                        : 'text-secondary hover:text-white hover:bg-white/5'
+                                                                                }`}
+                                                                            >
+                                                                                {num}
+                                                                            </button>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
+
                                                             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
                                                                 <div className="space-y-0.5">
                                                                     <span className="text-[8px] font-bold text-secondary uppercase tracking-wider block">License Plate</span>
@@ -4449,7 +4490,8 @@ const ManagerDashboard = () => {
                                                                                 year: editingDriver.selectedVehicle.year,
                                                                                 color: editingDriver.selectedVehicle.color,
                                                                                 photo: editingDriver.selectedVehicle.photo || null,
-                                                                                status: 'approved'
+                                                                                status: 'approved',
+                                                                                sharingType: editingDriver.selectedVehicle.sharingType || 4
                                                                             }
                                                                         });
                                                                     } catch (err) {
@@ -4580,7 +4622,8 @@ const ManagerDashboard = () => {
                                                                     color: newVehicleData.color || 'Midnight Green',
                                                                     photo: newVehicleData.photo || null,
                                                                     status: 'approved',
-                                                                    assignedDriver: newVehicleData.assignedDriver || 'None'
+                                                                    assignedDriver: newVehicleData.assignedDriver || 'None',
+                                                                    sharingType: 4
                                                                 };
                                                                 await setDoc(newVehicleRef, newVehicleDoc);
 
@@ -4595,7 +4638,8 @@ const ManagerDashboard = () => {
                                                                                 year: newVehicleDoc.year,
                                                                                 color: newVehicleDoc.color,
                                                                                 photo: newVehicleDoc.photo || null,
-                                                                                status: 'approved'
+                                                                                status: 'approved',
+                                                                                sharingType: 4
                                                                             }
                                                                         });
                                                                     }

@@ -223,7 +223,18 @@ const DriverDashboard = () => {
     const [tempPhotoPreview, setTempPhotoPreview] = useState(null);
 
     // NEW: Capacity and Active Rides
-    const [vehicleCapacity, setVehicleCapacity] = useState(3); // e.g., Tesla Model 3
+    const [vehicleCapacity, setVehicleCapacity] = useState(() => {
+        try {
+            const saved = localStorage.getItem('driver_vehicle_data');
+            if (saved && saved !== 'undefined' && saved !== 'null') {
+                const parsed = JSON.parse(saved);
+                if (parsed && parsed.sharingType) {
+                    return parsed.sharingType;
+                }
+            }
+        } catch (e) {}
+        return 4; // Default to 4
+    });
     const [currentOccupancy, setCurrentOccupancy] = useState(0);
     const [activeRidesCount, setActiveRidesCount] = useState(0);
     const [activeRide, setActiveRide] = useState(null);
@@ -289,11 +300,14 @@ const DriverDashboard = () => {
                     const parsed = JSON.parse(saved);
                     if (parsed) {
                         setVehicleInfo(prev => {
-                            if (!prev || prev.status !== parsed.status || prev.plate !== parsed.plate || prev.model !== parsed.model || prev.photo !== parsed.photo) {
+                            if (!prev || prev.status !== parsed.status || prev.plate !== parsed.plate || prev.model !== parsed.model || prev.photo !== parsed.photo || prev.sharingType !== parsed.sharingType) {
                                 return parsed;
                             }
                             return prev;
                         });
+                        if (parsed.sharingType) {
+                            setVehicleCapacity(parsed.sharingType);
+                        }
                     }
                 } catch (e) {
                     console.error("Error parsing syncVehicleData:", e);
@@ -577,6 +591,9 @@ const DriverDashboard = () => {
                 if (data.vehicleInfo) {
                     setVehicleInfo(data.vehicleInfo);
                     localStorage.setItem('driver_vehicle_data', JSON.stringify(data.vehicleInfo));
+                    if (data.vehicleInfo.sharingType) {
+                        setVehicleCapacity(data.vehicleInfo.sharingType);
+                    }
                 } else {
                     const isDemo = user?.email?.toLowerCase() === 'driver@green.de';
                     if (!isDemo) {
@@ -2440,6 +2457,15 @@ const DriverDashboard = () => {
                                                     />
                                                 </div>
                                             ))}
+                                            {(vehicleInfo?.status === 'approved' || vehicleInfo?.status === 'pending') && (
+                                                <div className="space-y-2 col-span-2">
+                                                    <label className="text-[7px] font-black text-gray-600 uppercase tracking-[0.2em] ml-1">Sharing Capacity Option</label>
+                                                    <div className="w-full bg-dark-950 border border-brand/20 rounded-xl px-4 py-3.5 text-[10px] font-black text-brand uppercase tracking-widest flex items-center justify-between">
+                                                        <span>Option {vehicleInfo?.sharingType || vehicleCapacity || 4} (Max capacity of {vehicleInfo?.sharingType || vehicleCapacity || 4} passengers)</span>
+                                                        <span className="text-[7px] text-gray-500 font-bold uppercase tracking-wider">Set by Fleet Manager</span>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {vehicleInfo?.status === 'approved' ? (
