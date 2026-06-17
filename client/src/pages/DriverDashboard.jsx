@@ -1992,9 +1992,9 @@ const DriverDashboard = () => {
                                 ))}
                             </div>
                         )}
-                        {rideStatus === 'none' && isOnline && (
+                        {rideStatus === 'none' && (
                             (() => {
-                                if (hasUnverifiedDocs) {
+                                if (hasUnverifiedDocs && isOnline) {
                                     return (
                                         <div className="w-full py-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-center shadow-lg shadow-red-500/5 px-4 animate-pulse">
                                             <p className="text-[10px] font-black uppercase tracking-[0.15em] text-red-500 flex items-center justify-center gap-2">
@@ -2010,7 +2010,12 @@ const DriverDashboard = () => {
                                 if (sharedTripsEnabled && isDemo) {
                                     return (
                                         <button
-                                            onClick={simulateGroupRide}
+                                            onClick={() => {
+                                                if (!isOnline) {
+                                                    setIsOnline(true);
+                                                }
+                                                simulateGroupRide();
+                                            }}
                                             className="w-full py-4 bg-brand/10 border border-brand/40 rounded-2xl font-black uppercase tracking-[0.2em] italic text-brand text-[10px] shadow-lg shadow-brand/10"
                                         >
                                             Launch Shared-Ride Hub
