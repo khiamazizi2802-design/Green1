@@ -40,7 +40,11 @@ jobs:
     - name: Sync Capacitor
       run: npx cap sync ios
 
-
+    - name: Set dynamic build version
+      run: |
+        BUILD_VER=$((60 + ${{ github.run_number }}))
+        echo "Updating iOS build version in project.pbxproj to $BUILD_VER"
+        sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*/CURRENT_PROJECT_VERSION = $BUILD_VER/g" ios/App/App.xcodeproj/project.pbxproj
 
     - name: Install Apple Certificate and Provisioning Profile
       env:
