@@ -39,20 +39,12 @@ const Sheet = ({ isOpen, onClose, children, position = 'bottom', className }) =>
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        drag={position === 'bottom' ? "y" : false}
-                        dragConstraints={{ top: 0, bottom: 0 }}
-                        dragElastic={0.4}
-                        onDragEnd={(e, { offset, velocity }) => {
-                            if (offset.y > 150 || velocity.y > 600) {
-                                onClose();
-                            }
-                        }}
                         className={clsx(
                             "fixed z-50 shadow-2xl p-6",
                             "border border-[var(--border-main)]",
                             position === 'bottom'
-                                ? 'bottom-0 left-0 right-0 rounded-t-[3rem] min-h-[40vh] max-h-[95vh] overflow-y-auto no-scrollbar'
-                                : 'top-0 left-0 bottom-0 w-80 overflow-y-auto no-scrollbar',
+                                ? 'bottom-0 left-0 right-0 rounded-t-[3rem] min-h-[40vh] max-h-[95vh] overflow-y-auto'
+                                : 'top-0 left-0 bottom-0 w-80 overflow-y-auto',
                             className
                         )}
                         style={{

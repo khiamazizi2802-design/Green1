@@ -866,7 +866,22 @@ const Home = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <ThemeToggle />
+                                <div className="flex items-center gap-3">
+                                    <ThemeToggle />
+                                    <button 
+                                        onClick={() => {
+                                            setActiveSheet(null);
+                                            setProfileSubView(null);
+                                            setHelpSubView(null);
+                                            setServiceDetailView(null);
+                                            setIsEditingProfile(false);
+                                            setEditingPaymentId(null);
+                                        }}
+                                        className="w-10 h-10 rounded-2xl bg-[var(--bg-btn-sec)] border border-[var(--border-main)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all active:scale-95"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
                             </div>
 
                             {/* View Personal Hub button hidden as requested */}

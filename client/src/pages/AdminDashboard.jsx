@@ -3504,42 +3504,48 @@ billing payouts are required.
                             <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
                                 <h2 className="text-5xl font-black italic uppercase tracking-tighter">System <span className="text-brand">Settings</span> & Compliance</h2>
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                                    <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] space-y-10">
-                                        <h3 className="text-2xl font-black italic uppercase text-white">Global Config</h3>
-                                        {[{ label: 'System Language', sub: 'Neural Translation (DE/EN/ES)', status: 'ACTIVE' }, { label: 'Auth Protocol', sub: 'Dual-Vector (Email/Phone)', status: 'ENABLED' }, { label: 'Invisible Routing', sub: '180-Day Moratorium active', status: 'LOCKED' }].map((setting, i) => (
-                                            <div key={i} className="flex justify-between items-center pb-8 border-b border-white/5 last:border-0 last:pb-0">
-                                                <div><p className="text-xl font-black italic uppercase text-white">{setting.label}</p><p className="text-[10px] font-black text-gray-500 uppercase mt-1 italic italic italic italic">{setting.sub}</p></div>
-                                                <div className="px-4 py-2 bg-brand/10 border border-brand/20 rounded-xl text-[10px] font-black text-brand uppercase">{setting.status}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] space-y-10">
-                                        <div className="flex justify-between items-center">
-                                            <h3 className="text-2xl font-black italic uppercase text-white">Compliance & Legal</h3>
-                                            <ShieldCheck size={24} className="text-brand" />
-                                        </div>
-                                        <div className="space-y-6">
-                                            {[
-                                                { label: 'Privacy Protocol', sub: 'GDPR / Data Monetization v1.0', icon: Shield },
-                                                { label: 'Terms of Service', sub: 'Operational Mandate v1.0', icon: FileText }
-                                            ].map((policy, i) => (
-                                                <button key={i} className="w-full p-6 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between group hover:border-white/30 transition-all text-left">
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-gray-500 group-hover:text-brand"><policy.icon size={20} /></div>
-                                                        <div><p className="text-lg font-black italic uppercase text-white leading-tight">{policy.label}</p><p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{policy.sub}</p></div>
+                                    <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
+                                        <div className="space-y-8">
+                                            <h3 className="text-2xl font-black italic uppercase text-white">Global Config</h3>
+                                            <div className="space-y-6">
+                                                {[{ label: 'System Language', sub: 'Neural Translation (DE/EN/ES)', status: 'ACTIVE' }, { label: 'Auth Protocol', sub: 'Dual-Vector (Email/Phone)', status: 'ENABLED' }, { label: 'Invisible Routing', sub: '180-Day Moratorium active', status: 'LOCKED' }].map((setting, i) => (
+                                                    <div key={i} className="flex justify-between items-center pb-6 border-b border-white/5 last:border-0 last:pb-0">
+                                                        <div><p className="text-xl font-black italic uppercase text-white">{setting.label}</p><p className="text-[10px] font-black text-gray-500 uppercase mt-1 italic">{setting.sub}</p></div>
+                                                        <div className="px-4 py-2 bg-brand/10 border border-brand/20 rounded-xl text-[10px] font-black text-brand uppercase">{setting.status}</div>
                                                     </div>
-                                                    <ChevronRight size={20} className="text-gray-700 group-hover:text-brand" />
-                                                </button>
-                                            ))}
-                                        </div>
-                                        <div className="pt-6">
-                                            <button className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] font-black shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT POLICIES</button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col justify-between">
-                                        <div className="space-y-6">
+                                    <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
+                                        <div className="space-y-8">
+                                            <div className="flex justify-between items-center">
+                                                <h3 className="text-2xl font-black italic uppercase text-white">Compliance & Legal</h3>
+                                                <ShieldCheck size={24} className="text-brand" />
+                                            </div>
+                                            <div className="space-y-4">
+                                                {[
+                                                    { label: 'Privacy Protocol', sub: 'GDPR / Data Monetization v1.0', icon: Shield },
+                                                    { label: 'Terms of Service', sub: 'Operational Mandate v1.0', icon: FileText }
+                                                ].map((policy, i) => (
+                                                    <button key={i} className="w-full p-5 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between group hover:border-white/30 transition-all text-left">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-gray-500 group-hover:text-brand"><policy.icon size={18} /></div>
+                                                            <div><p className="text-base font-black italic uppercase text-white leading-tight">{policy.label}</p><p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mt-0.5">{policy.sub}</p></div>
+                                                        </div>
+                                                        <ChevronRight size={18} className="text-gray-700 group-hover:text-brand" />
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT POLICIES</button>
+                                        </div>
+                                    </div>
+                                    <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
+                                        <div className="space-y-8">
                                             <h4 className="text-xl font-black italic uppercase text-white">Security Patch</h4>
-                                            <p className="text-xs text-gray-500 italic leading-relaxed italic italic">"Latest firmware v1.2.4-ALPHA deployed. All Director access logs are encrypted and hashed on cold-storage."</p>
+                                            <p className="text-xs text-gray-500 italic leading-relaxed">"Latest firmware v1.2.4-ALPHA deployed. All Director access logs are encrypted and hashed on cold-storage."</p>
                                         </div>
                                         <button className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all">Audit Security Logs</button>
                                     </div>
