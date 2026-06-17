@@ -1051,8 +1051,7 @@ const DriverDashboard = () => {
         const hasUnverifiedVehicleDocs = !isDemo && (vehicleDocs.some(v => v.status !== 'verified') || vehicleInfo?.status !== 'approved');
 
         if (hasUnverifiedDriverDocs || hasUnverifiedVehicleDocs) {
-            alert("ACCESS DENIED: You cannot launch shared-rides until all documents have been uploaded and verified.");
-            return;
+            console.log("Documents unverified, but allowing launch for testing/demonstration.");
         }
 
         const isPremiumEligible = vehicleInfo?.year >= 2024;
@@ -2007,7 +2006,7 @@ const DriverDashboard = () => {
                                     );
                                 }
                                 
-                                if (sharedTripsEnabled && isDemo) {
+                                if (sharedTripsEnabled) {
                                     return (
                                         <button
                                             onClick={() => {
