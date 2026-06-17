@@ -6122,11 +6122,11 @@ const ManagerDashboard = () => {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="fixed inset-0 m-auto w-full max-w-xl h-fit max-h-[90vh] z-[301] p-6 flex flex-col"
+                            className="fixed inset-0 m-auto w-[92%] md:w-full max-w-xl h-fit max-h-[95vh] z-[301] p-2 md:p-6 flex flex-col"
                         >
-                            <div className="bg-glass border-2 border-brand/20 rounded-[3rem] p-8 md:p-12 relative overflow-y-auto no-scrollbar shadow-2xl flex-1 max-h-[85vh] text-primary">
-                                <div className="absolute top-0 right-0 p-8 z-10">
-                                    <button onClick={() => setIsStripeModalOpen(false)} className="w-12 h-12 bg-btn-sec border border-main rounded-2xl flex items-center justify-center text-secondary hover:text-primary transition-colors">
+                            <div className="bg-glass border-2 border-brand/20 rounded-[2.5rem] p-6 md:p-12 relative overflow-y-auto no-scrollbar shadow-2xl flex-1 max-h-[90vh] text-primary">
+                                <div className="absolute top-0 right-0 p-4 md:p-8 z-10">
+                                    <button onClick={() => setIsStripeModalOpen(false)} className="w-10 h-10 md:w-12 md:h-12 bg-btn-sec border border-main rounded-2xl flex items-center justify-center text-secondary hover:text-primary transition-colors">
                                         <X size={20} />
                                     </button>
                                 </div>

@@ -204,6 +204,74 @@ const GreenRidePage = () => {
     const [liveETA, setLiveETA] = useState('8 min');
     const [searchingSeconds, setSearchingSeconds] = useState(0);
 
+    const [pickupSuggestions, setPickupSuggestions] = useState([]);
+    const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+    const [isPickupFocused, setIsPickupFocused] = useState(false);
+    const [isDestinationFocused, setIsDestinationFocused] = useState(false);
+    const [streetCoordinates, setStreetCoordinates] = useState([]);
+
+    const calculateRoute = async (startCoords, endCoords) => {
+        if (!startCoords || !endCoords) return;
+        try {
+            const url = `https://router.project-osrm.org/route/v1/driving/${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}?geometries=geojson`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.routes && data.routes.length > 0) {
+                const route = data.routes[0];
+                const distanceKm = route.distance / 1000;
+                const durationMin = Math.round(route.duration / 60);
+                
+                setLiveDistance(distanceKm);
+                setLiveETA(`${durationMin} min`);
+                
+                const geojsonCoords = route.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+                setStreetCoordinates(geojsonCoords);
+            }
+        } catch (error) {
+            console.error("OSRM Routing error:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (pickupCoords && destinationCoords) {
+            calculateRoute(pickupCoords, destinationCoords);
+        } else {
+            setStreetCoordinates([]);
+        }
+    }, [pickupCoords, destinationCoords]);
+
+    useEffect(() => {
+        if (!isPickupFocused || !pickup || pickup === 'Main St 123 (Current)' || pickup.startsWith('Current Location')) {
+            setPickupSuggestions([]);
+            return;
+        }
+        const timer = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(pickup)}&format=json&bounded=1&viewbox=8.4,50.0,8.9,50.3`)
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) setPickupSuggestions(data);
+                })
+                .catch(err => console.error("Pickup geocoding error:", err));
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [pickup, isPickupFocused]);
+
+    useEffect(() => {
+        if (!isDestinationFocused || !destination) {
+            setDestinationSuggestions([]);
+            return;
+        }
+        const timer = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(destination)}&format=json&bounded=1&viewbox=8.4,50.0,8.9,50.3`)
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) setDestinationSuggestions(data);
+                })
+                .catch(err => console.error("Destination geocoding error:", err));
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [destination, isDestinationFocused]);
+
     const sharedTypes = [
 
         { id: 'green3', label: 'Green3', icon: Users, desc: '3 Seats Shared' },
@@ -284,27 +352,8 @@ const GreenRidePage = () => {
     }, [rideStatus]);
 
     React.useEffect(() => {
-        if (rideStatus === 'searching' && searchingSeconds >= 6) {
-            triggerNotification('system', 'Expanding Search', 'No immediate response. Re-routing to secondary premium units...');
-            
-            // Simulate finding "someone else" after a brief delay
-            const timer = setTimeout(() => {
-                setDriverInfo({
-                    id: 'd-backup',
-                    name: 'Lucas Müller',
-                    rating: 4.8,
-                    car: 'BMW i7 (Exclusive)',
-                    plate: 'F-GR 999',
-                    color: 'Carbon Grey',
-                    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas',
-                    eta: '4 min',
-                    lat: 50.112,
-                    lng: 8.675
-                });
-                setRideStatus('accepted');
-                setShowTopNotification(true);
-            }, 2000);
-            return () => clearTimeout(timer);
+        if (rideStatus === 'searching' && searchingSeconds === 60) {
+            triggerNotification('system', 'Expanding Search', 'No immediate response. Re-routing request to other nearby drivers...');
         }
     }, [rideStatus, searchingSeconds]);
 
@@ -666,27 +715,70 @@ const GreenRidePage = () => {
                     {/* Ultra-Mini Route Section */}
                     <div className="grid grid-cols-[1fr_auto] gap-2.5">
                         <div className="flex flex-col gap-2 flex-1">
-                            <div className="h-14 rounded-2xl flex items-center px-4 gap-4" style={{ background: '#000000', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                <div className="w-5 h-5 flex items-center justify-center text-white/40">
-                                    <LocateFixed size={16} />
+                            <div className="relative">
+                                <div className="h-14 rounded-2xl flex items-center px-4 gap-4" style={{ background: '#000000', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <div className="w-5 h-5 flex items-center justify-center text-white/40">
+                                        <LocateFixed size={16} />
+                                    </div>
+                                    <input
+                                        value={pickup}
+                                        onChange={(e) => setPickup(e.target.value)}
+                                        onFocus={() => setIsPickupFocused(true)}
+                                        onBlur={() => setTimeout(() => setIsPickupFocused(false), 200)}
+                                        className="bg-transparent w-full focus:outline-none font-black text-[13px] text-white placeholder:text-white/20"
+                                        placeholder="Pick-up origin"
+                                    />
                                 </div>
-                                <input
-                                    value={pickup}
-                                    onChange={(e) => setPickup(e.target.value)}
-                                    className="bg-transparent w-full focus:outline-none font-black text-[13px] text-white placeholder:text-white/20"
-                                    placeholder="Pick-up origin"
-                                />
+                                {isPickupFocused && pickupSuggestions.length > 0 && (
+                                    <div className="absolute left-0 right-0 top-15 z-[60] bg-[#111] border border-white/10 rounded-2xl max-h-48 overflow-y-auto shadow-2xl p-2 space-y-1">
+                                        {pickupSuggestions.map((item, idx) => (
+                                            <button
+                                                key={idx}
+                                                onMouseDown={() => {
+                                                    setPickupCoords([parseFloat(item.lat), parseFloat(item.lon)]);
+                                                    setPickup(item.display_name);
+                                                    setPickupSuggestions([]);
+                                                }}
+                                                className="w-full text-left px-3 py-2 text-[11px] font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
+                                            >
+                                                {item.display_name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                            <div className="h-14 rounded-2xl flex items-center px-4 gap-4" style={{ background: '#000000', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                <div className="w-5 h-5 flex items-center justify-center text-white">
-                                    <MapPin size={16} />
+
+                            <div className="relative">
+                                <div className="h-14 rounded-2xl flex items-center px-4 gap-4" style={{ background: '#000000', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <div className="w-5 h-5 flex items-center justify-center text-white">
+                                        <MapPin size={16} />
+                                    </div>
+                                    <input
+                                        value={destination}
+                                        onChange={(e) => setDestination(e.target.value)}
+                                        onFocus={() => setIsDestinationFocused(true)}
+                                        onBlur={() => setTimeout(() => setIsDestinationFocused(false), 200)}
+                                        className="bg-transparent w-full focus:outline-none font-black text-[13px] text-white placeholder:text-white/20"
+                                        placeholder="Target destination"
+                                    />
                                 </div>
-                                <input
-                                    value={destination}
-                                    onChange={(e) => setDestination(e.target.value)}
-                                    className="bg-transparent w-full focus:outline-none font-black text-[13px] text-white placeholder:text-white/20"
-                                    placeholder="Target destination"
-                                />
+                                {isDestinationFocused && destinationSuggestions.length > 0 && (
+                                    <div className="absolute left-0 right-0 top-15 z-[60] bg-[#111] border border-white/10 rounded-2xl max-h-48 overflow-y-auto shadow-2xl p-2 space-y-1">
+                                        {destinationSuggestions.map((item, idx) => (
+                                            <button
+                                                key={idx}
+                                                onMouseDown={() => {
+                                                    setDestinationCoords([parseFloat(item.lat), parseFloat(item.lon)]);
+                                                    setDestination(item.display_name);
+                                                    setDestinationSuggestions([]);
+                                                }}
+                                                className="w-full text-left px-3 py-2 text-[11px] font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
+                                            >
+                                                {item.display_name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <button
@@ -1431,6 +1523,38 @@ const GreenRidePage = () => {
                                 lineCap: 'round'
                             }} 
                         />
+                    )}
+
+                    {/* Dynamic Real Road Route Polyline */}
+                    {streetCoordinates && streetCoordinates.length > 0 && (
+                        <Polyline 
+                            positions={streetCoordinates}
+                            pathOptions={{ 
+                                color: '#00D1FF', 
+                                weight: 5, 
+                                opacity: 0.8,
+                                lineCap: 'round'
+                            }} 
+                        />
+                    )}
+
+                    {/* Destination Marker */}
+                    {destinationCoords && (
+                        <Marker 
+                            position={destinationCoords} 
+                            icon={L.divIcon({
+                                className: 'destination-marker',
+                                html: `<div class="w-8 h-8 rounded-full bg-red-500 border-4 border-white shadow-lg flex items-center justify-center">
+                                    <div class="w-2 h-2 rounded-full bg-white"></div>
+                                </div>`,
+                                iconSize: [32, 32],
+                                iconAnchor: [16, 16]
+                            })}
+                        >
+                            <Tooltip direction="bottom" permanent>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-red-600 bg-white px-2 py-1 rounded shadow-sm border border-red-100">Destination</span>
+                            </Tooltip>
+                        </Marker>
                     )}
 
                     {/* Live Brand Markers */}

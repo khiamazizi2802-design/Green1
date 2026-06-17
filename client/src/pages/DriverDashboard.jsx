@@ -285,6 +285,15 @@ const DriverDashboard = () => {
     const notifiedMissions = React.useRef(new Set());
     const [dismissingMission, setDismissingMission] = useState(null); // { id: string, customer: string }
 
+    React.useEffect(() => {
+        if (!incomingRide) return;
+        const timer = setTimeout(() => {
+            setIncomingRide(null);
+            console.log("Incoming ride request auto-expired after 60 seconds.");
+        }, 60000); // 1 minute
+        return () => clearTimeout(timer);
+    }, [incomingRide]);
+
     const isDemo = user?.email?.toLowerCase() === 'driver@green.de';
     const hasUnverifiedDocs = !isDemo && (
         driverDocs.some(d => d.status !== 'verified') || 
@@ -637,8 +646,8 @@ const DriverDashboard = () => {
             setIncomingRide({
                 ...request,
                 customer: request.passengerName,
-                price: 24.50, 
-                basePrice: 24.50,
+                price: request.price || 24.50, 
+                basePrice: request.price || 24.50,
                 distance: '4.2 km',
                 coords: { lat: 50.115, lng: 8.685 },
                 isRealTime: true,
@@ -787,7 +796,7 @@ const DriverDashboard = () => {
             pickupCoord: incomingRide.coords || { lat: 50.115, lng: 8.685 },
             destCoord: { lat: 50.112, lng: 8.692 }, // Realistic Drop-off for simulation
             paymentType: (incomingRide.payment?.toLowerCase().includes('cash')) ? 'Cash' : 'Digital',
-            price: incomingRide.fare || 18.40
+            price: incomingRide.price || 24.50
         };
 
         setActiveMissions(prev => [...prev, newMission]);
@@ -906,7 +915,7 @@ const DriverDashboard = () => {
 
         if (mission && mission.status === 'confirm_payment') {
             lockAction();
-            const price = mission.price || 18.40;
+            const price = mission.price || 24.50;
             
             // Save to earnings
             setStats(prev => ({
@@ -1045,58 +1054,7 @@ const DriverDashboard = () => {
         alert("Shift Report Submitted Successfully.");
     };
 
-    const simulateGroupRide = () => {
-        const isDemo = user?.email?.toLowerCase() === 'driver@green.de';
-        const hasUnverifiedDriverDocs = !isDemo && driverDocs.some(d => d.status !== 'verified');
-        const hasUnverifiedVehicleDocs = !isDemo && (vehicleDocs.some(v => v.status !== 'verified') || vehicleInfo?.status !== 'approved');
 
-        if (hasUnverifiedDriverDocs || hasUnverifiedVehicleDocs) {
-            console.log("Documents unverified, but allowing launch for testing/demonstration.");
-        }
-
-        const isPremiumEligible = vehicleInfo?.year >= 2024;
-        
-        // Scenario 1: Mixed Shared Ride (Green/Max)
-        const mixedMissions = [
-            { id: 'M-1', customer: 'Lukas M.', pickup: 'Hauptwache', destination: 'Bornheim Mitte', pickupDone: true, pickupCoord: { lat: 50.113, lng: 8.680 }, destCoord: { lat: 50.125, lng: 8.710 }, status: 'picked_up', startTime: Date.now() - 600000, rideType: 'green', basePrice: 18.00, paymentType: 'Digital' },
-            { id: 'M-2', customer: 'Sarah K.', pickup: 'Zeil', destination: 'Sachsenhausen', pickupDone: false, pickupCoord: { lat: 50.114, lng: 8.685 }, destCoord: { lat: 50.110, lng: 8.720 }, status: 'accepted', startTime: Date.now(), rideType: 'green', basePrice: 15.00, paymentType: 'Cash' }
-        ];
-
-        // Scenario 2: Sequential Premium Chain
-        const premiumMissions = [
-            { id: 'P-1', customer: 'Dominik W.', pickup: 'Westend', destination: 'Opernplatz', pickupDone: true, pickupCoord: { lat: 50.118, lng: 8.665 }, destCoord: { lat: 50.130, lng: 8.680 }, status: 'picked_up', startTime: Date.now() - 300000, rideType: 'premium', basePrice: 45.00, paymentType: 'Digital' },
-            { id: 'P-2', customer: 'Helena R.', pickup: 'Skyline Plaza', destination: 'Airport Terminal 1', pickupDone: false, pickupCoord: { lat: 50.108, lng: 8.650 }, destCoord: { lat: 50.090, lng: 8.620 }, status: 'accepted', startTime: Date.now(), rideType: 'premium', basePrice: 52.00, paymentType: 'Digital' }
-        ];
-
-        // Logic: If car is empty, we can start a mission chain
-        if (activeMissions.length === 0) {
-            // Randomly choose between Premium Chain (if eligible) or Mixed Shared Hub
-            const startPremium = isPremiumEligible && Math.random() > 0.5;
-
-            if (startPremium) {
-                setActiveMissions([premiumMissions[0]]);
-                setActiveRidesCount(1);
-                setCurrentOccupancy(1);
-                setRideStatus('active_multi');
-                
-                // Mock receiving the follow-up premium mission 3 seconds later
-                setTimeout(() => {
-                    setActiveMissions(prev => {
-                        // CRITICAL: Only add if we haven't exited the mission view
-                        if (prev.length > 0) {
-                            return [...prev, premiumMissions[1]];
-                        }
-                        return prev;
-                    });
-                }, 3000);
-            } else {
-                setActiveMissions(mixedMissions);
-                setActiveRidesCount(2);
-                setCurrentOccupancy(1); // One in car (Lukas), one accepted (Sarah)
-                setRideStatus('active_multi');
-            }
-        }
-    };
 
     const handleResumeTrip = () => {
         if (lastCompletedRide) {
@@ -1938,7 +1896,7 @@ const DriverDashboard = () => {
                                                                         onClick={() => handleDropOff(m.id)}
                                                                         className="w-full py-4 bg-amber-500 text-[#000000] rounded-2xl text-[11px] font-black uppercase active:scale-95 transition-all shadow-lg shadow-amber-500/20"
                                                                     >
-                                                                        {m.paymentType === 'Cash' ? 'COLLECT CASH' : 'VERIFY DIGITAL'}: €{(m.price || 18.40).toFixed(2)}
+                                                                        {m.paymentType === 'Cash' ? 'COLLECT CASH' : 'VERIFY DIGITAL'}: €{(m.price || 24.50).toFixed(2)}
                                                                     </motion.button>
                                                                 ) : (
                                                                     <motion.button 
@@ -1977,52 +1935,15 @@ const DriverDashboard = () => {
                 {/* Online Toggle & Sector Intelligence - Only visible on main dashboard */}
                 {view === 'dashboard' && (
                     <div className="absolute bottom-6 w-full max-w-[420px] px-6 space-y-6 z-[60]">
-                        {rideStatus === 'none' && isOnline && isDemo && (
-                            <div className="grid grid-cols-3 gap-2 md:gap-4 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
-                                {[
-                                    { label: 'Station', load: 'HIGH', color: 'text-orange-500', icon: '🚉' },
-                                    { label: 'Club Zone', load: 'PEAK', color: 'text-brand', icon: '🕺' },
-                                    { label: 'Stadium', load: 'LOW', color: 'text-secondary', icon: '🏟️' }
-                                ].map((zone, i) => (
-                                    <div key={i} className="bg-dark-900/80 backdrop-blur-md border border-main rounded-xl md:rounded-[1.5rem] p-3 md:p-4 text-center relative shadow-xl">
-                                        <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 md:px-3 py-0.5 md:py-1 bg-brand text-black rounded-full text-[7px] md:text-[9px] font-black uppercase tracking-widest shadow-md whitespace-nowrap">{zone.label} {zone.icon}</div>
-                                        <p className={`text-[9px] md:text-[11px] font-black italic mt-1 ${zone.color}`}>{zone.load}</p>
-                                    </div>
-                                ))}
+                        {rideStatus === 'none' && hasUnverifiedDocs && isOnline && (
+                            <div className="w-full py-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-center shadow-lg shadow-red-500/5 px-4 animate-pulse">
+                                <p className="text-[10px] font-black uppercase tracking-[0.15em] text-red-500 flex items-center justify-center gap-2">
+                                    <AlertCircle size={14} /> Verification Required
+                                </p>
+                                <p className="text-[8px] font-bold text-gray-400 uppercase mt-1">
+                                    Upload and verify all documents in the sidebar menu to receive trip requests.
+                                </p>
                             </div>
-                        )}
-                        {rideStatus === 'none' && (
-                            (() => {
-                                if (hasUnverifiedDocs && isOnline) {
-                                    return (
-                                        <div className="w-full py-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-center shadow-lg shadow-red-500/5 px-4 animate-pulse">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-red-500 flex items-center justify-center gap-2">
-                                                <AlertCircle size={14} /> Verification Required
-                                            </p>
-                                            <p className="text-[8px] font-bold text-gray-400 uppercase mt-1">
-                                                Upload and verify all documents in the sidebar menu to receive trip requests.
-                                            </p>
-                                        </div>
-                                    );
-                                }
-                                
-                                if (sharedTripsEnabled) {
-                                    return (
-                                        <button
-                                            onClick={() => {
-                                                if (!isOnline) {
-                                                    setIsOnline(true);
-                                                }
-                                                simulateGroupRide();
-                                            }}
-                                            className="w-full py-4 bg-brand/10 border border-brand/40 rounded-2xl font-black uppercase tracking-[0.2em] italic text-brand text-[10px] shadow-lg shadow-brand/10"
-                                        >
-                                            Launch Shared-Ride Hub
-                                        </button>
-                                    );
-                                }
-                                return null;
-                            })()
                         )}
                         {rideStatus === 'none' && (
                             <button
