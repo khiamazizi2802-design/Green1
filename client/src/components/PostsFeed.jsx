@@ -321,12 +321,14 @@ const PostsFeed = ({ isOpen, onClose }) => {
 
                                     {/* Interaction Sidebar (Neon Wireframes) */}
                                     <div className="absolute right-4 bottom-32 flex flex-col gap-6 items-center z-[70]">
-                                        <button
-                                            onClick={() => setIsCreating(true)}
-                                            className="w-12 h-12 bg-brand rounded-full flex items-center justify-center text-dark-950 shadow-[0_0_20px_rgba(52,211,153,0.5)] mb-4 animate-bounce hover:scale-110 active:scale-95 transition-transform"
-                                        >
-                                            <Plus size={28} />
-                                        </button>
+                                        {user && (user.role === 'manager' || user.role === 'driver' || user.role === 'staff' || user.email?.toLowerCase() === 'driver@green.de') && (
+                                            <button
+                                                onClick={() => setIsCreating(true)}
+                                                className="w-12 h-12 bg-brand rounded-full flex items-center justify-center text-dark-950 shadow-[0_0_20px_rgba(52,211,153,0.5)] mb-4 animate-bounce hover:scale-110 active:scale-95 transition-transform"
+                                            >
+                                                <Plus size={28} />
+                                            </button>
+                                        )}
                                         
                                         {/* LIKE BUTTON */}
                                         <button 

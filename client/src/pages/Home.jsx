@@ -869,13 +869,7 @@ const Home = () => {
                                 <ThemeToggle />
                             </div>
 
-                            <button 
-                                onClick={() => navigate('/my-profile')}
-                                className="w-full mb-4 p-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-primary)] rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] italic flex items-center justify-center gap-3 shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
-                            >
-                                <User size={16} fill="currentColor" />
-                                View Personal Hub & Timeline
-                            </button>
+                            {/* View Personal Hub button hidden as requested */}
 
                             {/* Wallet Section */}
                             <button 
