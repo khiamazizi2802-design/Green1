@@ -82,6 +82,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useSocket } from '../context/SocketContext';
 import { Banknote, Check, Moon, Sun, Loader2 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import PostsFeed from '../components/PostsFeed';
 
 const itemMetadata = {
     // Bar / signature cocktails
@@ -599,6 +600,7 @@ const ManagerDashboard = () => {
     const [stripeFormRouting, setStripeFormRouting] = useState('');
     const [stripeOnboardStep, setStripeOnboardStep] = useState(1); // 1: Details, 2: Bank Payout Setup
     const [stripeLoading, setStripeLoading] = useState(false);
+    const [isFeedOpen, setIsFeedOpen] = useState(false);
 
 
     // STAFF ONBOARDING STATE
@@ -3689,7 +3691,15 @@ const ManagerDashboard = () => {
                                             </div>
 
                                             <div className="space-y-4">
-                                                <h3 className="text-lg font-black italic uppercase text-primary ml-6">Live <span className="text-brand">15s Feed Preview</span></h3>
+                                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6">
+                                                    <h3 className="text-lg font-black italic uppercase text-primary">Live <span className="text-brand">15s Feed Preview</span></h3>
+                                                    <button 
+                                                        onClick={() => setIsFeedOpen(true)}
+                                                        className="px-6 py-2.5 bg-brand text-dark-900 rounded-2xl text-[9px] font-black uppercase tracking-wider shadow-lg shadow-brand/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                    >
+                                                        <Activity size={12} /> View Live Feed
+                                                    </button>
+                                                </div>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                                                     {isDemo ? (
                                                         [
@@ -6122,9 +6132,9 @@ const ManagerDashboard = () => {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="fixed inset-0 m-auto w-[92%] md:w-full max-w-xl h-fit max-h-[95vh] z-[301] p-2 md:p-6 flex flex-col"
+                            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] md:w-full max-w-xl h-auto max-h-[90vh] z-[301] p-2 md:p-6 flex flex-col"
                         >
-                            <div className="bg-glass border-2 border-brand/20 rounded-[2.5rem] p-6 md:p-12 relative overflow-y-auto no-scrollbar shadow-2xl flex-1 max-h-[90vh] text-primary">
+                            <div className="bg-glass border-2 border-brand/20 rounded-[2.5rem] p-6 md:p-12 relative overflow-y-auto no-scrollbar shadow-2xl flex-1 max-h-full text-primary">
                                 <div className="absolute top-0 right-0 p-4 md:p-8 z-10">
                                     <button onClick={() => setIsStripeModalOpen(false)} className="w-10 h-10 md:w-12 md:h-12 bg-btn-sec border border-main rounded-2xl flex items-center justify-center text-secondary hover:text-primary transition-colors">
                                         <X size={20} />
@@ -6371,6 +6381,8 @@ const ManagerDashboard = () => {
                     </>
                 )}
             </AnimatePresence>
+
+            <PostsFeed isOpen={isFeedOpen} onClose={() => setIsFeedOpen(false)} />
 
             {/* REAL-TIME CASH ALERTS (Floating) */}
             <div className="fixed bottom-10 right-10 z-[200] space-y-4 max-w-sm w-full">
