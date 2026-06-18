@@ -2524,13 +2524,13 @@ billing payouts are required.
                                             <h4 className="text-[10px] font-black text-brand uppercase tracking-[0.2em] mb-4">🛠️ Campaign Parameter Configuration</h4>
 
                                             {/* Multi-Slot Offer Type Uploader */}
-                                            <div className="space-y-3">
-                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">1. UPLOAD PARTNER QR CODES / DOCUMENTS (PDF / IMAGE)</label>
+                                            <div className="space-y-3 p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                                <label className="text-[10px] font-black text-white uppercase tracking-wider block">1. UPLOAD PARTNER QR CODES / DOCUMENTS (PDF / IMAGE)</label>
                                                 {[{id:'nightlife', label:'🍸 Nightlife'}, {id:'restaurant', label:'🍽️ Restaurant'}, {id:'hotel', label:'🏨 Hotel VIP'}].map(cat => (
                                                     <div key={cat.id} className="flex items-center gap-3">
                                                         <div
                                                             onClick={() => document.getElementById(`campaign-file-${cat.id}`)?.click()}
-                                                            className="flex-1 border-2 border-dashed border-white/10 hover:border-brand/40 bg-dark-950/60 px-4 py-3 rounded-2xl flex items-center gap-3 cursor-pointer transition-all hover:scale-[1.01] group"
+                                                            className="flex-1 border-2 border-dashed border-white/20 hover:border-brand/60 bg-black/40 px-4 py-3.5 rounded-2xl flex items-center gap-3 cursor-pointer transition-all hover:scale-[1.01] group"
                                                         >
                                                             <input
                                                                 type="file"
@@ -2540,8 +2540,8 @@ billing payouts are required.
                                                                 onChange={handleCampaignFileUpload}
                                                                 className="hidden"
                                                             />
-                                                            <Upload size={14} className="text-gray-500 group-hover:text-brand transition-colors shrink-0" />
-                                                            <span className="text-[9px] font-black text-gray-400 group-hover:text-brand transition-colors">{cat.label}</span>
+                                                            <Upload size={14} className="text-gray-400 group-hover:text-brand transition-colors shrink-0" />
+                                                            <span className="text-[9px] font-black text-gray-300 group-hover:text-white transition-colors">{cat.label}</span>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -2550,12 +2550,12 @@ billing payouts are required.
                                                 {campaignFiles.length > 0 && (
                                                     <div className="space-y-2 max-h-[120px] overflow-y-auto no-scrollbar pt-1">
                                                         {campaignFiles.map(file => (
-                                                            <div key={file.id} className="p-2.5 bg-white/5 border border-white/5 rounded-xl flex items-center justify-between gap-3 text-left">
+                                                            <div key={file.id} className="p-2.5 bg-black/60 border border-white/5 rounded-xl flex items-center justify-between gap-3 text-left">
                                                                 <div className="flex items-center gap-2 min-w-0">
                                                                     <FileText size={13} className="text-brand shrink-0" />
                                                                     <div className="min-w-0">
                                                                         <p className="text-[9px] font-black text-white truncate">{file.name}</p>
-                                                                        <p className="text-[7px] font-bold text-gray-500">{file.size}</p>
+                                                                        <p className="text-[7px] font-bold text-gray-400">{file.size}</p>
                                                                     </div>
                                                                 </div>
                                                                 {file.progress < 100 ? (
@@ -2565,7 +2565,7 @@ billing payouts are required.
                                                                 ) : (
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); removeCampaignFile(file.id); }}
-                                                                        className="text-gray-500 hover:text-red-400 p-1 transition-colors shrink-0"
+                                                                        className="text-gray-400 hover:text-red-400 p-1 transition-colors shrink-0"
                                                                     >
                                                                         <X size={11} />
                                                                     </button>
@@ -2577,76 +2577,78 @@ billing payouts are required.
                                             </div>
 
                                             {/* Target Area Text Inputs */}
-                                            <div className="space-y-2">
-                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">2. TARGET AREA NAME</label>
-                                                <div className="relative">
-                                                    <input
-                                                        placeholder="E.g., Frankfurt Airport or Zeil"
-                                                        value={targetArea}
-                                                        onChange={e => setTargetArea(e.target.value)}
-                                                        className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl px-4 py-4 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-sm hover:border-black/20"
-                                                        style={{ backgroundColor: '#ffffff', color: '#111827' }}
-                                                    />
-                                                    <MapPin size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand pointer-events-none" />
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="grid grid-cols-3 gap-4">
+                                            <div className="space-y-4 p-5 bg-white/5 border border-white/10 rounded-3xl">
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest font-mono">LATITUDE</label>
-                                                    <input
-                                                        type="number"
-                                                        step="0.0001"
-                                                        placeholder="50.1109"
-                                                        value={tripIncrementProvision}
-                                                        onChange={e => setTripIncrementProvision(parseFloat(e.target.value) || 50.1109)}
-                                                        className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl p-4 text-xs font-black outline-none"
-                                                        style={{ backgroundColor: '#ffffff', color: '#111827' }}
-                                                    />
+                                                    <label className="text-[10px] font-black text-white uppercase tracking-wider block">2. TARGET AREA NAME</label>
+                                                    <div className="relative">
+                                                        <input
+                                                            placeholder="E.g., Frankfurt Airport or Zeil"
+                                                            value={targetArea}
+                                                            onChange={e => setTargetArea(e.target.value)}
+                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl px-5 py-4 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-lg"
+                                                            style={{ backgroundColor: '#090d16' }}
+                                                        />
+                                                        <MapPin size={14} className="absolute right-5 top-1/2 -translate-y-1/2 text-brand pointer-events-none" />
+                                                    </div>
                                                 </div>
                                                 
-                                                <div className="space-y-2">
-                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest font-mono">LONGITUDE</label>
-                                                    <input
-                                                        type="number"
-                                                        step="0.0001"
-                                                        placeholder="8.6821"
-                                                        value={tripThreshold}
-                                                        onChange={e => setTripThreshold(parseFloat(e.target.value) || 8.6821)}
-                                                        className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl p-4 text-xs font-black outline-none"
-                                                        style={{ backgroundColor: '#ffffff', color: '#111827' }}
-                                                    />
-                                                </div>
+                                                <div className="grid grid-cols-3 gap-4">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[9px] font-black text-white uppercase tracking-widest font-mono block">LATITUDE</label>
+                                                        <input
+                                                            type="number"
+                                                            step="0.0001"
+                                                            placeholder="50.1109"
+                                                            value={tripIncrementProvision}
+                                                            onChange={e => setTripIncrementProvision(parseFloat(e.target.value) || 50.1109)}
+                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs font-black outline-none"
+                                                            style={{ backgroundColor: '#090d16' }}
+                                                        />
+                                                    </div>
+                                                    
+                                                    <div className="space-y-2">
+                                                        <label className="text-[9px] font-black text-white uppercase tracking-widest font-mono block">LONGITUDE</label>
+                                                        <input
+                                                            type="number"
+                                                            step="0.0001"
+                                                            placeholder="8.6821"
+                                                            value={tripThreshold}
+                                                            onChange={e => setTripThreshold(parseFloat(e.target.value) || 8.6821)}
+                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs font-black outline-none"
+                                                            style={{ backgroundColor: '#090d16' }}
+                                                        />
+                                                    </div>
 
-                                                <div className="space-y-2">
-                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest font-mono">RADIUS (KM)</label>
-                                                    <input
-                                                        type="number"
-                                                        step="0.1"
-                                                        min="0.1"
-                                                        value={scanningRadius}
-                                                        onChange={e => setScanningRadius(parseFloat(e.target.value) || 2.0)}
-                                                        className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl p-4 text-xs font-black outline-none"
-                                                        style={{ backgroundColor: '#ffffff', color: '#111827' }}
-                                                    />
+                                                    <div className="space-y-2">
+                                                        <label className="text-[9px] font-black text-white uppercase tracking-widest font-mono block">RADIUS (KM)</label>
+                                                        <input
+                                                            type="number"
+                                                            step="0.1"
+                                                            min="0.1"
+                                                            value={scanningRadius}
+                                                            onChange={e => setScanningRadius(parseFloat(e.target.value) || 2.0)}
+                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs font-black outline-none"
+                                                            style={{ backgroundColor: '#090d16' }}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             {/* Define Offer Description */}
-                                            <div className="space-y-2">
-                                                <label className="text-[9px] font-black text-gray-700 uppercase tracking-widest">3. CAMPAIGN OFFER VOUCHER TEXT</label>
+                                            <div className="space-y-2 p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                                <label className="text-[10px] font-black text-white uppercase tracking-wider block">3. CAMPAIGN OFFER VOUCHER TEXT</label>
                                                 <input 
                                                     placeholder="E.g., 50% OFF ALL ENTRYS OR FREE DRINKS" 
                                                     value={campaignOfferText}
                                                     onChange={e => setCampaignOfferText(e.target.value)}
-                                                    className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl p-4 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-sm hover:border-black/20"
-                                                    style={{ backgroundColor: '#ffffff', color: '#111827' }}
+                                                    className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl p-5 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-lg"
+                                                    style={{ backgroundColor: '#090d16' }}
                                                 />
                                             </div>
 
                                             {/* Define Audience Size — Unlimited */}
-                                            <div className="space-y-2">
-                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">4. TARGET AUDIENCE SIZE (UNLIMITED)</label>
+                                            <div className="space-y-2 p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                                <label className="text-[10px] font-black text-white uppercase tracking-wider block">4. TARGET AUDIENCE SIZE (UNLIMITED)</label>
                                                 <div className="relative">
                                                     <input
                                                         type="number"
@@ -2654,12 +2656,12 @@ billing payouts are required.
                                                         placeholder="e.g. 5000"
                                                         value={targetPeopleCount}
                                                         onChange={e => setTargetPeopleCount(Math.max(1, parseInt(e.target.value) || 1))}
-                                                        className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl pl-4 pr-24 py-4 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-sm hover:border-black/20"
-                                                        style={{ backgroundColor: '#ffffff', color: '#111827' }}
+                                                        className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl pl-5 pr-24 py-4.5 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-lg"
+                                                        style={{ backgroundColor: '#090d16' }}
                                                     />
-                                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-brand uppercase tracking-wider pointer-events-none">Passengers</span>
+                                                    <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[9px] font-black text-brand uppercase tracking-wider pointer-events-none">Passengers</span>
                                                 </div>
-                                                <p className="text-[8px] text-gray-500 font-bold uppercase tracking-wider">No limit — reach as many people as needed</p>
+                                                <p className="text-[8px] text-gray-400 font-bold uppercase tracking-wider mt-1">No limit — reach as many people as needed</p>
                                             </div>
                                         </div>
 
