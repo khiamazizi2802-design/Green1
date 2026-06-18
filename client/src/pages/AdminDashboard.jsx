@@ -520,7 +520,10 @@ The "Guardian Protocol" for lost items is a mandatory coordination service. Driv
                     shop: targetArea,
                     offer: campaignOfferText.toUpperCase(),
                     category: offerCategory,
-                    color: categoryColor
+                    color: categoryColor,
+                    lat: tripIncrementProvision || 50.1109,
+                    lng: tripThreshold || 8.6821,
+                    radius: scanningRadius || 2.0
                 };
 
                 localStorage.setItem('green_active_offers', JSON.stringify([newOffer, ...activeOffers]));
@@ -2572,24 +2575,60 @@ billing payouts are required.
                                                 )}
                                             </div>
 
-                                            {/* Target Area Dropdown Input */}
+                                            {/* Target Area Text Inputs */}
                                             <div className="space-y-2">
-                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">2. TARGET AREA / REGION (2 KM RADIUS TRIGGER)</label>
+                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">2. TARGET AREA NAME</label>
                                                 <div className="relative">
-                                                    <select
+                                                    <input
+                                                        placeholder="E.g., Frankfurt Airport or Zeil"
                                                         value={targetArea}
                                                         onChange={e => setTargetArea(e.target.value)}
                                                         className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl px-4 py-4 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-sm hover:border-black/20"
                                                         style={{ backgroundColor: '#ffffff', color: '#111827' }}
-                                                    >
-                                                        <option value="Zeil">Zeil (City Center)</option>
-                                                        <option value="Frankfurt Airport">Frankfurt Airport (FRA)</option>
-                                                        <option value="Main-Taunus-Zentrum">Main-Taunus-Zentrum (MTZ)</option>
-                                                        <option value="Hessen-Center">Hessen-Center</option>
-                                                    </select>
+                                                    />
                                                     <MapPin size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand pointer-events-none" />
                                                 </div>
-                                                <p className="text-[8px] text-gray-500 font-bold uppercase tracking-wider">The system will trigger the offer when a ride starts or ends within 2 km of this area</p>
+                                            </div>
+                                            
+                                            <div className="grid grid-cols-3 gap-4">
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest font-mono">LATITUDE</label>
+                                                    <input
+                                                        type="number"
+                                                        step="0.0001"
+                                                        placeholder="50.1109"
+                                                        value={tripIncrementProvision}
+                                                        onChange={e => setTripIncrementProvision(parseFloat(e.target.value) || 50.1109)}
+                                                        className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl p-4 text-xs font-black outline-none"
+                                                        style={{ backgroundColor: '#ffffff', color: '#111827' }}
+                                                    />
+                                                </div>
+                                                
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest font-mono">LONGITUDE</label>
+                                                    <input
+                                                        type="number"
+                                                        step="0.0001"
+                                                        placeholder="8.6821"
+                                                        value={tripThreshold}
+                                                        onChange={e => setTripThreshold(parseFloat(e.target.value) || 8.6821)}
+                                                        className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl p-4 text-xs font-black outline-none"
+                                                        style={{ backgroundColor: '#ffffff', color: '#111827' }}
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest font-mono">RADIUS (KM)</label>
+                                                    <input
+                                                        type="number"
+                                                        step="0.1"
+                                                        min="0.1"
+                                                        value={scanningRadius}
+                                                        onChange={e => setScanningRadius(parseFloat(e.target.value) || 2.0)}
+                                                        className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl p-4 text-xs font-black outline-none"
+                                                        style={{ backgroundColor: '#ffffff', color: '#111827' }}
+                                                    />
+                                                </div>
                                             </div>
 
                                             {/* Define Offer Description */}

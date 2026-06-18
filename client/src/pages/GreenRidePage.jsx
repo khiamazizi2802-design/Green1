@@ -424,13 +424,23 @@ const GreenRidePage = () => {
             let offerTriggered = false;
 
             activeOffers.forEach(offer => {
-                const hotspotCoords = hotspots[offer.shop];
-                if (hotspotCoords) {
-                    const distToPickup = calculateDistance(pickupCoords[0], pickupCoords[1], hotspotCoords[0], hotspotCoords[1]);
-                    const distToDest = calculateDistance(destinationCoords[0], destinationCoords[1], hotspotCoords[0], hotspotCoords[1]);
+                // If the offer has custom lat/lng/radius, use them; otherwise fallback to default presets
+                const defaultHotspots = {
+                    'Zeil': [50.1139, 8.6876],
+                    'Frankfurt Airport': [50.0379, 8.5622],
+                    'Main-Taunus-Zentrum': [50.1175, 8.5280],
+                    'Hessen-Center': [50.1384, 8.7845]
+                };
+                const lat = offer.lat || (defaultHotspots[offer.shop] ? defaultHotspots[offer.shop][0] : null);
+                const lng = offer.lng || (defaultHotspots[offer.shop] ? defaultHotspots[offer.shop][1] : null);
+                const maxRadius = offer.radius || 2.0;
 
-                    // Trigger if pickup or destination is within 2 km
-                    if ((distToPickup <= 2.0 || distToDest <= 2.0) && !offerTriggered) {
+                if (lat !== null && lng !== null) {
+                    const distToPickup = calculateDistance(pickupCoords[0], pickupCoords[1], lat, lng);
+                    const distToDest = calculateDistance(destinationCoords[0], destinationCoords[1], lat, lng);
+
+                    // Trigger if pickup or destination is within custom radius
+                    if ((distToPickup <= maxRadius || distToDest <= maxRadius) && !offerTriggered) {
                         offerTriggered = true;
 
                         const customOffers = JSON.parse(localStorage.getItem('green_custom_offers') || '[]');
@@ -446,7 +456,7 @@ const GreenRidePage = () => {
                                 avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${offer.shop.replace(/\s+/g, '')}`,
                                 subject: `Route Discount: ${offer.offer}! 🚀`,
                                 preview: `Unlocked matching your route near ${offer.shop}. View details.`,
-                                content: `Welcome Passenger! Your booked route starts or ends within a 2 km radius of the ${offer.shop} zone. Because of this, the admin team has unlocked an exclusive ${offer.category} offer just for you: "${offer.offer}". Present this coupon or QR code upon arrival to claim your discount.`,
+                                content: `Welcome Passenger! Your booked route starts or ends within a ${maxRadius.toFixed(1)} km radius of the ${offer.shop} zone. Because of this, the admin team has unlocked an exclusive ${offer.category} offer just for you: "${offer.offer}". Present this coupon or QR code upon arrival to claim your discount.`,
                                 time: 'Just Now',
                                 tag: `${offer.category} • Route Match 🎯`,
                                 actionText: 'View Special Offer',
