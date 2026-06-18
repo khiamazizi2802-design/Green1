@@ -5692,15 +5692,15 @@ billing payouts are required.
                         className="fixed inset-0 z-[250] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4"
                     >
                         <motion.div initial={{ y: 40, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: 40, scale: 0.95 }}
-                            className="w-full max-w-4xl bg-[#0D1421] border border-brand/25 rounded-[2.5rem] shadow-[0_0_100px_rgba(52,211,153,0.15)] overflow-hidden flex flex-col max-h-[90vh]"
+                            className="w-full max-w-4xl bg-white border border-gray-200 rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
                         >
-                            <div className="px-10 py-8 border-b border-white/8 flex justify-between items-center">
+                            <div className="px-10 py-8 border-b border-gray-200 bg-gray-50/50 flex justify-between items-center">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-2xl bg-brand/15 border border-brand/30 flex items-center justify-center text-brand">
                                         {editingPolicy === 'privacy' ? <Shield size={24} /> : <FileText size={24} />}
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black italic uppercase text-white">
+                                        <h3 className="text-xl font-black italic uppercase text-dark-900">
                                             {editingPolicy === 'privacy' ? 'Edit Privacy Protocol' : 'Edit Terms of Service'}
                                         </h3>
                                         <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mt-1">
@@ -5708,27 +5708,27 @@ billing payouts are required.
                                         </p>
                                     </div>
                                 </div>
-                                <button onClick={() => setEditingPolicy(null)} className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-all">
+                                <button onClick={() => setEditingPolicy(null)} className="p-3 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-2xl text-gray-500 hover:text-black transition-all">
                                     <X size={20} />
                                 </button>
                             </div>
                             
-                            <div className="p-10 flex-1 overflow-y-auto space-y-6">
+                            <div className="p-10 bg-white flex-1 overflow-y-auto space-y-6">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] font-black uppercase tracking-wider text-gray-400">Policy Content (Markdown Format)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-wider text-gray-500">Policy Content (Markdown Format)</label>
                                     <textarea 
                                         value={tempPolicyText} 
                                         onChange={e => setTempPolicyText(e.target.value)}
                                         placeholder="Enter policy terms..."
-                                        className="w-full h-96 bg-white text-black border border-white/10 rounded-2xl p-6 text-sm font-medium outline-none focus:border-brand/40 transition-colors font-mono resize-none"
+                                        className="w-full h-96 bg-white text-black border border-gray-200 rounded-2xl p-6 text-sm font-medium outline-none focus:border-brand/40 transition-colors font-mono resize-none"
                                     />
                                 </div>
                             </div>
 
-                            <div className="px-10 py-6 border-t border-white/8 bg-black/20 flex gap-4 justify-end">
+                            <div className="px-10 py-6 border-t border-gray-200 bg-gray-50 flex gap-4 justify-end">
                                 <button 
                                     onClick={() => setEditingPolicy(null)} 
-                                    className="px-6 py-4 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all"
+                                    className="px-6 py-4 border border-gray-200 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-black hover:bg-gray-100 transition-all"
                                 >
                                     Cancel
                                 </button>
