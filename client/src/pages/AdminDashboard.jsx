@@ -15,6 +15,7 @@ import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 import Radar from '../components/Radar';
 import { useSocket } from '../context/SocketContext';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import { db } from '../config/firebase';
 import { collection, doc, query, where, onSnapshot, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -2666,72 +2667,60 @@ billing payouts are required.
                                         <div className="flex flex-col justify-between items-center space-y-6">
                                             <h4 className="text-[10px] font-black text-brand uppercase tracking-[0.2em] self-start">📡 Live Proximity Surveillance Grid</h4>
                                             
-                                            {/* Glowing CSS Radar Scan Sweeper — 1 km radius */}
-                                            <div className="relative w-52 h-52 rounded-full border-2 border-brand/30 bg-dark-950 flex items-center justify-center overflow-hidden shadow-[0_0_40px_rgba(0,200,100,0.08)]"
-                                                style={{ boxShadow: isScanningGrid ? '0 0 60px rgba(0,200,100,0.15)' : undefined }}
-                                            >
-                                                {/* Rotating sweep cone */}
-                                                {isScanningGrid && (
-                                                    <div
-                                                        className="absolute inset-0 rounded-full pointer-events-none"
-                                                        style={{
-                                                            background: 'conic-gradient(from 0deg, transparent 70%, rgba(0,220,110,0.35) 100%)',
-                                                            animation: 'spin 2s linear infinite'
-                                                        }}
+                                            {/* Interactive Map Component Showing Deployed geofence */}
+                                            <div className="relative w-full h-72 rounded-[2.5rem] border-2 border-brand/20 bg-dark-950 overflow-hidden shadow-2xl">
+                                                <MapContainer 
+                                                    center={[tripIncrementProvision || 50.1109, tripThreshold || 8.6821]} 
+                                                    zoom={13} 
+                                                    zoomControl={false}
+                                                    style={{ width: '100%', height: '100%', zIndex: 1 }}
+                                                >
+                                                    <TileLayer
+                                                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                                                        attribution='&copy; OpenStreetMap'
                                                     />
-                                                )}
-                                                {/* 1 km outer ring (full radius) */}
-                                                <div className="absolute w-[96%] h-[96%] rounded-full border-2 border-brand/25 border-dashed" />
-                                                <div className="absolute top-1 left-1/2 -translate-x-1/2 text-[6px] font-mono font-black text-brand/50 tracking-wider">1 KM</div>
-                                                {/* 500 m ring */}
-                                                <div className="absolute w-[60%] h-[60%] rounded-full border border-brand/12" />
-                                                <div className="absolute" style={{top:'20%', left:'50%', transform:'translateX(-50%)', fontSize:'5px', color:'rgba(0,200,100,0.3)', fontFamily:'monospace', fontWeight:900}}>500M</div>
-                                                {/* 250 m ring */}
-                                                <div className="absolute w-[32%] h-[32%] rounded-full border border-brand/8" />
-                                                {/* Crosshair */}
-                                                <div className="absolute w-full h-[1px] bg-brand/8" />
-                                                <div className="absolute h-full w-[1px] bg-brand/8" />
-
-                                                {/* Compass labels */}
-                                                <div className="absolute top-1.5 left-1/2 -translate-x-1/2 text-[5px] font-mono text-brand/20">N</div>
-                                                <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[5px] font-mono text-brand/20">S</div>
-                                                <div className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[5px] font-mono text-brand/20">W</div>
-                                                <div className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[5px] font-mono text-brand/20">E</div>
-
-                                                {/* Glowing Passenger Nodes */}
-                                                {isScanningGrid && Array.from({ length: 8 }).map((_, idx) => (
-                                                    <motion.div
-                                                        key={idx}
-                                                        initial={{ opacity: 0, scale: 0 }}
-                                                        animate={{ opacity: [0, 1, 0.6, 0], scale: [0, 1.4, 1, 0] }}
-                                                        transition={{ duration: 2.5, repeat: Infinity, delay: idx * 0.35 }}
-                                                        className="absolute w-2 h-2 rounded-full bg-brand shadow-[0_0_10px_var(--brand)]"
-                                                        style={{
-                                                            top: `${20 + (idx * 11) % 58}%`,
-                                                            left: `${15 + (idx * 23) % 68}%`
-                                                        }}
+                                                    <Marker position={[tripIncrementProvision || 50.1109, tripThreshold || 8.6821]}>
+                                                        <Popup>
+                                                            <div className="text-dark-900 font-bold p-1">
+                                                                <p className="text-xs uppercase font-black">{targetArea || 'Target Area'}</p>
+                                                                <p className="text-[9px] text-gray-500 font-mono mt-0.5">Radius: {scanningRadius || 2.0} km</p>
+                                                            </div>
+                                                        </Popup>
+                                                    </Marker>
+                                                    <Circle 
+                                                        center={[tripIncrementProvision || 50.1109, tripThreshold || 8.6821]}
+                                                        radius={(scanningRadius || 2.0) * 1000}
+                                                        pathOptions={{ color: '#10B981', fillColor: '#10B981', fillOpacity: 0.15, weight: 2 }}
                                                     />
-                                                ))}
+                                                    {/* Helper to center the map when lat/lng change */}
+                                                    {(() => {
+                                                        const ChangeMapView = () => {
+                                                            const map = useMap();
+                                                            useEffect(() => {
+                                                                map.setView([tripIncrementProvision || 50.1109, tripThreshold || 8.6821], 13);
+                                                            }, [tripIncrementProvision, tripThreshold]);
+                                                            return null;
+                                                        };
+                                                        return <ChangeMapView />;
+                                                    })()}
+                                                </MapContainer>
 
-                                                {/* Center pin */}
-                                                <div className="absolute w-3 h-3 rounded-full bg-brand/80 border-2 border-white/30 shadow-[0_0_12px_var(--brand)] z-20" />
-
-                                                {/* Status overlay */}
-                                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center z-10 bg-dark-900/85 px-3 py-2 rounded-2xl backdrop-blur-md border border-white/10 shadow-xl w-28">
+                                                {/* Mini Stats overlay */}
+                                                <div className="absolute bottom-4 right-4 z-10 bg-dark-900/90 px-4 py-3 rounded-2xl border border-white/10 shadow-xl">
                                                     <p className="text-[6px] font-black text-gray-500 uppercase tracking-widest">
-                                                        {isScanningGrid ? 'SCANNING 1 KM' : 'RADAR READY'}
+                                                        Geofence Status
                                                     </p>
-                                                    <p className="text-lg font-mono font-black italic text-brand leading-none mt-0.5">
-                                                        {isScanningGrid ? `${scannedProgress}%` : '●'}
+                                                    <p className="text-xs font-mono font-black text-brand uppercase leading-none mt-1">
+                                                        {targetArea || 'Zeil'}
                                                     </p>
-                                                    <p className="text-[6px] font-black uppercase text-white/70 mt-0.5">
-                                                        {scannedMatchesCount} Matches
+                                                    <p className="text-[7px] text-white/70 font-mono mt-1">
+                                                        R: {(scanningRadius || 2.0).toFixed(1)} km
                                                     </p>
                                                 </div>
                                             </div>
 
                                             {/* Telemetry Stream Log Console */}
-                                            <div className="w-full bg-dark-950 border border-white/5 p-4 rounded-2xl h-28 font-mono text-[8px] text-brand/80 overflow-y-auto space-y-1 text-left no-scrollbar">
+                                            <div className="w-full bg-dark-950 border border-white/5 p-4 rounded-2xl h-20 font-mono text-[8px] text-brand/80 overflow-y-auto space-y-1 text-left no-scrollbar">
                                                 {scanLogs.length === 0 ? (
                                                     <p className="text-gray-600 italic font-bold">GRID SCANNER STANDBY. DEFINE PARAMETERS AND EXECUTE OUTREACH SWEEP.</p>
                                                 ) : (
