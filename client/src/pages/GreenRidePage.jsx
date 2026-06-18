@@ -836,7 +836,10 @@ const GreenRidePage = () => {
                             <div className="w-1.5 h-1.5 rounded-full bg-brand" style={{ animationDelay: '400ms' }} />
                         </div>
                         <button 
-                            onClick={() => setRideStatus('idle')}
+                            onClick={() => {
+                                setRideStatus('idle');
+                                setHasWhistled(false);
+                            }}
                             className="w-full py-4 mt-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white/60 hover:bg-white/10 transition-all"
                         >
                             Cancel Search
@@ -1193,9 +1196,6 @@ const GreenRidePage = () => {
                                         >
                                             <span className="text-[10px] font-black">{count} Pers.</span>
                                             <span className="text-[7px] font-bold opacity-80">-{discounts[count]}</span>
-                                            <span className={`text-[6px] font-black uppercase tracking-tighter mt-0.5 ${isActive ? 'text-yellow-300' : 'text-yellow-500/70'}`}>
-                                                Fahrer: {driverBonuses[count]}
-                                            </span>
                                         </button>
                                     );
                                 })}

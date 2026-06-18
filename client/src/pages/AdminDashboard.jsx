@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Car, FileText, Search, ChevronRight, LogOut, Star, MessageSquare, Briefcase, 
     DollarSign, Bell, LayoutDashboard, Zap, Users, ShieldCheck, CheckCircle2, 
@@ -15,9 +15,49 @@ import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 import Radar from '../components/Radar';
 import { useSocket } from '../context/SocketContext';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, useMapEvents } from 'react-leaflet';
 import { db } from '../config/firebase';
 import { collection, doc, query, where, onSnapshot, updateDoc, getDoc, setDoc } from 'firebase/firestore';
+
+const MapController = ({ campaignLat, campaignLng, handleMapSelect }) => {
+    const map = useMap();
+    const timeoutRef = useRef(null);
+    const lastPosRef = useRef({ lat: campaignLat, lng: campaignLng });
+
+    useEffect(() => {
+        if (lastPosRef.current.lat !== campaignLat || lastPosRef.current.lng !== campaignLng) {
+            lastPosRef.current = { lat: campaignLat, lng: campaignLng };
+            map.setView([campaignLat, campaignLng]);
+        }
+    }, [campaignLat, campaignLng, map]);
+
+    useMapEvents({
+        click(e) {
+            handleMapSelect(e.latlng.lat, e.latlng.lng);
+        },
+        dblclick(e) {
+            handleMapSelect(e.latlng.lat, e.latlng.lng);
+        },
+        dragstart() {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        },
+        dragend() {
+            timeoutRef.current = setTimeout(() => {
+                map.setView([lastPosRef.current.lat, lastPosRef.current.lng]);
+            }, 5000);
+        }
+    });
+
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, []);
+
+    return null;
+};
 
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
@@ -445,6 +485,33 @@ The "Guardian Protocol" for lost items is a mandatory coordination service. Driv
     const [scannedProgress, setScannedProgress] = useState(0);
     const [scannedMatchesCount, setScannedMatchesCount] = useState(0);
     const [scanLogs, setScanLogs] = useState([]);
+    const [campaignLat, setCampaignLat] = useState(50.1109);
+    const [campaignLng, setCampaignLng] = useState(8.6821);
+    const [targetAreasList, setTargetAreasList] = useState([]);
+
+    // Geocode targetArea text inputs automatically
+    useEffect(() => {
+        if (!targetArea || targetArea.trim() === '' || targetArea.startsWith('Locating...') || targetArea.startsWith('Location')) return;
+        
+        const delayDebounceFn = setTimeout(async () => {
+            try {
+                const queryStr = targetArea.toLowerCase().includes('frankfurt') ? targetArea : `${targetArea} Frankfurt`;
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryStr)}&limit=1`, {
+                    headers: { 'User-Agent': 'GreenAdminDashboard/1.0' }
+                });
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    const first = data[0];
+                    setCampaignLat(parseFloat(parseFloat(first.lat).toFixed(4)));
+                    setCampaignLng(parseFloat(parseFloat(first.lon).toFixed(4)));
+                }
+            } catch (e) {
+                console.error("Geocoding failed:", e);
+            }
+        }, 1000);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [targetArea]);
 
     const handleCampaignFileUpload = (e) => {
         const files = Array.from(e.target.files);
@@ -475,6 +542,29 @@ The "Guardian Protocol" for lost items is a mandatory coordination service. Driv
 
     const removeCampaignFile = (id) => {
         setCampaignFiles(prev => prev.filter(f => f.id !== id));
+    };
+
+    const handleMapSelect = async (lat, lng) => {
+        setCampaignLat(parseFloat(lat.toFixed(4)));
+        setCampaignLng(parseFloat(lng.toFixed(4)));
+        try {
+            setTargetArea(`Locating... (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=16`, {
+                headers: {
+                    'User-Agent': 'GreenRideAdminDashboard/1.0'
+                }
+            });
+            const data = await response.json();
+            if (data && data.display_name) {
+                const address = data.address;
+                const cleanName = address.suburb || address.neighbourhood || address.road || address.amenity || address.city || "Custom Area";
+                setTargetArea(cleanName.toUpperCase());
+            } else {
+                setTargetArea(`Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+            }
+        } catch (e) {
+            setTargetArea(`Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+        }
     };
 
     const runCentralGridScanner = () => {
@@ -522,8 +612,8 @@ The "Guardian Protocol" for lost items is a mandatory coordination service. Driv
                     offer: campaignOfferText.toUpperCase(),
                     category: offerCategory,
                     color: categoryColor,
-                    lat: tripIncrementProvision || 50.1109,
-                    lng: tripThreshold || 8.6821,
+                    lat: campaignLat || 50.1109,
+                    lng: campaignLng || 8.6821,
                     radius: scanningRadius || 2.0
                 };
 
@@ -2591,16 +2681,60 @@ billing payouts are required.
                                             <div className="space-y-4 p-5 bg-white/5 border border-white/10 rounded-3xl">
                                                 <div className="space-y-2">
                                                     <label className="text-[10px] font-black text-white uppercase tracking-wider block">2. TARGET AREA NAME</label>
-                                                    <div className="relative">
-                                                        <input
-                                                            placeholder="E.g., Frankfurt Airport or Zeil"
-                                                            value={targetArea}
-                                                            onChange={e => setTargetArea(e.target.value)}
-                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl px-5 py-4 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-lg"
-                                                            style={{ backgroundColor: '#090d16' }}
-                                                        />
-                                                        <MapPin size={14} className="absolute right-5 top-1/2 -translate-y-1/2 text-brand pointer-events-none" />
+                                                    <div className="flex gap-2">
+                                                        <div className="relative flex-1">
+                                                            <input
+                                                                placeholder="E.g., Frankfurt Airport or Zeil"
+                                                                value={targetArea}
+                                                                onChange={e => setTargetArea(e.target.value)}
+                                                                className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl px-5 py-4 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-lg"
+                                                                style={{ backgroundColor: '#090d16' }}
+                                                            />
+                                                            <MapPin size={14} className="absolute right-5 top-1/2 -translate-y-1/2 text-brand pointer-events-none" />
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                if (!targetArea.trim()) return;
+                                                                const newArea = {
+                                                                    id: `area-${Date.now()}`,
+                                                                    name: targetArea.toUpperCase(),
+                                                                    lat: campaignLat,
+                                                                    lng: campaignLng,
+                                                                    radius: scanningRadius
+                                                                };
+                                                                setTargetAreasList(prev => [...prev, newArea]);
+                                                                triggerNotification('success', 'Area Added 📍', `Added ${targetArea} to target areas.`);
+                                                            }}
+                                                            className="px-5 bg-brand/10 hover:bg-brand/20 border-2 border-brand/40 text-brand rounded-2xl flex items-center justify-center transition-all hover:scale-[1.03] shrink-0"
+                                                            title="Add target area"
+                                                        >
+                                                            <PlusCircle size={18} />
+                                                        </button>
                                                     </div>
+
+                                                    {targetAreasList.length > 0 && (
+                                                        <div className="space-y-2 mt-4 p-4 bg-black/40 border border-white/5 rounded-2xl">
+                                                            <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block mb-2">Saved Target Areas ({targetAreasList.length})</label>
+                                                            <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto no-scrollbar">
+                                                                {targetAreasList.map(area => (
+                                                                    <div key={area.id} className="flex items-center gap-1.5 px-3 py-1.5 bg-black/60 border border-white/10 rounded-xl">
+                                                                        <span className="text-[9px] font-black uppercase text-white">{area.name}</span>
+                                                                        <span className="text-[7.5px] font-mono text-gray-400">({area.radius}km)</span>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                setTargetAreasList(prev => prev.filter(a => a.id !== area.id));
+                                                                            }}
+                                                                            className="text-gray-400 hover:text-red-400 p-0.5 transition-colors"
+                                                                        >
+                                                                            <X size={10} />
+                                                                        </button>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 
                                                 <div className="grid grid-cols-3 gap-4">
@@ -2610,8 +2744,8 @@ billing payouts are required.
                                                             type="number"
                                                             step="0.0001"
                                                             placeholder="50.1109"
-                                                            value={tripIncrementProvision}
-                                                            onChange={e => setTripIncrementProvision(parseFloat(e.target.value) || 50.1109)}
+                                                            value={campaignLat}
+                                                            onChange={e => setCampaignLat(parseFloat(e.target.value) || 50.1109)}
                                                             className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs font-black outline-none"
                                                             style={{ backgroundColor: '#090d16' }}
                                                         />
@@ -2623,8 +2757,8 @@ billing payouts are required.
                                                             type="number"
                                                             step="0.0001"
                                                             placeholder="8.6821"
-                                                            value={tripThreshold}
-                                                            onChange={e => setTripThreshold(parseFloat(e.target.value) || 8.6821)}
+                                                            value={campaignLng}
+                                                            onChange={e => setCampaignLng(parseFloat(e.target.value) || 8.6821)}
                                                             className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs font-black outline-none"
                                                             style={{ backgroundColor: '#090d16' }}
                                                         />
@@ -2683,16 +2817,18 @@ billing payouts are required.
                                             {/* Interactive Map Component Showing Deployed geofence */}
                                             <div className="relative w-full h-72 rounded-[2.5rem] border-2 border-brand/20 bg-dark-950 overflow-hidden shadow-2xl">
                                                 <MapContainer 
-                                                    center={[tripIncrementProvision || 50.1109, tripThreshold || 8.6821]} 
+                                                    center={[campaignLat || 50.1109, campaignLng || 8.6821]} 
                                                     zoom={13} 
-                                                    zoomControl={false}
+                                                    zoomControl={true}
+                                                    scrollWheelZoom={true}
+                                                    doubleClickZoom={false}
                                                     style={{ width: '100%', height: '100%', zIndex: 1 }}
                                                 >
                                                     <TileLayer
                                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                                         attribution='&copy; OpenStreetMap contributors'
                                                     />
-                                                    <Marker position={[tripIncrementProvision || 50.1109, tripThreshold || 8.6821]}>
+                                                    <Marker position={[campaignLat || 50.1109, campaignLng || 8.6821]}>
                                                         <Popup>
                                                             <div className="text-dark-900 font-bold p-1">
                                                                 <p className="text-xs uppercase font-black">{targetArea || 'Target Area'}</p>
@@ -2701,21 +2837,29 @@ billing payouts are required.
                                                         </Popup>
                                                     </Marker>
                                                     <Circle 
-                                                        center={[tripIncrementProvision || 50.1109, tripThreshold || 8.6821]}
+                                                        center={[campaignLat || 50.1109, campaignLng || 8.6821]}
                                                         radius={(scanningRadius || 2.0) * 1000}
                                                         pathOptions={{ color: '#10B981', fillColor: '#10B981', fillOpacity: 0.15, weight: 2 }}
                                                     />
-                                                    {/* Helper to center the map when lat/lng change */}
-                                                    {(() => {
-                                                        const ChangeMapView = () => {
-                                                            const map = useMap();
-                                                            useEffect(() => {
-                                                                map.setView([tripIncrementProvision || 50.1109, tripThreshold || 8.6821], 13);
-                                                            }, [tripIncrementProvision, tripThreshold]);
-                                                            return null;
-                                                        };
-                                                        return <ChangeMapView />;
-                                                    })()}
+                                                    {/* Draw all saved target areas */}
+                                                    {targetAreasList.map(area => (
+                                                        <React.Fragment key={area.id}>
+                                                            <Marker position={[area.lat, area.lng]}>
+                                                                <Popup>
+                                                                    <div className="text-dark-900 font-bold p-1">
+                                                                        <p className="text-xs uppercase font-black">{area.name}</p>
+                                                                        <p className="text-[9px] text-gray-500 font-mono mt-0.5">Radius: {area.radius} km</p>
+                                                                    </div>
+                                                                </Popup>
+                                                            </Marker>
+                                                            <Circle 
+                                                                center={[area.lat, area.lng]}
+                                                                radius={area.radius * 1000}
+                                                                pathOptions={{ color: '#3B82F6', fillColor: '#3B82F6', fillOpacity: 0.1, weight: 1.5, dashArray: '5, 5' }}
+                                                            />
+                                                        </React.Fragment>
+                                                    ))}
+                                                    <MapController campaignLat={campaignLat} campaignLng={campaignLng} handleMapSelect={handleMapSelect} />
                                                 </MapContainer>
 
                                                 {/* Mini Stats overlay */}
