@@ -84,7 +84,7 @@ const createBrandIcon = (logoUrl, status, isSelected, driverData) => L.divIcon({
                         </div>
                     </div>
                 ` : `
-                    <img src="${logoUrl}" class="logo-ping" style="width: 100%; height: 100%; object-fit: contain; filter: brightness(0);" />
+                    <img src="${logoUrl}" class="logo-ping" style="width: 100%; height: 100%; object-fit: contain;" />
                 `}
             </div>
         </div>
@@ -209,11 +209,13 @@ const GreenRidePage = () => {
     const [isPickupFocused, setIsPickupFocused] = useState(false);
     const [isDestinationFocused, setIsDestinationFocused] = useState(false);
     const [streetCoordinates, setStreetCoordinates] = useState([]);
+    const [stops, setStops] = useState([]);
 
-    const calculateRoute = async (startCoords, endCoords) => {
-        if (!startCoords || !endCoords) return;
+    const calculateRoute = async (points) => {
+        if (!points || points.length < 2) return;
         try {
-            const url = `https://router.project-osrm.org/route/v1/driving/${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}?geometries=geojson`;
+            const coordsString = points.map(p => `${p[1]},${p[0]}`).join(';');
+            const url = `https://router.project-osrm.org/route/v1/driving/${coordsString}?geometries=geojson`;
             const res = await fetch(url);
             const data = await res.json();
             if (data.routes && data.routes.length > 0) {
@@ -232,13 +234,17 @@ const GreenRidePage = () => {
         }
     };
 
+    const serializedStopsCoords = stops.map(s => s.coords ? s.coords.join(',') : '').join(';');
     useEffect(() => {
-        if (pickupCoords && destinationCoords) {
-            calculateRoute(pickupCoords, destinationCoords);
+        const points = [pickupCoords, ...stops.map(s => s.coords), destinationCoords];
+        const validPoints = points.filter(p => p !== null && p !== undefined);
+        
+        if (validPoints.length >= 2) {
+            calculateRoute(validPoints);
         } else {
             setStreetCoordinates([]);
         }
-    }, [pickupCoords, destinationCoords]);
+    }, [pickupCoords, destinationCoords, serializedStopsCoords]);
 
     useEffect(() => {
         if (!isPickupFocused || !pickup || pickup === 'Main St 123 (Current)' || pickup.startsWith('Current Location')) {
@@ -271,6 +277,41 @@ const GreenRidePage = () => {
         }, 400);
         return () => clearTimeout(timer);
     }, [destination, isDestinationFocused]);
+
+    const handleStopChange = (index, value) => {
+        const updated = [...stops];
+        updated[index].address = value;
+        setStops(updated);
+        
+        if (!value.trim()) {
+            updated[index].suggestions = [];
+            setStops(updated);
+            return;
+        }
+        
+        if (updated[index].timer) clearTimeout(updated[index].timer);
+        updated[index].timer = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&bounded=1&viewbox=8.4,50.0,8.9,50.3`)
+                .then(res => res.json())
+                .then(data => {
+                    const latest = [...stops];
+                    if (latest[index] && Array.isArray(data)) {
+                        latest[index].suggestions = data;
+                        setStops(latest);
+                    }
+                })
+                .catch(err => console.error("Stop geocoding error:", err));
+        }, 400);
+    };
+
+    const addStopField = () => {
+        setStops([...stops, { id: Date.now(), address: '', coords: null, suggestions: [] }]);
+    };
+
+    const removeStopField = (index) => {
+        const updated = stops.filter((_, i) => i !== index);
+        setStops(updated);
+    };
 
     const sharedTypes = [
 
@@ -525,7 +566,7 @@ const GreenRidePage = () => {
 
     const activeMarkers = socketDrivers?.length > 0 ? socketDrivers : demoDrivers;
 
-    const handleExecute = () => {
+    const handleExecute = async () => {
         if (!destination || hasWhistled || isProcessing) return;
         
         setHasWhistled(true);
@@ -541,31 +582,54 @@ const GreenRidePage = () => {
             finalBookingPrice = (parseFloat(finalBookingPrice) * 1.5).toFixed(2);
         }
         
-        // STAGE 1: Payment Processing
-        setTimeout(() => {
-            setIsProcessing(false);
-            setPaymentConfirmed(true);
-            const paymentMsg = selectedPayment.id === 'cash' 
-                ? `Payment set to Cash. Please pay €${finalBookingPrice} at destination.` 
-                : `€${finalBookingPrice} has been authorized via ${selectedPayment.name} (${selectedPayment.label})`;
-            triggerNotification('payment', selectedPayment.id === 'cash' ? 'Cash Selected' : 'Payment Secured', paymentMsg);
-            
-            // STAGE 2: Payment Confirmed -> Search
-            setTimeout(() => {
-                setPaymentConfirmed(false);
-                setRideStatus('searching');
+        // STAGE 1: Stripe Test Mode Integration
+        const wsUrl = import.meta.env.VITE_WS_URL || 'http://localhost:3001';
+        const backendUrl = wsUrl.replace(/^ws/, 'http');
+        let isMock = false;
+        
+        if (selectedPayment.id !== 'cash') {
+            try {
+                const response = await fetch(`${backendUrl}/api/payment/stripe/intent`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        amount: Math.round(parseFloat(finalBookingPrice) * 100), 
+                        currency: 'eur' 
+                    })
+                });
+                const data = await response.json();
+                isMock = data.isMock;
+            } catch (err) {
+                console.error("Stripe Sandbox Request failed:", err);
+                isMock = true;
+            }
+        }
+        
+        setIsProcessing(false);
+        setPaymentConfirmed(true);
+        const paymentMsg = selectedPayment.id === 'cash' 
+            ? `Payment set to Cash. Please pay €${finalBookingPrice} at destination.` 
+            : isMock 
+                ? `€${finalBookingPrice} authorized via simulated Sandbox gateway (${selectedPayment.label})` 
+                : `€${finalBookingPrice} successfully charged via Stripe Sandbox (${selectedPayment.label})`;
                 
-                // If a specific driver was targeted on the map, auto-assign them after a short delay
-                if (targetDriver) {
-                    setTimeout(() => {
-                        setDriverInfo(targetDriver);
-                        setTargetDriver(null);
-                        setRideStatus('accepted');
-                        setShowTopNotification(true);
-                    }, 2000);
-                }
-            }, 1500);
-        }, 2500);
+        triggerNotification('payment', selectedPayment.id === 'cash' ? 'Cash Selected' : 'Payment Secured', paymentMsg);
+        
+        // STAGE 2: Payment Confirmed -> Search
+        setTimeout(() => {
+            setPaymentConfirmed(false);
+            setRideStatus('searching');
+            
+            // If a specific driver was targeted on the map, auto-assign them after a short delay
+            if (targetDriver) {
+                setTimeout(() => {
+                    setDriverInfo(targetDriver);
+                    setTargetDriver(null);
+                    setRideStatus('accepted');
+                    setShowTopNotification(true);
+                }, 2000);
+            }
+        }, 1500);
     };
 
     const handleGPSLocation = () => {
@@ -714,77 +778,153 @@ const GreenRidePage = () => {
                 <div className="space-y-3.5">
                     {/* Ultra-Mini Route Section */}
                     <div className="grid grid-cols-[1fr_auto] gap-2.5">
-                        <div className="flex flex-col gap-2 flex-1">
-                            <div className="relative">
-                                <div className="h-14 rounded-2xl flex items-center px-4 gap-4" style={{ background: '#000000', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <div className="w-5 h-5 flex items-center justify-center text-white/40">
-                                        <LocateFixed size={16} />
+                        <div className="flex flex-col gap-3.5 flex-1">
+                            {/* PICK-UP ORIGIN */}
+                            <div className="space-y-1">
+                                <label className="text-[9px] font-black text-brand uppercase tracking-widest block ml-2">Pick-up Origin</label>
+                                <div className="relative">
+                                    <div className="h-14 rounded-2xl flex items-center px-4 gap-4 bg-[#111A2E]/85 border border-white/20 focus-within:border-brand/60 focus-within:shadow-[0_0_15px_rgba(50,205,50,0.15)] transition-all">
+                                        <div className="w-5 h-5 flex items-center justify-center text-brand">
+                                            <LocateFixed size={16} />
+                                        </div>
+                                        <input
+                                            value={pickup}
+                                            onChange={(e) => setPickup(e.target.value)}
+                                            onFocus={() => setIsPickupFocused(true)}
+                                            onBlur={() => setTimeout(() => setIsPickupFocused(false), 200)}
+                                            className="bg-transparent w-full focus:outline-none font-black text-[13px] text-white placeholder:text-white/40"
+                                            placeholder="Pick-up origin address"
+                                        />
                                     </div>
-                                    <input
-                                        value={pickup}
-                                        onChange={(e) => setPickup(e.target.value)}
-                                        onFocus={() => setIsPickupFocused(true)}
-                                        onBlur={() => setTimeout(() => setIsPickupFocused(false), 200)}
-                                        className="bg-transparent w-full focus:outline-none font-black text-[13px] text-white placeholder:text-white/20"
-                                        placeholder="Pick-up origin"
-                                    />
+                                    {isPickupFocused && pickupSuggestions.length > 0 && (
+                                        <div className="absolute left-0 right-0 top-15 z-[60] bg-[#111A2E] border border-white/20 rounded-2xl max-h-48 overflow-y-auto shadow-2xl p-2 space-y-1">
+                                            {pickupSuggestions.map((item, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    onMouseDown={() => {
+                                                        setPickupCoords([parseFloat(item.lat), parseFloat(item.lon)]);
+                                                        setPickup(item.display_name);
+                                                        setPickupSuggestions([]);
+                                                    }}
+                                                    className="w-full text-left px-3 py-2 text-[11px] font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
+                                                >
+                                                    {item.display_name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                                {isPickupFocused && pickupSuggestions.length > 0 && (
-                                    <div className="absolute left-0 right-0 top-15 z-[60] bg-[#111] border border-white/10 rounded-2xl max-h-48 overflow-y-auto shadow-2xl p-2 space-y-1">
-                                        {pickupSuggestions.map((item, idx) => (
-                                            <button
-                                                key={idx}
-                                                onMouseDown={() => {
-                                                    setPickupCoords([parseFloat(item.lat), parseFloat(item.lon)]);
-                                                    setPickup(item.display_name);
-                                                    setPickupSuggestions([]);
-                                                }}
-                                                className="w-full text-left px-3 py-2 text-[11px] font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
-                                            >
-                                                {item.display_name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
                             </div>
 
-                            <div className="relative">
-                                <div className="h-14 rounded-2xl flex items-center px-4 gap-4" style={{ background: '#000000', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <div className="w-5 h-5 flex items-center justify-center text-white">
-                                        <MapPin size={16} />
+                            {/* INTERMEDIATE STOPS */}
+                            {stops.map((stop, idx) => (
+                                <div key={stop.id} className="space-y-1">
+                                    <div className="flex justify-between items-center ml-2">
+                                        <label className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Waypoint Stop {idx + 1}</label>
+                                        <button 
+                                            onClick={() => removeStopField(idx)}
+                                            className="text-[9px] font-black text-red-500 hover:text-red-400 uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
+                                        >
+                                            Remove Stop
+                                        </button>
                                     </div>
-                                    <input
-                                        value={destination}
-                                        onChange={(e) => setDestination(e.target.value)}
-                                        onFocus={() => setIsDestinationFocused(true)}
-                                        onBlur={() => setTimeout(() => setIsDestinationFocused(false), 200)}
-                                        className="bg-transparent w-full focus:outline-none font-black text-[13px] text-white placeholder:text-white/20"
-                                        placeholder="Target destination"
-                                    />
-                                </div>
-                                {isDestinationFocused && destinationSuggestions.length > 0 && (
-                                    <div className="absolute left-0 right-0 top-15 z-[60] bg-[#111] border border-white/10 rounded-2xl max-h-48 overflow-y-auto shadow-2xl p-2 space-y-1">
-                                        {destinationSuggestions.map((item, idx) => (
-                                            <button
-                                                key={idx}
-                                                onMouseDown={() => {
-                                                    setDestinationCoords([parseFloat(item.lat), parseFloat(item.lon)]);
-                                                    setDestination(item.display_name);
-                                                    setDestinationSuggestions([]);
+                                    <div className="relative">
+                                        <div className="h-14 rounded-2xl flex items-center px-4 gap-4 bg-[#111A2E]/85 border border-amber-500/30 focus-within:border-amber-500/60 focus-within:shadow-[0_0_15px_rgba(245,158,11,0.15)] transition-all">
+                                            <div className="w-5 h-5 flex items-center justify-center text-amber-500 font-black text-[10px] border border-amber-500/40 rounded-full">
+                                                {idx + 1}
+                                            </div>
+                                            <input
+                                                value={stop.address}
+                                                onChange={(e) => handleStopChange(idx, e.target.value)}
+                                                onFocus={() => {
+                                                    const updated = [...stops];
+                                                    updated[idx].isFocused = true;
+                                                    setStops(updated);
                                                 }}
-                                                className="w-full text-left px-3 py-2 text-[11px] font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
-                                            >
-                                                {item.display_name}
-                                            </button>
-                                        ))}
+                                                onBlur={() => {
+                                                    setTimeout(() => {
+                                                        const updated = [...stops];
+                                                        if (updated[idx]) {
+                                                            updated[idx].isFocused = false;
+                                                            setStops(updated);
+                                                        }
+                                                    }, 200);
+                                                }}
+                                                className="bg-transparent w-full focus:outline-none font-black text-[13px] text-white placeholder:text-white/40"
+                                                placeholder={`Address for Waypoint Stop ${idx + 1}`}
+                                            />
+                                        </div>
+                                        {stop.isFocused && stop.suggestions && stop.suggestions.length > 0 && (
+                                            <div className="absolute left-0 right-0 top-15 z-[60] bg-[#111A2E] border border-white/20 rounded-2xl max-h-48 overflow-y-auto shadow-2xl p-2 space-y-1">
+                                                {stop.suggestions.map((item, sugIdx) => (
+                                                    <button
+                                                        key={sugIdx}
+                                                        onMouseDown={() => {
+                                                            const updated = [...stops];
+                                                            updated[idx].coords = [parseFloat(item.lat), parseFloat(item.lon)];
+                                                            updated[idx].address = item.display_name;
+                                                            updated[idx].suggestions = [];
+                                                            setStops(updated);
+                                                        }}
+                                                        className="w-full text-left px-3 py-2 text-[11px] font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
+                                                    >
+                                                        {item.display_name}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
+                            ))}
+
+                            {/* TARGET DESTINATION */}
+                            <div className="space-y-1">
+                                <div className="flex justify-between items-center ml-2">
+                                    <label className="text-[9px] font-black text-brand uppercase tracking-widest">Final Destination</label>
+                                    <button 
+                                        onClick={addStopField}
+                                        className="text-[9px] font-black text-brand hover:text-brand-glow uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
+                                    >
+                                        + Add Stop
+                                    </button>
+                                </div>
+                                <div className="relative">
+                                    <div className="h-14 rounded-2xl flex items-center px-4 gap-4 bg-[#111A2E]/85 border border-white/20 focus-within:border-brand/60 focus-within:shadow-[0_0_15px_rgba(50,205,50,0.15)] transition-all">
+                                        <div className="w-5 h-5 flex items-center justify-center text-brand">
+                                            <MapPin size={16} />
+                                        </div>
+                                        <input
+                                            value={destination}
+                                            onChange={(e) => setDestination(e.target.value)}
+                                            onFocus={() => setIsDestinationFocused(true)}
+                                            onBlur={() => setTimeout(() => setIsDestinationFocused(false), 200)}
+                                            className="bg-transparent w-full focus:outline-none font-black text-[13px] text-white placeholder:text-white/40"
+                                            placeholder="Final destination address"
+                                        />
+                                    </div>
+                                    {isDestinationFocused && destinationSuggestions.length > 0 && (
+                                        <div className="absolute left-0 right-0 top-15 z-[60] bg-[#111A2E] border border-white/20 rounded-2xl max-h-48 overflow-y-auto shadow-2xl p-2 space-y-1">
+                                            {destinationSuggestions.map((item, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    onMouseDown={() => {
+                                                        setDestinationCoords([parseFloat(item.lat), parseFloat(item.lon)]);
+                                                        setDestination(item.display_name);
+                                                        setDestinationSuggestions([]);
+                                                    }}
+                                                    className="w-full text-left px-3 py-2 text-[11px] font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
+                                                >
+                                                    {item.display_name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                         <button
                             onClick={handleGPSLocation}
-                            className="w-12 h-auto rounded-2xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-lg"
-                            style={{ background: '#000000', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
+                            className="w-12 h-14 rounded-2xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-lg bg-[#111A2E]/85 border border-white/20 text-brand"
                             title="Use Current Location"
                         >
                             <Navigation size={20} />
@@ -1557,6 +1697,26 @@ const GreenRidePage = () => {
                         </Marker>
                     )}
 
+                    {/* Intermediate Stop Markers */}
+                    {stops.filter(s => s.coords !== null).map((stop, idx) => (
+                        <Marker 
+                            key={stop.id}
+                            position={stop.coords} 
+                            icon={L.divIcon({
+                                className: `stop-${idx}-marker`,
+                                html: `<div class="w-8 h-8 rounded-full bg-amber-500 border-4 border-white shadow-lg flex items-center justify-center">
+                                    <span class="text-[10px] font-black text-white">${idx + 1}</span>
+                                </div>`,
+                                iconSize: [32, 32],
+                                iconAnchor: [16, 16]
+                            })}
+                        >
+                            <Tooltip direction="bottom" permanent>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 bg-white px-2 py-1 rounded shadow-sm border border-amber-100">Stop {idx + 1}</span>
+                            </Tooltip>
+                        </Marker>
+                    ))}
+
                     {/* Live Brand Markers */}
                     {activeMarkers?.filter(d => !selectedBrand || d.brand === selectedBrand).map(driver => {
                         const brand = brands.find(b => b.name === driver.brand) || brands[0];
@@ -2075,10 +2235,7 @@ const GreenRidePage = () => {
                         opacity: 1 - (sheetY / 1800)
                     }}>
                     
-                    {/* Soft Mint Overlay */}
-                    {!isMiniMode && (
-                        <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
-                    )}
+
 
                     {/* Dynamic Fluid Orbs Background - MULTI-COLOR MODE */}
                     {!isMiniMode && (

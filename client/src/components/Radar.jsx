@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const Radar = () => {
     return (
-        <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-white">
+        <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
             
             {/* 1. PERSPECTIVE TACTICAL GRID */}
             <div className="absolute inset-0 perspective-[800px] pointer-events-none">
@@ -16,7 +16,8 @@ const Radar = () => {
                     transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute inset-0 flex items-center justify-center"
                     style={{
-                        backgroundImage: `linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)`,
+                        backgroundImage: `linear-gradient(var(--radar-line) 1px, transparent 1px), linear-gradient(90deg, var(--radar-line) 1px, transparent 1px)`,
+                        opacity: 'var(--radar-grid-opacity)',
                         backgroundSize: '45px 45px',
                         transformStyle: 'preserve-3d',
                         maskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
@@ -32,20 +33,28 @@ const Radar = () => {
                     <motion.div 
                         animate={{ scale: [1, 2.2], opacity: [0.5, 0] }}
                         transition={{ duration: 4, repeat: Infinity, ease: "easeOut" }}
-                        className="absolute w-36 h-36 rounded-full border border-black/10"
+                        className="absolute w-36 h-36 rounded-full border"
+                        style={{ borderColor: 'rgba(var(--accent-primary-rgb), 0.1)' }}
                     />
                     {/* Concentric Circle Bubble 2 */}
                     <motion.div 
                         animate={{ scale: [1, 2.2], opacity: [0.5, 0] }}
                         transition={{ duration: 4, repeat: Infinity, ease: "easeOut", delay: 2 }}
-                        className="absolute w-36 h-36 rounded-full border border-black/10"
+                        className="absolute w-36 h-36 rounded-full border"
+                        style={{ borderColor: 'rgba(var(--accent-primary-rgb), 0.1)' }}
                     />
                     {/* Static Outer Ring */}
-                    <div className="absolute w-36 h-36 rounded-full border border-black/5" />
+                    <div className="absolute w-36 h-36 rounded-full border" style={{ borderColor: 'rgba(var(--accent-primary-rgb), 0.05)' }} />
                     
                     {/* Diamond Reticle */}
-                    <div className="w-14 h-14 rounded-[1.25rem] border border-black/20 flex items-center justify-center bg-black/[0.04] shadow-sm rotate-45">
-                        <div className="w-3.5 h-3.5 rounded-full bg-black" />
+                    <div 
+                        className="w-14 h-14 rounded-[1.25rem] border flex items-center justify-center shadow-sm rotate-45"
+                        style={{ 
+                            borderColor: 'rgba(var(--accent-primary-rgb), 0.2)',
+                            backgroundColor: 'rgba(var(--accent-primary-rgb), 0.04)'
+                        }}
+                    >
+                        <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: 'var(--text-primary)' }} />
                     </div>
                 </div>
             </div>

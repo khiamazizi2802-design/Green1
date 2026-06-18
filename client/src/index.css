@@ -53,7 +53,7 @@
     --bg-surface-light: #F9FBF9;
     
     --bg-btn-sec: rgba(0, 40, 20, 0.05);
-    --sheet-bg: linear-gradient(135deg, #F0FDF4, #F8FAFC);
+    --sheet-bg: linear-gradient(135deg, #FFFFFF, #F1F5F9);
     
     --text-primary: #000000;    /* Absolute Black for maximum contrast */
     --text-secondary: #0A0A0A;  /* Deep Black */
