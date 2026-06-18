@@ -73,5 +73,11 @@ service cloud.firestore {
         isAdmin()
       );
     }
+
+    // Global System Settings & Policies rules
+    match /system_config/{configId} {
+      allow read: if true;
+      allow write: if isAuthenticated() && (getUserData().role == 'super_admin' || isAdmin());
+    }
   }
 }

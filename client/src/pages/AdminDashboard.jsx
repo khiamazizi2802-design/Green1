@@ -16,7 +16,7 @@ import Sidebar from '../components/Sidebar';
 import Radar from '../components/Radar';
 import { useSocket } from '../context/SocketContext';
 import { db } from '../config/firebase';
-import { collection, doc, query, where, onSnapshot, updateDoc, getDoc } from 'firebase/firestore';
+import { collection, doc, query, where, onSnapshot, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
@@ -38,6 +38,103 @@ const AdminDashboard = () => {
     const [vaultOTP, setVaultOTP] = useState('');
     const [systemTime, setSystemTime] = useState(new Date().toLocaleTimeString());
     const [searchQuery, setSearchQuery] = useState('');
+
+    // Identity Dossier states
+    const [dossierFullName, setDossierFullName] = useState(() => localStorage.getItem('green_dossier_fullName') || (user?.name || 'Khiam Azizi'));
+    const [dossierEmail, setDossierEmail] = useState(() => localStorage.getItem('green_dossier_email') || (user?.email || 'khiamazizi2802@gmail.com'));
+    const [dossierPhone, setDossierPhone] = useState(() => localStorage.getItem('green_dossier_phone') || (user?.phone || '017662111103'));
+    const [dossierAddress, setDossierAddress] = useState(() => localStorage.getItem('green_dossier_address') || 'Auf dem schafberg 12-14');
+    const [dossierZip, setDossierZip] = useState(() => localStorage.getItem('green_dossier_zip') || '65933');
+    const [dossierIban, setDossierIban] = useState(() => localStorage.getItem('green_dossier_iban') || '');
+    const [dossierTaxId, setDossierTaxId] = useState(() => localStorage.getItem('green_dossier_taxId') || '');
+    const [dossierEmergency, setDossierEmergency] = useState(() => localStorage.getItem('green_dossier_emergency') || '');
+
+    const handleCommitDossier = () => {
+        localStorage.setItem('green_dossier_fullName', dossierFullName);
+        localStorage.setItem('green_dossier_email', dossierEmail);
+        localStorage.setItem('green_dossier_phone', dossierPhone);
+        localStorage.setItem('green_dossier_address', dossierAddress);
+        localStorage.setItem('green_dossier_zip', dossierZip);
+        localStorage.setItem('green_dossier_iban', dossierIban);
+        localStorage.setItem('green_dossier_taxId', dossierTaxId);
+        localStorage.setItem('green_dossier_emergency', dossierEmergency);
+        triggerNotification('success', 'IDENTITY GRID UPDATED', 'Dossier changes synchronized and broadcasted successfully.');
+    };
+
+    // --- LEGAL POLICIES & COMPLIANCE SYSTEM STATE ---
+    const defaultPrivacyProtocolText = `# GREEN ECOSYSTEM: GLOBAL PRIVACY PROTOCOL (v1.0-ALPHA)
+
+## 1. DATA COLLECTION & IDENTITY DOSSIERS
+The Green Application ("The Platform") collects high-clearance Personal Identifiable Information (PII) to facilitate the "Director Command" operational suite. This includes but is not limited to:
+* **PRIME-ID Identification**: Mandatory unique identifiers for all Partners, Drivers, and Customers.
+* **Geospatial Telemetry**: Real-time tracking of movement, sector density, and venue interaction.
+* **Financial Data**: Bank details (IBAN), Tax IDs, and settlement history for clearing house operations.
+* **Communication Logs**: All messaging, email, and "Invisible Phone" metadata are recorded for security and audit trails.
+
+## 2. DATA UTILIZATION & MONETIZATION (MARKET INTEL)
+As an operational director, you have authorized the "Advanced Detail Filtering" system. Data processed by the platform is utilized for:
+* **Market Sentiment Analysis**: Selling anonymized, high-level demographic trends to hospitality and nightlife partners.
+* **Operational Optimization**: Using AI Agents (Financial, Operations, Guardian) to adjust surge pricing and fleet density.
+* **PII Protection**: While high-level trends are monetized, raw PII (Bank details, addresses) is gated behind AES-256 encryption and NEVER shared externally without Alpha-Prime clearance.
+
+## 3. GDPR & INTERNATIONAL COMPLIANCE
+Operating primarily in Frankfurt, Germany, the platform adheres to the "Neural-GDPR" standard. 
+* **Right to Erasure**: Users can request "Identity Scrubbing" which clears their PRIME-ID from the active grid (subject to a 30-day legal hold).
+* **Data Portability**: Partners can export their "Fleet Performance Dossiers" in encrypted formats.
+
+## 4. SECURITY & THE VAULT
+All sensitive data is stored in the "MFA Secure Vault." Unauthorized attempts to access the vault trigger a "Global Lockdown" protocol.`;
+
+    const defaultTermsOfServiceText = `# GREEN ECOSYSTEM: TERMS OF SERVICE (OPERATIONAL MANDATE)
+
+## 1. ACCESS & CLEARANCE
+Access to the "Director Command Center" is restricted to authorized personnel. Sharing credentials constitutes a Level-5 security breach and results in immediate "PRIME-ID Revocation."
+
+## 2. PARTNER OBLIGATIONS
+Partners (Fleet Owners, Venues) must maintain 100% compliance with local transport laws (e.g., German PBefG). Failure to sync telemetry with the "Guardian AI" will result in a 24-hour operational suspension.
+
+## 3. "INVISIBLE NUMBER" MORATORIUM
+Direct phone number display is restricted for the first 180 days of operation. All communication must be routed through the "Neural CS Bridge" to protect user privacy.
+
+## 4. RECOVERY OF ASSETS
+The "Guardian Protocol" for lost items is a mandatory coordination service. Drivers are required to report "Seat Pressure Variance" immediately upon detecting left-behind items.`;
+
+    const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtocolText);
+    const [termsOfServiceText, setTermsOfServiceText] = useState(defaultTermsOfServiceText);
+    const [editingPolicy, setEditingPolicy] = useState(null); // 'privacy' | 'terms' | null
+    const [tempPolicyText, setTempPolicyText] = useState('');
+
+    useEffect(() => {
+        const fetchPolicies = async () => {
+            try {
+                const docRef = doc(db, 'system_config', 'legal');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.privacyPolicyText) setPrivacyPolicyText(data.privacyPolicyText);
+                    if (data.termsOfServiceText) setTermsOfServiceText(data.termsOfServiceText);
+                }
+            } catch (err) {
+                console.error("Error fetching policies:", err);
+            }
+        };
+        fetchPolicies();
+    }, []);
+
+    const handleCommitPolicies = async () => {
+        try {
+            const docRef = doc(db, 'system_config', 'legal');
+            await setDoc(docRef, {
+                privacyPolicyText,
+                termsOfServiceText,
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+            triggerNotification('success', 'POLICIES DEPLOYED GLOBALLY', 'Legal documents successfully pushed to Firestore production node.');
+        } catch (err) {
+            console.error("Error committing policies:", err);
+            triggerNotification('error', 'DEPLOYMENT FAILED', 'Database transaction rejected. Check authorization rules.');
+        }
+    };
 
     // --- STRIPE CONNECT GERMANY KYC & PAYOUT COMPLIANCE STATES ---
     const [stripeKycAccountId, setStripeKycAccountId] = useState(() => localStorage.getItem('green_admin_stripe_account_id') || 'acct_1oA92FFK99014B');
@@ -2028,11 +2125,11 @@ billing payouts are required.
                     </div>
                     <div className="flex items-center gap-4 group cursor-pointer" onClick={() => setView('personal-data')}>
                         <div className="text-right">
-                            <p className="text-[10px] font-black italic uppercase text-white group-hover:text-brand transition-colors">{user?.name || 'Jordan'}</p>
+                            <p className="text-[10px] font-black italic uppercase text-white group-hover:text-brand transition-colors">{dossierFullName || 'Jordan'}</p>
                             <p className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">Chief Director</p>
                         </div>
                         <div className="w-12 h-12 rounded-2xl bg-brand/20 border border-brand/40 p-1 group-hover:scale-110 transition-transform">
-                            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Jordan'}`} alt="Director" className="w-full h-full rounded-xl" />
+                            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${dossierFullName || 'Jordan'}`} alt="Director" className="w-full h-full rounded-xl" />
                         </div>
                     </div>
                 </div>
@@ -3525,10 +3622,16 @@ billing payouts are required.
                                             </div>
                                             <div className="space-y-4">
                                                 {[
-                                                    { label: 'Privacy Protocol', sub: 'GDPR / Data Monetization v1.0', icon: Shield },
-                                                    { label: 'Terms of Service', sub: 'Operational Mandate v1.0', icon: FileText }
+                                                    { id: 'privacy', label: 'Privacy Protocol', sub: 'GDPR / Data Monetization v1.0', icon: Shield, currentText: privacyPolicyText },
+                                                    { id: 'terms', label: 'Terms of Service', sub: 'Operational Mandate v1.0', icon: FileText, currentText: termsOfServiceText }
                                                 ].map((policy, i) => (
-                                                    <button key={i} className="w-full p-5 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between group hover:border-white/30 transition-all text-left">
+                                                    <button key={i} 
+                                                        onClick={() => {
+                                                            setEditingPolicy(policy.id);
+                                                            setTempPolicyText(policy.currentText);
+                                                        }}
+                                                        className="w-full p-5 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between group hover:border-white/30 transition-all text-left"
+                                                    >
                                                         <div className="flex items-center gap-4">
                                                             <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-gray-500 group-hover:text-brand"><policy.icon size={18} /></div>
                                                             <div><p className="text-base font-black italic uppercase text-white leading-tight">{policy.label}</p><p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mt-0.5">{policy.sub}</p></div>
@@ -3539,7 +3642,7 @@ billing payouts are required.
                                             </div>
                                         </div>
                                         <div>
-                                            <button className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT POLICIES</button>
+                                            <button onClick={handleCommitPolicies} className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT POLICIES</button>
                                         </div>
                                     </div>
                                     <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
@@ -4768,7 +4871,7 @@ billing payouts are required.
                                 <div className="flex items-center gap-10">
                                     <div className="flex flex-col items-center gap-4">
                                         <div className="w-32 h-32 rounded-[3rem] bg-brand/20 border border-brand/40 p-2 shadow-2xl relative group overflow-hidden">
-                                            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Jordan'}`} alt="Director" className="w-full h-full rounded-[2.5rem]" />
+                                            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${dossierFullName || 'Jordan'}`} alt="Director" className="w-full h-full rounded-[2.5rem]" />
                                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
                                                 <Upload size={24} className="text-brand" />
                                             </div>
@@ -4777,7 +4880,7 @@ billing payouts are required.
                                             <p className="text-[10px] font-black text-brand tracking-[0.3em] uppercase">ID: {user?.id || 'D-000-01'}</p>
                                         </div>
                                     </div>
-                                    <div><h2 className="text-6xl font-black italic uppercase tracking-tighter leading-none">{user?.name || 'Chief Director'}</h2><p className="text-brand text-sm font-bold uppercase tracking-[0.5em] mt-2 italic">Clearance Level: ALPHA PRIME</p></div>
+                                    <div><h2 className="text-6xl font-black italic uppercase tracking-tighter leading-none">{dossierFullName || 'Chief Director'}</h2><p className="text-brand text-sm font-bold uppercase tracking-[0.5em] mt-2 italic">Clearance Level: ALPHA PRIME</p></div>
                                 </div>
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                                     <div className="lg:col-span-2 bg-dark-900 border border-white/10 rounded-[3.5rem] p-12 space-y-10">
@@ -4785,33 +4888,33 @@ billing payouts are required.
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                             <div className="space-y-6">
                                                 {[
-                                                    { label: 'Full Name', value: user?.name || '', icon: UserIcon },
-                                                    { label: 'Director Email', value: user?.email || '', icon: Mail },
-                                                    { label: 'Secure Phone', value: user?.phone || '', icon: Phone },
-                                                    { label: 'Operational Address', value: '', icon: MapPin }
+                                                    { label: 'Full Name', value: dossierFullName, onChange: e => setDossierFullName(e.target.value), icon: UserIcon },
+                                                    { label: 'Director Email', value: dossierEmail, onChange: e => setDossierEmail(e.target.value), icon: Mail },
+                                                    { label: 'Secure Phone', value: dossierPhone, onChange: e => setDossierPhone(e.target.value), icon: Phone },
+                                                    { label: 'Operational Address', value: dossierAddress, onChange: e => setDossierAddress(e.target.value), icon: MapPin }
                                                 ].map((d, i) => (
                                                     <div key={i} className="p-6 bg-white/5 rounded-[2rem] border border-white/5 space-y-1">
                                                         <div className="flex items-center gap-2 text-gray-500 mb-2"><d.icon size={12} /><span className="text-[9px] font-black uppercase tracking-widest">{d.label}</span></div>
-                                                        <input defaultValue={d.value} placeholder="—" className="bg-transparent text-sm font-black italic text-white outline-none w-full placeholder-gray-700" />
+                                                        <input value={d.value} onChange={d.onChange} placeholder="—" className="bg-transparent text-sm font-black italic text-white outline-none w-full placeholder-gray-700" />
                                                     </div>
                                                 ))}
                                             </div>
                                             <div className="space-y-6">
                                                 {[
-                                                    { label: 'ZIP Code', value: '', icon: MapPin },
-                                                    { label: 'Bank (IBAN)', value: stripeKycIban || '', icon: Wallet },
-                                                    { label: 'Tax ID', value: stripeKycTaxId || '', icon: FileText },
-                                                    { label: 'Emergency Contact', value: '', icon: ShieldCheck }
+                                                    { label: 'ZIP Code', value: dossierZip, onChange: e => setDossierZip(e.target.value), icon: MapPin },
+                                                    { label: 'Bank (IBAN)', value: dossierIban, onChange: e => setDossierIban(e.target.value), icon: Wallet },
+                                                    { label: 'Tax ID', value: dossierTaxId, onChange: e => setDossierTaxId(e.target.value), icon: FileText },
+                                                    { label: 'Emergency Contact', value: dossierEmergency, onChange: e => setDossierEmergency(e.target.value), icon: ShieldCheck }
                                                 ].map((d, i) => (
                                                     <div key={i} className="p-6 bg-white/5 rounded-[2rem] border border-white/5 space-y-1">
                                                         <div className="flex items-center gap-2 text-gray-500 mb-2"><d.icon size={12} /><span className="text-[9px] font-black uppercase tracking-widest">{d.label}</span></div>
-                                                        <input defaultValue={d.value} placeholder="—" className="bg-transparent text-sm font-black italic text-white outline-none w-full placeholder-gray-700" />
+                                                        <input value={d.value} onChange={d.onChange} placeholder="—" className="bg-transparent text-sm font-black italic text-white outline-none w-full placeholder-gray-700" />
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
                                         <div className="pt-6">
-                                            <button className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT CHANGES TO GRID</button>
+                                            <button onClick={handleCommitDossier} className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT CHANGES TO GRID</button>
                                         </div>
                                     </div>
                                     <div className="bg-brand/5 border border-brand/20 rounded-[3.5rem] p-12 flex flex-col justify-center items-center text-center space-y-8">
@@ -5577,6 +5680,73 @@ billing payouts are required.
                             >
                                 CAPTURE & RUN COMPLIANCE ANALYSIS
                             </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* POLICY EDIT MODAL */}
+            <AnimatePresence>
+                {editingPolicy && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[250] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4"
+                    >
+                        <motion.div initial={{ y: 40, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: 40, scale: 0.95 }}
+                            className="w-full max-w-4xl bg-[#0D1421] border border-brand/25 rounded-[2.5rem] shadow-[0_0_100px_rgba(52,211,153,0.15)] overflow-hidden flex flex-col max-h-[90vh]"
+                        >
+                            <div className="px-10 py-8 border-b border-white/8 flex justify-between items-center">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-brand/15 border border-brand/30 flex items-center justify-center text-brand">
+                                        {editingPolicy === 'privacy' ? <Shield size={24} /> : <FileText size={24} />}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black italic uppercase text-white">
+                                            {editingPolicy === 'privacy' ? 'Edit Privacy Protocol' : 'Edit Terms of Service'}
+                                        </h3>
+                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mt-1">
+                                            Rewriting production legal mandates & GDPR compliance clauses
+                                        </p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setEditingPolicy(null)} className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-all">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            
+                            <div className="p-10 flex-1 overflow-y-auto space-y-6">
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-[10px] font-black uppercase tracking-wider text-gray-400">Policy Content (Markdown Format)</label>
+                                    <textarea 
+                                        value={tempPolicyText} 
+                                        onChange={e => setTempPolicyText(e.target.value)}
+                                        placeholder="Enter policy terms..."
+                                        className="w-full h-96 bg-white text-black border border-white/10 rounded-2xl p-6 text-sm font-medium outline-none focus:border-brand/40 transition-colors font-mono resize-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="px-10 py-6 border-t border-white/8 bg-black/20 flex gap-4 justify-end">
+                                <button 
+                                    onClick={() => setEditingPolicy(null)} 
+                                    className="px-6 py-4 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={() => {
+                                        if (editingPolicy === 'privacy') {
+                                            setPrivacyPolicyText(tempPolicyText);
+                                        } else {
+                                            setTermsOfServiceText(tempPolicyText);
+                                        }
+                                        setEditingPolicy(null);
+                                        triggerNotification('success', 'CHANGES STAGED', 'Click "Commit Policies" to push changes to production.');
+                                    }}
+                                    className="px-8 py-4 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand/10"
+                                >
+                                    Apply & Stage Changes
+                                </button>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

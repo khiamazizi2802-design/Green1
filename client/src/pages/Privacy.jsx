@@ -1,11 +1,93 @@
-import React, { useState } from 'react';
-import { ArrowLeft, ShieldCheck, Lock, Eye, EyeOff, Globe, Bell, Smartphone, MapPin, Database, UserCheck, CreditCard, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, ShieldCheck, Lock, Eye, EyeOff, Globe, Bell, Smartphone, MapPin, Database, UserCheck, CreditCard, X, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { db } from '../config/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 const Privacy = () => {
     const navigate = useNavigate();
     const [showFullPolicy, setShowFullPolicy] = useState(false);
+    const [activeTab, setActiveTab] = useState('privacy'); // 'privacy' | 'terms'
+
+    const defaultPrivacyProtocolText = `# GREEN ECOSYSTEM: GLOBAL PRIVACY PROTOCOL (v1.0-ALPHA)
+
+## 1. DATA COLLECTION & IDENTITY DOSSIERS
+The Green Application ("The Platform") collects high-clearance Personal Identifiable Information (PII) to facilitate the "Director Command" operational suite. This includes but is not limited to:
+* PRIME-ID Identification: Mandatory unique identifiers for all Partners, Drivers, and Customers.
+* Geospatial Telemetry: Real-time tracking of movement, sector density, and venue interaction.
+* Financial Data: Bank details (IBAN), Tax IDs, and settlement history for clearing house operations.
+* Communication Logs: All messaging, email, and "Invisible Phone" metadata are recorded for security and audit trails.
+
+## 2. DATA UTILIZATION & MONETIZATION (MARKET INTEL)
+As an operational director, you have authorized the "Advanced Detail Filtering" system. Data processed by the platform is utilized for:
+* Market Sentiment Analysis: Selling anonymized, high-level demographic trends to hospitality and nightlife partners.
+* Operational Optimization: Using AI Agents (Financial, Operations, Guardian) to adjust surge pricing and fleet density.
+* PII Protection: While high-level trends are monetized, raw PII (Bank details, addresses) is gated behind AES-256 encryption and NEVER shared externally without Alpha-Prime clearance.
+
+## 3. GDPR & INTERNATIONAL COMPLIANCE
+Operating primarily in Frankfurt, Germany, the platform adheres to the "Neural-GDPR" standard. 
+* Right to Erasure: Users can request "Identity Scrubbing" which clears their PRIME-ID from the active grid (subject to a 30-day legal hold).
+* Data Portability: Partners can export their "Fleet Performance Dossiers" in encrypted formats.
+
+## 4. SECURITY & THE VAULT
+All sensitive data is stored in the "MFA Secure Vault." Unauthorized attempts to access the vault trigger a "Global Lockdown" protocol.`;
+
+    const defaultTermsOfServiceText = `# GREEN ECOSYSTEM: TERMS OF SERVICE (OPERATIONAL MANDATE)
+
+## 1. ACCESS & CLEARANCE
+Access to the "Director Command Center" is restricted to authorized personnel. Sharing credentials constitutes a Level-5 security breach and results in immediate "PRIME-ID Revocation."
+
+## 2. PARTNER OBLIGATIONS
+Partners (Fleet Owners, Venues) must maintain 100% compliance with local transport laws (e.g., German PBefG). Failure to sync telemetry with the "Guardian AI" will result in a 24-hour operational suspension.
+
+## 3. "INVISIBLE NUMBER" MORATORIUM
+Direct phone number display is restricted for the first 180 days of operation. All communication must be routed through the "Neural CS Bridge" to protect user privacy.
+
+## 4. RECOVERY OF ASSETS
+The "Guardian Protocol" for lost items is a mandatory coordination service. Drivers are required to report "Seat Pressure Variance" immediately upon detecting left-behind items.`;
+
+    const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtocolText);
+    const [termsOfServiceText, setTermsOfServiceText] = useState(defaultTermsOfServiceText);
+
+    useEffect(() => {
+        const fetchPolicies = async () => {
+            try {
+                const docRef = doc(db, 'system_config', 'legal');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.privacyPolicyText) setPrivacyPolicyText(data.privacyPolicyText);
+                    if (data.termsOfServiceText) setTermsOfServiceText(data.termsOfServiceText);
+                }
+            } catch (err) {
+                console.error("Error fetching policies:", err);
+            }
+        };
+        fetchPolicies();
+    }, []);
+
+    const renderMarkdown = (text) => {
+        if (!text) return null;
+        return text.split('\n').map((line, idx) => {
+            if (line.startsWith('# ')) {
+                return <h1 key={idx} className="text-3xl font-black italic uppercase text-white mt-8 mb-4 border-b border-white/10 pb-2">{line.replace('# ', '')}</h1>;
+            }
+            if (line.startsWith('## ')) {
+                return <h2 key={idx} className="text-xl font-black italic uppercase text-brand mt-6 mb-3">{line.replace('## ', '')}</h2>;
+            }
+            if (line.startsWith('### ')) {
+                return <h3 key={idx} className="text-lg font-black text-white mt-4 mb-2">{line.replace('### ', '')}</h3>;
+            }
+            if (line.startsWith('* ')) {
+                return <li key={idx} className="ml-6 list-disc text-gray-300 my-1">{line.replace('* ', '')}</li>;
+            }
+            if (line.trim() === '') {
+                return <div key={idx} className="h-2" />;
+            }
+            return <p key={idx} className="text-gray-400 text-sm leading-relaxed my-2">{line}</p>;
+        });
+    };
 
     const sections = [
         {
@@ -59,52 +141,74 @@ const Privacy = () => {
             <div className="max-w-5xl mx-auto pt-24 relative z-10">
                 <div className="flex justify-end mb-8">
                     <div className="text-right">
-                        <p className="text-[10px] font-black text-brand uppercase tracking-[0.4em] italic mb-1">Neural Privacy Protocol</p>
-                        <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Version 2.4.0 • Updated May 2026</p>
+                        <p className="text-[10px] font-black text-brand uppercase tracking-[0.4em] italic mb-1">
+                            {activeTab === 'privacy' ? 'Neural Privacy Protocol' : 'Neural Terms of Service'}
+                        </p>
+                        <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Version 2.5.0 • Live Synchronized</p>
                     </div>
                 </div>
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-20 text-center space-y-4"
+                    className="mb-12 text-center space-y-4"
                 >
                     <h1 className="text-6xl font-black italic tracking-tighter uppercase leading-none">
-                        Privacy <span className="text-brand">Manifesto</span>
+                        {activeTab === 'privacy' ? (
+                            <>Privacy <span className="text-brand">Protocol</span></>
+                        ) : (
+                            <>Terms of <span className="text-brand">Service</span></>
+                        )}
                     </h1>
-                    <p className="text-gray-500 font-bold uppercase tracking-[0.5em] text-xs">Protecting the Pulse of Nightlife & Mobility</p>
+                    <p className="text-gray-500 font-bold uppercase tracking-[0.5em] text-xs">
+                        {activeTab === 'privacy' ? 'Protecting the Pulse of Nightlife & Mobility' : 'Operational Mandate & Legal Terms'}
+                    </p>
                 </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-                    {sections.map((section, i) => (
-                        <motion.section 
-                            key={i}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: i * 0.1 }}
-                            className="bg-[var(--bg-secondary)]/40 border border-white/5 p-10 rounded-[3rem] space-y-6 hover:border-brand/20 transition-all group backdrop-blur-3xl shadow-2xl"
-                        >
-                            <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center text-brand border border-brand/20 shadow-lg group-hover:scale-110 transition-transform">
-                                <section.icon size={28} />
-                            </div>
-                            <div className="space-y-3">
-                                <h2 className="text-2xl font-black italic text-white uppercase tracking-tight group-hover:text-brand transition-colors">{section.title}</h2>
-                                <p className="text-gray-400 text-sm font-medium leading-relaxed italic opacity-80 group-hover:opacity-100 transition-opacity">
-                                    {section.content}
-                                </p>
-                            </div>
-                        </motion.section>
-                    ))}
+                {/* Tab Selector */}
+                <div className="flex justify-center gap-4 mb-12">
+                    <button 
+                        onClick={() => setActiveTab('privacy')}
+                        className={`px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all flex items-center gap-2 ${
+                            activeTab === 'privacy' 
+                                ? 'bg-brand text-dark-900 border-brand shadow-lg shadow-brand/10' 
+                                : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/20'
+                        }`}
+                    >
+                        <ShieldCheck size={14} />
+                        Privacy Protocol
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('terms')}
+                        className={`px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all flex items-center gap-2 ${
+                            activeTab === 'terms' 
+                                ? 'bg-brand text-dark-900 border-brand shadow-lg shadow-brand/10' 
+                                : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/20'
+                        }`}
+                    >
+                        <FileText size={14} />
+                        Terms of Service
+                    </button>
                 </div>
 
-                {/* Read Full Legal Policy Button */}
-                <div className="flex justify-center mb-16">
-                    <button 
-                        onClick={() => setShowFullPolicy(true)}
-                        className="px-10 py-5 bg-brand text-dark-900 rounded-2xl text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand/10 flex items-center gap-2"
-                    >
-                        <ShieldCheck size={16} />
-                        Read Full Legal Datenschutzerklärung (DSGVO)
-                    </button>
+                <div className="bg-[var(--bg-secondary)]/40 border border-white/5 p-10 md:p-12 rounded-[3.5rem] mb-20 backdrop-blur-3xl shadow-2xl">
+                    {activeTab === 'privacy' ? (
+                        <div className="space-y-6">
+                            {renderMarkdown(privacyPolicyText)}
+                            <div className="flex justify-center mt-12 pt-8 border-t border-white/5">
+                                <button 
+                                    onClick={() => setShowFullPolicy(true)}
+                                    className="px-10 py-5 bg-brand text-dark-900 rounded-2xl text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand/10 flex items-center gap-2"
+                                >
+                                    <ShieldCheck size={16} />
+                                    Read Full Datenschutzerklärung (DSGVO)
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {renderMarkdown(termsOfServiceText)}
+                        </div>
+                    )}
                 </div>
 
                 <footer className="text-center py-20 border-t border-white/5 space-y-8">
