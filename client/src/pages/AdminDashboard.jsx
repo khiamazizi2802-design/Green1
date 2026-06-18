@@ -435,9 +435,9 @@ The "Guardian Protocol" for lost items is a mandatory coordination service. Driv
 
     // Custom Campaign Dispatcher states
     const [campaignFiles, setCampaignFiles] = useState([]);
-    const [targetArea, setTargetArea] = useState('Saffron Fine Dining');
+    const [targetArea, setTargetArea] = useState('Zeil');
     const [offerCategory, setOfferCategory] = useState('Restaurant');
-    const [scanningRadius, setScanningRadius] = useState(1.0);
+    const [scanningRadius, setScanningRadius] = useState(2.0);
     const [targetPeopleCount, setTargetPeopleCount] = useState(150);
     const [campaignOfferText, setCampaignOfferText] = useState('50% OFF COCKTAIL HOUR');
     const [isScanningGrid, setIsScanningGrid] = useState(false);
@@ -481,7 +481,7 @@ The "Guardian Protocol" for lost items is a mandatory coordination service. Driv
         setIsScanningGrid(true);
         setScannedProgress(0);
         setScannedMatchesCount(0);
-        setScanLogs([`📡 Initializing spatial sweep... Center Node: "${targetArea}"`]);
+        setScanLogs([`📡 Initializing spatial sweep... Area Hub: "${targetArea}" (2.0 km Radius Gate)`]);
 
         let currentProgress = 0;
         const interval = setInterval(() => {
@@ -490,18 +490,18 @@ The "Guardian Protocol" for lost items is a mandatory coordination service. Driv
 
             // Add simulated matches and geo-fence logs
             if (currentProgress === 15) {
-                setScanLogs(prev => [...prev, `🔍 Calibrating scanning perimeter... Radius: ${scanningRadius.toFixed(1)} km circle.`]);
+                setScanLogs(prev => [...prev, `🔍 Calibrating scanning perimeter... Area Radius: ${scanningRadius.toFixed(1)} km circle.`]);
             } else if (currentProgress === 35) {
-                setScanLogs(prev => [...prev, `🛰️ Cross-referencing destination routing manifests within ${scanningRadius.toFixed(1)} km circle near "${targetArea}"...`]);
+                setScanLogs(prev => [...prev, `🛰️ Storing campaign for trigger when a passenger books a ride originating or ending in "${targetArea}"...`]);
                 setScannedMatchesCount(Math.floor(targetPeopleCount * 0.25));
             } else if (currentProgress === 55) {
-                setScanLogs(prev => [...prev, `👥 Active passenger cluster located traveling towards Sector coordinates.`]);
+                setScanLogs(prev => [...prev, `👥 Active passenger routing checkpoints configured near target sectors.`]);
                 setScannedMatchesCount(Math.floor(targetPeopleCount * 0.6));
             } else if (currentProgress === 75) {
-                setScanLogs(prev => [...prev, `🔒 Securing cryptographic handshake vaults under DSGVO compliance...`]);
+                setScanLogs(prev => [...prev, `🔒 Securing cryptographic QR Code asset vault under DSGVO compliance...`]);
                 setScannedMatchesCount(Math.floor(targetPeopleCount * 0.85));
             } else if (currentProgress === 90) {
-                setScanLogs(prev => [...prev, `🎯 Geo-fence filter success: Found ${targetPeopleCount} matched passengers inside the ${scanningRadius.toFixed(1)} km radius.`]);
+                setScanLogs(prev => [...prev, `🎯 Trigger criteria active: 2.0 km geofence active for booking events near "${targetArea}".`]);
                 setScannedMatchesCount(targetPeopleCount);
             }
 
@@ -2521,7 +2521,7 @@ billing payouts are required.
 
                                             {/* Multi-Slot Offer Type Uploader */}
                                             <div className="space-y-3">
-                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">1. UPLOAD OFFERS BY CATEGORY (PDF / FLYER / IMAGE)</label>
+                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">1. UPLOAD PARTNER QR CODES / DOCUMENTS (PDF / IMAGE)</label>
                                                 {[{id:'nightlife', label:'🍸 Nightlife'}, {id:'restaurant', label:'🍽️ Restaurant'}, {id:'hotel', label:'🏨 Hotel VIP'}].map(cat => (
                                                     <div key={cat.id} className="flex items-center gap-3">
                                                         <div
@@ -2572,21 +2572,24 @@ billing payouts are required.
                                                 )}
                                             </div>
 
-                                            {/* Target Area Free-Text Input */}
+                                            {/* Target Area Dropdown Input */}
                                             <div className="space-y-2">
-                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">2. TARGET AREA / ADDRESS (1 KM RADIUS SWEEP)</label>
+                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">2. TARGET AREA / REGION (2 KM RADIUS TRIGGER)</label>
                                                 <div className="relative">
-                                                    <input
-                                                        type="text"
-                                                        placeholder="e.g. Hauptbahnhof Frankfurt, Zeil 106..."
+                                                    <select
                                                         value={targetArea}
                                                         onChange={e => setTargetArea(e.target.value)}
-                                                        className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl pl-4 pr-10 py-4 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-sm hover:border-black/20"
+                                                        className="w-full bg-white border-2 border-black/10 focus:border-brand/80 text-gray-900 rounded-2xl px-4 py-4 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-sm hover:border-black/20"
                                                         style={{ backgroundColor: '#ffffff', color: '#111827' }}
-                                                    />
+                                                    >
+                                                        <option value="Zeil">Zeil (City Center)</option>
+                                                        <option value="Frankfurt Airport">Frankfurt Airport (FRA)</option>
+                                                        <option value="Main-Taunus-Zentrum">Main-Taunus-Zentrum (MTZ)</option>
+                                                        <option value="Hessen-Center">Hessen-Center</option>
+                                                    </select>
                                                     <MapPin size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand pointer-events-none" />
                                                 </div>
-                                                <p className="text-[8px] text-gray-500 font-bold uppercase tracking-wider">The system will scan a 1 km radius around this location</p>
+                                                <p className="text-[8px] text-gray-500 font-bold uppercase tracking-wider">The system will trigger the offer when a ride starts or ends within 2 km of this area</p>
                                             </div>
 
                                             {/* Define Offer Description */}

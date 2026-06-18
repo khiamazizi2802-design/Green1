@@ -398,6 +398,69 @@ const GreenRidePage = () => {
         }
     }, [rideStatus, searchingSeconds]);
 
+    // Custom trigger: check if ride pickup/destination is within 2 km of any active campaign hotspot
+    React.useEffect(() => {
+        if (rideStatus === 'searching') {
+            const hotspots = {
+                'Zeil': [50.1139, 8.6876],
+                'Frankfurt Airport': [50.0379, 8.5622],
+                'Main-Taunus-Zentrum': [50.1175, 8.5280],
+                'Hessen-Center': [50.1384, 8.7845]
+            };
+
+            const calculateDistance = (lat1, lon1, lat2, lon2) => {
+                const R = 6371; // km
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = 
+                    Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return R * c;
+            };
+
+            const activeOffers = JSON.parse(localStorage.getItem('green_active_offers') || '[]');
+            let offerTriggered = false;
+
+            activeOffers.forEach(offer => {
+                const hotspotCoords = hotspots[offer.shop];
+                if (hotspotCoords) {
+                    const distToPickup = calculateDistance(pickupCoords[0], pickupCoords[1], hotspotCoords[0], hotspotCoords[1]);
+                    const distToDest = calculateDistance(destinationCoords[0], destinationCoords[1], hotspotCoords[0], hotspotCoords[1]);
+
+                    // Trigger if pickup or destination is within 2 km
+                    if ((distToPickup <= 2.0 || distToDest <= 2.0) && !offerTriggered) {
+                        offerTriggered = true;
+
+                        const customOffers = JSON.parse(localStorage.getItem('green_custom_offers') || '[]');
+                        // Make sure we only add it once per ride booking session
+                        const exists = customOffers.some(o => o.sender === offer.shop && o.subject.includes(offer.offer));
+
+                        if (!exists) {
+                            const newInboxOffer = {
+                                id: `custom-offer-${Date.now()}`,
+                                type: 'offer',
+                                sender: offer.shop,
+                                role: `Exclusive Partner Offer`,
+                                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${offer.shop.replace(/\s+/g, '')}`,
+                                subject: `Route Discount: ${offer.offer}! 🚀`,
+                                preview: `Unlocked matching your route near ${offer.shop}. View details.`,
+                                content: `Welcome Passenger! Your booked route starts or ends within a 2 km radius of the ${offer.shop} zone. Because of this, the admin team has unlocked an exclusive ${offer.category} offer just for you: "${offer.offer}". Present this coupon or QR code upon arrival to claim your discount.`,
+                                time: 'Just Now',
+                                tag: `${offer.category} • Route Match 🎯`,
+                                actionText: 'View Special Offer',
+                                actionRoute: '/home'
+                            };
+                            localStorage.setItem('green_custom_offers', JSON.stringify([newInboxOffer, ...customOffers]));
+                            triggerNotification('success', 'PARTNER OFFER UNLOCKED 🎯', `Exclusive voucher from ${offer.shop} added to your inbox!`);
+                        }
+                    }
+                }
+            });
+        }
+    }, [rideStatus, pickupCoords, destinationCoords]);
+
     const formatTime = (seconds) => {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
