@@ -2523,28 +2523,39 @@ billing payouts are required.
                                         <div className="space-y-6 text-left">
                                             <h4 className="text-[10px] font-black text-brand uppercase tracking-[0.2em] mb-4">🛠️ Campaign Parameter Configuration</h4>
 
-                                            {/* Multi-Slot Offer Type Uploader */}
-                                            <div className="space-y-3 p-5 bg-white/5 border border-white/10 rounded-3xl">
-                                                <label className="text-[10px] font-black text-white uppercase tracking-wider block">1. UPLOAD PARTNER QR CODES / DOCUMENTS (PDF / IMAGE)</label>
-                                                {[{id:'nightlife', label:'🍸 Nightlife'}, {id:'restaurant', label:'🍽️ Restaurant'}, {id:'hotel', label:'🏨 Hotel VIP'}].map(cat => (
-                                                    <div key={cat.id} className="flex items-center gap-3">
-                                                        <div
-                                                            onClick={() => document.getElementById(`campaign-file-${cat.id}`)?.click()}
-                                                            className="flex-1 border-2 border-dashed border-white/20 hover:border-brand/60 bg-black/40 px-4 py-3.5 rounded-2xl flex items-center gap-3 cursor-pointer transition-all hover:scale-[1.01] group"
-                                                        >
-                                                            <input
-                                                                type="file"
-                                                                id={`campaign-file-${cat.id}`}
-                                                                multiple
-                                                                accept=".pdf,.png,.jpg,.jpeg,.webp"
-                                                                onChange={handleCampaignFileUpload}
-                                                                className="hidden"
-                                                            />
-                                                            <Upload size={14} className="text-gray-400 group-hover:text-brand transition-colors shrink-0" />
-                                                            <span className="text-[9px] font-black text-gray-300 group-hover:text-white transition-colors">{cat.label}</span>
-                                                        </div>
+                                            {/* Refactored Custom Partner & QR Code Ingestor */}
+                                            <div className="space-y-4 p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                                <label className="text-[10px] font-black text-white uppercase tracking-wider block">1. B2B PARTNER QR CODES / DOCUMENTS</label>
+                                                
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Partner Category / Shop Type</label>
+                                                    <input
+                                                        placeholder="E.g., Restaurant, Hotel VIP, Nightlife, Club"
+                                                        value={offerCategory}
+                                                        onChange={e => setOfferCategory(e.target.value)}
+                                                        className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl px-4 py-3.5 text-xs font-black uppercase tracking-widest outline-none"
+                                                        style={{ backgroundColor: '#090d16' }}
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Upload Document or QR Code</label>
+                                                    <div
+                                                        onClick={() => document.getElementById('campaign-file-generic')?.click()}
+                                                        className="border-2 border-dashed border-white/20 hover:border-brand/60 bg-black/40 px-4 py-4 rounded-2xl flex items-center justify-center gap-3 cursor-pointer transition-all hover:scale-[1.01] group"
+                                                    >
+                                                        <input
+                                                            type="file"
+                                                            id="campaign-file-generic"
+                                                            multiple
+                                                            accept=".pdf,.png,.jpg,.jpeg,.webp"
+                                                            onChange={handleCampaignFileUpload}
+                                                            className="hidden"
+                                                        />
+                                                        <Upload size={16} className="text-gray-400 group-hover:text-brand transition-colors" />
+                                                        <span className="text-[10px] font-black text-gray-300 group-hover:text-white transition-colors">Choose Voucher Files...</span>
                                                     </div>
-                                                ))}
+                                                </div>
 
                                                 {/* Uploaded File List */}
                                                 {campaignFiles.length > 0 && (
@@ -2678,8 +2689,8 @@ billing payouts are required.
                                                     style={{ width: '100%', height: '100%', zIndex: 1 }}
                                                 >
                                                     <TileLayer
-                                                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                                                        attribution='&copy; OpenStreetMap'
+                                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                                        attribution='&copy; OpenStreetMap contributors'
                                                     />
                                                     <Marker position={[tripIncrementProvision || 50.1109, tripThreshold || 8.6821]}>
                                                         <Popup>
