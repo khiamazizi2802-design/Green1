@@ -3544,26 +3544,32 @@ const DriverDashboard = () => {
                                                 id={`file-input-${doc.id}`}
                                                 className="hidden"
                                                 disabled={doc.status === 'verified'}
-                                                onChange={(e) => {
-                                                    const file = e.target.files[0];
-                                                    if (!file) return;
-                                                    const reader = new FileReader();
-                                                    reader.onloadend = () => {
-                                                        const base64 = reader.result;
-                                                        const updatedDocs = driverDocs.map(d => 
-                                                            d.id === doc.id ? { ...d, status: 'pending', file: base64 } : d
-                                                        );
-                                                        setDriverDocs(updatedDocs);
-                                                        localStorage.setItem('driver_compliance_docs', JSON.stringify(updatedDocs));
-                                                        if (user?.email) {
-                                                            updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
-                                                                driverComplianceDocs: updatedDocs
-                                                            }).catch(err => console.error("Error updating driverComplianceDocs in Firestore:", err));
-                                                        }
-                                                        alert(`Document uploaded for ${doc.name} • Dispatched for manual audit!`);
-                                                    };
-                                                    reader.readAsDataURL(file);
-                                                }}
+                                                                                                 onChange={(e) => {
+                                                     const file = e.target.files[0];
+                                                     if (!file) return;
+                                                     if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                                                         alert("⚠️ PDF files are not supported because they are too large for the database. Please take a photo of your P-Schein (JPG/PNG) and upload it instead.");
+                                                         e.target.value = null;
+                                                         return;
+                                                     }
+                                                     const reader = new FileReader();
+                                                     reader.onloadend = () => {
+                                                         compressBase64(reader.result, (compressed) => {
+                                                             const updatedDocs = driverDocs.map(d => 
+                                                                 d.id === doc.id ? { ...d, status: 'pending', file: compressed } : d
+                                                             );
+                                                             setDriverDocs(updatedDocs);
+                                                             localStorage.setItem('driver_compliance_docs', JSON.stringify(updatedDocs));
+                                                             if (user?.email) {
+                                                                 updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                                                                     driverComplianceDocs: updatedDocs
+                                                                 }).catch(err => console.error("Error updating driverComplianceDocs in Firestore:", err));
+                                                             }
+                                                             alert(`Document uploaded for ${doc.name} • Dispatched for manual audit!`);
+                                                         });
+                                                     };
+                                                     reader.readAsDataURL(file);
+                                                 }}
                                             />
                                             <button
                                                 onClick={() => {

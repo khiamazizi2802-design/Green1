@@ -16,6 +16,12 @@ const DocumentArea = ({ title, description, documents, onUpload, onAccept, onDen
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
+            if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                alert("⚠️ PDF files are not supported because they are too large for the database. Please take a photo of your P-Schein (JPG/PNG) and upload it instead.");
+                setUploadingId(null);
+                e.target.value = null; // Reset input
+                return;
+            }
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64 = reader.result;
