@@ -170,12 +170,24 @@ export const RideProvider = ({ children }) => {
         }
     }, [driverInfo]);
 
-    // Pricing constants
-    const BASE_FARE = 10.00;
-    const PER_KM_RATE = 2.50;
+    // Dynamic pricing states
+    const [baseFare, setBaseFare] = useState(() => parseFloat(localStorage.getItem('green_base_fare') || '10.00'));
+    const [perKmRate, setPerKmRate] = useState(() => parseFloat(localStorage.getItem('green_per_km_rate') || '2.50'));
+
+    useEffect(() => {
+        localStorage.setItem('green_base_fare', String(baseFare));
+    }, [baseFare]);
+
+    useEffect(() => {
+        localStorage.setItem('green_per_km_rate', String(perKmRate));
+    }, [perKmRate]);
+
+    const BASE_FARE = parseFloat(baseFare);
+    const PER_KM_RATE = parseFloat(perKmRate);
 
     const calculatePrice = (distance, passengerCount) => {
-        const originalPrice = BASE_FARE + (distance * PER_KM_RATE);
+        const activeBaseFare = distance > 5 ? 0 : BASE_FARE;
+        const originalPrice = activeBaseFare + (distance * PER_KM_RATE);
         let discount = 0;
         let driverMultiplier = 1.0;
 
@@ -255,7 +267,11 @@ export const RideProvider = ({ children }) => {
             incomingRequests,
             setIncomingRequests,
             mutualFriends,
-            setMutualFriends
+            setMutualFriends,
+            baseFare,
+            setBaseFare,
+            perKmRate,
+            setPerKmRate
         }}>
             {children}
         </RideContext.Provider>

@@ -15,6 +15,7 @@ import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 import Radar from '../components/Radar';
 import { useSocket } from '../context/SocketContext';
+import { useRide } from '../context/RideContext';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, useMapEvents } from 'react-leaflet';
 import { db } from '../config/firebase';
 import { collection, doc, query, where, onSnapshot, updateDoc, getDoc, setDoc } from 'firebase/firestore';
@@ -63,6 +64,39 @@ const AdminDashboard = () => {
     const { user, logout } = useAuth();
     const { drivers } = useSocket();
     const isDemo = user?.isDemo;
+    const { baseFare, setBaseFare, perKmRate, setPerKmRate } = useRide();
+    const [isGermanComplianceActive, setIsGermanComplianceActive] = useState(() => localStorage.getItem('green_german_compliance') === 'true');
+    const [comparisonDistance, setComparisonDistance] = useState(10);
+    const [competitorType, setCompetitorType] = useState('all');
+    const [competitorSurge, setCompetitorSurge] = useState(1.0);
+    const [searchGermanCity, setSearchGermanCity] = useState('Frankfurt');
+    const [isLiveSimulationActive, setIsLiveSimulationActive] = useState(true);
+    const [currentScenario, setCurrentScenario] = useState('sunny');
+
+    useEffect(() => {
+        if (!isLiveSimulationActive) return;
+
+        const scenarios = [
+            { id: 'sunny', multiplier: 1.0 },
+            { id: 'rainy', multiplier: 1.4 },
+            { id: 'rush-hour', multiplier: 1.8 },
+            { id: 'concert-exit', multiplier: 2.3 }
+        ];
+
+        // Find current index to resume cycling smoothly
+        let index = scenarios.findIndex(s => s.multiplier === competitorSurge);
+        if (index === -1) index = 0;
+
+        const interval = setInterval(() => {
+            index = (index + 1) % scenarios.length;
+            const next = scenarios[index];
+            setCurrentScenario(next.id);
+            setCompetitorSurge(next.multiplier);
+        }, 8000); // cycle scenario every 8 seconds
+
+        return () => clearInterval(interval);
+    }, [isLiveSimulationActive, competitorSurge]);
+
 
     // NOTCH & SAFE AREA INTEGRATION
     const useSafeArea = localStorage.getItem('green_manager_use_safe_area') !== 'false';
@@ -3788,6 +3822,469 @@ billing payouts are required.
                         {view === 'app-settings' && (
                             <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
                                 <h2 className="text-5xl font-black italic uppercase tracking-tighter">System <span className="text-brand">Settings</span> & Compliance</h2>
+                                {/* Smart Intermediary Pricing Engine */}
+                                <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] space-y-10">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/5">
+                                        <div>
+                                            <h3 className="text-3xl font-black italic uppercase text-white tracking-tight">Smart Intermediary Pricing Engine</h3>
+                                            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">German Passenger Transport Compliance (PBefG)</p>
+                                        </div>
+                                        <div className="flex items-center gap-4 bg-white/5 border border-white/5 p-4 rounded-3xl">
+                                            <div>
+                                                <p className="text-xs font-black uppercase text-white">German Compliance Mode</p>
+                                                <p className="text-[9px] font-bold text-gray-500 uppercase">Enforce PBefG Tariff Caps & Mediation Log</p>
+                                            </div>
+                                            <button 
+                                                onClick={() => {
+                                                    const nextState = !isGermanComplianceActive;
+                                                    setIsGermanComplianceActive(nextState);
+                                                    localStorage.setItem('green_german_compliance', nextState ? 'true' : 'false');
+                                                    if (nextState) {
+                                                        // Enforce legal caps on activate
+                                                        if (baseFare < 3.00) setBaseFare(3.00);
+                                                        if (baseFare > 15.00) setBaseFare(15.00);
+                                                        if (perKmRate < 1.50) setPerKmRate(1.50);
+                                                        if (perKmRate > 4.50) setPerKmRate(4.50);
+                                                        triggerNotification('success', 'Compliance Mode Enabled', 'PBefG-compliant pricing limits and mediation audits are active.');
+                                                    } else {
+                                                        triggerNotification('warning', 'Compliance Mode Disabled', 'Manual pricing is now unrestricted. Surge caps removed.');
+                                                    }
+                                                }}
+                                                className={`w-14 h-8 rounded-full p-1 transition-all duration-300 ${isGermanComplianceActive ? 'bg-brand' : 'bg-gray-800'}`}
+                                            >
+                                                <div className={`w-6 h-6 rounded-full bg-dark-950 transition-all duration-300 ${isGermanComplianceActive ? 'translate-x-6' : 'translate-x-0'}`} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* LEGAL REFERENCE SHORT-CUTS & QUICK SEARCH */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                        <a 
+                                            href="https://www.gesetze-im-internet.de/pbefg/__51.html" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="p-5 bg-white/5 border border-white/5 rounded-2xl hover:border-brand/40 hover:bg-white/10 transition-all flex items-center justify-between group"
+                                        >
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase text-brand tracking-widest">PBefG §51 (Taxis)</p>
+                                                <p className="text-[8px] text-gray-500 uppercase font-bold mt-1">Official German Taxi Tariffs</p>
+                                            </div>
+                                            <ExternalLink size={16} className="text-gray-500 group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
+                                        </a>
+                                        <a 
+                                            href="https://www.gesetze-im-internet.de/pbefg/__51a.html" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="p-5 bg-white/5 border border-white/5 rounded-2xl hover:border-brand/40 hover:bg-white/10 transition-all flex items-center justify-between group"
+                                        >
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase text-brand tracking-widest">PBefG §51a (Mietwagen)</p>
+                                                <p className="text-[8px] text-gray-500 uppercase font-bold mt-1">Minimum Pricing for Fleets</p>
+                                            </div>
+                                            <ExternalLink size={16} className="text-gray-500 group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
+                                        </a>
+                                        <a 
+                                            href="https://www.google.com/search?q=Mietwagen+Mindestpreis+BGH+Urteil+Dumping" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="p-5 bg-white/5 border border-white/5 rounded-2xl hover:border-brand/40 hover:bg-white/10 transition-all flex items-center justify-between group"
+                                        >
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase text-brand tracking-widest">Anti-Dumping rulings</p>
+                                                <p className="text-[8px] text-gray-500 uppercase font-bold mt-1">Federal Anti-Trust Judgements</p>
+                                            </div>
+                                            <ExternalLink size={16} className="text-gray-500 group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
+                                        </a>
+                                        <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between gap-2">
+                                            <div className="flex-1">
+                                                <p className="text-[8px] text-gray-500 uppercase font-bold">Local City Tariff Lookup</p>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="e.g. Frankfurt" 
+                                                    value={searchGermanCity} 
+                                                    onChange={(e) => setSearchGermanCity(e.target.value)} 
+                                                    className="bg-black/30 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white placeholder-gray-700 focus:outline-none focus:border-brand/40 mt-1 w-full"
+                                                />
+                                            </div>
+                                            <button 
+                                                onClick={() => window.open(`https://www.google.com/search?q=Mindestpreis+Mietwagen+Taxi+Tarif+${encodeURIComponent(searchGermanCity)}+PBefG`, '_blank')}
+                                                className="p-2 bg-brand/10 text-brand border border-brand/20 rounded-xl hover:bg-brand hover:text-dark-900 transition-all flex items-center justify-center shrink-0 self-end mb-[2px]"
+                                            >
+                                                <Search size={12} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* DYNAMIC PRICE ZONE STATUS BAR & METER */}
+                                    {(() => {
+                                        const kmRateNum = parseFloat(perKmRate);
+                                        const baseFareNum = parseFloat(baseFare);
+                                        const isDumping = baseFareNum < 3.00 || kmRateNum < 1.40;
+                                        const isHighSurge = baseFareNum > 8.00 || kmRateNum > 3.20;
+                                        
+                                        // Calculate compliance health values
+                                        let complianceScore = 100;
+                                        let scoreColor = 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10';
+                                        
+                                        if (isDumping) {
+                                            complianceScore = Math.max(15, Math.round((kmRateNum / 1.40) * 60));
+                                            scoreColor = 'text-red-500 border-red-500/30 bg-red-500/10';
+                                        } else if (isHighSurge) {
+                                            complianceScore = Math.max(45, Math.round((3.20 / kmRateNum) * 85));
+                                            scoreColor = 'text-amber-500 border-amber-500/30 bg-amber-500/10';
+                                        }
+
+                                        // Pointer math for visual range meter: perKmRate range 0.50 to 5.00
+                                        const minRate = 0.50;
+                                        const maxRate = 5.00;
+                                        const ratePercent = Math.min(100, Math.max(0, ((kmRateNum - minRate) / (maxRate - minRate)) * 100));
+
+                                        return (
+                                            <div className="p-8 bg-white/5 border border-white/5 rounded-3xl space-y-6">
+                                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                                     <div className="flex items-start gap-4">
+                                                         {isDumping && (
+                                                             <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20 shrink-0"><AlertTriangle size={24} /></div>
+                                                         )}
+                                                         {isHighSurge && (
+                                                             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20 shrink-0"><Zap size={24} /></div>
+                                                         )}
+                                                         {!isDumping && !isHighSurge && (
+                                                             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 shrink-0"><CheckCircle size={24} /></div>
+                                                         )}
+                                                         <div>
+                                                             <p className="text-sm font-black uppercase tracking-wider text-white">
+                                                                 {isDumping && "⚠️ PRICE DUMPING DETECTED"}
+                                                                 {isHighSurge && "⚡ SURGE / PARITY ALERT"}
+                                                                 {!isDumping && !isHighSurge && "✅ COMPLIANT TARIFF ZONE"}
+                                                             </p>
+                                                             <p className="text-[10px] text-gray-400 font-bold uppercase mt-1 leading-relaxed max-w-2xl">
+                                                                 {isDumping && "Your tariff lies below standard taxi operating margins (Base < €3.00 or Km < €1.40). German Fair Competition Act (§3 UWG) & PBefG §51a prohibit predatory dumping prices."}
+                                                                 {isHighSurge && "Pricing exceeds Frankfurt taxi base averages. While valid for private hire surge under PBefG reforms, excessive surges are subject to local mediation caps."}
+                                                                 {!isDumping && !isHighSurge && "Healthy operational sweet spot. Parity guidelines met: pricing aligns with local taxis and maintains healthy fleet profit margins."}
+                                                             </p>
+                                                         </div>
+                                                     </div>
+                                                     
+                                                     <div className={`px-5 py-3 border rounded-2xl flex flex-col items-center shrink-0 ${scoreColor}`}>
+                                                         <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">Legal Score</span>
+                                                         <span className="text-2xl font-black italic">{complianceScore}%</span>
+                                                     </div>
+                                                </div>
+
+                                                {/* Visual Range Indicator Meter */}
+                                                <div className="space-y-2">
+                                                    <div className="flex justify-between text-[8px] font-black text-gray-500 uppercase tracking-widest px-1">
+                                                        <span className="text-red-500">Dumping Zone (&lt; €1.40)</span>
+                                                        <span className="text-emerald-400">Compliant / Fair (€1.40 - €3.20)</span>
+                                                        <span className="text-amber-500">High Surge (&gt; €3.20)</span>
+                                                    </div>
+                                                    <div className="relative h-4 w-full bg-dark-950 rounded-full border border-white/5 overflow-hidden flex">
+                                                        {/* Color background slices */}
+                                                        <div className="h-full bg-red-950/40 border-r border-red-500/20" style={{ width: '20%' }} />
+                                                        <div className="h-full bg-emerald-950/40 border-r border-emerald-500/20" style={{ width: '40%' }} />
+                                                        <div className="h-full bg-amber-950/40" style={{ width: '40%' }} />
+                                                        
+                                                        {/* Current selected perKmRate pointer mark */}
+                                                        <div 
+                                                            className="absolute top-0 bottom-0 w-1.5 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,0.8)] rounded-full transition-all duration-300"
+                                                            style={{ left: `${ratePercent}%`, transform: 'translateX(-50%)' }}
+                                                        />
+                                                    </div>
+                                                    <div className="flex justify-between text-[8px] font-bold text-gray-600 uppercase px-1">
+                                                        <span>Min: €0.50/km</span>
+                                                        <span className="text-white italic">Current Rate: €{kmRateNum.toFixed(2)}/km</span>
+                                                        <span>Max: €5.00/km</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                                        <div className="space-y-8">
+                                            <div>
+                                                <div className="flex justify-between items-center mb-4">
+                                                    <label className="text-sm font-black uppercase tracking-wider text-gray-400">Base Fare / Anfahrt (€)</label>
+                                                    <span className="text-2xl font-black italic text-brand">€{parseFloat(baseFare).toFixed(2)}</span>
+                                                </div>
+                                                <input 
+                                                    type="range" 
+                                                    min={isGermanComplianceActive ? "3.00" : "0.00"} 
+                                                    max={isGermanComplianceActive ? "15.00" : "30.00"} 
+                                                    step="0.50" 
+                                                    value={baseFare} 
+                                                    onChange={(e) => {
+                                                        setBaseFare(parseFloat(e.target.value));
+                                                    }}
+                                                    className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
+                                                />
+                                                <div className="flex justify-between text-[8px] font-bold text-gray-600 uppercase mt-2">
+                                                    <span>Min: €{isGermanComplianceActive ? "3.00" : "1.00"}</span>
+                                                    {isGermanComplianceActive && <span className="text-brand">Legal PBefG Caps Active</span>}
+                                                    <span>Max: €{isGermanComplianceActive ? "15.00" : "30.00"}</span>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex justify-between items-center mb-4">
+                                                    <label className="text-sm font-black uppercase tracking-wider text-gray-400">Per Kilometer Rate (€/km)</label>
+                                                    <span className="text-2xl font-black italic text-brand">€{parseFloat(perKmRate).toFixed(2)}</span>
+                                                </div>
+                                                <input 
+                                                    type="range" 
+                                                    min={isGermanComplianceActive ? "1.50" : "0.50"} 
+                                                    max={isGermanComplianceActive ? "4.50" : "10.00"} 
+                                                    step="0.10" 
+                                                    value={perKmRate} 
+                                                    onChange={(e) => {
+                                                        setPerKmRate(parseFloat(e.target.value));
+                                                    }}
+                                                    className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
+                                                />
+                                                <div className="flex justify-between text-[8px] font-bold text-gray-600 uppercase mt-2">
+                                                    <span>Min: €{isGermanComplianceActive ? "1.50" : "0.50"}</span>
+                                                    {isGermanComplianceActive && <span className="text-brand">Legal PBefG Caps Active</span>}
+                                                    <span>Max: €{isGermanComplianceActive ? "4.50" : "10.00"}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* LIVE DYNAMIC COMPETITOR COMPARISON PANEL */}
+                                            <div className="p-6 bg-white/5 border border-white/5 rounded-[2.5rem] space-y-6">
+                                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                                    <p className="text-xs font-black uppercase text-white tracking-widest flex items-center gap-2">
+                                                        <Scale size={14} className="text-brand" /> Live Market Pricing Comparison
+                                                    </p>
+                                                    {/* Distance Presets */}
+                                                    <div className="flex items-center gap-1.5 bg-black/40 p-1.5 rounded-2xl border border-white/5">
+                                                        {[3, 5, 10, 25, 50].map((d) => (
+                                                            <button 
+                                                                key={d} 
+                                                                onClick={() => setComparisonDistance(d)}
+                                                                className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all ${comparisonDistance === d ? 'bg-brand text-dark-900 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                                                            >
+                                                                {d}km
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Weather Scenario Live Status Card */}
+                                                <div className="p-4 bg-black/40 rounded-2xl border border-white/5 flex items-center justify-between gap-4 mb-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-12 h-12 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-2xl animate-pulse">
+                                                            {currentScenario === 'sunny' && '☀️'}
+                                                            {currentScenario === 'rainy' && '🌧️'}
+                                                            {currentScenario === 'rush-hour' && '🚗'}
+                                                            {currentScenario === 'concert-exit' && '🎆'}
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[10px] font-black uppercase text-white tracking-wider flex items-center gap-1.5">
+                                                                <span className="w-2 h-2 rounded-full bg-brand animate-ping" /> Live Market Feed: {
+                                                                    currentScenario === 'sunny' ? 'Clear weather' :
+                                                                    currentScenario === 'rainy' ? 'Precipitation active' :
+                                                                    currentScenario === 'rush-hour' ? 'Heavy peak traffic' :
+                                                                    'Venue event exit surge'
+                                                                }
+                                                            </p>
+                                                            <p className="text-[8px] text-gray-500 uppercase font-bold mt-0.5">
+                                                                {currentScenario === 'sunny' && 'Sunny conditions. Standard competitor rates apply (1.0x).'}
+                                                                {currentScenario === 'rainy' && 'Rain active. Competitors raising rates dynamically (+40%).'}
+                                                                {currentScenario === 'rush-hour' && 'Peak hours. Commuter gridlock causing Uber/Bolt surge (+80%).'}
+                                                                {currentScenario === 'concert-exit' && 'Stadium event exit. Extreme peak area surcharge active (+130%).'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-col items-end gap-1">
+                                                        <span className="text-[8px] font-black uppercase text-gray-500 tracking-wider">Live Feed</span>
+                                                        <button 
+                                                            onClick={() => setIsLiveSimulationActive(!isLiveSimulationActive)}
+                                                            className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase border transition-all ${isLiveSimulationActive ? 'bg-brand/10 border-brand/30 text-brand' : 'bg-white/5 border-white/10 text-gray-400'}`}
+                                                        >
+                                                            {isLiveSimulationActive ? '🟢 Live' : '🔴 Paused'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Competitor category toggle & Surge simulator */}
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-2 border-b border-white/5">
+                                                    <div>
+                                                        <label className="text-[8px] font-bold uppercase text-gray-500 tracking-wider">Fleet / Service Type</label>
+                                                        <div className="flex gap-2 mt-1">
+                                                            {['all', 'taxi', 'fleet'].map((t) => (
+                                                                <button
+                                                                    key={t}
+                                                                    onClick={() => setCompetitorType(t)}
+                                                                    className={`flex-1 py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-widest transition-all ${competitorType === t ? 'border-brand/40 bg-brand/10 text-brand' : 'border-white/5 bg-black/10 text-gray-500 hover:text-white'}`}
+                                                                >
+                                                                    {t}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="flex justify-between items-center text-[8px] font-bold uppercase text-gray-500">
+                                                            <span>Competitor Surge Multiplier</span>
+                                                            <span className="text-brand font-black">{competitorSurge.toFixed(1)}x</span>
+                                                        </div>
+                                                        <input 
+                                                            type="range" 
+                                                            min="1.0" 
+                                                            max="2.5" 
+                                                            step="0.1" 
+                                                            value={competitorSurge} 
+                                                            onChange={(e) => {
+                                                                setCompetitorSurge(parseFloat(e.target.value));
+                                                                setIsLiveSimulationActive(false); // Pause live cycle on manual adjustment
+                                                            }}
+                                                            className="w-full h-1 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand mt-2"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-4 pt-2">
+                                                    {(() => {
+                                                        const baseFareNum = parseFloat(baseFare);
+                                                        const kmRateNum = parseFloat(perKmRate);
+                                                        const greenPrice = (comparisonDistance > 5 ? 0 : baseFareNum) + kmRateNum * comparisonDistance;
+
+                                                        const allComps = [
+                                                            { name: 'Green App (You)', price: greenPrice, type: 'fleet', logo: '🟢', highlight: true, note: comparisonDistance > 5 ? '⚡ Base Fare Waived (> 5km)' : 'Current system settings' },
+                                                            { name: 'Local Taxi Frankfurt', price: 4.00 + (comparisonDistance <= 5 ? 2.40 : 2.20) * comparisonDistance, type: 'taxi', logo: '🚖', highlight: false, note: 'Official municipal fixed tariff' },
+                                                            { name: 'UberX (Simulated)', price: (3.00 + 1.80 * comparisonDistance) * competitorSurge, type: 'fleet', logo: '⚫', highlight: false, note: `Standard fleet fare * ${competitorSurge.toFixed(1)}x surge` },
+                                                            { name: 'Bolt Economy (Simulated)', price: (2.50 + 1.65 * comparisonDistance) * competitorSurge, type: 'fleet', logo: '🟢', highlight: false, note: `Budget fleet fare * ${competitorSurge.toFixed(1)}x surge` }
+                                                        ];
+
+                                                        // Filter out list
+                                                        const filteredComps = allComps.filter(c => {
+                                                            if (competitorType === 'all') return true;
+                                                            if (competitorType === 'taxi') return c.type === 'taxi' || c.highlight;
+                                                            if (competitorType === 'fleet') return c.type === 'fleet';
+                                                            return true;
+                                                        });
+
+                                                        // Sort cheapest first
+                                                        const sortedComps = [...filteredComps].sort((a, b) => a.price - b.price);
+                                                        const maxCompPrice = Math.max(...sortedComps.map(c => c.price));
+
+                                                        return sortedComps.map((c, idx) => {
+                                                            const diffPercent = Math.round(((c.price - greenPrice) / greenPrice) * 100);
+                                                            const barWidth = Math.max(30, Math.min(100, (c.price / maxCompPrice) * 100));
+
+                                                            return (
+                                                                <div key={idx} className={`p-4 rounded-2xl border flex flex-col gap-2 ${c.highlight ? 'bg-brand/10 border-brand/30 text-brand' : 'bg-black/20 border-white/5 text-gray-300'}`}>
+                                                                    <div className="flex justify-between items-center text-[10px] font-black uppercase">
+                                                                        <span className="flex items-center gap-1.5">
+                                                                            <span className="text-[12px]">{c.logo}</span>
+                                                                            <span>{idx + 1}. {c.name}</span>
+                                                                        </span>
+                                                                        <div className="flex items-center gap-2">
+                                                                            {!c.highlight && (
+                                                                                <span className={`text-[8px] font-black px-2 py-0.5 rounded-lg ${diffPercent >= 0 ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                                                                                    {diffPercent >= 0 ? `+${diffPercent}% vs You` : `${diffPercent}% vs You`}
+                                                                                </span>
+                                                                            )}
+                                                                            <span className="text-white text-xs italic">€{c.price.toFixed(2)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    {/* Mini bar meter */}
+                                                                    <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden">
+                                                                        <div 
+                                                                            className={`h-full rounded-full transition-all duration-500 ${c.highlight ? 'bg-brand shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-gray-700'}`} 
+                                                                            style={{ width: `${barWidth}%` }} 
+                                                                        />
+                                                                    </div>
+                                                                    <span className="text-[7px] font-bold text-gray-600 uppercase tracking-widest">{c.note}</span>
+                                                                </div>
+                                                            );
+                                                        });
+                                                    })()}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-dark-950/40 border border-white/5 p-8 rounded-[2.5rem] flex flex-col justify-between space-y-6">
+                                            <div className="flex justify-between items-center">
+                                                <div>
+                                                    <p className="text-xs font-black uppercase tracking-wider text-gray-400">Dynamic Tariff Projection</p>
+                                                    <p className="text-[9px] font-bold text-gray-600 uppercase">Estimated Total Cost relative to Distance</p>
+                                                </div>
+                                                <span className="text-[9px] font-black text-brand uppercase tracking-widest bg-brand/10 border border-brand/20 px-3 py-1 rounded-xl">Live Sync</span>
+                                            </div>
+
+                                            <div className="relative h-64 w-full bg-dark-950/20 rounded-2xl overflow-hidden border border-white/5 flex items-end">
+                                                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                                    <line x1="0" y1="25" x2="100" y2="25" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+                                                    <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+                                                    <line x1="0" y1="75" x2="100" y2="75" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+                                                    
+                                                    <line x1="25" y1="0" x2="25" y2="100" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+                                                    <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+                                                    <line x1="75" y1="0" x2="75" y2="100" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+
+                                                    {isGermanComplianceActive && (
+                                                        <polygon 
+                                                            points={`0,${100 - (3.00 / 105 * 100)} 100,${100 - ((3.00 + 4.50 * 20) / 105 * 100)} 100,${100 - ((15.00 + 1.50 * 20) / 105 * 100)} 0,${100 - (15.00 / 105 * 100)}`}
+                                                            fill="rgba(139,92,246,0.03)" 
+                                                            stroke="rgba(139,92,246,0.15)"
+                                                            strokeDasharray="2 2"
+                                                        />
+                                                    )}
+
+                                                    {(() => {
+                                                        const formattedPoints = [];
+                                                        for (let x = 0; x <= 20; x++) {
+                                                            const y = (x > 5 ? 0 : parseFloat(baseFare)) + (x * parseFloat(perKmRate));
+                                                            const svgX = (x / 20) * 100;
+                                                            const svgY = 100 - (y / 105) * 100;
+                                                            formattedPoints.push(`${svgX},${svgY}`);
+                                                        }
+                                                        return (
+                                                            <>
+                                                                <path 
+                                                                    d={`M ${formattedPoints.join(' L ')}`} 
+                                                                    fill="none" 
+                                                                    stroke="#10B981" 
+                                                                    strokeWidth="3" 
+                                                                />
+                                                                <path 
+                                                                    d={`M ${formattedPoints.join(' L ')}`} 
+                                                                    fill="none" 
+                                                                    stroke="#10B981" 
+                                                                    strokeWidth="8" 
+                                                                    opacity="0.15"
+                                                                />
+                                                            </>
+                                                        );
+                                                    })()}
+                                                </svg>
+
+                                                <div className="absolute top-2 left-2 text-[7px] font-bold text-gray-600 uppercase">Y: Total Fare (€)</div>
+                                                <div className="absolute bottom-2 right-2 text-[7px] font-bold text-gray-600 uppercase">X: Distance (km)</div>
+                                                
+                                                <div className="absolute left-2 top-[20%] text-[7px] font-bold text-gray-600 uppercase">€80</div>
+                                                <div className="absolute left-2 top-[50%] text-[7px] font-bold text-gray-600 uppercase">€50</div>
+                                                <div className="absolute left-2 top-[80%] text-[7px] font-bold text-gray-600 uppercase">€20</div>
+                                            </div>
+
+                                            <div className="flex flex-wrap justify-between gap-4 items-center text-[8px] font-bold uppercase tracking-wider text-gray-500">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-3 h-1 bg-brand rounded" />
+                                                    <span>Estimated Active Tariff</span>
+                                                </div>
+                                                {isGermanComplianceActive && (
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-3 h-2 bg-violet-500/10 border border-violet-500/30 rounded" />
+                                                        <span>PBefG Permissible Bounds</span>
+                                                    </div>
+                                                )}
+                                                <div className="text-white">Max Graph Range: 20 km</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                                     <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
                                         <div className="space-y-8">
