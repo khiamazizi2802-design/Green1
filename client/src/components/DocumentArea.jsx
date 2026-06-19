@@ -19,12 +19,42 @@ const DocumentArea = ({ title, description, documents, onUpload, onAccept, onDen
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64 = reader.result;
-                // Simulate a small network delay for visual spinner feedback
-                setTimeout(() => {
-                    if (onUpload) onUpload(uploadingId, base64);
-                    setUploadingId(null);
-                    e.target.value = null; // Reset input
-                }, 800);
+                const img = new Image();
+                img.src = base64;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 800;
+                    if (width > height) {
+                        if (width > maxDim) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        }
+                    } else {
+                        if (height > maxDim) {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressed = canvas.toDataURL('image/jpeg', 0.7);
+                    setTimeout(() => {
+                        if (onUpload) onUpload(uploadingId, compressed);
+                        setUploadingId(null);
+                        e.target.value = null; // Reset input
+                    }, 800);
+                };
+                img.onerror = () => {
+                    setTimeout(() => {
+                        if (onUpload) onUpload(uploadingId, base64);
+                        setUploadingId(null);
+                        e.target.value = null; // Reset input
+                    }, 800);
+                };
             };
             reader.readAsDataURL(file);
         } else {

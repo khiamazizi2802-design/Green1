@@ -84,6 +84,36 @@ import { Banknote, Check, Moon, Sun, Loader2 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import PostsFeed from '../components/PostsFeed';
 
+const compressBase64 = (base64, callback) => {
+    const img = new Image();
+    img.src = base64;
+    img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 800;
+        if (width > height) {
+            if (width > maxDim) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+            }
+        } else {
+            if (height > maxDim) {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+            }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        callback(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.onerror = () => {
+        callback(base64);
+    };
+};
+
 const itemMetadata = {
     // Bar / signature cocktails
     "midnight neon": { id: "C-01", image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=400&h=300&fit=crop" },

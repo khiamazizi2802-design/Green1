@@ -77,6 +77,36 @@ L.Icon.Default.mergeOptions({
 
 // Custom Marker Icons for that Premium "Green" feel
 // Custom Tactical Pointer for the Driver
+const compressBase64 = (base64, callback) => {
+    const img = new Image();
+    img.src = base64;
+    img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 800;
+        if (width > height) {
+            if (width > maxDim) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+            }
+        } else {
+            if (height > maxDim) {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+            }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        callback(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.onerror = () => {
+        callback(base64);
+    };
+};
+
 const driverIcon = L.divIcon({
     className: 'custom-div-icon',
     html: `<div class="relative w-10 h-10 flex items-center justify-center">
@@ -2318,7 +2348,11 @@ const DriverDashboard = () => {
                                                                         const file = e.target.files[0];
                                                                         if (file) {
                                                                             const reader = new FileReader();
-                                                                            reader.onloadend = () => setVehicleInfo(prev => ({ ...(prev || {}), photo: reader.result }));
+                                                                            reader.onloadend = () => {
+                                                                                compressBase64(reader.result, (compressed) => {
+                                                                                    setVehicleInfo(prev => ({ ...(prev || {}), photo: compressed }));
+                                                                                });
+                                                                            };
                                                                             reader.readAsDataURL(file);
                                                                         }
                                                                     }}
@@ -2343,8 +2377,12 @@ const DriverDashboard = () => {
                                                                 const file = e.target.files[0];
                                                                 if (file) {
                                                                     const reader = new FileReader();
-                                                                    reader.onloadend = () => setVehicleInfo(prev => ({ ...(prev || {}), photo: reader.result }));
-                                                                    reader.readAsDataURL(file);
+                                                                            reader.onloadend = () => {
+                                                                                compressBase64(reader.result, (compressed) => {
+                                                                                    setVehicleInfo(prev => ({ ...(prev || {}), photo: compressed }));
+                                                                                });
+                                                                            };
+                                                                            reader.readAsDataURL(file);
                                                                 }
                                                             }}
                                                             className="absolute inset-0 opacity-0 cursor-pointer" 
