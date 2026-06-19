@@ -747,15 +747,15 @@ const ManagerDashboard = () => {
                 };
                 
                 // If onboarded by a Fleet Manager or is a driver, auto-verify compliance documents so driver can go online
-                if (foundStaff.role === 'driver' || managerContext === 'FM') {
-                    updates.driverDocs = [
+                                if (foundStaff.role === 'driver' || managerContext === 'FM') {
+                    updates.driverComplianceDocs = [
                         { id: 'avatar', name: 'Profile Photo', status: 'verified', requirement: 'High-resolution headshot for driver profile ID', file: null },
                         { id: 'license', name: 'Driving License', status: 'verified', requirement: 'Class B EU License (Front & Back)', file: null },
                         { id: 'idcard', name: 'Passport / ID Card', status: 'verified', requirement: 'Government-issued biometric passport or national identity card', file: null },
                         { id: 'pschein', name: 'P-Schein (Passenger Permit)', status: 'verified', requirement: 'Passenger Transport License (Personenbeförderungsschein)', file: null },
                         { id: 'terms', name: 'Terms & Conditions', status: 'verified', requirement: 'Accept Platform Partnership & Data Usage Agreement', file: null }
                     ];
-                    updates.vehicleDocs = [
+                    updates.driverVehicleDocs = [
                         { id: 'tuv', name: 'HU/AU (TÜV)', status: 'verified', requirement: 'Valid main inspection certificate' },
                         { id: 'insurance', name: 'Commercial Insurance', status: 'verified', requirement: 'PBefG-compliant passenger insurance coverage' }
                     ];
