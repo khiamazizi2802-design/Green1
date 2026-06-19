@@ -708,17 +708,18 @@ const PaymentHub = () => {
                         ))}
                     </div>
                 </section>
+                
+                {/* Submit / Confirm Button placed naturally at the end of the scroll */}
+                <div className="pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)]">
+                    <button 
+                        onClick={handleGoBack}
+                        className="w-full py-6 border border-main rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-0.98 transition-all font-sans"
+                        style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                    >
+                        Confirm & Return to Mission
+                    </button>
+                </div>
             </main>
-
-            <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] bg-gradient-to-t from-dark-950 via-dark-950/90 to-transparent z-40">
-                <button 
-                    onClick={handleGoBack}
-                    className="w-full py-6 border border-main rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-0.98 transition-all font-sans"
-                    style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-                >
-                    Confirm & Return to Mission
-                </button>
-            </div>
 
             {/* STRIPE SECURE MODAL SHEET OVERLAY */}
             <AnimatePresence>
