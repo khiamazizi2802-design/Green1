@@ -98,11 +98,20 @@ const compressBase64 = (base64, callback) => {
         }
         canvas.width = width;
         canvas.height = height;
-        const ctx = canvas.getContext('2d');
+                const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        callback(canvas.toDataURL('image/jpeg', 0.7));
+        const compressed = canvas.toDataURL('image/jpeg', 0.7);
+        if (compressed.length > 900000) {
+            alert("⚠️ The photo is too large for the database. Please take a screenshot of your document and upload that instead.");
+            return;
+        }
+        callback(compressed);
     };
     img.onerror = () => {
+        if (base64.length > 900000) {
+            alert("⚠️ The file format is unsupported (e.g. PDF or iPhone HEIC) or too large. Please take a photo/screenshot (JPG/PNG) of your document and upload that instead.");
+            return;
+        }
         callback(base64);
     };
 };

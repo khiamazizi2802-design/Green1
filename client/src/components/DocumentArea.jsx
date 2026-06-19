@@ -47,7 +47,13 @@ const DocumentArea = ({ title, description, documents, onUpload, onAccept, onDen
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    const compressed = canvas.toDataURL('image/jpeg', 0.7);
+                                        const compressed = canvas.toDataURL('image/jpeg', 0.7);
+                    if (compressed.length > 900000) {
+                        alert("⚠️ The photo is too large for the database. Please take a screenshot of your document or upload a smaller file.");
+                        setUploadingId(null);
+                        e.target.value = null;
+                        return;
+                    }
                     setTimeout(() => {
                         if (onUpload) onUpload(uploadingId, compressed);
                         setUploadingId(null);
@@ -55,6 +61,12 @@ const DocumentArea = ({ title, description, documents, onUpload, onAccept, onDen
                     }, 800);
                 };
                 img.onerror = () => {
+                    if (base64.length > 900000) {
+                        alert("⚠️ The file format is unsupported (e.g. PDF or iPhone HEIC) or too large. Please take a photo/screenshot (JPG/PNG) of your document and upload that instead.");
+                        setUploadingId(null);
+                        e.target.value = null;
+                        return;
+                    }
                     setTimeout(() => {
                         if (onUpload) onUpload(uploadingId, base64);
                         setUploadingId(null);
