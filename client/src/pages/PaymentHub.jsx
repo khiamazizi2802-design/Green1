@@ -374,7 +374,7 @@ const PaymentHub = () => {
                 </div>
             </header>
 
-            <main className="p-6 max-w-lg mx-auto space-y-10 pt-8">
+            <main className="p-6 max-w-lg mx-auto space-y-10 pt-8 pb-32">
                 {/* Security Status Card */}
                 <section className="bg-dark-900 border border-main p-8 rounded-[3rem] space-y-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform">

@@ -4590,7 +4590,9 @@ const ManagerDashboard = () => {
 
                                                 <div className="space-y-6">
                                                     <div className="w-full aspect-video bg-dark-950 border-2 border-dashed border-main rounded-3xl flex flex-col items-center justify-center relative overflow-hidden group">
-                                                        {newVehicleData.photo ? (
+                                                        {newVehicleData.photo === 'uploading...' ? (
+                                                            <div className="flex items-center justify-center h-full w-full bg-dark-900 text-brand text-[10px] font-bold uppercase tracking-widest animate-pulse">Uploading...</div>
+                                                        ) : newVehicleData.photo ? (
                                                             <img src={newVehicleData.photo} className="w-full h-full object-cover" alt="Preview" />
                                                         ) : (
                                                             <div className="flex flex-col items-center gap-3">
@@ -4601,12 +4603,20 @@ const ManagerDashboard = () => {
                                                         <input 
                                                             type="file" 
                                                             className="absolute inset-0 opacity-0 cursor-pointer"
-                                                            onChange={(e) => {
+                                                            onChange={async (e) => {
                                                                 const file = e.target.files[0];
-                                                                if (file) {
-                                                                    const reader = new FileReader();
-                                                                    reader.onloadend = () => setNewVehicleData(prev => ({ ...prev, photo: reader.result }));
-                                                                    reader.readAsDataURL(file);
+                                                                if (file && user?.email) {
+                                                                    setNewVehicleData(prev => ({ ...prev, photo: 'uploading...' }));
+                                                                    try {
+                                                                        const storageRef = ref(storage, `vehicles/${user.email.toLowerCase()}/${Date.now()}_${file.name}`);
+                                                                        const uploadTask = await uploadBytesResumable(storageRef, file);
+                                                                        const url = await getDownloadURL(uploadTask.ref);
+                                                                        setNewVehicleData(prev => ({ ...prev, photo: url }));
+                                                                    } catch (err) {
+                                                                        console.error('Vehicle upload error:', err);
+                                                                        setNewVehicleData(prev => ({ ...prev, photo: null }));
+                                                                        alert('Failed to upload image.');
+                                                                    }
                                                                 }
                                                             }}
                                                         />
@@ -4729,11 +4739,17 @@ const ManagerDashboard = () => {
                                             <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-white/5">
                                                 <div className="relative group">
                                                     <div className="w-24 h-24 rounded-3xl p-1 bg-gradient-to-tr from-brand to-violet-500 shadow-[0_0_20px_rgba(52,211,153,0.15)] overflow-hidden">
-                                                        <img 
-                                                            src={personalInfo.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${personalInfo.name}`} 
-                                                            alt="Profile Preview" 
-                                                            className="w-full h-full rounded-[1.3rem] object-cover bg-dark-900" 
-                                                        />
+                                                        {personalInfo.profilePicture === 'uploading...' ? (
+                                                            <div className="w-full h-full rounded-[1.3rem] bg-dark-900 flex items-center justify-center">
+                                                                <span className="text-[8px] text-brand font-black animate-pulse">UP...</span>
+                                                            </div>
+                                                        ) : (
+                                                            <img 
+                                                                src={personalInfo.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${personalInfo.name}`} 
+                                                                alt="Profile Preview" 
+                                                                className="w-full h-full rounded-[1.3rem] object-cover bg-dark-900" 
+                                                            />
+                                                        )}
                                                     </div>
                                                     <label className="absolute -bottom-2 -right-2 p-2 bg-brand text-dark-900 rounded-xl cursor-pointer shadow-lg hover:scale-110 transition-transform">
                                                         <Camera size={14} />
@@ -4741,14 +4757,20 @@ const ManagerDashboard = () => {
                                                             type="file" 
                                                             className="hidden" 
                                                             accept="image/*" 
-                                                            onChange={(e) => {
+                                                            onChange={async (e) => {
                                                                 const file = e.target.files[0];
-                                                                if (file) {
-                                                                    const reader = new FileReader();
-                                                                    reader.onloadend = () => {
-                                                                        setPersonalInfo(prev => ({ ...prev, profilePicture: reader.result }));
-                                                                    };
-                                                                    reader.readAsDataURL(file);
+                                                                if (file && user?.email) {
+                                                                    setPersonalInfo(prev => ({ ...prev, profilePicture: 'uploading...' }));
+                                                                    try {
+                                                                        const storageRef = ref(storage, `profiles/${user.email.toLowerCase()}/${Date.now()}_${file.name}`);
+                                                                        const uploadTask = await uploadBytesResumable(storageRef, file);
+                                                                        const url = await getDownloadURL(uploadTask.ref);
+                                                                        setPersonalInfo(prev => ({ ...prev, profilePicture: url }));
+                                                                    } catch (err) {
+                                                                        console.error('Profile photo upload error:', err);
+                                                                        setPersonalInfo(prev => ({ ...prev, profilePicture: null }));
+                                                                        alert('Failed to upload image.');
+                                                                    }
                                                                 }
                                                             }}
                                                         />
