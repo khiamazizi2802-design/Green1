@@ -50,7 +50,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { db as fbDb } from '../config/firebase';
-import { doc, updateDoc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import Radar from '../components/Radar';
 import Button from '../components/Button';
 import Sheet from '../components/Sheet';
@@ -257,7 +257,12 @@ const DriverDashboard = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isBalanceVisible, setIsBalanceVisible] = useState(true);
     const [termsDenied, setTermsDenied] = useState(false);
-    const [profilePicStatus, setProfilePicStatus] = useState('missing'); // 'missing', 'pending', 'verified'
+    // profilePicStatus is derived from driverDocs so it stays in sync with Firestore and Admin Document Hub
+    const profilePicStatus = (() => {
+        const avatarDoc = driverDocs.find(d => d.id === 'avatar');
+        if (!avatarDoc) return 'missing';
+        return avatarDoc.status === 'verified' ? 'verified' : avatarDoc.status === 'pending' ? 'pending' : 'missing';
+    })();
     const [hasInitialPic, setHasInitialPic] = useState(false);
     const [tempPhotoPreview, setTempPhotoPreview] = useState(null);
 
@@ -432,31 +437,44 @@ const DriverDashboard = () => {
         }, 1000);
     };
 
-    const handleUploadDocument = (id, base64) => {
+    // fileUrlOrBase64 is now always a Storage download URL (https://...) from DocumentArea
+    // Legacy base64 uploads are also accepted for backwards-compat
+    const handleUploadDocument = (id, fileUrlOrBase64) => {
         if (driverDocs.some(d => d.id === id)) {
             setDriverDocs(prev => {
-                const updated = prev.map(doc => doc.id === id ? { ...doc, status: 'pending', file: base64 || null } : doc);
-                localStorage.setItem('driver_compliance_docs', JSON.stringify(updated));
+                const updated = prev.map(d =>
+                    d.id === id
+                        ? { ...d, status: 'pending', fileUrl: fileUrlOrBase64 || null, file: null }
+                        : d
+                );
+                // Store without the actual file data — just the URL and status
+                const cleanedForStorage = updated.map(d => ({ id: d.id, name: d.name, status: d.status, requirement: d.requirement, fileUrl: d.fileUrl || null }));
+                localStorage.setItem('driver_compliance_docs', JSON.stringify(cleanedForStorage));
                 if (user?.email) {
                     updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
-                        driverComplianceDocs: updated
-                    }).catch(err => console.error("Error updating driverComplianceDocs in Firestore:", err));
+                        driverComplianceDocs: cleanedForStorage
+                    }).catch(err => console.error('Error updating driverComplianceDocs:', err));
                 }
                 return updated;
             });
         } else if (vehicleDocs.some(v => v.id === id)) {
             setVehicleDocs(prev => {
-                const updated = prev.map(doc => doc.id === id ? { ...doc, status: 'pending', file: base64 || null } : doc);
-                localStorage.setItem('driver_vehicle_docs', JSON.stringify(updated));
+                const updated = prev.map(d =>
+                    d.id === id
+                        ? { ...d, status: 'pending', fileUrl: fileUrlOrBase64 || null, file: null }
+                        : d
+                );
+                const cleanedForStorage = updated.map(d => ({ id: d.id, name: d.name, status: d.status, requirement: d.requirement, fileUrl: d.fileUrl || null }));
+                localStorage.setItem('driver_vehicle_docs', JSON.stringify(cleanedForStorage));
                 if (user?.email) {
                     updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
-                        driverVehicleDocs: updated
-                    }).catch(err => console.error("Error updating driverVehicleDocs in Firestore:", err));
+                        driverVehicleDocs: cleanedForStorage
+                    }).catch(err => console.error('Error updating driverVehicleDocs:', err));
                 }
                 return updated;
             });
         }
-        alert("Photo uploaded successfully!");
+        alert('✅ Document uploaded to cloud successfully!');
     };
 
     const handleAcceptTerms = (id) => {
@@ -561,13 +579,13 @@ const DriverDashboard = () => {
             setIsOnline(false);
             setProfileData({
                 firstName: user?.name?.split(' ')[0] || '',
-                lastName: user?.name?.split(' ')[1] || '',
-                address: '',
+                lastName: user?.name?.split(' ').slice(1).join(' ') || '',
+                address: user?.address || '',
                 email: user?.email || '',
-                zipCode: '',
-                city: '',
-                phoneNumber: '',
-                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'NewDriver'}`
+                zipCode: user?.zip || '',
+                city: user?.city || '',
+                phoneNumber: user?.phone || '',
+                avatar: user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'NewDriver'}`
             });
             setTripHistory([]);
             setInboxMessages([]);
@@ -667,6 +685,54 @@ const DriverDashboard = () => {
         
         return () => unsubscribe();
     }, [user?.email]);
+
+    useEffect(() => {
+        if (!user?.email || view !== 'verification') return;
+        
+        const loadDocFiles = async () => {
+            let complianceUpdated = false;
+            const updatedCompliance = await Promise.all(driverDocs.map(async (docItem) => {
+                if (docItem.status !== 'missing' && !docItem.file && docItem.id !== 'terms') {
+                    try {
+                        const fileDoc = await getDoc(doc(fbDb, 'users', user.email.toLowerCase(), 'documents', docItem.id));
+                        if (fileDoc.exists() && fileDoc.data().file) {
+                            complianceUpdated = true;
+                            return { ...docItem, file: fileDoc.data().file };
+                        }
+                    } catch (e) {
+                        console.error(`Error loading compliance file ${docItem.id}:`, e);
+                    }
+                }
+                return docItem;
+            }));
+
+            let vehicleUpdated = false;
+            const updatedVehicle = await Promise.all(vehicleDocs.map(async (docItem) => {
+                if (docItem.status !== 'missing' && !docItem.file) {
+                    try {
+                        const fileDoc = await getDoc(doc(fbDb, 'users', user.email.toLowerCase(), 'documents', docItem.id));
+                        if (fileDoc.exists() && fileDoc.data().file) {
+                            vehicleUpdated = true;
+                            return { ...docItem, file: fileDoc.data().file };
+                        }
+                    } catch (e) {
+                        console.error(`Error loading vehicle file ${docItem.id}:`, e);
+                    }
+                }
+                return docItem;
+            }));
+
+            if (complianceUpdated) {
+                setDriverDocs(updatedCompliance);
+            }
+            if (vehicleUpdated) {
+                setVehicleDocs(updatedVehicle);
+            }
+        };
+
+        loadDocFiles();
+    }, [user?.email, view]);
+
 
 
     const currentStats = stats[activeTab];
@@ -1463,7 +1529,7 @@ const DriverDashboard = () => {
             )}
             <main className={`flex-1 w-full relative z-10 flex flex-col overflow-hidden ${(rideStatus === 'active_multi' || view !== 'dashboard') ? 'justify-start' : 'items-center justify-center'}`}>
                 <AnimatePresence mode="wait">
-                    {view === 'social-profile' ? (
+                            {view === 'social-profile' ? (
                         <motion.div 
                             key="social"
                             initial={{ opacity: 0, x: 30 }}
@@ -1471,6 +1537,34 @@ const DriverDashboard = () => {
                             exit={{ opacity: 0, x: -30 }}
                             className="flex-1 w-full flex flex-col pt-24 px-6 pb-20 overflow-y-auto no-scrollbar"
                         >
+                            {/* Hidden file inputs for gallery and camera */}
+                            <input
+                                type="file"
+                                id="social-gallery-upload"
+                                accept="image/*,video/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (!file) return;
+                                    const url = URL.createObjectURL(file);
+                                    alert(`✅ "${file.name}" selected! Post feature coming soon.`);
+                                    e.target.value = null;
+                                }}
+                            />
+                            <input
+                                type="file"
+                                id="social-camera-upload"
+                                accept="image/*,video/*"
+                                capture="environment"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (!file) return;
+                                    alert(`✅ "${file.name}" captured! Reel feature coming soon.`);
+                                    e.target.value = null;
+                                }}
+                            />
+
                             <div className="absolute top-8 left-6 right-6 z-[100] flex justify-between items-center pointer-events-none">
                                 <div className="flex gap-4 pointer-events-auto">
                                     <button 
@@ -1495,23 +1589,47 @@ const DriverDashboard = () => {
                                 </button>
                             </div>
 
+                            {/* Profile Header */}
                             <div className="flex flex-col items-center mb-10">
                                 <div className="w-32 h-32 rounded-[2.5rem] bg-brand/10 border-4 border-brand/20 p-2 shadow-2xl relative group">
-                                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} alt="Avatar" className="w-full h-full rounded-[2rem] object-cover" />
-                                    <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-[var(--brand)] rounded-xl flex items-center justify-center text-[var(--bg-primary)] border-4 border-[var(--bg-primary)]">
-                                        <CheckCircle size={20} />
-                                    </div>
+                                    <img
+                                        src={
+                                            tempPhotoPreview ||
+                                            profileData.avatar ||
+                                            (driverDocs.find(d => d.id === 'avatar')?.status === 'verified'
+                                                ? null
+                                                : null) ||
+                                            `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Driver'}`
+                                        }
+                                        alt="Avatar"
+                                        className="w-full h-full rounded-[2rem] object-cover"
+                                    />
+                                    {/* Verified badge if avatar doc is verified */}
+                                    {driverDocs.find(d => d.id === 'avatar')?.status === 'verified' && (
+                                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-[var(--brand)] rounded-xl flex items-center justify-center text-[var(--bg-primary)] border-4 border-[var(--bg-primary)]">
+                                            <CheckCircle size={20} />
+                                        </div>
+                                    )}
+                                    {/* Pending badge */}
+                                    {driverDocs.find(d => d.id === 'avatar')?.status === 'pending' && (
+                                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-white border-4 border-[var(--bg-primary)]">
+                                            <Clock size={16} />
+                                        </div>
+                                    )}
                                 </div>
-                                <h2 className="text-3xl font-black italic uppercase tracking-tighter mt-6">{user?.name}</h2>
-                                <p className="text-[10px] font-black text-brand uppercase tracking-[0.3em] mt-2">Certified Green Pilot • Tier 1</p>
+                                <h2 className="text-3xl font-black italic uppercase tracking-tighter mt-6">{profileData.firstName || user?.name?.split(' ')[0] || 'Driver'} {profileData.lastName || user?.name?.split(' ').slice(1).join(' ') || ''}</h2>
+                                <p className="text-[10px] font-black text-brand uppercase tracking-[0.3em] mt-2">Green Driver • {user?.email}</p>
                                 
+                                {/* Real stats - use real data, show 0 for new accounts */}
                                 <div className="flex gap-8 mt-8">
                                     <div className="text-center">
-                                        <p className="text-xl font-black italic">4.92</p>
+                                        <p className="text-xl font-black italic">{currentStats?.rating?.toFixed(2) || '—'}</p>
                                         <p className="text-[8px] font-bold text-secondary uppercase tracking-widest">Rating</p>
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-xl font-black italic text-brand">{user?.greenFlags > 1000 ? (user.greenFlags / 1000).toFixed(1) + 'K' : user?.greenFlags || '2.4K'}</p>
+                                        <p className="text-xl font-black italic text-brand">
+                                            {user?.greenFlags > 1000 ? (user.greenFlags / 1000).toFixed(1) + 'K' : user?.greenFlags ?? 0}
+                                        </p>
                                         <div className="flex items-center justify-center gap-1">
                                             <Zap size={8} className="text-brand fill-brand" />
                                             <p className="text-[8px] font-bold text-brand uppercase tracking-widest">Approvals</p>
@@ -1527,51 +1645,79 @@ const DriverDashboard = () => {
                                         </div>
                                     )}
                                     <div className="text-center">
-                                        <p className="text-xl font-black italic">1.2K</p>
+                                        <p className="text-xl font-black italic">{currentStats?.trips ?? 0}</p>
                                         <p className="text-[8px] font-bold text-secondary uppercase tracking-widest">Missions</p>
-                                    </div>
-                                    <div className="text-center">
-                                        <p className="text-xl font-black italic">8.4K</p>
-                                        <p className="text-[8px] font-bold text-secondary uppercase tracking-widest">Followers</p>
                                     </div>
                                 </div>
                             </div>
 
+                            {/* Stories / Reels */}
                             <div className="space-y-8">
                                 <div className="flex justify-between items-end px-2">
                                     <h3 className="text-xl font-black italic uppercase tracking-tighter">My <span className="text-brand">Discovery Stories</span></h3>
                                     <div className="flex gap-3">
                                         <button 
-                                            onClick={() => alert("Simulating: Opening Gallery for Photos...")}
-                                            className="p-2 bg-surface border border-main rounded-xl text-muted hover:text-primary"
+                                            onClick={() => document.getElementById('social-gallery-upload').click()}
+                                            className="p-2 bg-surface border border-main rounded-xl text-muted hover:text-primary active:scale-95 transition-all"
+                                            title="Upload from Gallery"
                                         >
                                             <Upload size={14} />
                                         </button>
                                         <button 
-                                            onClick={() => alert("Simulating: Launching Camera for Reel...")}
-                                            className="px-4 py-2 bg-brand text-dark-900 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand/20"
+                                            onClick={() => document.getElementById('social-camera-upload').click()}
+                                            className="px-4 py-2 bg-brand text-dark-900 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand/20 active:scale-95 transition-all"
                                         >
                                             New Reel +
                                         </button>
                                     </div>
                                 </div>
                                 
-                                <div className="grid grid-cols-2 gap-4">
-                                    {[
-                                        { title: 'Neon Night Cruise', views: '2.4K', img: 'https://images.unsplash.com/photo-1549239120-0a4c321d1bc1?q=80&w=400&auto=format&fit=crop' },
-                                        { title: 'Rainy City Vibes', views: '1.8K', img: 'https://images.unsplash.com/photo-1533045607062-a5e2f75a74e5?q=80&w=400&auto=format&fit=crop' },
-                                        { title: 'Tesla Speed Run', views: '4.2K', img: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=400&auto=format&fit=crop' },
-                                        { title: 'Morning Hustle', views: '982', img: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=400&auto=format&fit=crop' }
-                                    ].map((story, i) => (
-                                        <div key={i} className="aspect-[9/16] bg-dark-900 rounded-[2rem] border border-main relative overflow-hidden group">
-                                            <img src={story.img} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700" alt="Story" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-4 flex flex-col justify-end">
-                                                <p className="text-[10px] font-black italic text-primary uppercase truncate">{story.title}</p>
-                                                <p className="text-[8px] font-bold text-brand uppercase mt-1">{story.views} Views</p>
-                                            </div>
+                                {/* Empty state for new/real accounts — no mock posts */}
+                                {!isDemo && (
+                                    <div className="flex flex-col items-center justify-center py-16 gap-4 border border-dashed border-white/10 rounded-[2rem]">
+                                        <div className="w-16 h-16 rounded-[1.5rem] bg-brand/10 flex items-center justify-center border border-brand/20">
+                                            <Upload size={28} className="text-brand" />
                                         </div>
-                                    ))}
-                                </div>
+                                        <div className="text-center">
+                                            <p className="text-sm font-black text-primary uppercase tracking-widest">No stories yet</p>
+                                            <p className="text-[10px] text-muted mt-1">Tap <strong>New Reel +</strong> to record or <strong>↑</strong> to upload from gallery</p>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => document.getElementById('social-gallery-upload').click()}
+                                                className="px-5 py-3 bg-surface border border-main rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary hover:border-brand hover:text-brand active:scale-95 transition-all"
+                                            >
+                                                📷 Gallery
+                                            </button>
+                                            <button
+                                                onClick={() => document.getElementById('social-camera-upload').click()}
+                                                className="px-5 py-3 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand/20 active:scale-95 transition-all"
+                                            >
+                                                🎥 Camera
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Demo account still shows mock stories */}
+                                {isDemo && (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {[
+                                            { title: 'Neon Night Cruise', views: '2.4K', img: 'https://images.unsplash.com/photo-1549239120-0a4c321d1bc1?q=80&w=400&auto=format&fit=crop' },
+                                            { title: 'Rainy City Vibes', views: '1.8K', img: 'https://images.unsplash.com/photo-1533045607062-a5e2f75a74e5?q=80&w=400&auto=format&fit=crop' },
+                                            { title: 'Tesla Speed Run', views: '4.2K', img: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=400&auto=format&fit=crop' },
+                                            { title: 'Morning Hustle', views: '982', img: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=400&auto=format&fit=crop' }
+                                        ].map((story, i) => (
+                                            <div key={i} className="aspect-[9/16] bg-dark-900 rounded-[2rem] border border-main relative overflow-hidden group">
+                                                <img src={story.img} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700" alt="Story" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-4 flex flex-col justify-end">
+                                                    <p className="text-[10px] font-black italic text-primary uppercase truncate">{story.title}</p>
+                                                    <p className="text-[8px] font-bold text-brand uppercase mt-1">{story.views} Views</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     ) : (rideStatus === 'active_multi' || activeMissions.length > 0) ? (
@@ -2123,6 +2269,7 @@ const DriverDashboard = () => {
                                         title="Personal Verification"
                                         description="Driver Credentials & Identity"
                                         documents={driverDocs}
+                                        userEmail={user?.email}
                                         onUpload={handleUploadDocument}
                                         onAccept={handleAcceptTerms}
                                         onDeny={handleDenyTerms}
@@ -2132,6 +2279,7 @@ const DriverDashboard = () => {
                                         title="Vehicle Checks"
                                         description="Documents for driving in Frankfurt/Main"
                                         documents={vehicleDocs}
+                                        userEmail={user?.email}
                                         onUpload={handleUploadDocument}
                                     />
                                 </div>
@@ -2516,15 +2664,49 @@ const DriverDashboard = () => {
 
                             {view === 'profile-pic' && (
                                 <div className="space-y-10 flex flex-col items-center py-6">
+                                    {/* Hidden real file input for photo upload */}
+                                    <input
+                                        type="file"
+                                        id="profile-pic-view-upload"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (!file) return;
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => {
+                                                const img = new Image();
+                                                img.src = reader.result;
+                                                img.onload = () => {
+                                                    const canvas = document.createElement('canvas');
+                                                    let w = img.width, h = img.height;
+                                                    const max = 400;
+                                                    if (w > h) { if (w > max) { h = Math.round(h * max / w); w = max; } }
+                                                    else { if (h > max) { w = Math.round(w * max / h); h = max; } }
+                                                    canvas.width = w; canvas.height = h;
+                                                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                                                    const compressed = canvas.toDataURL('image/jpeg', 0.75);
+                                                    setTempPhotoPreview(compressed);
+                                                    setProfileData(prev => ({ ...prev, avatar: compressed }));
+                                                    setHasInitialPic(true);
+                                                    // Use the standard handler so the doc appears in Admin Document Hub
+                                                    handleUploadDocument('avatar', compressed);
+                                                };
+                                            };
+                                            reader.readAsDataURL(file);
+                                            e.target.value = null;
+                                        }}
+                                    />
+
                                     {/* Avatar Section */}
                                     <div className="relative group">
                                         <div className="w-40 h-40 rounded-[2.5rem] bg-brand/20 border-4 border-brand/50 p-1.5 shadow-2xl relative overflow-hidden">
-                                            <img 
-                                                src={tempPhotoPreview || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} 
-                                                alt="Avatar" 
-                                                className={`w-full h-full rounded-[2.1rem] bg-dark-800 ${profilePicStatus === 'pending' ? 'grayscale opacity-50' : ''}`} 
+                                            <img
+                                                src={tempPhotoPreview || profileData.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`}
+                                                alt="Avatar"
+                                                className={`w-full h-full rounded-[2.1rem] bg-dark-800 ${profilePicStatus === 'pending' ? 'grayscale opacity-50' : ''}`}
                                             />
-                                            
+
                                             {profilePicStatus === 'pending' && (
                                                 <div className="absolute inset-0 bg-[var(--bg-primary)]/60 backdrop-blur-[2px] flex flex-col items-center justify-center text-center p-4">
                                                     <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center mb-2 border border-amber-500/30">
@@ -2535,34 +2717,21 @@ const DriverDashboard = () => {
                                             )}
 
                                             {profilePicStatus === 'missing' && (
-                                                <div className="absolute inset-0 bg-[var(--bg-primary)]/40 flex flex-col items-center justify-center cursor-pointer" onClick={() => {
-                                                    alert("Simulating: Opening Phone Gallery...");
-                                                    setTempPhotoPreview(`https://api.dicebear.com/7.x/avataaars/svg?seed=selected-${Date.now()}`);
-                                                    setProfilePicStatus('pending');
-                                                    setHasInitialPic(true);
-                                                }}>
+                                                <div className="absolute inset-0 bg-[var(--bg-primary)]/40 flex flex-col items-center justify-center cursor-pointer" onClick={() => document.getElementById('profile-pic-view-upload').click()}>
                                                     <Upload className="text-primary opacity- mb-1" size={24} />
                                                     <p className="text-[7px] font-black uppercase tracking-widest text-primary opacity-">Tap to Upload</p>
                                                 </div>
                                             )}
 
                                             {profilePicStatus === 'verified' && (
-                                                <div className="absolute inset-0 bg-[var(--bg-primary)]/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={() => {
-                                                    alert("Simulating: Opening Phone Gallery for change request...");
-                                                    setProfilePicStatus('pending');
-                                                }}>
+                                                <div className="absolute inset-0 bg-[var(--bg-primary)]/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={() => document.getElementById('profile-pic-view-upload').click()}>
                                                     <Upload className="text-brand" size={40} />
                                                 </div>
                                             )}
                                         </div>
                                         {profilePicStatus !== 'pending' && (
-                                            <button 
-                                                onClick={() => {
-                                                    alert("Simulating: Opening Phone Gallery...");
-                                                    setTempPhotoPreview(`https://api.dicebear.com/7.x/avataaars/svg?seed=selected-${Date.now()}`);
-                                                    setProfilePicStatus('pending');
-                                                    setHasInitialPic(true);
-                                                }}
+                                            <button
+                                                onClick={() => document.getElementById('profile-pic-view-upload').click()}
                                                 className="absolute -bottom-2 -right-2 w-12 h-12 bg-[var(--brand)] rounded-2xl flex items-center justify-center text-[var(--bg-primary)] shadow-xl ring-4 ring-[var(--bg-primary)] hover:scale-110 transition-transform"
                                             >
                                                 <Edit3 size={20} />
@@ -2575,42 +2744,104 @@ const DriverDashboard = () => {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-1.5">
                                                 <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">First Name</label>
-                                                <input type="text" placeholder="First Name" className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="First Name"
+                                                    value={profileData.firstName || ''}
+                                                    onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
+                                                    className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none"
+                                                />
                                             </div>
                                             <div className="space-y-1.5">
                                                 <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">Surname</label>
-                                                <input type="text" placeholder="Surname" className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Surname"
+                                                    value={profileData.lastName || ''}
+                                                    onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
+                                                    className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none"
+                                                />
                                             </div>
                                         </div>
 
                                         <div className="space-y-1.5">
                                             <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">Email Address</label>
-                                            <input type="email" placeholder="email@green.com" className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" />
+                                            <input
+                                                type="email"
+                                                placeholder="email@green.com"
+                                                value={profileData.email || ''}
+                                                readOnly
+                                                className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary opacity-60 outline-none cursor-not-allowed"
+                                            />
                                         </div>
 
                                         <div className="space-y-1.5">
                                             <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">Phone Number</label>
-                                            <input type="tel" placeholder="+49 151 ..." className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" />
+                                            <input
+                                                type="tel"
+                                                placeholder="+49 151 ..."
+                                                value={profileData.phoneNumber || ''}
+                                                onChange={(e) => setProfileData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                                                className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none"
+                                            />
                                         </div>
 
                                         <div className="space-y-1.5">
                                             <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">Address</label>
-                                            <input type="text" placeholder="Street and Number" className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" />
+                                            <input
+                                                type="text"
+                                                placeholder="Street and Number"
+                                                value={profileData.address || ''}
+                                                onChange={(e) => setProfileData(prev => ({ ...prev, address: e.target.value }))}
+                                                className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none"
+                                            />
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-1.5">
                                                 <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">City</label>
-                                                <input type="text" placeholder="City" className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="City"
+                                                    value={profileData.city || ''}
+                                                    onChange={(e) => setProfileData(prev => ({ ...prev, city: e.target.value }))}
+                                                    className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none"
+                                                />
                                             </div>
                                             <div className="space-y-1.5">
                                                 <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">Zip Code</label>
-                                                <input type="text" placeholder="Zip Code" className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Zip Code"
+                                                    value={profileData.zipCode || ''}
+                                                    onChange={(e) => setProfileData(prev => ({ ...prev, zipCode: e.target.value }))}
+                                                    className="w-full bg-surface border border-main rounded-2xl p-4 text-sm font-bold text-primary focus:border-brand outline-none"
+                                                />
                                             </div>
                                         </div>
 
-                                        <button 
-                                            onClick={() => { alert("Profile saved successfully!"); setView('dashboard'); }}
+                                        <button
+                                            onClick={async () => {
+                                                if (user?.email) {
+                                                    try {
+                                                        await updateDoc(doc(fbDb, 'users', user.email.toLowerCase()), {
+                                                            name: `${profileData.firstName} ${profileData.lastName}`.trim(),
+                                                            phone: profileData.phoneNumber,
+                                                            address: profileData.address,
+                                                            city: profileData.city,
+                                                            zip: profileData.zipCode,
+                                                        });
+                                                        alert("✅ Profile saved successfully!");
+                                                        setView('dashboard');
+                                                    } catch (err) {
+                                                        console.error("Error saving profile:", err);
+                                                        alert("❌ Failed to save profile. Please try again.");
+                                                    }
+                                                } else {
+                                                    alert("Profile saved successfully!");
+                                                    setView('dashboard');
+                                                }
+                                            }}
                                             className="w-full py-5 bg-[var(--brand)] text-[var(--bg-primary)] rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
                                         >
                                             Save Profile Changes

@@ -541,9 +541,28 @@ const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtoco
         }
     };
 
-    const handleViewPartnerDoc = (docState) => {
-        const url = docState?.fileUrl || docState?.fileData;
-        if (!url) return;
+    const handleViewPartnerDoc = async (docState, email) => {
+        // fileUrl is the Firebase Storage download URL (new standard)
+        // file / fileData are legacy base64 fallbacks
+        let url = docState?.fileUrl || docState?.fileData || docState?.file;
+
+        // Legacy: try fetching from the old subcollection workaround
+        if (!url && email && docState?.id) {
+            try {
+                const docSnap = await getDoc(doc(db, 'users', email.toLowerCase(), 'documents', docState.id));
+                if (docSnap.exists()) {
+                    url = docSnap.data().fileUrl || docSnap.data().file;
+                }
+            } catch (e) {
+                console.error('Error fetching doc from subcollection:', e);
+            }
+        }
+
+        if (!url) {
+            alert('No document file found. The driver may not have uploaded this document yet.');
+            return;
+        }
+
         const newWindow = window.open();
         if (newWindow) {
             newWindow.document.title = docState.name || 'Document View';
@@ -553,8 +572,14 @@ const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtoco
             newWindow.document.body.style.justifyContent = 'center';
             newWindow.document.body.style.alignItems = 'center';
             newWindow.document.body.style.height = '100vh';
-            
-            const isImage = url.startsWith('data:image/') || url.includes('.png') || url.includes('.jpg') || url.includes('.jpeg') || url.includes('alt=media');
+
+            // Detect image: base64 data URLs, Firebase Storage URLs, or common image extensions
+            const isImage = url.startsWith('data:image/')
+                || url.includes('firebasestorage.googleapis.com')
+                || url.includes('firebasestorage.app')
+                || url.includes('alt=media')
+                || /\.(png|jpg|jpeg|gif|webp|heic)(\?|$)/i.test(url);
+
             if (isImage) {
                 const img = newWindow.document.createElement('img');
                 img.src = url;
@@ -573,6 +598,7 @@ const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtoco
             }
         }
     };
+
     const [selectedInvoiceForModal, setSelectedInvoiceForModal] = useState(null);
     const [isSimulatingPayoutFlow, setIsSimulatingPayoutFlow] = useState(false);
     const [simulationStep, setSimulationStep] = useState(0);
@@ -913,15 +939,15 @@ const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtoco
                             id: d.id,
                             name: d.name,
                             status: d.status === 'verified' ? 'approved' : d.status,
-                            uploadedAt: d.file ? 'Recent' : null,
-                            fileUrl: d.file || null
+                            uploadedAt: d.status !== 'missing' ? 'Recent' : null,
+                            fileUrl: d.file || (d.status !== 'missing' ? 'pending_subcollection' : null)
                         })),
                         ...vehicleDocs.map(d => ({
                             id: d.id,
                             name: d.name,
                             status: d.status === 'verified' ? 'approved' : d.status,
-                            uploadedAt: 'Recent',
-                            fileUrl: d.file || null
+                            uploadedAt: d.status !== 'missing' ? 'Recent' : null,
+                            fileUrl: d.file || (d.status !== 'missing' ? 'pending_subcollection' : null)
                         }))
                     ]
                 };
@@ -956,15 +982,15 @@ const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtoco
                             id: d.id,
                             name: d.name,
                             status: d.status === 'verified' ? 'approved' : d.status,
-                            uploadedAt: d.file ? 'Recent' : null,
-                            fileUrl: d.file || null
+                            uploadedAt: d.status !== 'missing' ? 'Recent' : null,
+                            fileUrl: d.file || (d.status !== 'missing' ? 'pending_subcollection' : null)
                         })),
                         ...vehicleDocs.map(d => ({
                             id: d.id,
                             name: d.name,
                             status: d.status === 'verified' ? 'approved' : d.status,
-                            uploadedAt: 'Recent',
-                            fileUrl: d.file || null
+                            uploadedAt: d.status !== 'missing' ? 'Recent' : null,
+                            fileUrl: d.file || (d.status !== 'missing' ? 'pending_subcollection' : null)
                         }))
                     ];
                 } else {
@@ -5143,7 +5169,7 @@ billing payouts are required.
                                                                             {doc.fileData ? (
                                                                                 <div className="flex gap-2">
                                                                                     <button 
-                                                                                        onClick={() => handleViewPartnerDoc(doc)}
+                                                                                        onClick={() => handleViewPartnerDoc(doc, partner.email)}
                                                                                         className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-[8px] font-black uppercase tracking-widest border border-white/5 hover:border-white/20 transition-all text-center flex items-center justify-center gap-1.5"
                                                                                     >
                                                                                         <Eye size={10} /> View Document
@@ -5601,7 +5627,7 @@ billing payouts are required.
                                                                 <div className="flex items-center gap-2">
                                                                     {doc.fileUrl && (
                                                                         <button
-                                                                            onClick={() => handleViewPartnerDoc(doc)}
+                                                                            onClick={() => handleViewPartnerDoc(doc, partner.email)}
                                                                             className="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-[8px] font-black uppercase rounded-xl transition-all"
                                                                         >View</button>
                                                                     )}

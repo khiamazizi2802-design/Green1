@@ -37,6 +37,11 @@ service cloud.firestore {
         allow read, write: if isOwner(email) || isAdmin();
       }
 
+      // Subcollection: documents
+      match /documents/{docId} {
+        allow read, write: if isOwner(email) || isAdmin();
+      }
+
       // Subcollection: posts
       match /posts/{postId} {
         allow read: if isAuthenticated();
