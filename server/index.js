@@ -366,7 +366,7 @@ app.post('/api/ai/scan-menu', async (req, res) => {
 });
 
 const server = http.createServer(app);
-const originUrl = process.env.CORS_ORIGIN || "http://localhost:5173";
+const originUrl = process.env.CORS_ORIGIN || "*";
 const io = new Server(server, {
     cors: {
         origin: originUrl === "*" ? true : originUrl,
