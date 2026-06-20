@@ -62,7 +62,7 @@ const MapController = ({ campaignLat, campaignLng, handleMapSelect }) => {
 
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
-    const { drivers } = useSocket();
+    const { drivers, socket } = useSocket();
     const isDemo = user?.isDemo;
     const { baseFare, setBaseFare, perKmRate, setPerKmRate } = useRide();
     const [isGermanComplianceActive, setIsGermanComplianceActive] = useState(() => localStorage.getItem('green_german_compliance') === 'true');
@@ -4147,9 +4147,13 @@ billing payouts are required.
                                                     step="0.50" 
                                                     value={baseFare} 
                                                     onChange={(e) => {
-                                                        setBaseFare(parseFloat(e.target.value));
+                                                        const val = parseFloat(e.target.value);
+                                                        setBaseFare(val);
+                                                        if (socket) {
+                                                            socket.emit('admin-update-pricing', { baseFare: val });
+                                                        }
                                                     }}
-                                                    className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
+                                                    className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand shadow-inner"
                                                 />
                                                 <div className="flex justify-between text-[8px] font-bold text-gray-600 uppercase mt-2">
                                                     <span>Min: €{isGermanComplianceActive ? "3.00" : "1.00"}</span>

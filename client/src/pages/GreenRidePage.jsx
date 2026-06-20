@@ -591,16 +591,25 @@ const GreenRidePage = () => {
             }
         };
 
+        const handleRideCanceled = (data) => {
+            console.log('Ride canceled by driver', data);
+            setRideStatus('idle');
+            setDriverInfo(null);
+            alert('⚠️ Your driver had to cancel the ride. Please request a new one.');
+        };
+
         socket.on('ride-accepted', handleRideAccepted);
         socket.on('driver-arrived', handleDriverArrived);
         socket.on('start-ride', handleStartRide);
         socket.on('complete-ride', handleCompleteRide);
+        socket.on('ride-canceled', handleRideCanceled);
 
         return () => {
             socket.off('ride-accepted', handleRideAccepted);
             socket.off('driver-arrived', handleDriverArrived);
             socket.off('start-ride', handleStartRide);
             socket.off('complete-ride', handleCompleteRide);
+            socket.off('ride-canceled', handleRideCanceled);
         };
     }, [socket, setDriverInfo, setRideStatus]);
 
@@ -617,8 +626,8 @@ const GreenRidePage = () => {
             }
             
             socket.emit('ride-request', {
-                passengerId: 'alex-passenger-id',
-                passengerName: 'Alex Passenger',
+                passengerId: user?.email || `guest-${Date.now()}`,
+                passengerName: user?.name || 'Guest Passenger',
                 pickup: pickup,
                 destination: destination || 'Mainzer Landstraße 123',
                 coords: { lat: pickupCoords[0], lng: pickupCoords[1] },

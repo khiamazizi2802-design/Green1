@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { useSocket } from './SocketContext';
 
 const RideContext = createContext();
 
 export const RideProvider = ({ children }) => {
     const { user } = useAuth();
+    const { socket } = useSocket();
     const isDemo = user?.isDemo;
     const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
 
@@ -182,11 +184,22 @@ export const RideProvider = ({ children }) => {
         localStorage.setItem('green_per_km_rate', String(perKmRate));
     }, [perKmRate]);
 
+    useEffect(() => {
+        if (socket) {
+            socket.on('update-pricing', (data) => {
+                if (data.baseFare !== undefined) setBaseFare(data.baseFare);
+                if (data.perKmRate !== undefined) setPerKmRate(data.perKmRate);
+                console.log('Live pricing updated from Admin:', data);
+            });
+            return () => socket.off('update-pricing');
+        }
+    }, [socket]);
+
     const BASE_FARE = parseFloat(baseFare);
     const PER_KM_RATE = parseFloat(perKmRate);
 
     const calculatePrice = (distance, passengerCount) => {
-        const activeBaseFare = distance > 5 ? 0 : BASE_FARE;
+        const activeBaseFare = BASE_FARE; // Fixed: Always apply base fare
         const originalPrice = activeBaseFare + (distance * PER_KM_RATE);
         let discount = 0;
         let driverMultiplier = 1.0;

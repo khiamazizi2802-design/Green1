@@ -555,6 +555,20 @@ io.on('connection', (socket) => {
         io.emit('complete-ride', { passengerId: data.passengerId });
     });
 
+    socket.on('cancel-ride', (data) => {
+        console.log('Cancel ride notification received:', data);
+        // Remove from active request list just in case it was stuck
+        activeRequests = activeRequests.filter(r => r.passengerId !== data.passengerId);
+        io.emit('active-requests-list', activeRequests);
+        io.emit('ride-canceled', { passengerId: data.passengerId, reason: data.reason || 'Driver Canceled' });
+    });
+
+    socket.on('admin-update-pricing', (data) => {
+        console.log('Admin updated pricing:', data);
+        // Broadcast pricing change to all connected clients (especially passengers)
+        io.emit('update-pricing', data);
+    });
+
     // Payment & Table Sync
     socket.on('request-cash-payment', (data) => {
         console.log('Cash payment requested for table:', data.tableId);

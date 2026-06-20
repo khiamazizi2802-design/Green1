@@ -288,6 +288,7 @@ const DriverDashboard = () => {
     const [activeMissions, setActiveMissions] = useState([]); 
     const [currentSequence, setCurrentSequence] = useState([]); 
     const [currentPos, setCurrentPos] = useState({ lat: 50.1109, lng: 8.6821 }); 
+    const [routeGeometry, setRouteGeometry] = useState([]);
     
     const [missionSheetOpen, setMissionSheetOpen] = useState(false);
     const [missionStep, setMissionStep] = useState('confirm'); // 'confirm' | 'summary'
@@ -328,6 +329,34 @@ const DriverDashboard = () => {
     const [paymentNotify, setPaymentNotify] = useState(null); // { name: string, amount: number }
     const notifiedMissions = React.useRef(new Set());
     const [dismissingMission, setDismissingMission] = useState(null); // { id: string, customer: string }
+
+    React.useEffect(() => {
+        if (currentSequence.length === 0) {
+            setRouteGeometry([]);
+            return;
+        }
+
+        const fetchRoute = async () => {
+            try {
+                const waypoints = [
+                    `${currentPos.lng},${currentPos.lat}`,
+                    ...currentSequence.map(s => `${s.coord.lng},${s.coord.lat}`)
+                ].join(';');
+
+                const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${waypoints}?geometries=geojson`);
+                const data = await response.json();
+
+                if (data.routes && data.routes.length > 0) {
+                    const coords = data.routes[0].geometry.coordinates.map(coord => [coord[1], coord[0]]); // [lat, lng]
+                    setRouteGeometry(coords);
+                }
+            } catch (err) {
+                console.error("OSRM Routing Error:", err);
+            }
+        };
+
+        fetchRoute();
+    }, [currentSequence, currentPos.lat, currentPos.lng]);
 
     React.useEffect(() => {
         if (!incomingRide) return;
@@ -890,7 +919,7 @@ const DriverDashboard = () => {
         if (incomingRide.isRealTime && socket) {
             socket.emit('accept-ride', {
                 passengerId: incomingRide.passengerId,
-                driverName: user?.name || "Expert Driver"
+                driverName: `${profileData.firstName} ${profileData.lastName}`.trim() || user?.name || "Expert Driver"
             });
         }
 
@@ -1307,6 +1336,12 @@ const DriverDashboard = () => {
                             <button
                                 key={reason.id}
                                 onClick={() => {
+                                    if (socket) {
+                                        socket.emit('cancel-ride', {
+                                            passengerId: dismissingMission.passengerId || dismissingMission.id,
+                                            reason: reason.label
+                                        });
+                                    }
                                     setActiveMissions(prev => prev.filter(m => m.id !== dismissingMission.id));
                                     setDismissingMission(null);
                                     alert(`Mission Ended: ${reason.label}`);
@@ -1818,7 +1853,14 @@ const DriverDashboard = () => {
                                     <Marker position={[currentPos.lat, currentPos.lng]} icon={driverIcon} />
 
                                     {/* Path Polyline */}
-                                    {currentSequence.length > 0 && (
+                                    {routeGeometry.length > 0 ? (
+                                        <Polyline 
+                                            positions={routeGeometry}
+                                            color="var(--brand)"
+                                            weight={5}
+                                            opacity={0.8}
+                                        />
+                                    ) : currentSequence.length > 0 && (
                                         <Polyline 
                                             positions={[
                                                 [currentPos.lat, currentPos.lng],
@@ -1932,6 +1974,9 @@ const DriverDashboard = () => {
                                                     <button 
                                                         onClick={(e) => {
                                                             e.stopPropagation();
+                                                            if (socket) {
+                                                                socket.emit('cancel-ride', { passengerId: m.passengerId || m.id, reason: 'Driver dismissed request' });
+                                                            }
                                                             setActiveMissions(prev => prev.filter(mission => mission.id !== m.id));
                                                         }}
                                                         className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-primary rounded-full flex items-center justify-center border border-dark-900 z-20 hover:scale-110 transition-transform"
