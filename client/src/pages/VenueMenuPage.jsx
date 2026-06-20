@@ -258,97 +258,10 @@ const VenueMenuPage = () => {
     const [showToast, setShowToast] = useState(false);
     const [toastMsg, setToastMsg] = useState("");
 
-    const hotelCategories = [
-        {
-            name: "Zimmer (Rooms)",
-            items: [
-                { id: 'hr1', name: "Deluxe Zimmer", price: 180.00, desc: "Luxuriöses Zimmer mit Stadtblick, King-Size-Bett und modernster Smart-Room-Steuerung.", image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=400&h=400&fit=crop", tags: ["Rooms", "Luxury", "Hotel Room"] },
-                { id: 'hr2', name: "Executive Suite", price: 350.00, desc: "Großzügige Suite mit eigener Terrasse, persönlicher Bar und exklusivem Zugang zur VIP-Lounge.", image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=400&fit=crop", tags: ["Rooms", "Elite", "Suite"] }
-            ]
-        },
-        {
-            name: "Speisen (Food)",
-            items: [
-                { id: 'hf1', name: "Wagyu Gold Filet", price: 85.00, desc: "A5 Grade Wagyu with truffle butter and 24k gold flakes.", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop", tags: ["Food", "Fine Dining"] },
-                { id: 'hf2', name: "Lobster Thermidor", price: 65.00, desc: "Classic French preparation with creamy brandy sauce.", image: "https://images.unsplash.com/photo-1533682805518-48d1f5a8cd3a?w=400&h=400&fit=crop", tags: ["Seafood"] },
-            ]
-        },
-        {
-            name: "Getränke (Drinks)",
-            items: [
-                { id: 'hd1', name: "Midnight Neon Cocktail", price: 14.50, desc: "Blue Curacao, Vodka, Lime, Electric Glow Dust.", image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=400&h=300&fit=crop", tags: ["Drinks"] },
-                { id: 'hd2', name: "Green Emerald Mojito", price: 16.00, desc: "Premium Gin, Midori, Cucumber, Fresh Mint, Soda.", image: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop", tags: ["Drinks"] }
-            ]
-        },
-        {
-            name: "Desserts",
-            items: [
-                { id: 'hde1', name: "Golden Lava Chocolate Cake", price: 18.00, desc: "Warm chocolate cake with a molten gold-dusted center, served with vanilla ice cream.", image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&h=400&fit=crop", tags: ["Dessert", "Sweet"] },
-                { id: 'hde2', name: "Pistachio Panna Cotta", price: 14.00, desc: "Creamy panna cotta infused with premium Sicilian pistachios.", image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&h=400&fit=crop", tags: ["Dessert", "Sweet"] }
-            ]
-        }
-    ];
-
-    const diningCategories = [
-        {
-            name: "Speisen (Food)",
-            items: [
-                { id: 'df1', name: "Wagyu Gold Filet", price: 85.00, desc: "A5 Grade Wagyu with truffle butter and 24k gold flakes.", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop", tags: ["Food", "Fine Dining"] },
-                { id: 'df2', name: "Lobster Thermidor", price: 65.00, desc: "Classic French preparation with creamy brandy sauce.", image: "https://images.unsplash.com/photo-1533682805518-48d1f5a8cd3a?w=400&h=400&fit=crop", tags: ["Seafood"] },
-                { id: 'df3', name: "Truffle Tagliatelle", price: 32.00, desc: "Handmade pasta, fresh black truffles, aged parmesan cream.", image: "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=400&h=400&fit=crop", tags: ["Food", "Vegetarian"] }
-            ]
-        },
-        {
-            name: "Getränke (Drinks)",
-            items: [
-                { id: 'dd1', name: "Midnight Neon Cocktail", price: 14.50, desc: "Blue Curacao, Vodka, Lime, Electric Glow Dust.", image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=400&h=300&fit=crop", tags: ["Drinks"] },
-                { id: 'dd2', name: "Green Emerald Mojito", price: 16.00, desc: "Premium Gin, Midori, Cucumber, Fresh Mint, Soda.", image: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop", tags: ["Drinks"] },
-                { id: 'dd3', name: "Chablis Premier Cru 0.75L", price: 75.00, desc: "Crisp French white wine, perfect with seafood.", image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=400&fit=crop", tags: ["Drinks", "Wine"] }
-            ]
-        },
-        {
-            name: "Desserts",
-            items: [
-                { id: 'de1', name: "Golden Lava Chocolate Cake", price: 18.00, desc: "Warm chocolate cake with a molten gold-dusted center, served with vanilla ice cream.", image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&h=400&fit=crop", tags: ["Dessert", "Sweet"] },
-                { id: 'de2', name: "Pistachio Panna Cotta", price: 14.00, desc: "Creamy panna cotta infused with premium Sicilian pistachios.", image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&h=400&fit=crop", tags: ["Dessert", "Sweet"] }
-            ]
-        }
-    ];
-
-    const stadiumCategories = [
-        {
-            name: "Matchday Tickets",
-            items: [
-                { id: 'st1', name: "Executive VIP Box", price: 2500.00, desc: "Private suite for 12, premium catering, and field-side balcony access.", image: "https://images.unsplash.com/photo-1510204819217-1d35ae4489ae?w=400&h=400&fit=crop", tags: ["VIP"] },
-                { id: 'st2', name: "Field-Side Premium", price: 450.00, desc: "Front row seats with lounge access and unlimited drinks.", image: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=400&h=400&fit=crop", tags: ["Premium"] },
-            ]
-        }
-    ];
-
-    const clubCategories = [
-        {
-            name: "Event-Tickets & Eintrittskarten",
-            items: dynamicClubTickets.length > 0 ? dynamicClubTickets : [
-                { id: 't1', name: "Standard Eintrittskarte", price: 20.00, desc: "Standard entry ticket to the club. Includes one free welcome drink.", image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=400&fit=crop", tags: ["Ticket", "Fast-Lane"] },
-                { id: 't2', name: "VIP Eintrittskarte (Fast-Lane)", price: 45.00, desc: "Fast-lane entry, VIP lounge access, and premium wardrobe service.", image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop", tags: ["VIP", "Fast-Lane"] },
-                { id: 't3', name: "Backstage Experience Pass", price: 150.00, desc: "All-access backstage entry, artist meet & greet (if applicable), and open bar access.", image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop", tags: ["VIP Gold", "All-Access"] }
-            ]
-        },
-        {
-            name: "VIP Bottle Service",
-            items: [
-                { id: 'b1', name: "Belvedere Vodka 0.75L", price: 180.00, desc: "Served on ice with 4 mixers of your choice (Red Bull, Tonic, or Cola).", image: "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=400&h=400&fit=crop", tags: ["Bottle Service"] },
-                { id: 'b2', name: "Dom Pérignon Champagne", price: 380.00, desc: "Prestige Cuvée, served perfectly chilled with fresh strawberries.", image: "https://images.unsplash.com/photo-1594487523522-f282d9c493ab?w=400&h=400&fit=crop", tags: ["Prestige", "Champagne"] }
-            ]
-        },
-        {
-            name: "Midnight Beverages",
-            items: [
-                { id: 'c1', name: "Midnight Neon Cocktail", price: 14.50, desc: "Blue Curacao, Vodka, Lime, Electric Glow Dust.", image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=400&h=300&fit=crop", tags: ["Drinks"] },
-                { id: 'c2', name: "Green Emerald Mojito", price: 16.00, desc: "Premium Gin, Midori, Cucumber, Fresh Mint, Soda.", image: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop", tags: ["Drinks"] }
-            ]
-        }
-    ];
+    const hotelCategories = [];
+    const diningCategories = [];
+    const stadiumCategories = [];
+    const clubCategories = [];
 
     // Dynamic hotel categories helper to resolve from local room inventory
     const getDynamicHotelCategories = (roomsList) => {
@@ -369,15 +282,7 @@ const VenueMenuPage = () => {
         }
         
         if (!Array.isArray(roomsToUse) || roomsToUse.length === 0) {
-            roomsToUse = [
-                { id: '101', name: 'Deluxe King Suite', tier: 'Deluxe', status: 'occupied', guest: 'Julian R.', price: 280, cleanStatus: 'clean', bedLayout: 'Double' },
-                { id: '102', name: 'Deluxe King Suite', tier: 'Deluxe', status: 'available', guest: null, price: 280, cleanStatus: 'clean', bedLayout: 'Double' },
-                { id: '103', name: 'Spa Balcony Suite', tier: 'Premium', status: 'cleaning', guest: null, price: 420, cleanStatus: 'cleaning', bedLayout: 'Double' },
-                { id: '104', name: 'Spa Balcony Suite', tier: 'Premium', status: 'occupied', guest: 'Sarah J.', price: 420, cleanStatus: 'clean', bedLayout: 'Double' },
-                { id: '201', name: 'Emerald Suite', tier: 'Executive', status: 'available', guest: null, price: 650, cleanStatus: 'clean', bedLayout: 'Double' },
-                { id: '202', name: 'Emerald Suite', tier: 'Executive', status: 'occupied', guest: 'Elena M.', price: 650, cleanStatus: 'clean', bedLayout: 'Double' },
-                { id: '301', name: 'Zenith Penthouse', tier: 'Presidential', status: 'available', guest: null, price: 1800, cleanStatus: 'clean', bedLayout: 'Triple' }
-            ];
+            roomsToUse = []; // CLEANED MOCK DATA
         }
 
         const uniqueCategories = {};
@@ -415,15 +320,7 @@ const VenueMenuPage = () => {
         return currentHotelCategories;
     };
 
-    const defaultCategories = isStadium ? stadiumCategories : isClub ? clubCategories : isHotel ? getDynamicHotelCategories() : isDining ? diningCategories : [
-        {
-            name: "Signature Cocktails",
-            items: [
-                { id: 'c1', name: "Midnight Neon", price: 14.50, desc: "Blue Curacao, Vodka, Lime, Electric Dust", image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=400&h=300&fit=crop", tags: ["Drinks"] },
-                { id: 'c2', name: "Green Emerald", price: 16.00, desc: "Gin, Midori, Cucumber, Mint, Soda", image: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop", tags: ["Drinks"] },
-            ]
-        }
-    ];
+    const defaultCategories = isStadium ? stadiumCategories : isClub ? clubCategories : isHotel ? getDynamicHotelCategories() : isDining ? diningCategories : [];
 
     const [menuCategories, setMenuCategories] = useState(defaultCategories);
 
