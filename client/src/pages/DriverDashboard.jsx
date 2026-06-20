@@ -798,15 +798,30 @@ const DriverDashboard = () => {
             }
         };
 
-        socket.on('new-ride-request', handleNewRequest);
+        socket.on('new-ride-request', handleNewRequest); // Legacy global broadcast
+        socket.on('targeted-ride-request', handleNewRequest); // Smart dispatch engine
         socket.on('active-requests-list', handleRequestsList);
         
         // Fetch any missions already in the air
         socket.emit('get-active-requests');
 
+        let geoWatchId;
+        if (isOnline) {
+            geoWatchId = navigator.geolocation.watchPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    socket.emit('driver-location-update', { lat: latitude, lng: longitude });
+                },
+                (error) => console.error('Error watching location:', error),
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            );
+        }
+
         return () => {
             socket.off('new-ride-request', handleNewRequest);
+            socket.off('targeted-ride-request', handleNewRequest);
             socket.off('active-requests-list', handleRequestsList);
+            if (geoWatchId) navigator.geolocation.clearWatch(geoWatchId);
         };
     }, [socket, isOnline, incomingRide, driverDocs, vehicleDocs, vehicleInfo, user]);
 
@@ -3381,7 +3396,12 @@ const DriverDashboard = () => {
                                     <motion.button
                                         whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.1)" }}
                                         whileTap={{ scale: 0.98 }}
-                                        onClick={() => setIncomingRide(null)}
+                                        onClick={() => {
+                                            if (socket && incomingRide) {
+                                                socket.emit('reject-ride', { passengerId: incomingRide.passengerId || incomingRide.id });
+                                            }
+                                            setIncomingRide(null);
+                                        }}
                                         className="flex-1 py-5 bg-white/5 border border-white/20 rounded-2xl font-black text-xs uppercase tracking-widest transition-all text-white/70 hover:text-white"
                                     >
                                         Dismiss

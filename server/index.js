@@ -461,6 +461,56 @@ function getDistance(lat1, lon1, lat2, lon2) {
 }
 
 let activeRequests = [];
+let realDrivers = new Map(); // socket.id -> { id, socket, lat, lng, status }
+
+// Smart Dispatch Engine Loop
+setInterval(() => {
+    const now = Date.now();
+    activeRequests.forEach(req => {
+        if (req.status !== 'searching') return;
+
+        // If currently targeted to a driver, check timeout
+        if (req.targetDriverId) {
+            if (now - req.targetAssignedAt > 10000) { // 10 seconds timeout
+                req.rejectedBy.push(req.targetDriverId);
+                req.targetDriverId = null;
+            } else {
+                // Still waiting for this driver
+                return;
+            }
+        }
+
+        // Need to find a new driver
+        let closestDriver = null;
+        let closestDistance = Infinity;
+
+        for (const [socketId, driver] of realDrivers.entries()) {
+            if (driver.status !== 'available') continue;
+            if (req.rejectedBy.includes(socketId)) continue;
+            
+            const dist = getDistance(req.coords.lat, req.coords.lng, driver.lat, driver.lng);
+            if (dist <= req.radius && dist < closestDistance) {
+                closestDistance = dist;
+                closestDriver = driver;
+            }
+        }
+
+        if (closestDriver) {
+            // Assign to this driver
+            req.targetDriverId = closestDriver.id;
+            req.targetAssignedAt = now;
+            closestDriver.socket.emit('targeted-ride-request', req);
+        } else {
+            // No available drivers in radius
+            if (req.radius === 5 && !req.askedForExpansion) {
+                req.status = 'waiting_expansion';
+                req.askedForExpansion = true;
+                // Broadcast to find the specific passenger
+                io.emit('no-drivers-found', { passengerId: req.passengerId });
+            }
+        }
+    });
+}, 1000);
 
 // Socket handshake token validation (compatible yet secure)
 io.use((socket, next) => {
@@ -485,9 +535,14 @@ io.on('connection', (socket) => {
     // Send the current global pricing to the newly connected client immediately
     socket.emit('update-pricing', globalPricing);
 
-    // Fetch initial list of active requests
-    socket.on('get-active-requests', () => {
-        socket.emit('active-requests-list', activeRequests);
+    socket.on('driver-location-update', (coords) => {
+        realDrivers.set(socket.id, {
+            id: socket.id,
+            socket: socket,
+            lat: coords.lat,
+            lng: coords.lng,
+            status: 'available'
+        });
     });
 
     socket.on('ride-request', (request) => {
@@ -503,7 +558,13 @@ io.on('connection', (socket) => {
             capacity: request.capacity || 3,
             price: request.price || 24.50,
             paymentType: request.paymentType || 'Digital',
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            radius: 5,
+            rejectedBy: [],
+            status: 'searching',
+            targetDriverId: null,
+            targetAssignedAt: null,
+            askedForExpansion: false
         };
 
         // Check if request is already in list
@@ -511,6 +572,37 @@ io.on('connection', (socket) => {
         if (!exists) {
             activeRequests.push(requestData);
         }
+        
+        io.emit('active-requests-list', activeRequests);
+        console.log('Added ride request to dispatch engine. Active list count:', activeRequests.length);
+    });
+
+    socket.on('reject-ride', (data) => {
+        const { passengerId } = data;
+        const req = activeRequests.find(r => r.passengerId === passengerId);
+        if (req) {
+            req.rejectedBy.push(socket.id);
+            if (req.targetDriverId === socket.id) {
+                req.targetDriverId = null; // Free it up instantly
+            }
+        }
+    });
+
+    socket.on('expand-search-radius', (data) => {
+        const req = activeRequests.find(r => r.passengerId === data.passengerId);
+        if (req) {
+            req.radius = 10;
+            req.price = (parseFloat(req.price) + 3.00).toFixed(2);
+            req.status = 'searching';
+        }
+    });
+
+    socket.on('wait-in-radius', (data) => {
+        const req = activeRequests.find(r => r.passengerId === data.passengerId);
+        if (req) {
+            req.status = 'searching'; // Will keep trying 5km without reprompting
+        }
+    });  }
 
         // Broadcast to all driver dashboards
         io.emit('new-ride-request', requestData);
@@ -613,6 +705,7 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('Client disconnected');
+        realDrivers.delete(socket.id);
     });
 });
 

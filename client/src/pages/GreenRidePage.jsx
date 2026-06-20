@@ -196,6 +196,7 @@ const GreenRidePage = () => {
     const [targetDriver, setTargetDriver] = useState(null); // The locked driver for the next whistle
     const [showWhistleConfirm, setShowWhistleConfirm] = useState(null);
     const [poolPassengers, setPoolPassengers] = useState(3); // Default to 3, range 2-5
+    const [showExpansionPrompt, setShowExpansionPrompt] = useState(false);
     
     // Live Location State
     const [pickupCoords, setPickupCoords] = useState([50.1109, 8.6821]); // Frankfurt Center
@@ -592,10 +593,13 @@ const GreenRidePage = () => {
         };
 
         const handleRideCanceled = (data) => {
-            console.log('Ride canceled by driver', data);
+            console.log('Ride canceled:', data);
             setRideStatus('idle');
-            setDriverInfo(null);
-            alert('⚠️ Your driver had to cancel the ride. Please request a new one.');
+        };
+
+        const handleNoDrivers = (data) => {
+            console.log('No drivers in 5km. Prompting expansion:', data);
+            setShowExpansionPrompt(true);
         };
 
         socket.on('ride-accepted', handleRideAccepted);
@@ -603,6 +607,7 @@ const GreenRidePage = () => {
         socket.on('start-ride', handleStartRide);
         socket.on('complete-ride', handleCompleteRide);
         socket.on('ride-canceled', handleRideCanceled);
+        socket.on('no-drivers-found', handleNoDrivers);
 
         return () => {
             socket.off('ride-accepted', handleRideAccepted);
@@ -610,6 +615,7 @@ const GreenRidePage = () => {
             socket.off('start-ride', handleStartRide);
             socket.off('complete-ride', handleCompleteRide);
             socket.off('ride-canceled', handleRideCanceled);
+            socket.off('no-drivers-found', handleNoDrivers);
         };
     }, [socket, setDriverInfo, setRideStatus]);
 
@@ -2626,6 +2632,55 @@ const GreenRidePage = () => {
                                     className="h-12 rounded-2xl text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-60 hover:text-[var(--text-primary)] transition-colors"
                                 >
                                     Cancel Mission
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Expansion Prompt Modal */}
+            <AnimatePresence>
+                {showExpansionPrompt && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, y: 20 }} 
+                            animate={{ scale: 1, y: 0 }} 
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="w-full max-w-sm bg-[var(--bg-secondary)] border border-orange-500/30 rounded-[2rem] p-8 shadow-2xl space-y-6 text-center"
+                        >
+                            <div className="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto border border-orange-500/20">
+                                <MapPin size={32} className="text-orange-500" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-black italic uppercase text-white mb-2 tracking-wide">No Drivers in 5km</h3>
+                                <p className="text-xs text-[var(--text-secondary)] opacity-80 leading-relaxed">
+                                    We couldn't find a driver nearby. Would you like to expand the search radius to 10km for a €3.00 surcharge to attract drivers from further away?
+                                </p>
+                            </div>
+                            <div className="flex flex-col gap-3 mt-4">
+                                <button
+                                    onClick={() => {
+                                        setShowExpansionPrompt(false);
+                                        if (socket) socket.emit('expand-search-radius', { passengerId: user?.email || `guest-${Date.now()}` });
+                                    }}
+                                    className="w-full bg-[var(--text-primary)] text-black font-black uppercase text-xs tracking-widest py-4 rounded-xl hover:opacity-90"
+                                >
+                                    Expand to 10km (+€3.00)
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setShowExpansionPrompt(false);
+                                        if (socket) socket.emit('wait-in-radius', { passengerId: user?.email || `guest-${Date.now()}` });
+                                    }}
+                                    className="w-full bg-transparent border border-white/10 text-white font-bold uppercase text-[10px] tracking-wider py-4 rounded-xl hover:bg-white/5"
+                                >
+                                    Keep waiting in 5km
                                 </button>
                             </div>
                         </motion.div>
