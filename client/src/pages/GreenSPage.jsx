@@ -264,9 +264,7 @@ const GreenSPage = () => {
     const [isSupportOpen, setIsSupportOpen] = useState(false);
     const [supportType, setSupportType] = useState('feedback'); // 'feedback' or 'complaint'
     const [chatInput, setChatInput] = useState('');
-    const [messages, setMessages] = useState([
-        { id: 1, text: "Welcome to Green Support Terminal. How can we assist your operation tonight?", sender: 'admin', time: '20:46' }
-    ]);
+    const [messages, setMessages] = useState([]);
 
     const handleSendMessage = () => {
         if (!chatInput.trim()) return;

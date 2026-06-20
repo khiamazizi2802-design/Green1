@@ -27,9 +27,7 @@ const MyProfilePage = () => {
         }
     }, [user]);
 
-    const [mockComplaints, setMockComplaints] = useState([
-        { id: 'GRN-421', business: 'Skyline Bar', reason: 'Unsafe Driving Report', date: '02.05.2026', status: 'Active' },
-    ]);
+    const [mockComplaints, setMockComplaints] = useState([]);
 
     const [activeTab, setActiveTab] = useState('posts');
     const [showRequests, setShowRequests] = useState(false);

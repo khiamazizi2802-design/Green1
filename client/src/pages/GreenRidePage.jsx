@@ -154,9 +154,7 @@ const GreenRidePage = () => {
     const [selectedPayment, setSelectedPayment] = useState({ name: 'Mastercard', icon: CreditCard, label: 'MC •••• 4242' });
     const [showTopNotification, setShowTopNotification] = useState(false);
     const [showChat, setShowChat] = useState(false);
-    const [chatMessages, setChatMessages] = useState([
-        { sender: 'driver', text: "I'm on my way! traffic is light.", timestamp: new Date() }
-    ]);
+    const [chatMessages, setChatMessages] = useState([]);
     const [messageInput, setMessageInput] = useState('');
     const [whistleEffectActive, setWhistleEffectActive] = useState(false);
     const [rating, setRating] = useState(0);
@@ -180,12 +178,7 @@ const GreenRidePage = () => {
     const [endTripReason, setEndTripReason] = useState(null);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [feedbackText, setFeedbackText] = useState('');
-    const [userPaymentMethods, setUserPaymentMethods] = useState([
-        { id: 'cash', name: 'Cash', icon: Banknote, color: 'text-gray-900', label: 'Pay at destination' },
-        { id: 'default', name: 'Mastercard', icon: CreditCard, color: 'text-[var(--text-primary)]', label: 'MC •••• 4242' },
-        { id: 'paypal', name: 'PayPal', icon: Globe, color: 'text-blue-500', label: 'alex.wallet@pay.me' },
-        { id: 'revolut', name: 'Revolut', icon: Smartphone, color: 'text-indigo-400', label: 'Rev @alex_grn' }
-    ]);
+    const [userPaymentMethods, setUserPaymentMethods] = useState([]);
     const [isMiniMode, setIsMiniMode] = useState(false);
     const [sheetY, setSheetY] = useState(0);
     const [cardForm, setCardForm] = useState({ name: '', number: '', expiry: '', cvv: '' });
