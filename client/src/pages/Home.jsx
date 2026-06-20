@@ -131,9 +131,7 @@ const Home = () => {
     const [profileSubView, setProfileSubView] = useState(null); // null, 'account', 'history', 'help'
     const [helpSubView, setHelpSubView] = useState(null); // null, 'chat', 'dsgvo', 'app', 'email', 'delete_account'
     const [serviceDetailView, setServiceDetailView] = useState(null); // null, 'trips', 'tickets', 'rooms', 'order', 'waiter'
-    const [chatMessages, setChatMessages] = useState([
-        { sender: 'ai', text: `Hello! How can I assist you with your active tickets, trips, or venue orders today?` }
-    ]);
+    const [chatMessages, setChatMessages] = useState([]);
     const [chatInput, setChatInput] = useState('');
     const [isAiTyping, setIsAiTyping] = useState(false);
 
@@ -249,15 +247,9 @@ const Home = () => {
         }, 1200);
     };
     const [isEditingProfile, setIsEditingProfile] = useState(false);
-    const [paymentMethods, setPaymentMethods] = useState([
-        { id: 1, type: 'Credit Card', provider: 'Mastercard', last4: '4242 4242 4242 4242', icon: CreditCard, name: 'Alex Passenger', expiry: '12/26', cvv: '123', status: 'Active' },
-        { id: 2, type: 'Bank Account', provider: 'Deutsche Bank', iban: 'DE91 1007 0000 1234 5678 90', bic: 'DEUTDEBB', expiry: '01/30', name: 'Alex Passenger', status: 'Active', icon: Landmark },
-        { id: 3, type: 'Digital Wallet', provider: 'PayPal', email: 'alex.p@uplink.net', icon: Shield, status: 'Active' },
-        { id: 4, type: 'Cash', provider: 'Physical Cash', status: 'Always Active', icon: Coins },
-    ]);
+    const [paymentMethods, setPaymentMethods] = useState([]);
     const [editingPaymentId, setEditingPaymentId] = useState(null);
     const [walletStats, setWalletStats] = useState({
-        totalPaid: 1240.50,
         totalSaved: 312.20
     });
 

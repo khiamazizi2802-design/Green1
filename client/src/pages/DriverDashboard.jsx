@@ -552,39 +552,20 @@ const DriverDashboard = () => {
                 phoneNumber: '+49 176 12345678',
                 avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=Mick`
             });
-            setTripHistory([
-                { id: 'TRIP-1024', date: '2026-03-08 14:20', from: 'Frankfurt Airport', to: 'Mainz Hbf', amount: 42.50, status: 'completed', distance: '32 km' },
-                { id: 'TRIP-1025', date: '2026-03-08 16:45', from: 'Zeil 10', to: 'Bornheim', amount: 18.20, status: 'completed', distance: '5.4 km' },
-                { id: 'TRIP-1026', date: '2026-03-09 09:15', from: 'Sachsenhausen', to: 'Airport Terminal 1', amount: 38.00, status: 'completed', distance: '14.2 km' },
-                { id: 'TRIP-1027', date: '2026-03-09 17:30', from: 'Messe Frankfurt', to: 'Westend', amount: 22.00, status: 'completed', distance: '6.2 km' },
-                { id: 'TRIP-1028', date: '2026-03-01 11:15', from: 'Wiesbaden Hbf', to: 'Frankfurt Hbf', amount: 55.00, status: 'completed', distance: '40 km' },
-                { id: 'TRIP-1029', date: '2026-02-14 20:00', from: 'Bockenheim', to: 'Nordend', amount: 15.50, status: 'completed', distance: '4.8 km' }
-            ]);
-            setInboxMessages([
-                { id: 1, title: 'New Bonus Program', content: 'Earn 20% more for rides between 18:00 and 22:00 starting next Monday!', date: 'Today' },
-                { id: 2, title: 'Frankfurt Auto Show', content: 'High demand expected near the Messe area. Prepare for increased surge pricing.', date: 'Yesterday' }
-            ]);
+            setTripHistory([]);
+            setInboxMessages([]);
             setStats({
-                day: { earnings: 142.50, trips: 12, hours: 6.5, rating: 4.8 },
-                week: { earnings: 840.20, trips: 64, hours: 38.2, rating: 4.9 },
-                month: { earnings: 3250.00, trips: 245, hours: 162, rating: 4.85 },
-                year: { earnings: 38540.00, trips: 2840, hours: 1920, rating: 4.88 }
+                day: { earnings: 0.00, trips: 0, hours: 0, rating: 0 },
+                week: { earnings: 0.00, trips: 0, hours: 0, rating: 0 },
+                month: { earnings: 0.00, trips: 0, hours: 0, rating: 0 },
+                year: { earnings: 0.00, trips: 0, hours: 0, rating: 0 }
             });
             
-            const demoDocs = [
-                { id: 'avatar', name: 'Profile Photo', status: 'missing', requirement: 'High-resolution headshot for driver profile ID', file: null },
-                { id: 'license', name: 'Driving License', status: 'verified', requirement: 'Class B EU License (Front & Back)', file: null },
-                { id: 'idcard', name: 'Passport / ID Card', status: 'missing', requirement: 'Government-issued biometric passport or national identity card', file: null },
-                { id: 'pschein', name: 'P-Schein (Passenger Permit)', status: 'missing', requirement: 'Passenger Transport License (Personenbeförderungsschein)', file: null },
-                { id: 'terms', name: 'Terms & Conditions', status: 'missing', requirement: 'Accept Platform Partnership & Data Usage Agreement', file: null }
-            ];
+            const demoDocs = [];
             setDriverDocs(demoDocs);
             localStorage.setItem('driver_compliance_docs', JSON.stringify(demoDocs));
 
-            const demoVehicleDocs = [
-                { id: 'tuv', name: 'HU/AU (TÜV)', status: 'verified', requirement: 'Valid main inspection certificate' },
-                { id: 'insurance', name: 'Commercial Insurance', status: 'missing', requirement: 'PBefG-compliant passenger insurance coverage' }
-            ];
+            const demoVehicleDocs = [];
             setVehicleDocs(demoVehicleDocs);
             localStorage.setItem('driver_vehicle_docs', JSON.stringify(demoVehicleDocs));
             

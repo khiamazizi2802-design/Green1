@@ -826,33 +826,13 @@ const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtoco
     };
 
     // Live Webhook Event Logs Terminal
-    const [stripeLiveWebhookEvents, setStripeLiveWebhookEvents] = useState([
-        { time: '21:05:33', level: 'SYSTEM', msg: '🔐 Stripe API Connect Session active on port 443' },
-        { time: '21:04:42', level: 'WEBHOOK', msg: 'Event payment_intent.succeeded received for tx ch_3M4d99FKe821' },
-        { time: '21:04:42', level: 'ROUTING', msg: 'Connect Split: routed 20.91 € net to partner acct_fleet_102 (absorbed card fee 0.59 €)' },
-        { time: '21:04:42', level: 'PLATFORM', msg: 'Secured flat step provision of 3.00 € for Jordan Executive' },
-        { time: '21:04:42', level: 'FINANZAMT', msg: 'Stored legal B2B invoice INV-2026-0881 under BDSG / GwG §6' },
-        { time: '20:46:01', level: 'WEBHOOK', msg: 'Event payment_intent.succeeded received for tx ch_3M4d88FKe190' },
-        { time: '20:46:01', level: 'ROUTING', msg: 'Connect Split: routed 140.15 € net to partner acct_stadium_824 (absorbed card fee 2.35 €)' },
-        { time: '20:46:01', level: 'PLATFORM', msg: 'Secured flat 5% ticket commission of 7.50 €' }
-    ]);
+    const [stripeLiveWebhookEvents, setStripeLiveWebhookEvents] = useState([]);
 
     // Live Settlements Ledger Array
-    const [liveSplitsLedger, setLiveSplitsLedger] = useState([
-        { id: 1, time: '21:02:44', tx: 'ch_3M4d99FKe821', partner: 'acct_fleet_102', partnerName: 'Hessen EcoFleet', client: 'Marcus G.', total: '24.50', prov: '3.00', fee: '0.59', tag: '🚗 Fleet Trip (Base Step)', status: 'INSTANT SPLIT ⚡', inv: 'INV-2026-0881', category: 'transport', date: '2026-05-23' },
-        { id: 2, time: '20:45:12', tx: 'ch_3M4d88FKe190', partner: 'acct_stadium_824', partnerName: 'Green Stadium Arena', client: 'Hansi M.', total: '150.00', prov: '7.50', fee: '2.35', tag: '🎟️ VIP Tickets (5% Commission)', status: 'INSTANT SPLIT ⚡', inv: 'INV-2026-0882', category: 'events', date: '2026-05-23' },
-        { id: 3, time: '19:12:05', tx: 'ch_3M4d77FKe402', partner: 'acct_hotel_913', partnerName: 'Grand Frankfurt Hotel', client: 'Sophie K.', total: '240.00', prov: '12.00', fee: '3.61', tag: '🏨 Hotel Suite (5% Commission)', status: 'INSTANT SPLIT ⚡', inv: 'INV-2026-0883', category: 'hotels', date: '2026-05-23' },
-        { id: 4, time: '18:55:30', tx: 'ch_3M4d66FKe331', partner: 'acct_restaurant_495', partnerName: 'Saffron Fine Dining', client: 'Elena V.', total: '85.00', prov: '0.00', fee: '1.44', tag: '🍔 Food & Drinks (0% Platform Fee)', status: 'VENUE PAYOUT 🍹', inv: 'N/A (Direct Sales)', category: 'clubs', date: '2026-05-23' }
-    ]);
+    const [liveSplitsLedger, setLiveSplitsLedger] = useState([]);
 
     // Live Connected Partner Accounts
-    const [stripeConnectedPartners, setStripeConnectedPartners] = useState([
-        { id: 'acct_fleet_102', name: 'Hessen EcoFleet', manager: 'Marcus G.', industry: 'Logistics', status: 'Active', balance: 4120.50, grossContribution: 38400.00, iban: 'DE44 5002 0000 1294 88', swift: 'HEFLEETDEM1X', commissionModel: 'Progressive Step (3€ Base + 2€ per 30€)', totalPaidOut: 34279.50 },
-        { id: 'acct_restaurant_495', name: 'Saffron Fine Dining', manager: 'Elena V.', industry: 'Restaurant', status: 'Active', balance: 1480.00, grossContribution: 22120.00, iban: 'DE91 2201 9922 4481 00', swift: 'SAFFRONDEM2X', commissionModel: '0% Restaurant Sales Policy', totalPaidOut: 20640.00 },
-        { id: 'acct_hotel_913', name: 'Grand Frankfurt Hotel', manager: 'Sophie K.', industry: 'Hospitality', status: 'Active', balance: 5800.00, grossContribution: 54300.00, iban: 'DE33 4004 1122 3344 55', swift: 'GRANDDEM3X', commissionModel: 'Flat 5.0% Platform Fee', totalPaidOut: 48500.00 },
-        { id: 'acct_stadium_824', name: 'Green Stadium Arena', manager: 'Hansi M.', industry: 'Events', status: 'Active', balance: 9200.00, grossContribution: 28020.00, iban: 'DE22 9009 5544 3322 11', swift: 'STADIUMDEM4X', commissionModel: 'Flat 5.0% Booking Fee', totalPaidOut: 18820.00 },
-        { id: 'acct_fleet_044', name: 'Berlin VIP Shuttle', manager: 'Sven Weber', industry: 'Logistics', status: 'Active', balance: 2940.00, grossContribution: 16120.00, iban: 'DE77 1001 8844 9922 11', swift: 'BERLINDEM5X', commissionModel: 'Progressive Step (3€ Base + 2€ per 30€)', totalPaidOut: 13180.00 }
-    ]);
+    const [stripeConnectedPartners, setStripeConnectedPartners] = useState([]);
 
     // Live Passive Earnings Ticker
     const [todayEarnings, setTodayEarnings] = useState(() => parseFloat(localStorage.getItem('green_admin_today_earnings')) || 642.45);
@@ -1107,21 +1087,9 @@ const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtoco
     // --- DSGVO COMPLIANCE & AI COMPLIANCE/SALES AGENT STATES ---
     const [anonymizedModeActive, setAnonymizedModeActive] = useState(true);
     const [isScoutThinking, setIsScoutThinking] = useState(false);
-    const [scoutInput, setScoutInput] = useState('');
-    const [scoutMessages, setScoutMessages] = useState([
-        { 
-            role: 'agent', 
-            text: `### 🛡️ KHIAM GREEN COMPLIANCE & SALES SCOUT ONLINE\n\nHello Director. I have initialized the **DSGVO Anonymizer Shield** in **ACTIVE** mode to ensure all guest telemetry remains fully compliant under European Data Protection (DSGVO/GDPR) and BaFin frameworks.\n\nRaw names, specific unit routes, and venue names have been safely mapped to dynamic secure hashes in the interface.\n\n**Operational Directives:**\n- I can analyze this real-time sentiment telemetry and draft highly optimized, premium-branded sales pitches to help you scale/sell platform integrations to **luxury hotel concierges**, **fleet managers**, or **vip venues**.\n- Use the quick action buttons below or query me directly in the secure command terminal!`, 
-            time: new Date().toLocaleTimeString().substring(0, 5)
-        }
-    ]);
+    const [scoutMessages, setScoutMessages] = useState([]);
 
-    const rawFeedbackItems = isDemo ? [
-        { type: 'Fleet', id: 'DR-492', location: 'Frankfurt Sector 2', date: '2024-05-01', time: '22:14', rating: 1, text: 'Driver was late and the vehicle cleanliness was subpar for the Executive tier.', user: 'Marcus G.' },
-        { type: 'Restaurant', id: 'Midnight Neon', location: 'Zeil District', date: '2024-05-01', time: '23:45', rating: 5, text: 'Incredible atmosphere and the fast-track entry via the app worked flawlessly.', user: 'Elena V.' },
-        { type: 'Stadium', id: 'Commerzbank Arena', location: 'South Gate', date: '2024-05-01', time: '19:30', rating: 4, text: 'Shuttle frequency was high, but boarding needs better organization.', user: 'Hansi M.' },
-        { type: 'Hotel', id: 'Grand Frankfurt', location: 'Main River', date: '2024-04-30', time: '09:12', rating: 5, text: 'Seamless checkout experience. The Director level concierge was helpful.', user: 'Sophie K.' }
-    ] : [];
+    const rawFeedbackItems = [];
 
     const anonymizeFeedback = (items, active) => {
         if (!active) return items;
@@ -1438,11 +1406,7 @@ billing payouts are required.
     const [isAssistantExpanded, setIsAssistantExpanded] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [activeAgent, setActiveAgent] = useState('financial');
-    const [neuralInsights, setNeuralInsights] = useState([
-        { id: 'INS-01', type: 'fraud', title: 'GPS Manipulation Detected', target: 'Driver D-404', reason: 'System detected simulated coordinates matching known spoofing patterns.', law: 'PBefG §49 (Operating outside territory)', severity: 'high', status: 'pending' },
-        { id: 'INS-02', type: 'compliance', title: 'V5C Authenticity Warning', target: 'Partner P-102', reason: 'Metadata mismatch in uploaded Vehicle Registration. Possible forgery.', law: 'StVZO §13 (Document Integrity)', severity: 'critical', status: 'pending' },
-        { id: 'INS-03', type: 'legal', title: 'New EU Data Directive', target: 'System Policy', reason: 'Amendment required for cross-border passenger data retention.', law: 'GDPR Art. 44-49', severity: 'medium', status: 'pending' }
-    ]);
+    const [neuralInsights, setNeuralInsights] = useState([]);
 
     useEffect(() => {
         if (!isDemo) {
