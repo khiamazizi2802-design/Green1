@@ -485,8 +485,17 @@ setInterval(() => {
         let closestDistance = Infinity;
 
         for (const [socketId, driver] of realDrivers.entries()) {
-            if (driver.status !== 'available') continue;
             if (req.rejectedBy.includes(socketId)) continue;
+
+            const isSharedRide = req.rideType === 'shared' || req.rideType === 'pool';
+
+            if (isSharedRide) {
+                // Shared rides ONLY go to available drivers who accept shared rides
+                if (driver.status !== 'available' || driver.acceptsShared === false) continue;
+            } else {
+                // Exclusive rides go to available drivers, OR busy drivers who don't have a queued ride yet
+                if (driver.status !== 'available' && (driver.status !== 'busy' || driver.queuedRideId)) continue;
+            }
             
             const dist = getDistance(req.coords.lat, req.coords.lng, driver.lat, driver.lng);
             if (dist <= req.radius && dist < closestDistance) {
@@ -535,14 +544,25 @@ io.on('connection', (socket) => {
     // Send the current global pricing to the newly connected client immediately
     socket.emit('update-pricing', globalPricing);
 
-    socket.on('driver-location-update', (coords) => {
+    socket.on('driver-location-update', (data) => {
+        const existing = realDrivers.get(socket.id) || {};
         realDrivers.set(socket.id, {
             id: socket.id,
             socket: socket,
-            lat: coords.lat,
-            lng: coords.lng,
-            status: 'available'
+            lat: data.lat,
+            lng: data.lng,
+            status: existing.status || 'available',
+            acceptsShared: existing.acceptsShared !== undefined ? existing.acceptsShared : true,
+            queuedRideId: existing.queuedRideId || null
         });
+    });
+
+    socket.on('update-shared-preference', (data) => {
+        const driver = realDrivers.get(socket.id);
+        if (driver) {
+            driver.acceptsShared = data.acceptsShared;
+            console.log(`Driver ${socket.id} shared preference: ${data.acceptsShared}`);
+        }
     });
 
     socket.on('ride-request', (request) => {
@@ -614,6 +634,17 @@ io.on('connection', (socket) => {
         console.log('Ride accepted by driver:', data);
         const { passengerId, driverName } = data;
 
+        const driver = realDrivers.get(socket.id);
+        if (driver) {
+            if (driver.status === 'busy') {
+                // Queue the ride for later
+                driver.queuedRideId = passengerId;
+            } else {
+                // Make driver busy immediately
+                driver.status = 'busy';
+            }
+        }
+
         // Remove from active request list
         activeRequests = activeRequests.filter(r => r.passengerId !== passengerId);
         io.emit('active-requests-list', activeRequests);
@@ -648,6 +679,19 @@ io.on('connection', (socket) => {
 
     socket.on('complete-ride', (data) => {
         console.log('Complete ride notification received:', data);
+        
+        const driver = realDrivers.get(socket.id);
+        if (driver) {
+            if (driver.queuedRideId) {
+                // Driver finishes current ride, but has a queued ride. Promote to active busy.
+                // Driver dashboard should technically trigger `start-ride` for the queued one automatically or manually.
+                driver.queuedRideId = null;
+                driver.status = 'busy';
+            } else {
+                driver.status = 'available';
+            }
+        }
+
         io.emit('complete-ride', { passengerId: data.passengerId });
     });
 

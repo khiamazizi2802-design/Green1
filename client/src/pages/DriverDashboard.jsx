@@ -329,6 +329,8 @@ const DriverDashboard = () => {
     const [paymentNotify, setPaymentNotify] = useState(null); // { name: string, amount: number }
     const notifiedMissions = React.useRef(new Set());
     const [dismissingMission, setDismissingMission] = useState(null); // { id: string, customer: string }
+    const [acceptsShared, setAcceptsShared] = useState(true);
+    const [queuedMission, setQueuedMission] = useState(null);
 
     React.useEffect(() => {
         if (currentSequence.length === 0) {
@@ -777,17 +779,21 @@ const DriverDashboard = () => {
 
         const handleNewRequest = (request) => {
             console.log('Incoming Real-Time Request:', request);
-            setIncomingRide({
-                ...request,
-                customer: request.passengerName,
-                price: request.price || 24.50, 
-                basePrice: request.price || 24.50,
-                distance: '4.2 km',
-                coords: { lat: 50.115, lng: 8.685 },
-                isRealTime: true,
-                rideType: request.rideType || 'green',
-                capacity: request.capacity || 3,
-                paymentType: request.paymentType || 'Digital'
+            // Don't show if we already have an active mission AND a queued mission
+            setIncomingRide(prev => {
+                if (activeMissions.length > 0 && queuedMission) return prev;
+                return {
+                    ...request,
+                    customer: request.passengerName,
+                    price: request.price || 24.50,
+                    basePrice: request.price || 24.50,
+                    distance: '4.2 km',
+                    coords: { lat: 50.115, lng: 8.685 },
+                    isRealTime: true,
+                    rideType: request.rideType || 'green',
+                    capacity: request.capacity || 3,
+                    paymentType: request.paymentType || 'Digital'
+                };
             });
         };
 
@@ -801,6 +807,9 @@ const DriverDashboard = () => {
         socket.on('new-ride-request', handleNewRequest); // Legacy global broadcast
         socket.on('targeted-ride-request', handleNewRequest); // Smart dispatch engine
         socket.on('active-requests-list', handleRequestsList);
+
+        // Emit initial shared preference on connect
+        socket.emit('update-shared-preference', { acceptsShared });
         
         // Fetch any missions already in the air
         socket.emit('get-active-requests');
@@ -936,6 +945,19 @@ const DriverDashboard = () => {
                 passengerId: incomingRide.passengerId,
                 driverName: `${profileData.firstName} ${profileData.lastName}`.trim() || user?.name || "Expert Driver"
             });
+        }
+
+        if (activeMissions.length > 0) {
+            // Queue the mission if we are already busy
+            setQueuedMission({
+                ...incomingRide,
+                status: 'accepted',
+                id: incomingRide.id || `M-${Date.now()}`,
+                distance: incomingRide.distance || '4.2 km',
+                customer: incomingRide.customer || 'New Passenger'
+            });
+            setIncomingRide(null);
+            return;
         }
 
         const newMission = {
@@ -1077,14 +1099,19 @@ const DriverDashboard = () => {
             setTimeout(() => setPaymentNotify(null), 5000);
 
             // Clean up mission
-            const remaining = activeMissions.filter(m => m.id !== id);
-            setActiveMissions(remaining);
-            
-            // If it was the last mission, clear sequence
-            if (remaining.length === 0) {
-                setCurrentSequence([]);
-                setRideStatus('none');
-            }
+            setActiveMissions(prev => {
+                const remaining = prev.filter(m => m.id !== id);
+                
+                if (queuedMission) {
+                    remaining.push(queuedMission);
+                    setQueuedMission(null);
+                    setRideStatus('accepted');
+                } else if (remaining.length === 0) {
+                    setRideStatus('none');
+                    setRouteGeometry([]);
+                }
+                return remaining;
+            });
             return;
         }
         setCurrentSequence(prev => prev.filter(s => s.id !== id));
@@ -1417,6 +1444,18 @@ const DriverDashboard = () => {
                                             {isOnline ? 'Searching' : 'Offline'}
                                         </p>
                                         <h2 className="hidden md:block text-sm font-black italic uppercase tracking-tighter -mt-1">{user?.name}</h2>
+                                    </div>
+                                    <div className="flex items-center gap-2 border-l border-main pl-4 ml-2">
+                                        <span className="text-[9px] font-bold uppercase tracking-widest text-secondary">Shared</span>
+                                        <button 
+                                            onClick={toggleSharedRides}
+                                            className={`relative w-10 h-5 rounded-full transition-colors ${acceptsShared ? 'bg-brand' : 'bg-dark-700 border border-main'}`}
+                                        >
+                                            <motion.div 
+                                                animate={{ x: acceptsShared ? 20 : 2 }}
+                                                className={`absolute top-[2px] w-4 h-4 rounded-full ${acceptsShared ? 'bg-dark-900' : 'bg-gray-500'}`}
+                                            />
+                                        </button>
                                     </div>
                                 </>
                             )}
@@ -1974,6 +2013,41 @@ const DriverDashboard = () => {
                                         className="flex gap-2 overflow-x-auto no-scrollbar pb-1 px-2 min-h-[120px]"
                                     >
                                         <AnimatePresence mode="popLayout">
+                                            {queuedMission && (
+                                                <motion.div
+                                                    layout
+                                                    initial={{ opacity: 0, scale: 0.9, x: 20 }}
+                                                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                                                    exit={{ opacity: 0, scale: 0.8 }}
+                                                    className="flex-shrink-0 w-52 bg-brand/10 backdrop-blur-2xl border border-brand/40 rounded-[2.5rem] p-5 space-y-4 transition-all relative z-10"
+                                                >
+                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-brand text-dark-900 rounded-full shadow-lg shadow-brand/20">
+                                                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Up Next</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center mt-2">
+                                                        <div className="w-7 h-7 rounded-lg bg-btn-sec border border-brand/30 overflow-hidden">
+                                                            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${queuedMission.customer}`} className="w-full h-full" alt="" />
+                                                        </div>
+                                                        <div className="flex flex-col items-end">
+                                                            <span className="text-xs font-black italic">{queuedMission.customer}</span>
+                                                            <div className="flex items-center gap-1">
+                                                                <Star size={8} className="fill-brand text-brand" />
+                                                                <span className="text-[9px] font-bold text-muted">New</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-2 bg-dark-900/50 p-3 rounded-[1.5rem] border border-white/5">
+                                                        <div className="flex items-center gap-2">
+                                                            <MapPin size={10} className="text-brand" />
+                                                            <span className="text-[10px] font-bold truncate text-primary">{queuedMission.pickup}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="pt-2 border-t border-brand/20 flex justify-between items-center">
+                                                        <span className="text-[8px] font-black text-brand uppercase tracking-widest">Queued</span>
+                                                        <span className="text-[11px] font-black text-primary">{queuedMission.distance}</span>
+                                                    </div>
+                                                </motion.div>
+                                            )}
                                             {activeMissions.filter(m => m.status !== 'guest_in_car' && m.status !== 'collect_payment').map((m, i) => {
                                             const minutesInCar = Math.floor((Date.now() - m.startTime) / 60000);
                                             const isNextObjective = currentSequence.length > 0 && currentSequence[0].label.includes(m.customer);
