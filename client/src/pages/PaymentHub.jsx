@@ -155,7 +155,7 @@ const PaymentHub = () => {
     };
 
     const getBackendUrl = () => {
-        const wsUrl = import.meta.env.VITE_WS_URL || 'http://localhost:3001';
+        const wsUrl = import.meta.env.VITE_WS_URL || `http://${window.location.hostname}:3001`;
         return wsUrl.replace(/^ws/, 'http');
     };
 
