@@ -241,27 +241,12 @@ const ManagerDashboard = () => {
     const [staffList, setStaffList] = useState(() => {
         const saved = localStorage.getItem(`green_staff_list_${userEmailKey}`);
         if (saved) return JSON.parse(saved);
-        if (isDemo) {
-            return [
-                { id: 'ST-1021', name: 'Lukas Meyer', role: 'Floor Manager', status: 'On Shift', avatar: 'Lukas', permissions: ['Orders', 'Feed', 'Terminal'] },
-                { id: 'ST-1022', name: 'Anja Schmidt', role: 'Receptionist', status: 'On Shift', avatar: 'Anja', permissions: ['Feed', 'Terminal'] },
-                { id: 'ST-1023', name: 'Marc Becker', role: 'Staff Pilot', status: 'Offline', avatar: 'Marc', permissions: ['Terminal'] }
-            ];
-        }
         return [];
     });
 
     const [orders, setOrders] = useState(() => {
         const saved = localStorage.getItem(`green_active_orders_${userEmailKey}`);
         if (saved) return JSON.parse(saved);
-        if (isDemo) {
-            return [
-                { id: '#BK-9921', guest: 'Lukas M.', items: ['Deluxe King Suite', 'Spa Access Included'], total: '450.00', status: 'Received', type: 'Stay Booking', time: 'Just now', payment: 'Online', room: '204', checkIn: 'May 10', checkOut: 'May 12' },
-                { id: '#8821', guest: 'Sarah J.', items: ['Midnight Neon (2x)', 'Truffle Fries'], total: '38.00', status: 'Preparing', type: 'Dine-In', time: '12m ago', payment: 'Online', table: '14' },
-                { id: '#8822', guest: 'Pioneer #042', items: ['Gold Leaf Burger', 'Emerald Cocktail'], total: '61.00', status: 'Received', type: 'Takeaway', time: '5m ago', payment: 'Cash', plate: 'B-GR-2026', carColor: 'Blue' },
-                { id: '#8823', guest: 'Dr. Müller', items: ['Lobster Thermidor', 'Champagne (Bottle)'], total: '195.00', status: 'Served', type: 'VIP Table 1', time: '45m ago', payment: 'Online', room: '402' }
-            ];
-        }
         return [];
     });
     
@@ -802,11 +787,6 @@ const ManagerDashboard = () => {
     const [stadiumEvents, setStadiumEvents] = useState(() => {
         const saved = localStorage.getItem(`green_stadium_events_${userEmailKey}`);
         if (saved) return JSON.parse(saved);
-        
-        if (isDemo) {
-            const isClub = managerContext === 'CM';
-            if (isClub) {
-                return [
                     {
                         id: 'evt-1',
                         name: 'Midnight Neon Festival 2026',
@@ -1766,11 +1746,7 @@ const ManagerDashboard = () => {
         localStorage.setItem(`green_stadium_events_${userEmailKey}`, JSON.stringify(updated));
     };
 
-    const fleetDrivers = [
-        { id: 1, name: "Marcus H.", car: "Tesla Model 3", status: "In Ride", rating: 4.9, earnings: "€142", lastActive: "Just now" },
-        { id: 2, name: "Sarah K.", car: "VW ID.4", status: "Online", rating: 5.0, earnings: "€88", lastActive: "2m ago" },
-        { id: 3, name: "Thomas M.", car: "Mercedes EQE", status: "Offline", rating: 4.8, earnings: "€210", lastActive: "1h ago" },
-    ];
+    const fleetDrivers = [];
 
     const { socket } = useSocket();
     const [cashAlerts, setCashAlerts] = useState([]);
