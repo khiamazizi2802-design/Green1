@@ -375,6 +375,7 @@ const io = new Server(server, {
 });
 
 let drivers = [];
+let globalPricing = { baseFare: 10.00, perKmRate: 2.50 };
 
 // Simulate driver movement and availability
 setInterval(() => {
@@ -481,6 +482,9 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
 
+    // Send the current global pricing to the newly connected client immediately
+    socket.emit('update-pricing', globalPricing);
+
     // Fetch initial list of active requests
     socket.on('get-active-requests', () => {
         socket.emit('active-requests-list', activeRequests);
@@ -565,6 +569,8 @@ io.on('connection', (socket) => {
 
     socket.on('admin-update-pricing', (data) => {
         console.log('Admin updated pricing:', data);
+        if (data.baseFare !== undefined) globalPricing.baseFare = data.baseFare;
+        if (data.perKmRate !== undefined) globalPricing.perKmRate = data.perKmRate;
         // Broadcast pricing change to all connected clients (especially passengers)
         io.emit('update-pricing', data);
     });
