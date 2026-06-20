@@ -35,6 +35,9 @@ jobs:
         npm install
 
     - name: Build Web Application
+      env:
+        VITE_WS_URL: https://green1-wpng.onrender.com
+        VITE_STRIPE_PUBLIC_KEY: pk_test_51TdyJNB2h3oHJV8dj9S071k3lzq8DEkDRTA54Geeq579R8EZl0Vz4lNfeIRWXWktqND4NKxeCEPob0GmkyEtrvqb003rDki96c
       run: npm run build --prefix client
 
     - name: Sync Capacitor
