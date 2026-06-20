@@ -622,12 +622,6 @@ io.on('connection', (socket) => {
         if (req) {
             req.status = 'searching'; // Will keep trying 5km without reprompting
         }
-    });  }
-
-        // Broadcast to all driver dashboards
-        io.emit('new-ride-request', requestData);
-        io.emit('active-requests-list', activeRequests);
-        console.log('Broadcasted ride request. Active list count:', activeRequests.length);
     });
 
     socket.on('accept-ride', (data) => {
