@@ -66,6 +66,13 @@ const AdminDashboard = () => {
     const isDemo = user?.isDemo;
     const { baseFare, setBaseFare, perKmRate, setPerKmRate } = useRide();
     const [isGermanComplianceActive, setIsGermanComplianceActive] = useState(() => localStorage.getItem('green_german_compliance') === 'true');
+
+    // Sync local pricing to the server when the admin dashboard opens
+    React.useEffect(() => {
+        if (socket) {
+            socket.emit('admin-update-pricing', { baseFare, perKmRate });
+        }
+    }, [socket]); // Intentionally omitting baseFare/perKmRate so it only runs once on socket mount
     const [comparisonDistance, setComparisonDistance] = useState(10);
     const [competitorType, setCompetitorType] = useState('all');
     const [competitorSurge, setCompetitorSurge] = useState(1.0);
