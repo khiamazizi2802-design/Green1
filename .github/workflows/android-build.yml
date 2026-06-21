@@ -41,6 +41,10 @@ jobs:
     - name: Sync Capacitor
       run: npx cap sync android
 
+    - name: Generate Keystore
+      run: |
+        keytool -genkey -v -keystore release.keystore -alias greenapp -keyalg RSA -keysize 2048 -validity 10000 -storepass greenapp123 -keypass greenapp123 -dname "CN=Green App, OU=Development, O=Green Group, L=Frankfurt, ST=Hesse, C=DE"
+
     - name: Setup Java JDK
       uses: actions/setup-java@v4
       with:
@@ -50,14 +54,20 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
 
-    - name: Build Android Debug APK
+    - name: Build Android Release AAB
       run: |
         cd android
         chmod +x gradlew
-        ./gradlew assembleDebug
+        ./gradlew bundleRelease -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/release.keystore -Pandroid.injected.signing.store.password=greenapp123 -Pandroid.injected.signing.key.alias=greenapp -Pandroid.injected.signing.key.password=greenapp123
 
-    - name: Upload Debug APK
+    - name: Upload Release AAB
       uses: actions/upload-artifact@v4
       with:
-        name: green-app-debug-apk
-        path: android/app/build/outputs/apk/debug/app-debug.apk
+        name: green-app-release-aab
+        path: android/app/build/outputs/bundle/release/app-release.aab
+
+    - name: Upload Keystore (SAVE THIS SECURELY!)
+      uses: actions/upload-artifact@v4
+      with:
+        name: green-app-keystore
+        path: release.keystore
