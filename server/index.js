@@ -5,12 +5,46 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const auth = require('./auth');
 
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_key_51P8M1');
+
 const app = express();
 app.use(cors());
+
+// Stripe Webhook MUST use raw body before express.json() is applied globally
+app.post('/api/payment/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    let event;
+
+    try {
+        if (endpointSecret) {
+            const signature = req.headers['stripe-signature'];
+            event = stripe.webhooks.constructEvent(req.body, signature, endpointSecret);
+        } else {
+            // Fallback for local testing without CLI (unsafe for production!)
+            event = JSON.parse(req.body);
+        }
+    } catch (err) {
+        console.error(`Webhook signature verification failed: ${err.message}`);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the event
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+            console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
+            // In production, we would use Firebase Admin SDK here to securely update the Firestore order status to PAID.
+            break;
+        default:
+            console.log(`Unhandled event type ${event.type}.`);
+    }
+
+    // Return a 200 response to acknowledge receipt of the event
+    res.send();
+});
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_key_51P8M1');
 
 // ── Health Check / Status Page ──────────────────────────────────────────────
 app.get('/', (req, res) => {
@@ -75,6 +109,49 @@ app.get('/health', (req, res) => {
 });
 
 // ────────────────────────────────────────────────────────────────────────────
+app.post('/api/payment/stripe/connect/onboard', async (req, res) => {
+    try {
+        const { email, name, iban } = req.body;
+        
+        if (!iban) return res.status(400).json({ error: 'IBAN is required' });
+
+        // Create a Custom Account
+        const account = await stripe.accounts.create({
+            type: 'custom',
+            country: 'DE', // Assuming Germany for IBANs usually
+            email: email,
+            business_type: 'individual',
+            individual: {
+                first_name: name.split(' ')[0] || 'Partner',
+                last_name: name.split(' ')[1] || 'Partner',
+                email: email
+            },
+            capabilities: {
+                transfers: { requested: true },
+            },
+            external_account: {
+                object: 'bank_account',
+                country: 'DE',
+                currency: 'eur',
+                account_number: iban
+            },
+            tos_acceptance: {
+                date: Math.floor(Date.now() / 1000),
+                ip: req.ip
+            }
+        });
+
+        res.json({ stripeAccountId: account.id });
+    } catch (err) {
+        console.error('Stripe Custom Account creation failed:', err.message);
+        // Fallback for simulation if Stripe keys are test/missing
+        res.json({ 
+            stripeAccountId: 'acct_custom_' + Math.random().toString(36).substring(2, 11),
+            isMock: true
+        });
+    }
+});
+
 app.post('/api/payment/stripe/intent', async (req, res) => {
     try {
         const { amount, currency, partnerStripeAccountId, applicationFeeAmount } = req.body;

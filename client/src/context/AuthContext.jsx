@@ -107,7 +107,7 @@ const demoEmails = [
     'stadium@green.de'
 ];
 const isDemoEmail = (email) => {
-    return email && demoEmails.includes(email.toLowerCase());
+    return false; // Disabled for production
 };
 
 export const AuthProvider = ({ children }) => {

@@ -10,7 +10,7 @@ import { useRide } from '../context/RideContext';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../config/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
 
 const TouchSwipeableContainer = ({ children, className, ...props }) => {
     const containerRef = React.useRef(null);
@@ -732,7 +732,7 @@ const VenueMenuPage = () => {
         setIsProcessing(true);
         
         // Simulation delay
-        setTimeout(() => {
+        setTimeout(async () => {
             const isRoomCharge = String(paymentMethod) === 'room_charge';
             
             let paymentMethodName = paymentMethod;
@@ -809,13 +809,17 @@ const VenueMenuPage = () => {
                 else if (isClub && hasTicketsInCart) typeDisplay = 'Club Event Ticket';
 
                 const managerOrder = {
+                    id: newTicket.id,
+                    venueEmail: managerEmail.toLowerCase(),
+                    customerEmail: user?.email ? user.email.toLowerCase() : 'guest@green.de',
                     guest: guestDetails?.companyName ? `${newTicket.guestName} (${guestDetails.companyName})` : (newTicket.guestName || 'Anonymous Guest'),
                     company: guestDetails?.companyName || undefined,
                     items: managerItemNames,
                     total: typeof newTicket.total === 'number' ? newTicket.total.toFixed(2) : String(newTicket.total),
                     status: isBooking ? 'Booked' : 'Received',
                     type: typeDisplay,
-                    time: 'Just now',
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    timestamp: Date.now(),
                     payment: paymentDisplay,
                     table: (!isBooking && !isHotel && !isStadium && !isClub && !hasTicketsInCart) ? newTicket.tableId : undefined,
                     room: (isBooking || isHotel) ? (newTicket.tableId && newTicket.tableId !== 'Check-in Assigned' ? newTicket.tableId : String(Math.floor(100 + Math.random() * 400))) : undefined,
@@ -823,7 +827,10 @@ const VenueMenuPage = () => {
                     checkOut: isBooking ? 'May 21' : undefined
                 };
 
-                // Prepend new order to global list
+                // Push to Firestore
+                await addDoc(collection(db, 'orders'), managerOrder);
+                
+                // Also keep local copy for backward compatibility in some views
                 const updatedOrders = [managerOrder, ...managerOrders];
                 localStorage.setItem('green_active_orders', JSON.stringify(updatedOrders));
 

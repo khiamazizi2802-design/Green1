@@ -33,6 +33,8 @@ import { useRide } from '../context/RideContext';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { triggerNotification } from '../components/NotificationToast';
+import { db } from '../config/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 // Custom Marker Icon for Brands
 const createBrandIcon = (logoUrl, status, isSelected, driverData) => L.divIcon({
@@ -670,12 +672,32 @@ const GreenRidePage = () => {
         
         if (selectedPayment.id !== 'cash') {
             try {
+                // Fetch latest provision rules
+                let baseFee = 3.00;
+                let increment = 2.00;
+                try {
+                    const docSnap = await getDoc(doc(fbDb, 'system_config', 'provisions'));
+                    if (docSnap.exists()) {
+                        const r = docSnap.data();
+                        baseFee = parseFloat(r.fleetBaseFee) || 3.00;
+                        increment = parseFloat(r.fleetIncrement) || 2.00;
+                    }
+                } catch(e) { console.warn("Could not fetch provision rules, using defaults", e); }
+                
+                const price = parseFloat(finalBookingPrice);
+                // Math: 3 + floor(price / 30) * 2
+                const calculatedProvision = baseFee + Math.floor(price / 30) * increment;
+                const applicationFeeAmount = Math.round(calculatedProvision * 100); // Stripe uses cents
+
                 const response = await fetch(`${backendUrl}/api/payment/stripe/intent`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        amount: Math.round(parseFloat(finalBookingPrice) * 100), 
-                        currency: 'eur' 
+                        amount: Math.round(price * 100), 
+                        currency: 'eur',
+                        applicationFeeAmount: applicationFeeAmount,
+                        // Note: partnerStripeAccountId should be injected here once the driver is assigned, 
+                        // or handled via Separate Charges and Transfers if driver is unknown at checkout.
                     })
                 });
                 const data = await response.json();
@@ -1544,24 +1566,31 @@ const GreenRidePage = () => {
 
                     {/* Done Button */}
                     <button
-                        onClick={() => {
+                        onClick={async () => {
                             if (driverInfo) {
                                 try {
+                                    const newRide = {
+                                        passengerId: user?.email ? user.email.toLowerCase() : 'guest',
+                                        driverId: driverInfo?.id || 'unknown',
+                                        service: serviceType === 'shared' ? 'GreenS (Shared)' : 'GreenRide (Private)',
+                                        date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                                        timestamp: Date.now(),
+                                        price: serviceType === 'shared' ? '€ 19.60' : '€ 24.50',
+                                        pickup: pickup || 'Current Location',
+                                        destination: destination || 'Eco-Park Central',
+                                        driverName: driverInfo?.name || 'MICK D.',
+                                        icon: serviceType === 'shared' ? 'Share2' : 'Zap',
+                                        status: 'completed'
+                                    };
+                                    await addDoc(collection(db, 'rides'), newRide);
+                                    
+                                    // Maintain local copy for fast loading in legacy views
                                     const emailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
                                     const historyKey = `green_ride_history_${emailKey}`;
                                     const existing = JSON.parse(localStorage.getItem(historyKey) || '[]');
-                                    const newRide = {
-                                        id: Date.now(),
-                                        service: serviceType === 'shared' ? 'GreenS (Shared)' : 'GreenRide (Private)',
-                                        date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                                        price: serviceType === 'shared' ? '€ 19.60' : '€ 24.50',
-                                        destination: destination || 'Eco-Park Central',
-                                        driver: driverInfo.name || 'MICK D.',
-                                        icon: serviceType === 'shared' ? 'Share2' : 'Zap'
-                                    };
-                                    localStorage.setItem(historyKey, JSON.stringify([newRide, ...existing]));
+                                    localStorage.setItem(historyKey, JSON.stringify([{ id: Date.now(), ...newRide }, ...existing]));
                                 } catch (e) {
-                                    console.error('Failed to save ride history:', e);
+                                    console.error('Failed to save ride history to Firestore:', e);
                                 }
                             }
                             setRideStatus('idle');

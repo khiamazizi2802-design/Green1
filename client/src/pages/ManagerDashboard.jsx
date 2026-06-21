@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db as fbDb, storage } from '../config/firebase';
-import { doc, getDoc, updateDoc, setDoc, deleteDoc, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc, deleteDoc, collection, query, where, getDocs, onSnapshot, orderBy } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import {
     TrendingUp,
@@ -787,20 +787,23 @@ const ManagerDashboard = () => {
     const [stadiumEvents, setStadiumEvents] = useState(() => {
         const saved = localStorage.getItem(`green_stadium_events_${userEmailKey}`);
         if (saved) return JSON.parse(saved);
-                    {
-                        id: 'evt-1',
-                        name: 'Midnight Neon Festival 2026',
-                        date: '2026-06-12',
-                        time: '22:00',
-                        published: true,
-                        tiers: [
-                            { id: 't1', name: 'Silver (Normal Ticket)', price: 35, quantity: 1500, sold: 940 },
-                            { id: 't2', name: 'Gold (Premium)', price: 120, quantity: 200, sold: 165 },
-                            { id: 't3', name: 'Diamond (VIP)', price: 750, quantity: 20, sold: 14 }
-                        ]
-                    }
-                ];
-            }
+        if (user?.role === 'club') {
+            return [
+                {
+                    id: 'evt-1',
+                    name: 'Midnight Neon Festival 2026',
+                    date: '2026-06-12',
+                    time: '22:00',
+                    published: true,
+                    tiers: [
+                        { id: 't1', name: 'Silver (Normal Ticket)', price: 35, quantity: 1500, sold: 940 },
+                        { id: 't2', name: 'Gold (Premium)', price: 120, quantity: 200, sold: 165 },
+                        { id: 't3', name: 'Diamond (VIP)', price: 750, quantity: 20, sold: 14 }
+                    ]
+                }
+            ];
+        }
+        if (user?.role === 'stadium' || user?.role === 'admin') {
             return [
                 {
                     id: 'evt-1',
@@ -1461,6 +1464,28 @@ const ManagerDashboard = () => {
                 profilePicture: personalInfo.profilePicture || ''
             };
 
+            let stripeAccountId = user.stripeAccountId || null;
+            if (bankingInfo.iban && bankingInfo.iban.length > 10) {
+                try {
+                    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+                    const res = await fetch(`${backendUrl}/api/payment/stripe/connect/onboard`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: userEmail,
+                            name: personalInfo.name || userEmail,
+                            iban: bankingInfo.iban
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.stripeAccountId) {
+                        stripeAccountId = data.stripeAccountId;
+                    }
+                } catch(e) {
+                    console.error('Failed to auto-onboard stripe:', e);
+                }
+            }
+
             await setDoc(userRef, {
                 name: personalInfo.name,
                 phone: personalInfo.phone,
@@ -1470,6 +1495,7 @@ const ManagerDashboard = () => {
                 profilePicture: personalInfo.profilePicture || '',
                 businessInfo: businessInfo,
                 bankingInfo: bankingInfo,
+                stripeAccountId: stripeAccountId,
                 securityPassword: securityPassword
             }, { merge: true });
 
@@ -1943,39 +1969,31 @@ const ManagerDashboard = () => {
         }
     }, [orders, isDemo, userEmailKey]);
 
-    // Real-Time orders synchronization from passenger / venue booking page
+    // Real-Time orders synchronization from Firestore
     useEffect(() => {
-        const handleSync = () => {
-            const saved = localStorage.getItem(`green_active_orders_${userEmailKey}`);
-            if (saved) {
-                try {
-                    setOrders(JSON.parse(saved));
-                } catch (e) {
-                    console.error('Failed to parse synchronized orders:', e);
-                }
-            }
-        };
+        if (!userEmailKey || isDemo) return;
+        const ordersRef = collection(fbDb, 'orders');
+        // Query orders matching this venue, sorted by newest first
+        const q = query(
+            ordersRef,
+            where('venueEmail', '==', user?.email ? user.email.toLowerCase() : userEmailKey),
+            orderBy('timestamp', 'desc')
+        );
 
-        try {
-            if (window.parent) {
-                window.parent.addEventListener('green-orders-updated', handleSync);
-            }
-        } catch (e) {
-            console.warn('Blocked from accessing window.parent for order sync due to Same-Origin Policy:', e);
-        }
-        window.addEventListener('storage', handleSync);
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const liveOrders = [];
+            snapshot.forEach(doc => {
+                liveOrders.push({ firestoreId: doc.id, ...doc.data() });
+            });
+            setOrders(liveOrders);
+            // Also update local storage for backward compatibility with other views
+            localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(liveOrders));
+        }, (error) => {
+            console.error('Error fetching live orders from Firestore:', error);
+        });
 
-        return () => {
-            try {
-                if (window.parent) {
-                    window.parent.removeEventListener('green-orders-updated', handleSync);
-                }
-            } catch (e) {
-                // Ignore cleanup error
-            }
-            window.removeEventListener('storage', handleSync);
-        };
-    }, [userEmailKey]);
+        return () => unsubscribe();
+    }, [userEmailKey, isDemo, user?.email]);
 
     // Real-Time stadium events sold counts synchronization
     useEffect(() => {

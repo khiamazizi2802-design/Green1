@@ -63,8 +63,17 @@ const MapController = ({ campaignLat, campaignLng, handleMapSelect }) => {
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
     const { drivers, socket } = useSocket();
-    const isDemo = user?.isDemo;
-    const { baseFare, setBaseFare, perKmRate, setPerKmRate } = useRide();
+    const isDemo = false; // Disabled for production
+    const { 
+        baseFare, setBaseFare, 
+        baseFareMax, setBaseFareMax,
+        baseFarePremium, setBaseFarePremium,
+        baseFareShared, setBaseFareShared,
+        perKmRate, setPerKmRate,
+        perKmRateMax, setPerKmRateMax,
+        perKmRatePremium, setPerKmRatePremium,
+        perKmRateShared, setPerKmRateShared
+    } = useRide();
     const [isGermanComplianceActive, setIsGermanComplianceActive] = useState(() => localStorage.getItem('green_german_compliance') === 'true');
 
     // Sync local pricing to the server when the admin dashboard opens
@@ -338,6 +347,82 @@ const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtoco
     
     // --- STRIPE CONNECT SPLIT HUB & LIVE COMMAND OVERVIEW STATES ---
     const [stripeActiveSubTab, setStripeActiveSubTab] = useState('live-overview');
+
+    // --- DYNAMIC PROVISION RULES ---
+    const [fleetBaseFee, setFleetBaseFee] = useState(3.00);
+    const [fleetIncrement, setFleetIncrement] = useState(2.00);
+    const [hotelStadiumPercent, setHotelStadiumPercent] = useState(5.0);
+    const [fnbPercent, setFnbPercent] = useState(0.0);
+    const [isSavingProvisions, setIsSavingProvisions] = useState(false);
+
+    useEffect(() => {
+        const fetchProvisions = async () => {
+            try {
+                const docRef = doc(fbDb, 'system_config', 'provisions');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setFleetBaseFee(data.fleetBaseFee || 3.00);
+                    setFleetIncrement(data.fleetIncrement || 2.00);
+                    setHotelStadiumPercent(data.hotelStadiumPercent || 5.0);
+                    setFnbPercent(data.fnbPercent || 0.0);
+                }
+            } catch (e) {
+                console.error('Failed to fetch provisions', e);
+            }
+        };
+        fetchProvisions();
+    }, []);
+    const updatePricingInCloud = async (updates) => {
+        try {
+            const cleanUpdates = {};
+            for (const [key, value] of Object.entries(updates)) {
+                cleanUpdates[key] = parseFloat(value);
+            }
+            cleanUpdates.updatedAt = new Date().toISOString();
+
+            await setDoc(doc(fbDb, 'system_config', 'pricing'), cleanUpdates, { merge: true });
+            
+            // Still emit via socket for instant client UI updates if connected
+            if (socket) {
+                socket.emit('admin-update-pricing', updates);
+            }
+        } catch (e) {
+            console.error('Failed to sync pricing to cloud', e);
+        }
+    };
+
+    const handleSaveProvisions = async () => {
+        setIsSavingProvisions(true);
+        try {
+            const newRules = {
+                fleetBaseFee: parseFloat(fleetBaseFee),
+                fleetIncrement: parseFloat(fleetIncrement),
+                hotelStadiumPercent: parseFloat(hotelStadiumPercent),
+                fnbPercent: parseFloat(fnbPercent),
+                updatedAt: new Date().toISOString()
+            };
+            await setDoc(doc(fbDb, 'system_config', 'provisions'), newRules, { merge: true });
+            
+            // Automatically inject into Terms of Service
+            const provisionClause = `\n\n### SECTION 7: FINANCIAL PROVISIONS & COMMISSIONS\nAs a connected business partner, you agree to the following automated provision structure taken directly via Stripe Connect:\n- **Fleet Managers (Rides):** A base fee of €${parseFloat(fleetBaseFee).toFixed(2)} plus an increment of €${parseFloat(fleetIncrement).toFixed(2)} per €30.00 of the total ride price.\n- **Hotels & Stadiums:** A flat platform fee of ${parseFloat(hotelStadiumPercent).toFixed(1)}% on all bookings.\n- **Restaurants, Clubs, & Bars:** A flat platform fee of ${parseFloat(fnbPercent).toFixed(1)}% on food and drinks.\nThese fees are automatically deducted prior to your payout.\n`;
+            
+            let newTerms = defaultTermsOfServiceText;
+            // Remove existing section 7 if it exists to avoid duplicates
+            if (newTerms.includes('### SECTION 7: FINANCIAL PROVISIONS')) {
+                newTerms = newTerms.split('### SECTION 7: FINANCIAL PROVISIONS')[0];
+            }
+            newTerms += provisionClause;
+            setDefaultTermsOfServiceText(newTerms);
+            await setDoc(doc(fbDb, 'system_config', 'legal'), { termsOfService: newTerms }, { merge: true });
+            
+            triggerNotification('success', 'Rules Applied', 'Dynamic provisions and legal terms updated automatically.');
+        } catch (e) {
+            console.error('Failed to save provisions', e);
+            triggerNotification('error', 'Update Failed', 'Could not apply provision rules.');
+        }
+        setIsSavingProvisions(false);
+    };
 
     // Partner Compliance review states
     const [complianceRefreshTicker, setComplianceRefreshTicker] = useState(0);
@@ -4106,8 +4191,11 @@ billing payouts are required.
 
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                         <div className="space-y-8">
-                                            <div>
-                                                <div className="flex justify-between items-center mb-4">
+                                            {/* GREEN STANDARD RATE */}
+                                            <div className="space-y-6">
+                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs">Green Standard Pricing</h4>
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-4">
                                                     <label className="text-sm font-black uppercase tracking-wider text-gray-400">Base Fare / Anfahrt (€)</label>
                                                     <span className="text-2xl font-black italic text-brand">€{parseFloat(baseFare).toFixed(2)}</span>
                                                 </div>
@@ -4120,10 +4208,9 @@ billing payouts are required.
                                                     onChange={(e) => {
                                                         const val = parseFloat(e.target.value);
                                                         setBaseFare(val);
-                                                        if (socket) {
-                                                            socket.emit('admin-update-pricing', { baseFare: val });
-                                                        }
                                                     }}
+                                                    onMouseUp={() => updatePricingInCloud({ baseFare })}
+                                                    onTouchEnd={() => updatePricingInCloud({ baseFare })}
                                                     className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand shadow-inner"
                                                 />
                                                 <div className="flex justify-between text-[8px] font-bold text-gray-600 uppercase mt-2">
@@ -4147,12 +4234,132 @@ billing payouts are required.
                                                     onChange={(e) => {
                                                         setPerKmRate(parseFloat(e.target.value));
                                                     }}
+                                                    onMouseUp={() => updatePricingInCloud({ perKmRate })}
+                                                    onTouchEnd={() => updatePricingInCloud({ perKmRate })}
                                                     className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
                                                 />
                                                 <div className="flex justify-between text-[8px] font-bold text-gray-600 uppercase mt-2">
                                                     <span>Min: €{isGermanComplianceActive ? "1.50" : "0.50"}</span>
                                                     {isGermanComplianceActive && <span className="text-brand">Legal PBefG Caps Active</span>}
                                                     <span>Max: €{isGermanComplianceActive ? "4.50" : "10.00"}</span>
+                                                </div>
+                                                </div>
+                                            </div>
+
+                                            {/* GREEN MAX RATE */}
+                                            <div className="space-y-6 pt-6 border-t border-white/5">
+                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs">Green Max Pricing</h4>
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-4">
+                                                        <label className="text-sm font-black uppercase tracking-wider text-gray-400">Base Fare (€)</label>
+                                                        <span className="text-2xl font-black italic text-brand">€{parseFloat(baseFareMax).toFixed(2)}</span>
+                                                    </div>
+                                                    <input 
+                                                        type="range" 
+                                                        min="1.00" 
+                                                        max="30.00" 
+                                                        step="0.50" 
+                                                        value={baseFareMax} 
+                                                        onChange={(e) => setBaseFareMax(parseFloat(e.target.value))}
+                                                        onMouseUp={() => updatePricingInCloud({ baseFareMax })}
+                                                        onTouchEnd={() => updatePricingInCloud({ baseFareMax })}
+                                                        className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-4">
+                                                        <label className="text-sm font-black uppercase tracking-wider text-gray-400">Per Kilometer (€/km)</label>
+                                                        <span className="text-2xl font-black italic text-brand">€{parseFloat(perKmRateMax).toFixed(2)}</span>
+                                                    </div>
+                                                    <input 
+                                                        type="range" 
+                                                        min="1.00" 
+                                                        max="15.00" 
+                                                        step="0.10" 
+                                                        value={perKmRateMax} 
+                                                        onChange={(e) => setPerKmRateMax(parseFloat(e.target.value))}
+                                                        onMouseUp={() => updatePricingInCloud({ perKmRateMax })}
+                                                        onTouchEnd={() => updatePricingInCloud({ perKmRateMax })}
+                                                        className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* GREEN PREMIUM RATE */}
+                                            <div className="space-y-6 pt-6 border-t border-white/5">
+                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs">Green Premium Pricing</h4>
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-4">
+                                                        <label className="text-sm font-black uppercase tracking-wider text-gray-400">Base Fare (€)</label>
+                                                        <span className="text-2xl font-black italic text-brand">€{parseFloat(baseFarePremium).toFixed(2)}</span>
+                                                    </div>
+                                                    <input 
+                                                        type="range" 
+                                                        min="2.00" 
+                                                        max="50.00" 
+                                                        step="0.50" 
+                                                        value={baseFarePremium} 
+                                                        onChange={(e) => setBaseFarePremium(parseFloat(e.target.value))}
+                                                        onMouseUp={() => updatePricingInCloud({ baseFarePremium })}
+                                                        onTouchEnd={() => updatePricingInCloud({ baseFarePremium })}
+                                                        className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-4">
+                                                        <label className="text-sm font-black uppercase tracking-wider text-gray-400">Per Kilometer (€/km)</label>
+                                                        <span className="text-2xl font-black italic text-brand">€{parseFloat(perKmRatePremium).toFixed(2)}</span>
+                                                    </div>
+                                                    <input 
+                                                        type="range" 
+                                                        min="1.50" 
+                                                        max="20.00" 
+                                                        step="0.10" 
+                                                        value={perKmRatePremium} 
+                                                        onChange={(e) => setPerKmRatePremium(parseFloat(e.target.value))}
+                                                        onMouseUp={() => updatePricingInCloud({ perKmRatePremium })}
+                                                        onTouchEnd={() => updatePricingInCloud({ perKmRatePremium })}
+                                                        className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* GREEN SHARED RATE */}
+                                            <div className="space-y-6 pt-6 border-t border-white/5">
+                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs">Green Shared Pricing</h4>
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-4">
+                                                        <label className="text-sm font-black uppercase tracking-wider text-gray-400">Base Fare (€)</label>
+                                                        <span className="text-2xl font-black italic text-brand">€{parseFloat(baseFareShared).toFixed(2)}</span>
+                                                    </div>
+                                                    <input 
+                                                        type="range" 
+                                                        min="0.50" 
+                                                        max="20.00" 
+                                                        step="0.50" 
+                                                        value={baseFareShared} 
+                                                        onChange={(e) => setBaseFareShared(parseFloat(e.target.value))}
+                                                        onMouseUp={() => updatePricingInCloud({ baseFareShared })}
+                                                        onTouchEnd={() => updatePricingInCloud({ baseFareShared })}
+                                                        className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <div className="flex justify-between items-center mb-4">
+                                                        <label className="text-sm font-black uppercase tracking-wider text-gray-400">Per Kilometer (€/km)</label>
+                                                        <span className="text-2xl font-black italic text-brand">€{parseFloat(perKmRateShared).toFixed(2)}</span>
+                                                    </div>
+                                                    <input 
+                                                        type="range" 
+                                                        min="0.50" 
+                                                        max="5.00" 
+                                                        step="0.10" 
+                                                        value={perKmRateShared} 
+                                                        onChange={(e) => setPerKmRateShared(parseFloat(e.target.value))}
+                                                        onMouseUp={() => updatePricingInCloud({ perKmRateShared })}
+                                                        onTouchEnd={() => updatePricingInCloud({ perKmRateShared })}
+                                                        className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
+                                                    />
                                                 </div>
                                             </div>
 
@@ -4463,7 +4670,8 @@ billing payouts are required.
                                             { id: 'live-overview', label: 'Live Split Overview', icon: Activity },
                                             { id: 'partners-directory', label: 'Connected Partners', icon: Users },
                                             { id: 'kyc-dossier', label: 'BaFin KYC Dossier', icon: ShieldCheck },
-                                            { id: 'partner-compliance', label: 'Partner Compliance Vaults', icon: ShieldAlert }
+                                            { id: 'partner-compliance', label: 'Partner Compliance Vaults', icon: ShieldAlert },
+                                            { id: 'provision-rules', label: 'Dynamic Provisions', icon: Percent }
                                         ].map(tab => (
                                             <button
                                                 key={tab.id}
@@ -5303,6 +5511,68 @@ billing payouts are required.
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
+
+                                {/* TAB 5: DYNAMIC PROVISION RULES */}
+                                {stripeActiveSubTab === 'provision-rules' && (
+                                    <div className="space-y-8 bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
+                                        <div>
+                                            <h3 className="text-3xl font-black italic uppercase text-white">Dynamic Provisions & Fees</h3>
+                                            <p className="text-xs text-gray-500 italic mt-1">Configure the exact platform commission models. Saving these rules will automatically update checkout logic and rewrite the Terms of Service.</p>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
+                                                <div className="flex items-center gap-3">
+                                                    <Car size={24} className="text-brand" />
+                                                    <h4 className="text-lg font-black uppercase text-white">Fleet Partners</h4>
+                                                </div>
+                                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Progressive Step Model</p>
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-400">Base Fee (€)</label>
+                                                        <input type="number" value={fleetBaseFee} onChange={e => setFleetBaseFee(e.target.value)} className="w-full bg-dark-950/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold mt-1 outline-none focus:border-brand/50" step="0.5" />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-400">Increment per €30 (€)</label>
+                                                        <input type="number" value={fleetIncrement} onChange={e => setFleetIncrement(e.target.value)} className="w-full bg-dark-950/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold mt-1 outline-none focus:border-brand/50" step="0.5" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
+                                                <div className="flex items-center gap-3">
+                                                    <Building2 size={24} className="text-violet-400" />
+                                                    <h4 className="text-lg font-black uppercase text-white">Hotels & Stadiums</h4>
+                                                </div>
+                                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Flat Percentage Model</p>
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-400">Platform Fee (%)</label>
+                                                        <input type="number" value={hotelStadiumPercent} onChange={e => setHotelStadiumPercent(e.target.value)} className="w-full bg-dark-950/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold mt-1 outline-none focus:border-violet-400/50" step="0.5" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
+                                                <div className="flex items-center gap-3">
+                                                    <Droplets size={24} className="text-rose-400" />
+                                                    <h4 className="text-lg font-black uppercase text-white">Restaurants & Bars</h4>
+                                                </div>
+                                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Flat Percentage Model</p>
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-400">Platform Fee (%)</label>
+                                                        <input type="number" value={fnbPercent} onChange={e => setFnbPercent(e.target.value)} className="w-full bg-dark-950/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold mt-1 outline-none focus:border-rose-400/50" step="0.5" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="pt-6 border-t border-white/5 flex justify-end">
+                                            <button onClick={handleSaveProvisions} disabled={isSavingProvisions} className="px-8 py-4 bg-brand text-dark-900 font-black uppercase rounded-2xl tracking-widest hover:scale-105 transition-all shadow-lg shadow-brand/20 disabled:opacity-50">
+                                                {isSavingProvisions ? 'Saving...' : 'Deploy Global Provision Rules'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
                             </motion.div>
                         )}
 
