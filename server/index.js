@@ -812,10 +812,29 @@ io.on('connection', (socket) => {
         io.emit('new-uxlab-event', data);
     });
 
-    // Real-Time B2B to B2C Guest Messages
     socket.on('send-guest-message', (data) => {
         console.log(`💬 Broadcast guest message: send-guest-message to order: ${data.orderId}`);
         io.emit('new-guest-message', data);
+    });
+
+    // Simulate pool matching
+    socket.on('simulate-pool-match', (data) => {
+        console.log(`📡 Broadcast event: simulate-pool-match to driver and passenger: ${data.passengerId}`);
+        io.emit('pool-match-pending', {
+            originalPassengerId: data.passengerId,
+            newPassenger: {
+                id: 'mock-pass-' + Date.now(),
+                name: 'Sarah L.',
+                rating: '4.9',
+                image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
+            }
+        });
+    });
+
+    // Handle pool match response
+    socket.on('pool-match-response', (data) => {
+        console.log(`💬 Pool match response from ${data.role} for original passenger ${data.originalPassengerId}: ${data.accepted}`);
+        io.emit('pool-match-result', data);
     });
 
     socket.on('disconnect', () => {

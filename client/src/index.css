@@ -124,7 +124,6 @@ button:active,
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
     will-change: scroll-position;
-    transform: translate3d(0, 0, 0);
 }
 
 /* ── Iframe-friendly height overrides ──────────────── */
@@ -889,4 +888,20 @@ h1, h2, h3, h4, h5, h6, strong, b {
 @keyframes shine {
   0% { left: -80%; }
   100% { left: 120%; }
+}
+
+/* Smooth Leaflet Marker Animations for debounced GPS */
+.leaflet-marker-icon {
+  transition: transform 10s linear, opacity 0.3s ease-in-out;
+}
+
+
+/* Fix Chrome Autofill in Dark Theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #171717 inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
 }

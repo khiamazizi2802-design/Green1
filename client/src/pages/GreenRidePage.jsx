@@ -190,6 +190,7 @@ const GreenRidePage = () => {
     const [showDriverProfile, setShowDriverProfile] = useState(null); // Holds the driver object
     const [targetDriver, setTargetDriver] = useState(null); // The locked driver for the next whistle
     const [showWhistleConfirm, setShowWhistleConfirm] = useState(null);
+    const [showPoolRequest, setShowPoolRequest] = useState(null);
     const [poolPassengers, setPoolPassengers] = useState(3); // Default to 3, range 2-5
     const [showExpansionPrompt, setShowExpansionPrompt] = useState(false);
     
@@ -597,12 +598,33 @@ const GreenRidePage = () => {
             setShowExpansionPrompt(true);
         };
 
+        const handlePoolMatchPending = (data) => {
+            if (data.originalPassengerId === (user?.email || 'alex-passenger-id')) {
+                setShowPoolRequest(data.newPassenger);
+                triggerNotification('system', 'Pool Match Found', `${data.newPassenger.name} is on your route.`);
+            }
+        };
+
+        const handlePoolMatchResult = (data) => {
+            // If accepted and we are the passenger
+            if (data.accepted && data.role === 'passenger' && data.originalPassengerId === (user?.email || 'alex-passenger-id')) {
+                // We add them to our mock pool
+                setShowPoolRequest(null);
+                triggerNotification('success', 'Match Accepted', 'Route updated.');
+            } else if (!data.accepted && data.originalPassengerId === (user?.email || 'alex-passenger-id')) {
+                setShowPoolRequest(null);
+                triggerNotification('system', 'Match Declined', 'Continuing private ride.');
+            }
+        };
+
         socket.on('ride-accepted', handleRideAccepted);
         socket.on('driver-arrived', handleDriverArrived);
         socket.on('start-ride', handleStartRide);
         socket.on('complete-ride', handleCompleteRide);
         socket.on('ride-canceled', handleRideCanceled);
         socket.on('no-drivers-found', handleNoDrivers);
+        socket.on('pool-match-pending', handlePoolMatchPending);
+        socket.on('pool-match-result', handlePoolMatchResult);
 
         return () => {
             socket.off('ride-accepted', handleRideAccepted);
@@ -611,6 +633,8 @@ const GreenRidePage = () => {
             socket.off('complete-ride', handleCompleteRide);
             socket.off('ride-canceled', handleRideCanceled);
             socket.off('no-drivers-found', handleNoDrivers);
+            socket.off('pool-match-pending', handlePoolMatchPending);
+            socket.off('pool-match-result', handlePoolMatchResult);
         };
     }, [socket, setDriverInfo, setRideStatus]);
 
@@ -2388,6 +2412,16 @@ const GreenRidePage = () => {
                     {/* Bottom Glow Anchor — Minimalist Hint */}
                     <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/5 blur-md" />
 
+                    {/* Developer Button for Testing Pool Request */}
+                    {serviceType === 'shared' && rideStatus === 'in_ride' && (
+                        <button
+                            onClick={() => socket?.emit('simulate-pool-match', { passengerId: user?.email || 'alex-passenger-id' })}
+                            className="absolute bottom-24 left-4 z-[70] bg-[var(--brand)] text-black text-xs font-black px-4 py-2 rounded-xl shadow-lg border border-black"
+                        >
+                            Dev: Test Match
+                        </button>
+                    )}
+
                     {!isMiniMode && (
                         /* Draggable Handle - Gray Contrast */
                         <div className="flex justify-center mb-6">
@@ -2401,6 +2435,57 @@ const GreenRidePage = () => {
 
             {/* Holographic Grid Overlay */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(52,211,153,1) 0.5px, transparent 0.5px), linear-gradient(90deg, rgba(52,211,153,1) 0.5px, transparent 0.5px)', backgroundSize: '40px 40px' }} />
+
+            {/* Double Approval Pool Match Request Modal */}
+            <AnimatePresence>
+                {showPoolRequest && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 50 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 50 }}
+                        className="fixed inset-x-4 bottom-32 z-[80] bg-[#1A1A1A] rounded-[2rem] border-2 border-[var(--brand)] shadow-[0_20px_60px_-15px_rgba(52,211,153,0.4)] overflow-hidden"
+                    >
+                        <div className="p-6">
+                            <div className="flex items-center gap-5 mb-5 border-b border-white/10 pb-4">
+                                <div className="w-16 h-16 rounded-2xl border-2 border-[var(--brand)] overflow-hidden shrink-0 shadow-inner">
+                                    <img src={showPoolRequest.image} alt={showPoolRequest.name} className="w-full h-full object-cover" />
+                                </div>
+                                <div>
+                                    <div className="text-[10px] text-[var(--brand)] font-black uppercase tracking-widest mb-1 animate-pulse">New Request</div>
+                                    <h3 className="text-white font-black text-xl italic leading-tight">{showPoolRequest.name}</h3>
+                                    <div className="flex items-center gap-1.5 mt-1 opacity-80">
+                                        <Star className="w-3.5 h-3.5 text-[var(--brand)] fill-current" />
+                                        <span className="text-[var(--brand)] text-sm font-bold">{showPoolRequest.rating} Rating</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p className="text-gray-300 text-sm font-medium mb-5 leading-relaxed">
+                                This passenger is on your route. Do you approve adding them to your Green Shared ride?
+                            </p>
+                            <div className="flex gap-3">
+                                <button 
+                                    onClick={() => {
+                                        socket?.emit('pool-match-response', { role: 'passenger', originalPassengerId: user?.email || 'alex-passenger-id', accepted: false });
+                                        setShowPoolRequest(null);
+                                    }}
+                                    className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3.5 rounded-xl font-bold text-sm transition-colors"
+                                >
+                                    Decline
+                                </button>
+                                <button 
+                                    onClick={() => {
+                                        socket?.emit('pool-match-response', { role: 'passenger', originalPassengerId: user?.email || 'alex-passenger-id', accepted: true });
+                                        setShowPoolRequest(null);
+                                    }}
+                                    className="flex-1 bg-[var(--brand)] hover:brightness-110 text-black py-3.5 rounded-xl font-black text-sm uppercase tracking-wide transition-all shadow-[0_0_20px_rgba(52,211,153,0.2)]"
+                                >
+                                    Accept Match
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Chat Overlay */}
             <AnimatePresence>
@@ -2680,7 +2765,7 @@ const GreenRidePage = () => {
                                 <MapPin size={32} className="text-orange-500" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-black italic uppercase text-white mb-2 tracking-wide">No Drivers in 5km</h3>
+                                <h3 className="text-xl font-black italic uppercase text-[var(--text-primary)] mb-2 tracking-wide">No Drivers in 5km</h3>
                                 <p className="text-xs text-[var(--text-secondary)] opacity-80 leading-relaxed">
                                     We couldn't find a driver nearby. Would you like to expand the search radius to 10km for a €3.00 surcharge to attract drivers from further away?
                                 </p>
@@ -2691,7 +2776,7 @@ const GreenRidePage = () => {
                                         setShowExpansionPrompt(false);
                                         if (socket) socket.emit('expand-search-radius', { passengerId: user?.email || `guest-${Date.now()}` });
                                     }}
-                                    className="w-full bg-[var(--text-primary)] text-black font-black uppercase text-xs tracking-widest py-4 rounded-xl hover:opacity-90"
+                                    className="w-full bg-[var(--text-primary)] text-[var(--bg-primary)] font-black uppercase text-xs tracking-widest py-4 rounded-xl hover:opacity-90"
                                 >
                                     Expand to 10km (+€3.00)
                                 </button>
@@ -2700,7 +2785,7 @@ const GreenRidePage = () => {
                                         setShowExpansionPrompt(false);
                                         if (socket) socket.emit('wait-in-radius', { passengerId: user?.email || `guest-${Date.now()}` });
                                     }}
-                                    className="w-full bg-transparent border border-white/10 text-white font-bold uppercase text-[10px] tracking-wider py-4 rounded-xl hover:bg-white/5"
+                                    className="w-full bg-transparent border border-[var(--border-main)] text-[var(--text-primary)] font-bold uppercase text-[10px] tracking-wider py-4 rounded-xl hover:bg-[var(--text-primary)]/5"
                                 >
                                     Keep waiting in 5km
                                 </button>

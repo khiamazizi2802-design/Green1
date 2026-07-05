@@ -18,6 +18,7 @@ import {
     Phone,
     Mail,
     MapPin,
+    Camera,
     Box,
     ArrowRight,
     LogOut,
@@ -1529,7 +1530,7 @@ const Home = () => {
                                     <div className="space-y-4 pt-2">
                                         <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Privacy & Info</h4>
                                         <div className="space-y-2">
-                                            <button onClick={() => setHelpSubView('dsgvo')} className="w-full p-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl flex items-center justify-between group hover:border-brand/30 transition-all">
+                                            <button onClick={() => navigate('/privacy')} className="w-full p-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl flex items-center justify-between group hover:border-brand/30 transition-all">
                                                 <div className="flex items-center gap-4">
                                                     <FileText className="text-brand" size={18} />
                                                     <div className="text-left">
@@ -2171,30 +2172,42 @@ const Home = () => {
             <AnimatePresence>
                 {!localStorage.getItem('green_permissions_granted') && (
                     <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[200] bg-[var(--bg-primary)]/90 backdrop-blur-3xl flex items-center justify-center p-8"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ type: "spring", bounce: 0.4, duration: 0.8 }}
+                        className="fixed inset-0 z-[200] bg-[var(--bg-primary)]/80 backdrop-blur-2xl flex items-center justify-center p-6"
                     >
-                        <div className="max-w-xs w-full bg-[var(--bg-secondary)] border border-[#1A1A1A]/10 rounded-[3rem] p-10 text-center space-y-8 shadow-2xl">
-                            <div className="w-20 h-20 bg-[#1A1A1A] rounded-3xl flex items-center justify-center text-white mx-auto border border-white/10 shadow-xl">
-                                <MapPin size={40} className="animate-pulse" />
-                            </div>
-                            <div className="space-y-2">
-                                <h3 className="text-2xl font-black italic uppercase tracking-tighter text-gray-900">System Access</h3>
-                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
-                                    GREEN requires high-fidelity <span className="text-gray-900">Location</span> and <span className="text-gray-900">Camera/Media</span> access to facilitate tactical mission tracking and creative content sharing.
+                        <div className="max-w-xs w-full relative overflow-hidden rounded-[2.5rem] p-8 text-center shadow-[0_30px_60px_rgba(0,0,0,0.4)] border border-white/10 bg-[var(--bg-secondary)]/90 backdrop-blur-3xl">
+                            {/* Glowing Orbs */}
+                            <div className="absolute -top-20 -left-20 w-40 h-40 bg-brand/20 rounded-full blur-[60px]" />
+                            <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-blue-500/20 rounded-full blur-[60px]" />
+                            
+                            <div className="relative z-10">
+                                <div className="w-20 h-20 bg-gradient-to-br from-gray-900 to-black rounded-3xl flex items-center justify-center text-white mx-auto shadow-2xl mb-8 relative border border-white/10">
+                                    <MapPin size={32} className="animate-bounce" />
+                                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-brand rounded-full flex items-center justify-center shadow-lg border-2 border-[#1A1A1A]">
+                                        <Camera size={14} className="text-black" />
+                                    </div>
+                                </div>
+                                
+                                <h3 className="text-2xl font-black tracking-tight text-white mb-3">Erlebnis Freischalten</h3>
+                                
+                                <p className="text-[11px] text-gray-400 font-medium leading-relaxed mb-8 px-1">
+                                    Um dir das bestmögliche Erlebnis zu bieten und alle Funktionen der App optimal nutzen zu können, benötigt GREEN Zugriff auf deinen <strong className="text-white">Standort</strong> und deine <strong className="text-white">Kamera</strong>.
                                 </p>
+
+                                <button 
+                                    onClick={() => {
+                                        localStorage.setItem('green_permissions_granted', 'true');
+                                        window.location.reload();
+                                    }}
+                                    className="w-full py-4 bg-white text-black rounded-2xl font-black text-xs shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300 relative overflow-hidden group uppercase tracking-widest"
+                                >
+                                    <div className="absolute inset-0 bg-brand translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                                    <span className="relative z-10 group-hover:text-black transition-colors">Weiter</span>
+                                </button>
                             </div>
-                            <button 
-                                onClick={() => {
-                                    localStorage.setItem('green_permissions_granted', 'true');
-                                    window.location.reload();
-                                }}
-                                className="w-full py-5 bg-[#1A1A1A] text-white rounded-2xl font-black uppercase text-xs shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-95 transition-all"
-                            >
-                                Grant Authority
-                            </button>
                         </div>
                     </motion.div>
                 )}

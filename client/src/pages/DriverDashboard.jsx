@@ -331,6 +331,7 @@ const DriverDashboard = () => {
     const [dismissingMission, setDismissingMission] = useState(null); // { id: string, customer: string }
     const [acceptsShared, setAcceptsShared] = useState(true);
     const [queuedMission, setQueuedMission] = useState(null);
+    const [showPoolRequest, setShowPoolRequest] = useState(null);
 
     React.useEffect(() => {
         if (currentSequence.length === 0) {
@@ -785,9 +786,27 @@ const DriverDashboard = () => {
             }
         };
 
+        const handlePoolMatchPending = (data) => {
+            setShowPoolRequest(data.newPassenger);
+        };
+
+        const handlePoolMatchResult = (data) => {
+            if (data.accepted && data.role === 'passenger') {
+                setShowPoolRequest(null);
+                alert('Passenger accepted route deviation.');
+            } else if (!data.accepted && data.role === 'passenger') {
+                setShowPoolRequest(null);
+                alert('Passenger declined route deviation.');
+            } else if (data.role === 'driver') {
+                setShowPoolRequest(null);
+            }
+        };
+
         socket.on('new-ride-request', handleNewRequest); // Legacy global broadcast
         socket.on('targeted-ride-request', handleNewRequest); // Smart dispatch engine
         socket.on('active-requests-list', handleRequestsList);
+        socket.on('pool-match-pending', handlePoolMatchPending);
+        socket.on('pool-match-result', handlePoolMatchResult);
 
         // Emit initial shared preference on connect
         socket.emit('update-shared-preference', { acceptsShared });
@@ -797,13 +816,19 @@ const DriverDashboard = () => {
 
         let geoWatchId;
         if (isOnline) {
+            let lastEmitTime = 0;
             geoWatchId = navigator.geolocation.watchPosition(
                 (position) => {
-                    const { latitude, longitude } = position.coords;
-                    socket.emit('driver-location-update', { lat: latitude, lng: longitude });
+                    const now = Date.now();
+                    // Throttle: only send to server every 10 seconds
+                    if (now - lastEmitTime >= 10000) {
+                        const { latitude, longitude } = position.coords;
+                        socket.emit('driver-location-update', { lat: latitude, lng: longitude });
+                        lastEmitTime = now;
+                    }
                 },
                 (error) => console.error('Error watching location:', error),
-                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         }
 
@@ -811,6 +836,8 @@ const DriverDashboard = () => {
             socket.off('new-ride-request', handleNewRequest);
             socket.off('targeted-ride-request', handleNewRequest);
             socket.off('active-requests-list', handleRequestsList);
+            socket.off('pool-match-pending', handlePoolMatchPending);
+            socket.off('pool-match-result', handlePoolMatchResult);
             if (geoWatchId) navigator.geolocation.clearWatch(geoWatchId);
         };
     }, [socket, isOnline, incomingRide, driverDocs, vehicleDocs, vehicleInfo, user]);
@@ -1429,7 +1456,7 @@ const DriverDashboard = () => {
                                     <div className="flex items-center gap-2 border-l border-main pl-4 ml-2">
                                         <span className="text-[9px] font-bold uppercase tracking-widest text-secondary">Shared</span>
                                         <button 
-                                            onClick={toggleSharedRides}
+                                            onClick={() => setAcceptsShared(!acceptsShared)}
                                             className={`relative w-10 h-5 rounded-full transition-colors ${acceptsShared ? 'bg-brand' : 'bg-dark-700 border border-main'}`}
                                         >
                                             <motion.div 
@@ -4043,6 +4070,57 @@ const DriverDashboard = () => {
             </Sheet>
 
             <PostsFeed isOpen={showPosts} onClose={() => setShowPosts(false)} />
+
+            {/* Double Approval Pool Match Request Modal */}
+            <AnimatePresence>
+                {showPoolRequest && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 50 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 50 }}
+                        className="fixed inset-x-4 top-1/4 z-[100] bg-[#1A1A1A] rounded-[2rem] border-2 border-[var(--brand)] shadow-[0_20px_60px_-15px_rgba(52,211,153,0.4)] overflow-hidden"
+                    >
+                        <div className="p-6">
+                            <div className="flex items-center gap-5 mb-5 border-b border-white/10 pb-4">
+                                <div className="w-16 h-16 rounded-2xl border-2 border-[var(--brand)] overflow-hidden shrink-0 shadow-inner">
+                                    <img src={showPoolRequest.image} alt={showPoolRequest.name} className="w-full h-full object-cover" />
+                                </div>
+                                <div>
+                                    <div className="text-[10px] text-[var(--brand)] font-black uppercase tracking-widest mb-1 animate-pulse">Route Deviation Request</div>
+                                    <h3 className="text-white font-black text-xl italic leading-tight">{showPoolRequest.name}</h3>
+                                    <div className="flex items-center gap-1.5 mt-1 opacity-80">
+                                        <Star className="w-3.5 h-3.5 text-[var(--brand)] fill-current" />
+                                        <span className="text-[var(--brand)] text-sm font-bold">{showPoolRequest.rating} Rating</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p className="text-gray-300 text-sm font-medium mb-5 leading-relaxed">
+                                A new passenger requested a shared ride along your current route. Do you approve the route deviation?
+                            </p>
+                            <div className="flex gap-3">
+                                <button 
+                                    onClick={() => {
+                                        socket?.emit('pool-match-response', { role: 'driver', originalPassengerId: user?.email || 'alex-passenger-id', accepted: false });
+                                        setShowPoolRequest(null);
+                                    }}
+                                    className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3.5 rounded-xl font-bold text-sm transition-colors"
+                                >
+                                    Decline
+                                </button>
+                                <button 
+                                    onClick={() => {
+                                        socket?.emit('pool-match-response', { role: 'driver', originalPassengerId: user?.email || 'alex-passenger-id', accepted: true });
+                                        setShowPoolRequest(null);
+                                    }}
+                                    className="flex-1 bg-[var(--brand)] hover:brightness-110 text-black py-3.5 rounded-xl font-black text-sm uppercase tracking-wide transition-all shadow-[0_0_20px_rgba(52,211,153,0.2)]"
+                                >
+                                    Approve Route
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

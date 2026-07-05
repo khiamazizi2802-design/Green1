@@ -113,6 +113,24 @@ const PaymentHub = () => {
         setStripeForm(prev => ({ ...prev, holder: user?.name || 'Member' }));
     }, [userEmail]);
 
+    // Sync to local storage for synchronous reads in other parts of the app (like VenueMenuPage)
+    React.useEffect(() => {
+        try {
+            if (paymentMethods.length > 0) {
+                // Strip complex objects like icons before stringifying
+                const serializableMethods = paymentMethods.map(m => {
+                    const { icon, ...rest } = m;
+                    return rest;
+                });
+                localStorage.setItem('green_payment_methods', JSON.stringify(serializableMethods));
+            } else {
+                localStorage.removeItem('green_payment_methods');
+            }
+        } catch (e) {
+            console.error('Failed to sync payment methods to localStorage:', e);
+        }
+    }, [paymentMethods]);
+
     // Save a single method to Firestore
     const saveMethodToFirestore = async (method) => {
         if (!userEmail || user?.isDemo) return;
@@ -803,9 +821,10 @@ const PaymentHub = () => {
                                 </div>
 
                                 <div className="space-y-1">
+                                    <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">Card Number</label>
                                     <input
                                         type="text"
-                                        placeholder="Card Number (e.g. 4242 4242...)"
+                                        placeholder="4242 4242 4242 4242"
                                         value={stripeForm.cardNumber}
                                         onChange={(e) => setStripeForm({ ...stripeForm, cardNumber: formatCardNumber(e.target.value) })}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-mono text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
@@ -815,36 +834,43 @@ const PaymentHub = () => {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <input
-                                        type="text"
-                                        placeholder="Expiry (MM/YY)"
-                                        value={stripeForm.expiry}
-                                        onChange={(e) => {
-                                            let val = e.target.value.replace(/[^0-9/]/g, '');
-                                            if (val.length === 2 && !val.includes('/') && e.nativeEvent.inputType !== 'deleteContentBackward') {
-                                                val = val + '/';
-                                            }
-                                            setStripeForm({ ...stripeForm, expiry: val });
-                                        }}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-mono text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
-                                        maxLength="5"
-                                        required
-                                    />
-                                    <input
-                                        type="password"
-                                        placeholder="CVV"
-                                        value={stripeForm.cvv}
-                                        onChange={(e) => setStripeForm({ ...stripeForm, cvv: e.target.value.replace(/[^0-9]/g, '') })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-mono text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
-                                        maxLength="4"
-                                        required
-                                    />
+                                    <div className="space-y-1">
+                                        <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">Expiry Date</label>
+                                        <input
+                                            type="text"
+                                            placeholder="MM/YY"
+                                            value={stripeForm.expiry}
+                                            onChange={(e) => {
+                                                let val = e.target.value.replace(/[^0-9/]/g, '');
+                                                if (val.length === 2 && !val.includes('/') && e.nativeEvent.inputType !== 'deleteContentBackward') {
+                                                    val = val + '/';
+                                                }
+                                                setStripeForm({ ...stripeForm, expiry: val });
+                                            }}
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-mono text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
+                                            maxLength="5"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">CVV</label>
+                                        <input
+                                            type="password"
+                                            placeholder="•••"
+                                            value={stripeForm.cvv}
+                                            onChange={(e) => setStripeForm({ ...stripeForm, cvv: e.target.value.replace(/[^0-9]/g, '') })}
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-mono text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
+                                            maxLength="4"
+                                            required
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="space-y-1">
+                                    <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">Cardholder Name</label>
                                     <input
                                         type="text"
-                                        placeholder="Cardholder Name"
+                                        placeholder="e.g. John Doe"
                                         value={stripeForm.holder}
                                         onChange={(e) => setStripeForm({ ...stripeForm, holder: e.target.value })}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
@@ -853,22 +879,28 @@ const PaymentHub = () => {
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Zip"
-                                        value={stripeForm.postalCode}
-                                        onChange={(e) => setStripeForm({ ...stripeForm, postalCode: e.target.value })}
-                                        className="col-span-1 w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3.5 text-xs text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
-                                        required
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="City"
-                                        value={stripeForm.city}
-                                        onChange={(e) => setStripeForm({ ...stripeForm, city: e.target.value })}
-                                        className="col-span-2 w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3.5 text-xs text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
-                                        required
-                                    />
+                                    <div className="col-span-1 space-y-1">
+                                        <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">Zip Code</label>
+                                        <input
+                                            type="text"
+                                            placeholder="10115"
+                                            value={stripeForm.postalCode}
+                                            onChange={(e) => setStripeForm({ ...stripeForm, postalCode: e.target.value })}
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3.5 text-xs text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="col-span-2 space-y-1">
+                                        <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">City</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Berlin"
+                                            value={stripeForm.city}
+                                            onChange={(e) => setStripeForm({ ...stripeForm, city: e.target.value })}
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3.5 text-xs text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
+                                            required
+                                        />
+                                    </div>
                                 </div>
 
                                 <button

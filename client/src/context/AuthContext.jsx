@@ -5,7 +5,10 @@ import {
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword, 
     signOut, 
-    onAuthStateChanged 
+    onAuthStateChanged,
+    sendEmailVerification,
+    RecaptchaVerifier,
+    linkWithPhoneNumber
 } from 'firebase/auth';
 import { 
     doc, 
@@ -228,8 +231,17 @@ export const AuthProvider = ({ children }) => {
             }
         });
 
-        // Run auto-seeder on boot
-        // seedDefaultUsers();
+        // Auto-login from query parameter
+        const params = new URLSearchParams(window.location.search);
+        const autoLoginEmail = params.get('autoLogin');
+        if (autoLoginEmail) {
+            if (!fbAuth.currentUser || fbAuth.currentUser.email !== autoLoginEmail) {
+                console.log(`[Simulator] Auto-login triggered for ${autoLoginEmail}`);
+                signInWithEmailAndPassword(fbAuth, autoLoginEmail, 'green2026').catch(err => {
+                    console.error("[Simulator] Auto-login failed:", err);
+                });
+            }
+        }
 
         return () => {
             unsubscribeAuth();
@@ -275,8 +287,17 @@ export const AuthProvider = ({ children }) => {
                 scopedStorage.setItem('green_business_type', profile.businessType);
             }
             scopedStorage.setItem('green_user_email', profile.email);
-            setIsVerified(false);
-            scopedStorage.removeItem('green_verified');
+            
+            // Auto-verify test accounts
+            const isTestAccount = profile.email.includes('@green.de') || profile.email.includes('kh5c');
+            
+            if ((firebaseUser.emailVerified && profile.phoneVerified) || isTestAccount) {
+                setIsVerified(true);
+                scopedStorage.setItem('green_verified', 'true');
+            } else {
+                setIsVerified(false);
+                scopedStorage.removeItem('green_verified');
+            }
             setLoading(false);
             return { success: true, user: profile };
         } catch (error) {
@@ -348,6 +369,13 @@ export const AuthProvider = ({ children }) => {
             const userCredential = await createUserWithEmailAndPassword(fbAuth, newUserData.email, newUserData.password);
             const firebaseUser = userCredential.user;
             const email = firebaseUser.email.toLowerCase();
+
+            // Send email verification right after creation
+            try {
+                await sendEmailVerification(firebaseUser);
+            } catch (err) {
+                console.error("Failed to send verification email:", err);
+            }
 
             const createdUser = {
                 name: newUserData.name,
@@ -469,6 +497,46 @@ export const AuthProvider = ({ children }) => {
         scopedStorage.setItem('green_verified', 'true');
     };
 
+    const setupRecaptcha = (containerId) => {
+        if (!window.recaptchaVerifier) {
+            window.recaptchaVerifier = new RecaptchaVerifier(fbAuth, containerId, {
+                size: 'invisible',
+                callback: () => {
+                    // reCAPTCHA solved
+                }
+            });
+        }
+        return window.recaptchaVerifier;
+    };
+
+    const sendVerificationSMS = async (phoneNumber, appVerifier) => {
+        if (!fbAuth.currentUser) throw new Error("No user signed in.");
+        // Format phone number to E.164 format if not already
+        let formattedPhone = phoneNumber;
+        if (!formattedPhone.startsWith('+')) {
+            // Default to +49 (Germany) if no country code provided, just as an example.
+            // A real app should ensure the user inputs the + country code.
+            formattedPhone = formattedPhone.startsWith('0') 
+                ? '+49' + formattedPhone.substring(1) 
+                : '+49' + formattedPhone;
+        }
+        const confirmationResult = await linkWithPhoneNumber(fbAuth.currentUser, formattedPhone, appVerifier);
+        return confirmationResult;
+    };
+
+    const confirmSMS = async (confirmationResult, code) => {
+        const result = await confirmationResult.confirm(code);
+        
+        // Update Firestore to mark phone as verified
+        if (result.user && user) {
+            const docRef = doc(fbDb, 'users', user.email.toLowerCase());
+            await setDoc(docRef, { phoneVerified: true }, { merge: true });
+            setUser(prev => ({ ...prev, phoneVerified: true }));
+        }
+        
+        return result.user;
+    };
+
     const logout = async () => {
         setUser(null);
         setIsVerified(false);
@@ -500,7 +568,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, setUser, loading, login, logout, isVerified, verify, register }}>
+        <AuthContext.Provider value={{ user, setUser, loading, login, logout, isVerified, verify, register, setupRecaptcha, sendVerificationSMS, confirmSMS }}>
             {children}
         </AuthContext.Provider>
     );

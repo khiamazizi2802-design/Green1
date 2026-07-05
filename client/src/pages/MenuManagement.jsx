@@ -71,7 +71,16 @@ const getCategoryOptionsForContext = (ctx) => {
             { value: 'Dessert', label: 'Dessert & Sweets' }
         ];
     }
-    // Default RM, CM (Restaurant, Club)
+    if (ctx === 'CM') {
+        return [
+            { value: 'Tickets', label: 'Entry Tickets / Passes' },
+            { value: 'VIP', label: 'VIP Table / Premium Booking' },
+            { value: 'Drinks', label: 'Drinks & Beverages' },
+            { value: 'Food', label: 'Food / Dining' },
+            { value: 'Shisha', label: 'Shisha / Hookah' }
+        ];
+    }
+    // Default RM (Restaurant)
     return [
         { value: 'Food', label: 'Food / Dining' },
         { value: 'Drinks', label: 'Drinks & Beverages' },
@@ -192,7 +201,7 @@ const MenuManagement = () => {
 
             // 1. Fetch from Firestore
             try {
-                const docRef = doc(db, 'business_menus', `${ctx}_${userEmailKey}`);
+                const docRef = doc(db, 'business_menus', user?.email?.toLowerCase() || userEmailKey);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -265,7 +274,7 @@ const MenuManagement = () => {
                 status: 'verified'
             }));
 
-            await setDoc(doc(db, 'business_menus', `${managerContext}_${userEmailKey}`), {
+            await setDoc(doc(db, 'business_menus', user?.email?.toLowerCase() || userEmailKey), {
                 items: formattedItems,
                 updatedAt: new Date().toISOString()
             });

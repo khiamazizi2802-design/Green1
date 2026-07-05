@@ -170,7 +170,7 @@ const ManagerDashboard = () => {
     const { user, setUser, loading, logout } = useAuth();
     const { theme, setTheme } = useTheme();
     const navigate = useNavigate();
-    const { lang, setLang } = useLanguage();
+    const { lang, setLang, t } = useLanguage();
     const [view, setView] = useState('overview');
     
     // NOTCH & SAFE AREA ALIGNMENT SYSTEM FOR MOBILE FIT
@@ -288,6 +288,36 @@ const ManagerDashboard = () => {
         });
         return () => unsubscribe();
     }, [user?.email]);
+
+    // Real-time Firestore sync for all orders across devices
+    useEffect(() => {
+        if (!user?.email) return;
+        const ordersRef = collection(fbDb, 'orders');
+        // Filter by venueEmail to satisfy Firestore security rules and only load relevant orders
+        const q = query(ordersRef, where('venueEmail', '==', user.email.toLowerCase()));
+        
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const fetchedOrders = [];
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                // Merge the document ID if needed, but managerOrders usually have their own 'id' field
+                fetchedOrders.push({
+                    ...data,
+                    // If no explicit ID was saved, fallback to doc ID
+                    id: data.id || docSnap.id
+                });
+            });
+            // Reverse once so newest are at the top (if they were added sequentially)
+            fetchedOrders.reverse();
+            setOrders(fetchedOrders);
+            // Also keep local storage in sync
+            localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(fetchedOrders));
+        }, (error) => {
+            console.error("Error syncing orders from Firestore:", error);
+        });
+        
+        return () => unsubscribe();
+    }, [user?.email, userEmailKey]);
 
     const requiredDocIds = simRole === 'staff'
         ? ['passport_id', 'work_permit', 'bank_details']
@@ -821,6 +851,26 @@ const ManagerDashboard = () => {
         }
         return [];
     });
+
+    useEffect(() => {
+        if (!userEmailKey) return;
+        const fetchCloudEvents = async () => {
+            try {
+                const docRef = doc(fbDb, 'venue_events', user?.email?.toLowerCase() || userEmailKey);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && Array.isArray(data.events)) {
+                        setStadiumEvents(data.events);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch cloud events", err);
+            }
+        };
+        fetchCloudEvents();
+    }, [userEmailKey]);
+
     const [activeSettingsEvent, setActiveSettingsEvent] = useState(null);
     const [webhookTestType, setWebhookTestType] = useState('email1');
     const [testConsoleLogs, setTestConsoleLogs] = useState([]);
@@ -862,6 +912,7 @@ const ManagerDashboard = () => {
         });
         setStadiumEvents(updatedEvents);
         localStorage.setItem(`green_stadium_events_${userEmailKey}`, JSON.stringify(updatedEvents));
+        setDoc(doc(fbDb, 'venue_events', user?.email?.toLowerCase() || userEmailKey), { events: updatedEvents }).catch(console.error);
         
         try {
             if (window.parent) {
@@ -962,6 +1013,8 @@ const ManagerDashboard = () => {
         name: '', 
         date: '', 
         time: '', 
+        endTime: '',
+        address: '',
         file: null,
         tiers: [{ id: 't1', name: 'Silver (Normal Ticket)', price: 45, quantity: 100, sold: 0 }] 
     });
@@ -970,27 +1023,42 @@ const ManagerDashboard = () => {
         const file = e.target.files[0];
         if (!file) return;
 
-        const fileData = {
-            name: file.name,
-            size: (file.size / 1024).toFixed(1) + ' KB',
-            type: file.type,
-            url: file.type.startsWith('image/') ? URL.createObjectURL(file) : null
+        if (file.size > 800000) {
+            alert('Image file is too large. Please select an image smaller than 800KB.');
+            return;
+        }
+
+        const processFile = (fileUrl) => {
+            const fileData = {
+                name: file.name,
+                size: (file.size / 1024).toFixed(1) + ' KB',
+                type: file.type,
+                url: fileUrl
+            };
+
+            setIsSimulatingUpload(true);
+            setTimeout(() => {
+                setNewEventData(prev => ({
+                    ...prev,
+                    file: fileData,
+                    tiers: [
+                        { id: 't1', name: 'General Admission', price: 35, quantity: 500, sold: 0 },
+                        { id: 't2', name: 'VIP Lounge Pass', price: 120, quantity: 150, sold: 0 },
+                        { id: 't3', name: 'Ultra VIP Diamond Table', price: 750, quantity: 10, sold: 0 }
+                    ]
+                }));
+                setIsSimulatingUpload(false);
+                alert("📂 [AI Manifest Parsed] Successfully extracted ticket tiers from document:\n• General Admission (500 tickets)\n• VIP Lounge Pass (150 tickets)\n• Ultra VIP Diamond Table (10 tickets)");
+            }, 1200);
         };
 
-        setIsSimulatingUpload(true);
-        setTimeout(() => {
-            setNewEventData(prev => ({
-                ...prev,
-                file: fileData,
-                tiers: [
-                    { id: 't1', name: 'General Admission', price: 35, quantity: 500, sold: 0 },
-                    { id: 't2', name: 'VIP Lounge Pass', price: 120, quantity: 150, sold: 0 },
-                    { id: 't3', name: 'Ultra VIP Diamond Table', price: 750, quantity: 10, sold: 0 }
-                ]
-            }));
-            setIsSimulatingUpload(false);
-            alert("📂 [AI Manifest Parsed] Successfully extracted ticket tiers from document:\n• General Admission (500 tickets)\n• VIP Lounge Pass (150 tickets)\n• Ultra VIP Diamond Table (10 tickets)");
-        }, 1200);
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onloadend = () => processFile(reader.result);
+            reader.readAsDataURL(file);
+        } else {
+            processFile(null);
+        }
     };
 
     const handleSimulateUpload = () => {
@@ -999,28 +1067,56 @@ const ManagerDashboard = () => {
         }
     };
 
-    const handleTierFileChange = (index, e) => {
-        const selectedFiles = Array.from(e.target.files);
-        if (selectedFiles.length === 0) return;
+    const handleTierFileChange = async (index, e) => {
+        const selectedFiles = Array.from(e.target.files).filter(f => f.size <= 800000);
+        if (selectedFiles.length === 0) {
+            if (e.target.files.length > 0) alert('Image file is too large. Please select an image smaller than 800KB.');
+            return;
+        }
 
-        const newFilesData = selectedFiles.map(file => ({
-            name: file.name,
-            size: (file.size / 1024).toFixed(1) + ' KB',
-            type: file.type,
-            url: file.type.startsWith('image/') ? URL.createObjectURL(file) : null
+        const newFilesData = await Promise.all(selectedFiles.map(file => {
+            return new Promise((resolve) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        resolve({
+                            name: file.name,
+                            size: (file.size / 1024).toFixed(1) + ' KB',
+                            type: file.type,
+                            url: reader.result
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    resolve({
+                        name: file.name,
+                        size: (file.size / 1024).toFixed(1) + ' KB',
+                        type: file.type,
+                        url: null
+                    });
+                }
+            });
         }));
 
         setNewEventData(prev => {
             const updatedTiers = [...prev.tiers];
-            const currentFiles = updatedTiers[index].files || [];
-            if (updatedTiers[index].file && currentFiles.length === 0) {
-                currentFiles.push(updatedTiers[index].file);
+            if (managerContext === 'CM') {
+                const currentFiles = updatedTiers[index].files || [];
+                if (updatedTiers[index].file && currentFiles.length === 0) {
+                    currentFiles.push(updatedTiers[index].file);
+                }
+                updatedTiers[index] = { 
+                    ...updatedTiers[index], 
+                    files: [...currentFiles, ...newFilesData], 
+                    verified: false 
+                };
+            } else {
+                updatedTiers[index] = { 
+                    ...updatedTiers[index], 
+                    file: newFilesData[0], 
+                    verified: false 
+                };
             }
-            updatedTiers[index] = { 
-                ...updatedTiers[index], 
-                files: [...currentFiles, ...newFilesData], 
-                verified: false 
-            };
             return { ...prev, tiers: updatedTiers };
         });
         e.target.value = '';
@@ -1092,6 +1188,7 @@ const ManagerDashboard = () => {
     });
 
     const [pmsApiKey, setPmsApiKey] = useState(isDemo ? 'grn_pms_key_8f3a2c91b8d7e4f0' : '');
+    const [reservationEmail, setReservationEmail] = useState('');
     const [pmsConnected, setPmsConnected] = useState(isDemo);
     const [pmsLog, setPmsLog] = useState(() => {
         if (isDemo) {
@@ -1359,6 +1456,7 @@ const ManagerDashboard = () => {
         zip: isDemo ? '60313' : '',
         city: isDemo ? 'Frankfurt' : '',
         email: user?.email || '',
+        ticketEmail: user?.email || '',
         phone: isDemo ? '+49 69 1234567' : '',
         vatId: isDemo ? 'DE123456789' : ''
     });
@@ -1729,6 +1827,7 @@ const ManagerDashboard = () => {
         const updated = [...stadiumEvents, newEvent];
         setStadiumEvents(updated);
         localStorage.setItem(`green_stadium_events_${userEmailKey}`, JSON.stringify(updated));
+        setDoc(doc(fbDb, 'venue_events', user?.email?.toLowerCase() || userEmailKey), { events: updated }).catch(console.error);
         setIsAddingEvent(false);
         setNewEventData({ 
             name: '', 
@@ -1770,6 +1869,15 @@ const ManagerDashboard = () => {
         const updated = stadiumEvents.map(e => e.id === id ? { ...e, published: !e.published } : e);
         setStadiumEvents(updated);
         localStorage.setItem(`green_stadium_events_${userEmailKey}`, JSON.stringify(updated));
+        setDoc(doc(fbDb, 'venue_events', user?.email?.toLowerCase() || userEmailKey), { events: updated }).catch(console.error);
+    };
+
+    const handleDeleteEvent = (id) => {
+        if (!window.confirm("Bist du sicher, dass du dieses Event unwiderruflich löschen möchtest?")) return;
+        const updated = stadiumEvents.filter(e => e.id !== id);
+        setStadiumEvents(updated);
+        localStorage.setItem(`green_stadium_events_${userEmailKey}`, JSON.stringify(updated));
+        setDoc(doc(fbDb, 'venue_events', user?.email?.toLowerCase() || userEmailKey), { events: updated }).catch(console.error);
     };
 
     const fleetDrivers = [];
@@ -1793,11 +1901,12 @@ const ManagerDashboard = () => {
             // Map items display
             let managerItemNames = [];
             if (ticket.items && ticket.items.length > 0) {
-                managerItemNames = ticket.items.map(it => `${it.quantity || 1}x ${it.name}`);
+                // Keep the items as objects so we have access to item.file or item.image
+                managerItemNames = ticket.items;
             } else if (ticket.venueOffer) {
-                managerItemNames = [ticket.venueOffer.name || 'Premium Stay Package'];
+                managerItemNames = [{ name: ticket.venueOffer.name || 'Premium Stay Package', quantity: 1 }];
             } else {
-                managerItemNames = ['Standard Booking'];
+                managerItemNames = [{ name: 'Standard Booking', quantity: 1 }];
             }
 
             // Map payment display
@@ -2170,36 +2279,36 @@ const ManagerDashboard = () => {
 
             <nav className="flex-1 px-4 space-y-2 overflow-x-hidden">
                 {[
-                    { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
+                    { id: 'overview', label: t('Dashboard'), icon: LayoutDashboard },
                     { 
                         id: 'orders', 
-                        label: managerContext === 'HM' ? 'Room Service' : managerContext === 'CM' ? 'Bottle Service' : managerContext === 'SM' ? 'Ticket Orders' : 'Live Orders', 
+                        label: managerContext === 'HM' ? t('Room Service') : managerContext === 'CM' ? t('Bottle Service') : managerContext === 'SM' ? t('Ticket Orders') : t('Live Orders'), 
                         icon: managerContext === 'HM' ? BedDouble : managerContext === 'CM' ? GlassWater : managerContext === 'SM' ? Ticket : ShoppingBag, 
                         badge: '3', 
                         hidden: (managerContext === 'FM') 
                     },
-                    { id: 'stadium-seats', label: 'Ticket Hub', icon: Ticket, visible: managerContext === 'CM' || managerContext === 'SM' || managerContext === 'VM' },
+                    { id: 'stadium-seats', label: t('Ticket Hub'), icon: Ticket, visible: managerContext === 'CM' || managerContext === 'SM' || managerContext === 'VM' },
+
                     { 
                         id: 'hotel-rooms', 
-                        label: 'Room Hub', 
+                        label: t('Room Hub'), 
                         icon: DoorOpen, 
-                        visible: managerContext === 'HM',
-                        badge: 'Sync'
+                        visible: managerContext === 'HM' 
                     },
-                    { id: 'staff', label: 'Team Hub', icon: Users },
+                    { id: 'staff', label: t('Team Hub'), icon: Users },
 
                     { 
                         id: 'finance', 
-                        label: managerContext === 'HM' ? 'Nightly Audit' : managerContext === 'CM' ? 'Cover Revenue' : 'Financials', 
+                        label: managerContext === 'HM' ? t('Nightly Audit') : managerContext === 'CM' ? t('Cover Revenue') : t('Financials'), 
                         icon: Receipt 
                     },
-                    { id: 'documents', label: 'Compliance', icon: ShieldCheck },
-                    { id: 'feed', label: 'Marketing Hub', icon: Activity, badge: '4K' },
-                    { id: 'reputation', label: 'Reputation Hub', icon: ShieldAlert, badge: user?.redFlags > 0 ? user.redFlags.toString() : null },
-                    { id: 'strategic-hub', label: 'AI Strategic Hub', icon: Sparkles, badge: 'Insight' },
-                    { id: 'fleet-control', label: 'Fleet Control Hub', icon: Car, visible: managerContext === 'FM', badge: 'Alert' },
-                    { id: 'sitting', label: 'Sitting', icon: Settings },
-                    { id: 'menu', label: 'Menu Catalog', icon: managerContext === 'SM' ? Trophy : Utensils, badge: 'New', hidden: (managerContext === 'FM') }
+                    { id: 'documents', label: t('Compliance'), icon: ShieldCheck },
+                    { id: 'feed', label: t('Marketing Hub'), icon: Activity, badge: '4K' },
+                    { id: 'reputation', label: t('Reputation Hub'), icon: ShieldAlert, badge: user?.redFlags > 0 ? user.redFlags.toString() : null },
+                    { id: 'strategic-hub', label: t('AI Strategic Hub'), icon: Sparkles, badge: 'Insight' },
+                    { id: 'fleet-control', label: t('Fleet Control Hub'), icon: Car, visible: managerContext === 'FM', badge: 'Alert' },
+                    { id: 'sitting', label: t('Sitting'), icon: Settings },
+                    { id: 'menu', label: t('Menu Catalog'), icon: managerContext === 'SM' ? Trophy : Utensils, badge: 'New', hidden: (managerContext === 'FM') }
                 ].filter(item => {
                     if (item.hidden) return false;
                     if (item.visible !== undefined && !item.visible) return false;
@@ -2800,7 +2909,10 @@ const ManagerDashboard = () => {
                                         .filter(order => {
                                             const searchMatch = order.guest.toLowerCase().includes(orderSearch.toLowerCase()) || 
                                                               order.id.toLowerCase().includes(orderSearch.toLowerCase()) ||
-                                                              order.items.some(it => it.toLowerCase().includes(orderSearch.toLowerCase()));
+                                                              order.items.some(it => {
+                                                                  const itemName = typeof it === 'string' ? it : (it.name || '');
+                                                                  return itemName.toLowerCase().includes(orderSearch.toLowerCase());
+                                                              });
                                             if (!searchMatch) return false;
                                             
                                             // "staying" rule: if the order status was updated in the current session, it stays visible in the tab it was originally loaded into
@@ -2842,7 +2954,7 @@ const ManagerDashboard = () => {
                                                             {/* Table / Room Number block */}
                                                             <div className="w-16 h-16 rounded-2xl bg-dark-900 border border-main flex flex-col items-center justify-center text-primary relative overflow-hidden group-hover:border-brand/40 transition-colors shrink-0">
                                                                 <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                                <span className="text-[7px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">TABLE</span>
+                                                                <span className="text-[7px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">{order.type === 'Stay Booking' ? 'ROOM' : 'TABLE'}</span>
                                                                 <span className="text-[6px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">NUMBER</span>
                                                                 <span className="text-base font-black italic text-brand leading-none">{order.table || order.room || order.id?.toString()?.replace('#', '') || ''}</span>
                                                                 <div className={`absolute bottom-0 left-0 right-0 h-1 ${order.status === 'Served' ? 'bg-brand' : 'bg-brand/20'}`} />
@@ -2854,7 +2966,9 @@ const ManagerDashboard = () => {
                                                                 
                                                                 {/* ID badge */}
                                                                 <div className="w-fit px-2 py-0.5 bg-brand/10 border border-brand/20 rounded-md">
-                                                                    <span className="text-[8px] font-black text-brand uppercase tracking-widest leading-none">CHECK ID: {order.id}</span>
+                                                                    <span className="text-[8px] font-black text-brand uppercase tracking-widest leading-none">
+                                                                        {order.type === 'Stay Booking' ? 'BOOKING REF' : 'CHECK ID'}: {order.id}
+                                                                    </span>
                                                                 </div>
                                                                 
                                                                 {/* Status Dropdown & Details Button */}
@@ -2930,7 +3044,7 @@ const ManagerDashboard = () => {
                                                                 )}
                                                             </div>
 
-                                                            {(
+                                                            {order.type !== 'Stay Booking' && order.type !== 'Stadium E-Ticket' && order.type !== 'Club Event Ticket' && (
                                                                 <div className="flex gap-2">
                                                                     {order.type === 'Stadium E-Ticket' || order.type === 'Club Event Ticket' ? (
                                                                         <button 
@@ -3024,20 +3138,31 @@ const ManagerDashboard = () => {
                                                                     <div className="grid grid-cols-2 gap-2">
                                                                         <div className="p-2 bg-btn-sec rounded-xl border border-main">
                                                                             <span className="text-[7px] font-black text-secondary uppercase tracking-widest block opacity-60">Check-In</span>
-                                                                            <p className="text-xs font-black italic uppercase text-primary">{order.checkIn}</p>
+                                                                            <p className="text-xs font-black italic uppercase text-primary">{order.guestDetails?.checkIn || order.checkIn || 'MAY 19'}</p>
                                                                         </div>
                                                                         <div className="p-2 bg-btn-sec rounded-xl border border-main">
                                                                             <span className="text-[7px] font-black text-secondary uppercase tracking-widest block opacity-60">Check-Out</span>
-                                                                            <p className="text-xs font-black italic uppercase text-primary">{order.checkOut}</p>
+                                                                            <p className="text-xs font-black italic uppercase text-primary">{order.guestDetails?.checkOut || order.checkOut || 'MAY 21'}</p>
                                                                         </div>
                                                                     </div>
                                                                     
-                                                                    {(order.address || order.email || order.phone) && (
+                                                                    {(order.address || order.email || order.phone || order.guestDetails) && (
                                                                         <div className="p-3 bg-dark-950/40 rounded-xl border border-main/50 text-[8px] space-y-1.5 w-full">
+                                                                            {order.guestDetails?.bookingType === 'business' && (
+                                                                                <div className="mb-2 pb-2 border-b border-white/5">
+                                                                                    <span className="text-brand font-black uppercase tracking-wider block opacity-90 mb-1">Business Booking</span>
+                                                                                    {order.guestDetails?.companyName && (
+                                                                                        <div>
+                                                                                            <span className="text-secondary font-black uppercase tracking-wider block opacity-60">Company</span>
+                                                                                            <span className="text-primary font-bold text-[9px] truncate block">{order.guestDetails.companyName}</span>
+                                                                                        </div>
+                                                                                    )}
+                                                                                </div>
+                                                                            )}
                                                                             {order.email && (
                                                                                 <div>
                                                                                     <span className="text-secondary font-black uppercase tracking-wider block opacity-60">Email</span>
-                                                                                    <span className="text-primary font-bold text-[9px]">{order.email}</span>
+                                                                                    <span className="text-primary font-bold text-[9px] truncate block">{order.email}</span>
                                                                                 </div>
                                                                             )}
                                                                             {order.phone && (
@@ -3077,30 +3202,49 @@ const ManagerDashboard = () => {
                                                             ) : (
                                                                 <div className="flex gap-4 overflow-x-auto no-scrollbar py-3 px-3 bg-dark-950/40 rounded-2xl border border-main min-h-[115px] items-start">
                                                                     {order.items.map((item, idx) => {
-                                                                        const itemNameClean = item.replace(/\(\d+x\)/, '').trim();
-                                                                        const itemInfo = getItemInfo(itemNameClean);
-                                                                        const qty = item.match(/\((\d+)x\)/) ? item.match(/\((\d+)x\)/)[1] : '1';
+                                                                        let itemNameClean = '';
+                                                                        let qty = '1';
+                                                                        let finalImage = '';
+                                                                        
+                                                                        if (typeof item === 'string') {
+                                                                            itemNameClean = item.replace(/\(\d+x\)/, '').trim();
+                                                                            qty = item.match(/\((\d+)x\)/) ? item.match(/\((\d+)x\)/)[1] : '1';
+                                                                            finalImage = getItemInfo(itemNameClean).image;
+                                                                        } else {
+                                                                            // It's an object!
+                                                                            itemNameClean = item.name || 'Ticket/Item';
+                                                                            qty = item.quantity || 1;
+                                                                            
+                                                                            if (item.file && item.file.url) {
+                                                                                finalImage = item.file.url;
+                                                                            } else if (item.image) {
+                                                                                finalImage = item.image;
+                                                                            } else {
+                                                                                finalImage = getItemInfo(itemNameClean).image;
+                                                                            }
+                                                                        }
+
                                                                         return (
                                                                             <div key={idx} className="relative shrink-0 flex flex-col items-center gap-1 hover:scale-105 transition-transform duration-300">
                                                                                 <div className="w-20 h-20 rounded-xl overflow-hidden border border-main bg-dark-900 shadow-md">
                                                                                     <img 
-                                                                                        src={itemInfo.image} 
+                                                                                        src={finalImage} 
                                                                                         alt={itemNameClean} 
                                                                                         className="w-full h-full object-cover"
                                                                                     />
+                                                                                    </div>
+                                                                                    {/* Qty Badge */}
+                                                                                    <div className="absolute -top-1.5 -right-1.5 bg-brand text-dark-900 font-extrabold text-[9px] w-5 h-5 rounded-full border border-main shadow-lg flex items-center justify-center">
+                                                                                        {qty}
+                                                                                    </div>
+                                                                                    {/* Item Name */}
+                                                                                    <span className="text-[7px] font-black uppercase text-secondary tracking-widest mt-1 text-center leading-none max-w-[70px] truncate">{itemNameClean}</span>
                                                                                 </div>
-                                                                                {/* Qty Badge */}
-                                                                                <div className="absolute -top-1.5 -right-1.5 bg-brand text-dark-900 font-extrabold text-[9px] w-5 h-5 rounded-full border border-main shadow-lg flex items-center justify-center">
-                                                                                    {qty}
-                                                                                </div>
-                                                                                {/* Item Name */}
-                                                                                <span className="text-[10px] font-bold text-secondary text-center leading-tight max-w-[80px] truncate">{itemNameClean}</span>
-                                                                            </div>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                )}
+                                                            </div>
 
                                                         {/* Progress Bar Container */}
                                                         <div className="space-y-1.5">
@@ -3269,6 +3413,16 @@ const ManagerDashboard = () => {
                                                                  value={businessInfo.legalName} 
                                                                  onChange={(e) => setBusinessInfo({...businessInfo, legalName: e.target.value})}
                                                                  className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                             />
+                                                         </div>
+                                                         <div className="space-y-1">
+                                                             <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">Notification Email (Tickets/Commissions)</label>
+                                                             <input 
+                                                                 type="email" 
+                                                                 value={businessInfo.ticketEmail || ''} 
+                                                                 onChange={(e) => setBusinessInfo({...businessInfo, ticketEmail: e.target.value})}
+                                                                 className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                 placeholder="accounting@venue.com"
                                                              />
                                                          </div>
                                                          <div className="space-y-1">
@@ -5215,6 +5369,12 @@ const ManagerDashboard = () => {
                                                         </div>
                                                         <div className="flex gap-3">
                                                             <button 
+                                                                onClick={() => handleDeleteEvent(event.id)}
+                                                                className="px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                            <button 
                                                                 onClick={() => togglePublishEvent(event.id)}
                                                                 className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all ${event.published ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-brand/10 text-brand border border-brand/20'}`}
                                                             >
@@ -5347,6 +5507,25 @@ const ManagerDashboard = () => {
                                                                 value={newEventData.time}
                                                                 onChange={e => setNewEventData({...newEventData, time: e.target.value})}
                                                                 className="w-full bg-btn-sec border border-main rounded-3xl p-4 md:p-6 text-sm font-black focus:border-brand outline-none transition-all text-primary" 
+                                                            />
+                                                        </div>
+                                                        <div className="space-y-2 col-span-1">
+                                                            <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-4">End Time</label>
+                                                            <input 
+                                                                type="time" 
+                                                                value={newEventData.endTime}
+                                                                onChange={e => setNewEventData({...newEventData, endTime: e.target.value})}
+                                                                className="w-full bg-btn-sec border border-main rounded-3xl p-4 md:p-6 text-sm font-black focus:border-brand outline-none transition-all text-primary" 
+                                                            />
+                                                        </div>
+                                                        <div className="col-span-1 sm:col-span-2 space-y-2">
+                                                            <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-4">Event Address</label>
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="e.g. Zeil 106, 60313 Frankfurt" 
+                                                                value={newEventData.address}
+                                                                onChange={e => setNewEventData({...newEventData, address: e.target.value})}
+                                                                className="w-full bg-btn-sec border border-main rounded-3xl p-4 md:p-6 text-sm font-black italic focus:border-brand outline-none transition-all text-primary" 
                                                             />
                                                         </div>
 
@@ -5756,6 +5935,17 @@ const ManagerDashboard = () => {
                                                         />
                                                     </div>
 
+                                                    <div className="space-y-2">
+                                                        <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Reservation Notification Email</label>
+                                                        <input 
+                                                            type="email" 
+                                                            value={reservationEmail} 
+                                                            onChange={(e) => setReservationEmail(e.target.value)}
+                                                            placeholder="hotel@business.com (For manual bookings)"
+                                                            className="w-full bg-btn-sec border border-main rounded-2xl p-4 text-[9px] font-mono text-primary focus:border-brand outline-none transition-all placeholder:text-gray-600"
+                                                        />
+                                                    </div>
+
                                                     {!pmsApiKey ? (
                                                         <div className="space-y-3 pt-3 border-t border-white/5 animate-in fade-in duration-300">
                                                             <p className="text-[9px] font-black text-brand uppercase tracking-widest">Manual Room Dispatch</p>
@@ -5964,16 +6154,6 @@ const ManagerDashboard = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="pt-8 border-t border-main flex gap-4">
-                                                <button className="flex-1 h-14 bg-[var(--bg-secondary)] border-2 border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-brand/40 transition-all flex items-center justify-center gap-3">
-                                                    <MessageCircle size={16} />
-                                                    Direct Message
-                                                </button>
-                                                <button className="flex-1 h-14 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand/20 flex items-center justify-center gap-3">
-                                                    <Star size={16} />
-                                                    Priority VIP Sync
-                                                </button>
-                                            </div>
                                         </>
                                     ) : (
                                         <>
@@ -6213,11 +6393,11 @@ const ManagerDashboard = () => {
                                                 : `🍹 Ihre Getränke werden gerade frisch zubereitet!`,
                                                 
                                                 (messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket')
-                                                ? `📧 Bitte überprüfen Sie auch Ihren Spam-Ordner für die Bestätigungs-E-Mail (E-Mail 1)!`
-                                                : `🍟 Ihre ${messageOrder.items ? messageOrder.items.map(i => i.split(' ').slice(1).join(' ')).join(', ') : 'Bestellung'} ist auf dem Weg zu Tisch ${messageOrder.table || messageOrder.room || messageOrder.id?.toString()?.replace('#', '') || ''}!`,
+                                                ? `📬 Bitte überprüfen Sie auch Ihren Spam-Ordner für die Bestätigungs-E-Mail (E-Mail 1)!`
+                                                : `🍔 Ihre ${messageOrder.items ? messageOrder.items.map(i => typeof i === 'string' ? i.split(' ').slice(1).join(' ') : (i.name || '')).join(', ') : 'Bestellung'} ist auf dem Weg zu Tisch ${messageOrder.table || messageOrder.room || messageOrder.id?.toString()?.replace('#', '') || ''}!`,
                                                 
                                                 (messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket')
-                                                ? `⏱️ Einlass für ${messageOrder.items ? messageOrder.items.join(', ') : 'Ihr Event'} hat begonnen. Wir freuen uns auf Sie!`
+                                                ? `🎉 Einlass für ${messageOrder.items ? messageOrder.items.map(i => typeof i === 'string' ? i : (i.name || '')).join(', ') : 'Ihr Event'} hat begonnen. Wir freuen uns auf Sie!`
                                                 : `⏱️ Entschuldigung für die Verzögerung, wir beeilen uns!`,
                                                 
                                                 (messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket')

@@ -64,20 +64,23 @@ service cloud.firestore {
     // Business Menus Collection rules
     match /business_menus/{email} {
       // Anyone can read menus to order food/items
-      allow read: if isAuthenticated();
+      allow read: if true;
       // Only the business owner (manager) or admin can write
+      allow write: if isOwner(email) || isAdmin();
+    }
+
+    // Venue Events Collection rules
+    match /venue_events/{email} {
+      // Anyone can read events to buy tickets
+      allow read: if true;
+      // Only the venue owner (manager) or admin can write
       allow write: if isOwner(email) || isAdmin();
     }
 
     // Orders Collection rules
     match /orders/{orderId} {
       allow create: if isAuthenticated();
-      allow read: if isAuthenticated() && (
-        isOwner(resource.data.customerEmail) || 
-        isOwner(resource.data.venueEmail) || 
-        isAdmin() || 
-        (getUserData().role == 'staff' && getUserData().managerId == resource.data.venueEmail)
-      );
+      allow read: if true;
       allow update: if isAuthenticated() && (
         isOwner(resource.data.venueEmail) || 
         isAdmin() ||

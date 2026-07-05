@@ -198,14 +198,17 @@ const VenueMenuPage = () => {
     const isDemo = user?.isDemo;
     
     const venueName = location.state?.venueName || "Skyline Club";
+    const venueAddress = location.state?.venueAddress || "";
     const venueOffer = location.state?.venueOffer || "FREE ENTRY + 1 DRINK";
     const isTakeawayMode = location.state?.isTakeawayMode || false;
+    const venueEmail = location.state?.email || 'hotel@green.de';
     
+    const passedCategory = location.state?.category;
     const isParking = false;
-    const isHotel = venueName.toLowerCase().includes('hotel') || venueName.toLowerCase().includes('luxe');
-    const isStadium = venueName.toLowerCase().includes('stadium') || venueName.toLowerCase().includes('arena');
-    const isDining = venueName.toLowerCase().includes('dining') || venueName.toLowerCase().includes('restaurant') || venueName.toLowerCase().includes('bistro') || venueName.toLowerCase().includes('eat') || venueName.toLowerCase().includes('food') || venueName.toLowerCase().includes('cafe') || venueName.toLowerCase().includes('café') || venueName.toLowerCase().includes('diner') || venueName.toLowerCase().includes('steakhouse') || venueName.toLowerCase().includes('gastronomy') || venueName.toLowerCase().includes('sushi') || venueName.toLowerCase().includes('pizza') || venueName.toLowerCase().includes('kitchen') || venueName.toLowerCase().includes('bistro');
-    const isClub = (venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('disco') || venueName.toLowerCase().includes('lounge') || venueName.toLowerCase().includes('night') || venueName.toLowerCase().includes('bar') || venueName.toLowerCase().includes('festival') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('underground')) && !isDining && !isHotel && !isStadium;
+    const isHotel = passedCategory === 'hotel' || venueName.toLowerCase().includes('hotel') || venueName.toLowerCase().includes('luxe');
+    const isStadium = passedCategory === 'stadium' || venueName.toLowerCase().includes('stadium') || venueName.toLowerCase().includes('arena');
+    const isDining = passedCategory === 'restaurant' || venueName.toLowerCase().includes('dining') || venueName.toLowerCase().includes('restaurant') || venueName.toLowerCase().includes('bistro') || venueName.toLowerCase().includes('eat') || venueName.toLowerCase().includes('food') || venueName.toLowerCase().includes('cafe') || venueName.toLowerCase().includes('cafǸ') || venueName.toLowerCase().includes('diner') || venueName.toLowerCase().includes('steakhouse') || venueName.toLowerCase().includes('gastronomy') || venueName.toLowerCase().includes('sushi') || venueName.toLowerCase().includes('pizza') || venueName.toLowerCase().includes('kitchen');
+    const isClub = passedCategory === 'club' || passedCategory === 'bar' || ((venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('disco') || venueName.toLowerCase().includes('lounge') || venueName.toLowerCase().includes('night') || venueName.toLowerCase().includes('bar') || venueName.toLowerCase().includes('festival') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('underground')) && !isDining && !isHotel && !isStadium);
 
     const isGroupActive = localStorage.getItem('green_group_state') === 'active';
 
@@ -250,13 +253,37 @@ const VenueMenuPage = () => {
         dob: '',
         cardNumber: '',
         cardExpiry: '',
-        cardCvv: ''
+        cardCvv: '',
+        checkIn: '',
+        checkOut: '',
+        stayDuration: 1,
+        bookingType: 'private'
     });
     const [isProcessing, setIsProcessing] = useState(false);
     const [attendees, setAttendees] = useState([]); // For stadium multi-ticket personalization
     const [lastOrderDetails, setLastOrderDetails] = useState(null);
     const [showToast, setShowToast] = useState(false);
     const [toastMsg, setToastMsg] = useState("");
+
+    const [venueProvisions, setVenueProvisions] = useState({ hotelStadium: 5.0, fnb: 0.0 });
+
+    useEffect(() => {
+        const fetchProvisions = async () => {
+            try {
+                const docSnap = await getDoc(doc(db, 'system_config', 'provisions'));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setVenueProvisions({
+                        hotelStadium: parseFloat(data.hotelStadiumPercent) || 5.0,
+                        fnb: parseFloat(data.fnbPercent) || 0.0
+                    });
+                }
+            } catch (e) {
+                console.warn("Could not fetch provisions", e);
+            }
+        };
+        fetchProvisions();
+    }, []);
 
     const hotelCategories = [];
     const diningCategories = [];
@@ -326,8 +353,7 @@ const VenueMenuPage = () => {
 
     // Dynamic AI Neural Catalog sync effect
     useEffect(() => {
-        // Resolve fallback demo email key if not passed
-        let emailKey = location.state?.emailKey;
+        let emailKey = location.state?.emailKey || location.state?.email?.replace(/[^a-zA-Z0-9]/g, '_');
         if (!emailKey) {
             if (isHotel) emailKey = 'hotel_green_de';
             else if (isStadium) emailKey = 'stadium_green_de';
@@ -336,7 +362,13 @@ const VenueMenuPage = () => {
             else emailKey = 'restaurant_green_de';
         }
 
-        const bizType = isHotel ? 'HM' : 
+        const bizType = passedCategory === 'hotel' ? 'HM' :
+                        passedCategory === 'stadium' ? 'SM' :
+                        passedCategory === 'club' ? 'CM' :
+                        passedCategory === 'bar' ? 'BM' :
+                        passedCategory === 'restaurant' ? 'RM' :
+                        passedCategory === 'event' ? 'VM' :
+                        isHotel ? 'HM' : 
                         isStadium ? 'SM' : 
                         (venueName.toLowerCase().includes('gala') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('show') || venueName.toLowerCase().includes('festival') || venueName.toLowerCase().includes('party')) ? 'VM' :
                         (venueName.toLowerCase().includes('bar') || venueName.toLowerCase().includes('lounge')) ? 'BM' : 
@@ -358,7 +390,7 @@ const VenueMenuPage = () => {
 
             // 2. Try Firestore for real-time sync
             try {
-                const docRef = doc(db, 'business_menus', `${bizType}_${emailKey}`);
+                const docRef = doc(db, 'business_menus', location.state?.email?.toLowerCase() || emailKey);
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists()) {
@@ -369,6 +401,37 @@ const VenueMenuPage = () => {
                 }
             } catch (fbError) {
                 console.warn('Firestore menu lookup bypassed/failed:', fbError.message);
+            }
+
+            // 2.5 Try fetching venue_events (Tickets from Ticket Hub)
+            try {
+                const eventsRef = doc(db, 'venue_events', location.state?.email?.toLowerCase() || emailKey);
+                const eventsSnap = await getDoc(eventsRef);
+                if (eventsSnap.exists()) {
+                    const data = eventsSnap.data();
+                    if (data && Array.isArray(data.events)) {
+                        const publishedEvents = data.events.filter(e => e.published && (!e.context || e.context === bizType));
+                        publishedEvents.forEach(evt => {
+                            evt.tiers.forEach(tier => {
+                                if (!customItems) customItems = [];
+                                    let evtDesc = `Date: ${evt.date}, Time: ${evt.time}`;
+                                    if (evt.endTime) evtDesc += ` - ${evt.endTime}`;
+                                    if (evt.address) evtDesc += ` • Location: ${evt.address}`;
+                                    
+                                    customItems.push({
+                                        id: `ticket-${evt.id}-${tier.name}`,
+                                        name: `${evt.name} - ${tier.name}`,
+                                        price: tier.price,
+                                        description: evtDesc,
+                                        image: tier.files?.[0]?.url || tier.file?.url || evt.file?.url || evt.image || 'https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?w=400&h=400&fit=crop',
+                                    category: 'Tickets'
+                                });
+                            });
+                        });
+                    }
+                }
+            } catch (fbError) {
+                console.warn('Firestore events lookup bypassed/failed:', fbError.message);
             }
 
             // 3. Re-group custom items by category
@@ -390,8 +453,7 @@ const VenueMenuPage = () => {
                 // If B2C user is viewing a hotel, inject the B2B manually added rooms
                 if (isHotel) {
                     try {
-                        const managerEmail = location.state?.email || 'hotel@green.de';
-                        const mgrRef = doc(db, 'users', managerEmail.toLowerCase());
+                        const mgrRef = doc(db, 'users', venueEmail.toLowerCase());
                         const mgrSnap = await getDoc(mgrRef);
                         let roomsToUse = [];
                         if (mgrSnap.exists()) {
@@ -446,6 +508,43 @@ const VenueMenuPage = () => {
                     }
                 }
 
+                // Inject tickets from Ticket Hub (Manager Dashboard)
+                try {
+                    const savedEvents = localStorage.getItem(`green_stadium_events_${emailKey}`);
+                    if (savedEvents) {
+                        const rawEvents = JSON.parse(savedEvents);
+                        // Ticket Hub events are sometimes saved with published:false if just created
+                        // We will just show all events here for the demo, or filter by published
+                        const ticketItems = [];
+                        rawEvents.forEach(evt => {
+                            if (evt.tiers) {
+                                evt.tiers.forEach((t, tIdx) => {
+                                    let evtDesc = `Entry ticket for ${evt.name || evt.title}. Date: ${evt.date}, Time: ${evt.time}`;
+                                    if (evt.endTime) evtDesc += ` - ${evt.endTime}`;
+                                    if (evt.address) evtDesc += ` • Location: ${evt.address}`;
+                                    evtDesc += `. Allocation: ${t.quantity - (t.sold || 0)} available.`;
+                                    
+                                    ticketItems.push({
+                                        id: `dynamic-${evt.id}-${t.id || tIdx}`,
+                                        name: `${evt.name || evt.title} - ${t.name}`,
+                                        price: Number(t.price) || 20.00,
+                                        desc: evtDesc,
+                                        image: t.files?.[0]?.url || t.file?.url || evt.file?.url || evt.image || (tIdx % 2 === 0 
+                                            ? "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=400&fit=crop" 
+                                            : "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop"),
+                                        tags: ["Ticket", t.name.includes('VIP') ? "VIP" : "Standard"]
+                                    });
+                                });
+                            }
+                        });
+                        if (ticketItems.length > 0) {
+                            grouped["Ticket Hub"] = ticketItems;
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to inject Ticket Hub events:", e);
+                }
+
                 const dynamicCategories = Object.keys(grouped).map(catName => ({
                     name: catName,
                     items: grouped[catName]
@@ -454,8 +553,7 @@ const VenueMenuPage = () => {
                 setMenuCategories(dynamicCategories);
             } else if (isHotel) {
                 try {
-                    const managerEmail = location.state?.email || 'hotel@green.de';
-                    const mgrRef = doc(db, 'users', managerEmail.toLowerCase());
+                    const mgrRef = doc(db, 'users', venueEmail.toLowerCase());
                     const mgrSnap = await getDoc(mgrRef);
                     if (mgrSnap.exists()) {
                         const data = mgrSnap.data();
@@ -483,6 +581,19 @@ const VenueMenuPage = () => {
 
     const hasFoodOrDrinksInCart = cart.some(item => !item.tags?.includes('Ticket') && !item.tags?.includes('Fast-Lane') && !item.tags?.includes('VIP') && !item.id.startsWith('t') && !item.id.startsWith('st') && !item.id.startsWith('dynamic'));
 
+    const isRemote = !isTakeawayMode && !location.state?.selectedTable && !isHotel;
+
+    const isItemTicket = (item) => item.tags?.includes('Ticket') || 
+        item.tags?.includes('Fast-Lane') || 
+        item.tags?.includes('VIP') ||
+        item.tags?.includes('Tickets') ||
+        item.name?.toLowerCase().includes('ticket') ||
+        item.name?.toLowerCase().includes('pass') ||
+        item.name?.toLowerCase().includes('vip') ||
+        item.id.startsWith('t') || 
+        item.id.startsWith('st') ||
+        item.id.startsWith('dynamic');
+
     const triggerToast = (msg) => {
         setToastMsg(msg);
         setShowToast(true);
@@ -490,12 +601,7 @@ const VenueMenuPage = () => {
     };
 
     const handleOrder = (item) => {
-        const itemIsTicket = item.tags?.includes('Ticket') || 
-            item.tags?.includes('Fast-Lane') || 
-            item.tags?.includes('VIP') ||
-            item.id.startsWith('t') || 
-            item.id.startsWith('st') ||
-            item.id.startsWith('dynamic');
+        const itemIsTicket = isItemTicket(item);
 
         if (itemIsTicket) {
             // Trying to add a ticket
@@ -504,6 +610,10 @@ const VenueMenuPage = () => {
                 return;
             }
         } else {
+            if (isRemote) {
+                triggerToast("Food & Drinks können nur direkt vor Ort am Tisch bestellt werden.");
+                return;
+            }
             // Trying to add food/drinks
             if (hasTicketsInCart) {
                 triggerToast("Food and drinks can only be ordered at the business place. Please complete your ticket purchase first.");
@@ -513,35 +623,7 @@ const VenueMenuPage = () => {
         setCart([...cart, item]);
     };
 
-    // Load dynamic tickets uploaded by B2B Manager
-    useEffect(() => {
-        const saved = localStorage.getItem('green_stadium_events');
-        if (saved) {
-            try {
-                const raw = JSON.parse(saved);
-                const published = raw.filter(e => e.published);
-                
-                const items = [];
-                published.forEach(evt => {
-                    evt.tiers.forEach((t, tIdx) => {
-                        items.push({
-                            id: `dynamic-${evt.id}-${t.id || tIdx}`,
-                            name: `${evt.name} - ${t.name}`,
-                            price: Number(t.price) || 20.00,
-                            desc: `Entry ticket for ${evt.name}. Date: ${evt.date} at ${evt.time}. Allocation: ${t.quantity - (t.sold || 0)} available.`,
-                            image: tIdx % 2 === 0 
-                                ? "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=400&fit=crop" 
-                                : "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop",
-                            tags: ["Ticket", t.name.includes('VIP') ? "VIP" : "Standard"]
-                        });
-                    });
-                });
-                setDynamicClubTickets(items);
-            } catch (e) {
-                console.error('Failed to parse green_stadium_events in VenueMenuPage:', e);
-            }
-        }
-    }, []);
+    // Load dynamic tickets logic merged into fetchDynamicMenu
 
     // Sync states when returning from payment method page or location state changes
     useEffect(() => {
@@ -603,7 +685,6 @@ const VenueMenuPage = () => {
     }, [showPaymentTerminal, paymentStep, isStadium, isClub, cart]);
 
     const getPaymentMethods = () => {
-        if (!isDemo) return [];
         try {
             const savedMethods = localStorage.getItem('green_payment_methods');
             if (savedMethods) {
@@ -644,19 +725,40 @@ const VenueMenuPage = () => {
             console.error('Failed to get dynamic payment methods:', e);
         }
 
-        // Fallback defaults
-        return [
-            { id: 1, label: 'Mastercard (•••• 4242)', icon: CreditCard },
-            { id: 2, label: 'Deutsche Bank (•••• 5678)', icon: Landmark },
-            { id: 3, label: 'PayPal (alex.p@uplink.net)', icon: Wallet }
-        ];
+        if (isDemo) {
+            return [
+                { id: 1, label: 'Mastercard (•••• 4242)', icon: CreditCard },
+                { id: 2, label: 'Deutsche Bank (•••• 5678)', icon: Landmark },
+                { id: 3, label: 'PayPal (alex.p@uplink.net)', icon: Wallet }
+            ];
+        }
+        return [];
     };
 
-    const isBooking = isHotel && cart.some(item => item.tags?.includes('Luxury') || item.tags?.includes('Elite'));
+    const isBooking = cart.some(item => 
+        item.category?.toLowerCase().includes('room') || 
+        item.category?.toLowerCase().includes('zimmer') || 
+        item.name?.toLowerCase().includes('room') || 
+        item.name?.toLowerCase().includes('suite') || 
+        item.name?.toLowerCase().includes('zimmer')
+    ) || (isHotel && cart.some(item => item.tags?.includes('Luxury') || item.tags?.includes('Elite')));
 
-    const activePaymentMethods = (isHotel ? [
+    const baseHotelMethods = [
         { id: 'room_charge', label: 'Charge to Room (Folio)', icon: BedDouble },
-        { id: 'external', label: 'External Card', icon: CreditCard },
+        { id: 'external', label: 'External Card', icon: CreditCard }
+    ];
+
+    if (guestDetails.bookingType === 'business' && guestDetails.ccNumber) {
+        const last4 = guestDetails.ccNumber.replace(/\s/g, '').slice(-4);
+        baseHotelMethods.push({ 
+            id: 'company_card', 
+            label: `Company Card (•••• ${last4 || 'XXXX'})`, 
+            icon: CreditCard 
+        });
+    }
+
+    const activePaymentMethods = (isHotel || isBooking ? [
+        ...baseHotelMethods,
         ...getPaymentMethods()
     ] : [
         ...getPaymentMethods()
@@ -743,10 +845,37 @@ const VenueMenuPage = () => {
                 }
             }
             
+            // --- STRIPE INTENT FOR VENUE COMMISSIONS ---
+            if (!isGroupActive && !isRoomCharge && paymentMethod !== 'cash') {
+                try {
+                    let commissionPercent = venueProvisions.fnb;
+                    if (isBooking || isHotel || isStadium) {
+                        commissionPercent = venueProvisions.hotelStadium;
+                    }
+                    const applicationFeeAmount = Math.round(totalCost * (commissionPercent / 100) * 100);
+                    const wsUrl = import.meta.env.VITE_WS_URL || `http://${window.location.hostname}:3001`;
+                    const backendUrl = wsUrl.replace(/^ws/, 'http');
+                    
+                    await fetch(`${backendUrl}/api/payment/stripe/intent`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            amount: Math.round(totalCost * 100), 
+                            currency: 'eur',
+                            applicationFeeAmount: applicationFeeAmount
+                        })
+                    });
+                } catch (e) {
+                    console.error("Venue Stripe Request failed:", e);
+                }
+            }
+            // -------------------------------------------
+            
             const newTicket = {
                 id: `#${Date.now()}`,
                 type: (isStadium && hasTicketsInCart) ? 'stadium_ticket' : (isClub && hasTicketsInCart) ? 'club_ticket' : isParking ? 'parking' : isBooking ? 'booking' : (isHotel ? 'room_service' : 'order'),
                 venueName,
+                venueAddress,
                 venueOffer,
                 tableId: isStadium ? 'E-Ticket' : isClub ? 'Club-Pass' : hasTicketsInCart ? 'E-Ticket' : isParking ? 'Valet-Pass' : isBooking ? 'Check-in Assigned' : selectedTable,
                 guestName: isBooking ? `${guestDetails.firstName} ${guestDetails.lastName}`.trim() : guestName,
@@ -756,7 +885,7 @@ const VenueMenuPage = () => {
                 total: totalCost,
                 paymentMethod: isGroupActive ? 'group_tab' : (paymentMethod === 'external' ? externalMethod : paymentMethodName),
                 paymentStatus: isGroupActive ? 'UNPAID' : 'PAID',
-                orderStatus: hasTicketsInCart ? 'PENDING' : (isGroupActive ? 'GROUP ORDER' : ((isStadium || isClub) ? 'DISPATCHED' : 'PENDING')),
+                orderStatus: isBooking ? 'CONFIRMED' : (hasTicketsInCart ? 'PENDING' : (isGroupActive ? 'GROUP ORDER' : ((isStadium || isClub) ? 'DISPATCHED' : 'PENDING'))),
                 timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
 
@@ -791,11 +920,11 @@ const VenueMenuPage = () => {
                 
                 let managerItemNames = [];
                 if (newTicket.items && newTicket.items.length > 0) {
-                    managerItemNames = newTicket.items.map(it => `${it.quantity || 1}x ${it.name}`);
+                    managerItemNames = newTicket.items;
                 } else if (newTicket.venueOffer) {
-                    managerItemNames = [newTicket.venueOffer.name || 'Premium Stay Package'];
+                    managerItemNames = [{ name: newTicket.venueOffer.name || 'Premium Stay Package', quantity: 1 }];
                 } else {
-                    managerItemNames = ['Standard Booking'];
+                    managerItemNames = [{ name: 'Standard Booking', quantity: 1 }];
                 }
 
                 // Map payment display
@@ -810,10 +939,10 @@ const VenueMenuPage = () => {
 
                 const managerOrder = {
                     id: newTicket.id,
-                    venueEmail: managerEmail.toLowerCase(),
+                    venueEmail: venueEmail.toLowerCase(),
                     customerEmail: user?.email ? user.email.toLowerCase() : 'guest@green.de',
                     guest: guestDetails?.companyName ? `${newTicket.guestName} (${guestDetails.companyName})` : (newTicket.guestName || 'Anonymous Guest'),
-                    company: guestDetails?.companyName || undefined,
+                    company: guestDetails?.companyName || null,
                     items: managerItemNames,
                     total: typeof newTicket.total === 'number' ? newTicket.total.toFixed(2) : String(newTicket.total),
                     status: isBooking ? 'Booked' : 'Received',
@@ -821,10 +950,10 @@ const VenueMenuPage = () => {
                     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     timestamp: Date.now(),
                     payment: paymentDisplay,
-                    table: (!isBooking && !isHotel && !isStadium && !isClub && !hasTicketsInCart) ? newTicket.tableId : undefined,
-                    room: (isBooking || isHotel) ? (newTicket.tableId && newTicket.tableId !== 'Check-in Assigned' ? newTicket.tableId : String(Math.floor(100 + Math.random() * 400))) : undefined,
-                    checkIn: isBooking ? 'May 19' : undefined,
-                    checkOut: isBooking ? 'May 21' : undefined
+                    table: (!isBooking && !isHotel && !isStadium && !isClub && !hasTicketsInCart) ? newTicket.tableId : null,
+                    room: (isBooking || isHotel) ? (newTicket.tableId && newTicket.tableId !== 'Check-in Assigned' ? newTicket.tableId : String(Math.floor(100 + Math.random() * 400))) : null,
+                    checkIn: isBooking ? 'May 19' : null,
+                    checkOut: isBooking ? 'May 21' : null
                 };
 
                 // Push to Firestore
@@ -866,6 +995,7 @@ const VenueMenuPage = () => {
                 }
             } catch (e) {
                 console.error('Failed to sync order with Manager Dashboard:', e);
+                alert(`CRITICAL ERROR SAVING ORDER: ${e.message}. Please show this to the developer.`);
             }
             
             // Log Simulated Dispatch
@@ -889,14 +1019,18 @@ const VenueMenuPage = () => {
                     state: {
                         cart: newTicket.items,
                         venueName: newTicket.venueName,
+                        venueAddress: newTicket.venueAddress,
                         venueOffer: newTicket.venueOffer,
                         orderId: newTicket.id,
                         tableId: newTicket.tableId,
                         paymentStatus: 'UNPAID',
-                        orderStatus: hasTicketsInCart ? 'PENDING' : 'GROUP ORDER',
+                        orderStatus: isBooking ? 'CONFIRMED' : (hasTicketsInCart ? 'PENDING' : 'GROUP ORDER'),
                         guestName: newTicket.guestName,
                         guestEmail: newTicket.guestDetails?.email,
-                        guestPhone: newTicket.guestDetails?.phone
+                        guestPhone: newTicket.guestDetails?.phone,
+                        guestDetails: newTicket.guestDetails,
+                        attendees: newTicket.attendees,
+                        totalCost: newTicket.total
                     }
                 });
             } else {
@@ -929,7 +1063,7 @@ const VenueMenuPage = () => {
         return 'SEND ORDER';
     };
 
-    const totalCost = cart.reduce((sum, item) => sum + item.price, 0);
+    const totalCost = cart.reduce((sum, item) => sum + item.price, 0) * (isBooking ? (guestDetails.stayDuration || 1) : 1);
 
     return (
         <div className="min-h-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans relative pb-32">
@@ -996,18 +1130,7 @@ const VenueMenuPage = () => {
             </header>
 
             <main className="p-6 max-w-lg mx-auto space-y-8">
-                {/* Tactical Ordering Protocol Information Card */}
-                <div className="bg-[var(--bg-secondary)] border border-[var(--border-main)]/10 p-5 rounded-[2.5rem] flex gap-4 text-left relative overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
-                    <div className="w-10 h-10 rounded-2xl bg-brand/10 text-brand flex items-center justify-center flex-shrink-0">
-                        <Info size={20} />
-                    </div>
-                    <div className="space-y-1">
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-brand">Order Protocol Warning</span>
-                        <p className="text-[10px] text-[var(--text-secondary)] font-bold uppercase leading-relaxed">
-                            Only tickets can be purchased in advance. Food and drinks can only be ordered when you are physically present at the business place (club, bar, restaurant, hotel, or event) to access their live on-premise menu.
-                        </p>
-                    </div>
-                </div>
+                {/* Order Protocol Warning Removed for Remote Browsing */}
 
                 {/* Kategorie-Schnellwahl-Leiste (Wischbares Menü oben) */}
                 <TouchSwipeableContainer className="flex gap-2.5 overflow-x-auto no-scrollbar py-2 px-1 mb-2 snap-x">
@@ -1048,7 +1171,16 @@ const VenueMenuPage = () => {
                                     <p className="text-[9px] text-[var(--text-primary)] opacity-50 font-medium uppercase tracking-tight line-clamp-2 mb-4 h-6 leading-tight">{item.desc}</p>
                                     <div className="flex justify-between items-center mt-auto">
                                         <span className="text-xs font-black italic text-brand">€{item.price.toFixed(2)}</span>
-                                        <button onClick={() => handleOrder(item)} className="w-8 h-8 bg-brand text-dark-900 rounded-lg flex items-center justify-center shadow-lg shadow-brand/20 active:scale-90 transition-transform"><Plus size={16} /></button>
+                                        <button 
+                                            onClick={() => handleOrder(item)} 
+                                            className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-all ${
+                                                !isItemTicket(item) && isRemote 
+                                                    ? 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-main)] opacity-50 cursor-not-allowed' 
+                                                    : 'bg-brand text-dark-900 shadow-brand/20'
+                                            }`}
+                                        >
+                                            <Plus size={16} />
+                                        </button>
                                     </div>
                                 </div>
                             ))}
@@ -1101,7 +1233,7 @@ const VenueMenuPage = () => {
                                                         disabled={isOccupied}
                                                         onClick={() => { setSelectedTable(num); }}
                                                         className={`h-16 rounded-2xl border text-lg font-black transition-all relative overflow-hidden ${
-                                                            selectedTable === num ? 'bg-brand border-brand text-dark-950' : 
+                                                            selectedTable === num ? 'bg-brand border-brand text-white' : 
                                                             isOccupied ? 'bg-red-500/5 border-red-500/20 text-red-500/30 cursor-not-allowed' :
                                                             'bg-[var(--bg-secondary)] border-[var(--border-main)] text-[var(--text-secondary)] hover:border-brand/30 hover:text-[var(--text-primary)]'
                                                         }`}
@@ -1136,7 +1268,7 @@ const VenueMenuPage = () => {
                                                     setPaymentStep('method');
                                                 }
                                             }} 
-                                            className={`w-full py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${selectedTable ? 'bg-brand text-dark-950 shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]'}`}
+                                            className={`w-full py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${selectedTable ? 'bg-brand text-white shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]'}`}
                                         >
                                             {selectedTable && selectedTable !== 'BAR' && selectedTable !== 'Front Desk' ? `Confirm ${isHotel ? 'Room' : 'Table'} ${isGroupActive ? '→ Group Tab' : ''}` : (isHotel ? 'Contacting Front Desk' : 'Ordering at the Bar')}
                                         </button>
@@ -1165,9 +1297,23 @@ const VenueMenuPage = () => {
                                         
                                         <div className={`space-y-4 ${ (isBooking || isStadium || isClub) ? 'max-h-[50vh] overflow-y-auto pr-2 no-scrollbar px-1' : ''}`}>
                                             {isBooking ? (
-                                                <div className="space-y-4 px-2">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mb-2">Gast-Details / Guest Information</p>
-                                                    
+                                                <div className="space-y-6">
+                                                    <div className="flex bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[2rem] p-1.5 relative overflow-hidden">
+                                                        <div className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-brand rounded-full transition-all duration-300 ease-out ${guestDetails.bookingType === 'business' ? 'left-[calc(50%+3px)]' : 'left-1.5'}`} />
+                                                        <button 
+                                                            onClick={() => setGuestDetails({...guestDetails, bookingType: 'private'})}
+                                                            className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest relative z-10 transition-colors ${guestDetails.bookingType === 'private' ? 'text-white' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                                                        >
+                                                            Private Booking
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => setGuestDetails({...guestDetails, bookingType: 'business'})}
+                                                            className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest relative z-10 transition-colors ${guestDetails.bookingType === 'business' ? 'text-white' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                                                        >
+                                                            Business Booking
+                                                        </button>
+                                                    </div>
+
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-1">
                                                             <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Vorname / First Name</label>
@@ -1270,32 +1416,109 @@ const VenueMenuPage = () => {
                                                         </div>
                                                     </div>
 
-                                                    <div className="mt-6 pt-4 border-t border-white/5 space-y-4">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="w-1.5 h-1.5 bg-brand rounded-full" />
-                                                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-brand">Firmenrechnung / Company Invoicing (Optional)</p>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="space-y-1">
+                                                            <label className="text-[8px] font-black uppercase tracking-widest text-brand">Check-In / Arrival</label>
+                                                            <input 
+                                                                type="date"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-brand/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] focus:border-brand outline-none transition-all"
+                                                                value={guestDetails.checkIn}
+                                                                onChange={(e) => {
+                                                                    const val = e.target.value;
+                                                                    let dur = guestDetails.stayDuration;
+                                                                    if (val && guestDetails.checkOut) {
+                                                                        const diff = new Date(guestDetails.checkOut) - new Date(val);
+                                                                        dur = diff > 0 ? Math.ceil(diff / (1000 * 60 * 60 * 24)) : 1;
+                                                                    }
+                                                                    setGuestDetails({...guestDetails, checkIn: val, stayDuration: dur});
+                                                                }}
+                                                            />
                                                         </div>
-                                                        <div className="grid grid-cols-2 gap-4">
-                                                            <div className="space-y-1">
-                                                                <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Firmenname / Company Name</label>
-                                                                <input 
-                                                                    type="text" placeholder="Green Mobility GmbH"
-                                                                    className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
-                                                                    value={guestDetails.companyName}
-                                                                    onChange={(e) => setGuestDetails({...guestDetails, companyName: e.target.value})}
-                                                                />
-                                                            </div>
-                                                            <div className="space-y-1">
-                                                                <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Firmenadresse / Company Address</label>
-                                                                <input 
-                                                                    type="text" placeholder="Zeil 106, 60313 Frankfurt"
-                                                                    className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
-                                                                    value={guestDetails.companyAddress}
-                                                                    onChange={(e) => setGuestDetails({...guestDetails, companyAddress: e.target.value})}
-                                                                />
-                                                            </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[8px] font-black uppercase tracking-widest text-brand">Check-Out / Departure</label>
+                                                            <input 
+                                                                type="date"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-brand/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] focus:border-brand outline-none transition-all"
+                                                                value={guestDetails.checkOut}
+                                                                onChange={(e) => {
+                                                                    const val = e.target.value;
+                                                                    let dur = guestDetails.stayDuration;
+                                                                    if (guestDetails.checkIn && val) {
+                                                                        const diff = new Date(val) - new Date(guestDetails.checkIn);
+                                                                        dur = diff > 0 ? Math.ceil(diff / (1000 * 60 * 60 * 24)) : 1;
+                                                                    }
+                                                                    setGuestDetails({...guestDetails, checkOut: val, stayDuration: dur});
+                                                                }}
+                                                            />
                                                         </div>
                                                     </div>
+
+                                                    {guestDetails.bookingType === 'business' && (
+                                                        <>
+                                                            <div className="mt-6 pt-4 border-t border-white/5 space-y-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-1.5 h-1.5 bg-brand rounded-full" />
+                                                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-brand">Company Invoicing Details (Optional)</p>
+                                                                </div>
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                    <div className="space-y-1">
+                                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Firmenname / Company Name</label>
+                                                                        <input 
+                                                                            type="text" placeholder="Green Corp Ltd."
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                            value={guestDetails.companyName}
+                                                                            onChange={(e) => setGuestDetails({...guestDetails, companyName: e.target.value})}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="space-y-1">
+                                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Firmenadresse / Company Address</label>
+                                                                        <input 
+                                                                            type="text" placeholder="Zeil 106, 60313 Frankfurt"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                            value={guestDetails.companyAddress}
+                                                                            onChange={(e) => setGuestDetails({...guestDetails, companyAddress: e.target.value})}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="mt-6 pt-4 border-t border-white/5 space-y-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-1.5 h-1.5 bg-brand rounded-full" />
+                                                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-brand">Deposit Information / Kaution</p>
+                                                                </div>
+                                                                <div className="space-y-1">
+                                                                    <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Kreditkartennummer / Company Card Number</label>
+                                                                    <input 
+                                                                        type="text" placeholder="•••• •••• •••• ••••"
+                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                        value={guestDetails.ccNumber || ''}
+                                                                        onChange={(e) => setGuestDetails({...guestDetails, ccNumber: e.target.value})}
+                                                                    />
+                                                                </div>
+                                                                <div className="grid grid-cols-2 gap-4">
+                                                                    <div className="space-y-1">
+                                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Ablaufdatum / Expiry Date</label>
+                                                                        <input 
+                                                                            type="text" placeholder="MM/YY"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                            value={guestDetails.ccExpiry || ''}
+                                                                            onChange={(e) => setGuestDetails({...guestDetails, ccExpiry: e.target.value})}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="space-y-1">
+                                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Prüfziffer / CVC</label>
+                                                                        <input 
+                                                                            type="text" placeholder="123"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                            value={guestDetails.ccCvv || ''}
+                                                                            onChange={(e) => setGuestDetails({...guestDetails, ccCvv: e.target.value})}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    )}
                                                 </div>
                                             ) : (
                                                 <div className="text-left space-y-4">
@@ -1310,6 +1533,36 @@ const VenueMenuPage = () => {
                                                             value={guestName}
                                                             onChange={(e) => setGuestName(e.target.value)}
                                                         />
+                                                        {(hasTicketsInCart || isStadium || isClub) && (
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                                                                <input 
+                                                                    type="text" placeholder="Address..."
+                                                                    className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
+                                                                    value={guestDetails.address}
+                                                                    onChange={(e) => setGuestDetails({...guestDetails, address: e.target.value})}
+                                                                />
+                                                                <div className="grid grid-cols-2 gap-4">
+                                                                    <input 
+                                                                        type="text" placeholder="PLZ"
+                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
+                                                                        value={guestDetails.zip}
+                                                                        onChange={(e) => setGuestDetails({...guestDetails, zip: e.target.value})}
+                                                                    />
+                                                                    <input 
+                                                                        type="text" placeholder="Stadt"
+                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
+                                                                        value={guestDetails.city}
+                                                                        onChange={(e) => setGuestDetails({...guestDetails, city: e.target.value})}
+                                                                    />
+                                                                </div>
+                                                                <input 
+                                                                    type="text" placeholder="Geburtsdatum (DD.MM.YYYY)"
+                                                                    className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] sm:col-span-2"
+                                                                    value={guestDetails.dob}
+                                                                    onChange={(e) => setGuestDetails({...guestDetails, dob: e.target.value})}
+                                                                />
+                                                            </div>
+                                                        )}
                                                     </div>
 
                                                     {(hasTicketsInCart || isStadium || isClub) && (
@@ -1373,6 +1626,16 @@ const VenueMenuPage = () => {
                                                                                     setAttendees(newAttendees);
                                                                                 }}
                                                                             />
+                                                                            <input 
+                                                                                type="text" placeholder="Geburtsdatum (DD.MM.YYYY)"
+                                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
+                                                                                value={attendee.dob || ''}
+                                                                                onChange={(e) => {
+                                                                                    const newAttendees = [...attendees];
+                                                                                    newAttendees[idx] = { ...newAttendees[idx], dob: e.target.value };
+                                                                                    setAttendees(newAttendees);
+                                                                                }}
+                                                                            />
                                                                             <div className="p-3 bg-brand/5 border border-brand/10 rounded-xl">
                                                                                 <p className="text-[7px] font-black text-brand uppercase tracking-widest leading-tight">
                                                                                     * Unregistered users will receive a registration invite via Email to secure their ticket.
@@ -1394,14 +1657,19 @@ const VenueMenuPage = () => {
                                                     setPaymentStep('method');
                                                 } else {
                                                     if (hasTicketsInCart) {
+                                                        const missingAttendeeData = attendees.some(a => !a.name || !a.email || !a.dob);
+                                                        if (missingAttendeeData) {
+                                                            triggerToast('Bitte fülle Name, Email und DOB für alle Begleitpersonen aus.');
+                                                            return;
+                                                        }
                                                         setPaymentStep('method');
                                                     } else {
                                                         setPaymentStep(isGroupActive ? 'table' : 'method');
                                                     }
                                                 }
                                             }}
-                                            disabled={isBooking ? (!guestDetails.firstName || !guestDetails.lastName || !guestDetails.email || !guestDetails.phone || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.idNumber || !guestDetails.dob) : (hasTicketsInCart ? (!guestName || !guestDetails.email) : !guestName)}
-                                            className={`w-full py-6 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${(isBooking ? (guestDetails.firstName && guestDetails.lastName && guestDetails.email && guestDetails.phone && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.idNumber && guestDetails.dob) : (hasTicketsInCart ? (guestName && guestDetails.email) : guestName)) ? 'bg-brand text-dark-950 shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]/50'}`}
+                                            disabled={isBooking ? (!guestDetails.firstName || !guestDetails.lastName || !guestDetails.email || !guestDetails.phone || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.idNumber || !guestDetails.dob || !guestDetails.checkIn || !guestDetails.checkOut || (guestDetails.bookingType === 'business' && (!guestDetails.companyName || !guestDetails.companyAddress || !guestDetails.ccNumber || !guestDetails.ccExpiry || !guestDetails.ccCvv))) : (hasTicketsInCart ? (!guestName || !guestDetails.email || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.dob) : !guestName)}
+                                            className={`w-full py-6 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${(isBooking ? (guestDetails.firstName && guestDetails.lastName && guestDetails.email && guestDetails.phone && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.idNumber && guestDetails.dob && guestDetails.checkIn && guestDetails.checkOut && (guestDetails.bookingType !== 'business' || (guestDetails.companyName && guestDetails.companyAddress && guestDetails.ccNumber && guestDetails.ccExpiry && guestDetails.ccCvv))) : (hasTicketsInCart ? (guestName && guestDetails.email && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.dob) : guestName)) ? 'bg-brand text-white shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]/50'}`}
                                         >
                                             {isBooking ? 'Complete Registration' : (isStadium || isClub || hasTicketsInCart) ? `Authorize Tickets` : 'Continue to Settlement'}
                                         </button>
@@ -1451,11 +1719,6 @@ const VenueMenuPage = () => {
                                                 let Icon = method.icon || CreditCard;
                                                 let displayLabel = method.label;
 
-                                                // 1. Strip out obfuscation parentheses for saved/dynamic methods
-                                                if (displayLabel.includes(' (')) {
-                                                    displayLabel = displayLabel.split(' (')[0];
-                                                }
-
                                                 // 2. Map sub-options dynamically to parent button for External Card
                                                 if (method.id === 'external' && externalMethod) {
                                                     if (externalMethod === 'mastercard') { displayLabel = 'Credit Card'; Icon = CreditCard; }
@@ -1478,7 +1741,7 @@ const VenueMenuPage = () => {
                                                                     console.error('Failed to sync active method selection to storage:', e);
                                                                 }
                                                             }}
-                                                            className={`w-full p-5 rounded-3xl border flex items-center justify-between group transition-all ${isSelected ? 'bg-brand border-brand text-dark-950' : 'bg-[var(--bg-secondary)] border-[var(--border-main)] text-[var(--text-primary)] hover:border-brand/30'}`}
+                                                            className={`w-full p-5 rounded-3xl border flex items-center justify-between group transition-all ${isSelected ? 'bg-brand border-brand text-white' : 'bg-[var(--bg-secondary)] border-[var(--border-main)] text-[var(--text-primary)] hover:border-brand/30'}`}
                                                         >
                                                             <div className="flex items-center gap-4">
                                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isSelected ? 'bg-black/10' : 'bg-black/10'}`}>
@@ -1488,66 +1751,6 @@ const VenueMenuPage = () => {
                                                             </div>
                                                             {isSelected && <Check size={18} />}
                                                         </button>
-
-                                                        {/* Sub-options for External Card in Hotels */}
-                                                        {isHotel && method.id === 'external' && isSelected && (
-                                                            <div className="space-y-4 pt-2">
-                                                                <motion.div 
-                                                                    initial={{ opacity: 0, y: -10 }} 
-                                                                    animate={{ opacity: 1, y: 0 }}
-                                                                    className="grid grid-cols-2 gap-2 pl-4 pr-2"
-                                                                >
-                                                                    {[
-                                                                        { id: 'mastercard', label: 'Credit Card', icon: CreditCard },
-                                                                        { id: 'paypal', label: 'PayPal', icon: Wallet },
-                                                                        { id: 'klarna', label: 'Klarna', icon: Sparkles },
-                                                                        { id: 'revolut', label: 'Revolut', icon: Zap }
-                                                                    ].map(sub => (
-                                                                        <button 
-                                                                            key={sub.id}
-                                                                            onClick={() => setExternalMethod(sub.id)}
-                                                                            className={`p-3 rounded-2xl border flex items-center gap-3 transition-all ${externalMethod === sub.id ? 'bg-brand/20 border-brand text-dark-950' : 'bg-white/5 border-black/5 text-gray-500 hover:border-black/20'}`}
-                                                                        >
-                                                                            <sub.icon size={14} />
-                                                                            <span className="text-[8px] font-black uppercase tracking-widest">{sub.label}</span>
-                                                                        </button>
-                                                                    ))}
-                                                                </motion.div>
-
-                                                                {/* Mock Card Entry Form */}
-                                                                {externalMethod === 'mastercard' && (
-                                                                    <motion.div 
-                                                                        initial={{ opacity: 0, height: 0 }}
-                                                                        animate={{ opacity: 1, height: 'auto' }}
-                                                                        className="pl-4 pr-2 space-y-3"
-                                                                    >
-                                                                        <div className="relative">
-                                                                            <input 
-                                                                                type="text" placeholder="Card Number (0000 0000 0000 0000)"
-                                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
-                                                                                value={guestDetails.cardNumber}
-                                                                                onChange={(e) => setGuestDetails({...guestDetails, cardNumber: e.target.value})}
-                                                                            />
-                                                                            <CreditCard size={14} className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400" />
-                                                                        </div>
-                                                                        <div className="grid grid-cols-2 gap-3">
-                                                                            <input 
-                                                                                type="text" placeholder="MM/YY"
-                                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
-                                                                                value={guestDetails.cardExpiry}
-                                                                                onChange={(e) => setGuestDetails({...guestDetails, cardExpiry: e.target.value})}
-                                                                            />
-                                                                            <input 
-                                                                                type="text" placeholder="CVV"
-                                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
-                                                                                value={guestDetails.cardCvv}
-                                                                                onChange={(e) => setGuestDetails({...guestDetails, cardCvv: e.target.value})}
-                                                                            />
-                                                                        </div>
-                                                                    </motion.div>
-                                                                )}
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 );
                                             })}
@@ -1555,7 +1758,7 @@ const VenueMenuPage = () => {
 
                                         <button 
                                             onClick={confirmPayment}
-                                            disabled={!paymentMethod || (paymentMethod === 'external' && !externalMethod) || (externalMethod === 'mastercard' && !guestDetails.cardNumber) || isProcessing}
+                                            disabled={!paymentMethod || isProcessing}
                                             className="w-full py-6 bg-[var(--text-primary)] text-[var(--bg-primary)] border border-[var(--border-main)] rounded-[2.5rem] flex items-center justify-center gap-4 group transition-all shadow-2xl disabled:opacity-30 relative overflow-hidden"
                                         >
                                             {isProcessing ? (
@@ -1590,26 +1793,28 @@ const VenueMenuPage = () => {
                         />
                         <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="bg-[var(--bg-primary)] border-t border-white/10 rounded-t-[3.5rem] p-8 pb-12 space-y-8 shadow-2xl relative z-10 w-full max-w-lg overflow-y-auto max-h-[80vh] no-scrollbar">
                              <div className="w-12 h-1 bg-white/10 rounded-full mx-auto" />
-                             <div className="text-center pt-2 relative">
-                                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-[0.3em] shadow-lg whitespace-nowrap">Operational Ticket Hub 🛰️</div>
-                                 <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter mt-4">Active Missions</h3>
-                             </div>
+                            <div className="text-center pt-2 relative">
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-brand text-white rounded-full text-[7px] font-black uppercase tracking-[0.3em] shadow-lg whitespace-nowrap">Operational Hub 🛰️</div>
+                                <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter mt-4">Active Missions & Bookings</h3>
+                            </div>
 
                             <div className="space-y-4">
                                 {venueTickets.map((ticket) => {
-                                    const isHotelTicket = ticket.venueName.toLowerCase().includes('hotel') || ticket.venueName.toLowerCase().includes('luxe');
-                                    const isStadiumTicket = ticket.venueName.toLowerCase().includes('stadium') || ticket.venueName.toLowerCase().includes('arena');
-                                    const isClubTicket = ticket.venueName.toLowerCase().includes('club') || ticket.venueName.toLowerCase().includes('disco') || ticket.venueName.toLowerCase().includes('lounge') || ticket.venueName.toLowerCase().includes('night') || ticket.venueName.toLowerCase().includes('bar') || ticket.venueName.toLowerCase().includes('festival') || ticket.venueName.toLowerCase().includes('event');
-                                    
                                     let locationLabel = 'Table';
                                     let displayTitle = 'Digital Order';
                                     
-                                    if (isHotelTicket) {
+                                    if (ticket.type === 'booking') {
+                                        locationLabel = 'Status';
+                                        displayTitle = 'Hotel Booking';
+                                    } else if (ticket.type === 'room_service') {
                                         locationLabel = 'Room';
                                         displayTitle = 'Room Service';
-                                    } else if (isStadiumTicket || isClubTicket) {
+                                    } else if (ticket.type === 'stadium_ticket' || ticket.type === 'club_ticket') {
                                         locationLabel = 'Ticket';
                                         displayTitle = 'Digital Ticket';
+                                    } else if (ticket.type === 'parking') {
+                                        locationLabel = 'Pass';
+                                        displayTitle = 'Parking Pass';
                                     }
 
                                     // Dynamic Status Mapping from B2B Manager Dashboard
@@ -1621,7 +1826,7 @@ const VenueMenuPage = () => {
                                             const b2bStatus = matchedOrder.status;
                                             if (ticket.type === 'booking') {
                                                 if (b2bStatus === 'Received' || b2bStatus === 'Booked') {
-                                                    currentStatus = 'PENDING';
+                                                    currentStatus = 'CONFIRMED';
                                                 } else if (b2bStatus === 'Check-In' || b2bStatus === 'Staying') {
                                                     currentStatus = 'CHECKED IN';
                                                 } else if (b2bStatus === 'Departed') {
@@ -1675,6 +1880,7 @@ const VenueMenuPage = () => {
                                                         state: { 
                                                             cart: ticket.items, 
                                                             venueName: ticket.venueName, 
+                                                            venueAddress: ticket.venueAddress,
                                                             tableId: ticket.tableId, 
                                                             orderId: ticket.id, 
                                                             paymentMethod: ticket.paymentMethod, 
@@ -1682,7 +1888,10 @@ const VenueMenuPage = () => {
                                                             orderStatus: ticket.orderStatus,
                                                             guestName: ticket.guestName,
                                                             guestEmail: ticket.guestDetails?.email,
-                                                            guestPhone: ticket.guestDetails?.phone
+                                                            guestPhone: ticket.guestDetails?.phone,
+                                                            guestDetails: ticket.guestDetails,
+                                                            attendees: ticket.attendees,
+                                                            totalCost: ticket.total
                                                         } 
                                                     });
                                                     setShowTicketHub(false);
@@ -1720,7 +1929,7 @@ const VenueMenuPage = () => {
                         <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} className="bg-[var(--bg-primary)] border-t border-white/10 rounded-t-[3.5rem] p-8 pb-12 space-y-8 shadow-2xl relative z-10 w-full max-w-lg">
                              <div className="w-12 h-1 bg-white/10 rounded-full mx-auto" />
                              <div className="text-center pt-2 relative">
-                                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-[0.3em] shadow-lg whitespace-nowrap">Select Your {isHotel ? 'Room' : 'Table'} Number 📍</div>
+                                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-brand text-white rounded-full text-[7px] font-black uppercase tracking-[0.3em] shadow-lg whitespace-nowrap">Select Your {isHotel ? 'Room' : 'Table'} Number 📍</div>
                                  <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter mt-4">Identify Your Location</h3>
                              </div>
                             <div className="grid grid-cols-4 gap-4 py-4">

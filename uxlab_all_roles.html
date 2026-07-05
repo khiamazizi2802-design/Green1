@@ -483,6 +483,9 @@
     <button class="tab active-admin" data-role="admin" onclick="showRole('admin')">
       <span class="dot" style="background:#f43f5e;"></span> Super Admin
     </button>
+    <button class="tab-all" id="tab-partners" onclick="showRole('partners')" style="border-color:#38bdf8; color:#38bdf8; background:rgba(56,189,248,0.1);">
+      🤝 B2B Partners
+    </button>
   </div>
 
   <!-- MAIN CANVAS -->
@@ -829,6 +832,90 @@
       </div>
     </section>
 
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- B2B PARTNERS                                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="role-section hidden" id="section-partners">
+      <div class="role-header">
+        <span class="role-badge" style="background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3);">● B2B Partners</span>
+        <span class="role-label" style="color:#38bdf8;">Partner Dashboard</span>
+        <div class="role-divider"></div>
+      </div>
+      <div class="devices-row">
+
+        <!-- FLEET MANAGER -->
+        <div class="device-card">
+          <div class="device-meta">
+            <span class="device-name" style="color: #38bdf8; background: rgba(56,189,248,0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(56,189,248,0.3);">🚗 Fleet Staff (staff.fleet@green.de)</span>
+            <span class="device-size-tag">Tablet</span>
+          </div>
+          <div class="tablet-shell" style="border-color:#1e3a8a;">
+            <div class="tablet-camera-bar"><div class="tablet-camera"></div></div>
+            <div class="tablet-screen">
+              <iframe src="http://localhost:5173/manager?role=manager&businessType=FM&autoLogin=staff.fleet@green.de" id="iframe-partner-fleet" title="Fleet Manager"></iframe>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESTAURANT MANAGER -->
+        <div class="device-card">
+          <div class="device-meta">
+            <span class="device-name" style="color: #f97316; background: rgba(249,115,22,0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(249,115,22,0.3);">🍔 Restaurant Staff (staff.restaurant@green.de)</span>
+            <span class="device-size-tag">Tablet</span>
+          </div>
+          <div class="tablet-shell" style="border-color:#7c2d12;">
+            <div class="tablet-camera-bar"><div class="tablet-camera"></div></div>
+            <div class="tablet-screen">
+              <iframe src="http://localhost:5173/manager?role=manager&businessType=RM&autoLogin=staff.restaurant@green.de" id="iframe-partner-restaurant" title="Restaurant Manager"></iframe>
+            </div>
+          </div>
+        </div>
+
+        <!-- CLUB MANAGER -->
+        <div class="device-card">
+          <div class="device-meta">
+            <span class="device-name" style="color: #d946ef; background: rgba(217,70,239,0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(217,70,239,0.3);">🪩 Club Staff (staff.club@green.de)</span>
+            <span class="device-size-tag">Tablet</span>
+          </div>
+          <div class="tablet-shell" style="border-color:#701a75;">
+            <div class="tablet-camera-bar"><div class="tablet-camera"></div></div>
+            <div class="tablet-screen">
+              <iframe src="http://localhost:5173/manager?role=manager&businessType=CM&autoLogin=staff.club@green.de" id="iframe-partner-club" title="Club Manager"></iframe>
+            </div>
+          </div>
+        </div>
+
+        <!-- HOTEL MANAGER -->
+        <div class="device-card">
+          <div class="device-meta">
+            <span class="device-name" style="color: #eab308; background: rgba(234,179,8,0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(234,179,8,0.3);">🏨 Hotel Staff (staff.hotel@green.de)</span>
+            <span class="device-size-tag">Tablet</span>
+          </div>
+          <div class="tablet-shell" style="border-color:#713f12;">
+            <div class="tablet-camera-bar"><div class="tablet-camera"></div></div>
+            <div class="tablet-screen">
+              <iframe src="http://localhost:5173/manager?role=manager&businessType=HM&autoLogin=staff.hotel@green.de" id="iframe-partner-hotel" title="Hotel Manager"></iframe>
+            </div>
+          </div>
+        </div>
+
+        <!-- STADIUM MANAGER -->
+        <div class="device-card">
+          <div class="device-meta">
+            <span class="device-name" style="color: #10b981; background: rgba(16,185,129,0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(16,185,129,0.3);">🏟️ Stadium Staff (staff.stadium@green.de)</span>
+            <span class="device-size-tag">Tablet</span>
+          </div>
+          <div class="tablet-shell" style="border-color:#064e3b;">
+            <div class="tablet-camera-bar"><div class="tablet-camera"></div></div>
+            <div class="tablet-screen">
+              <iframe src="http://localhost:5173/manager?role=manager&businessType=SM&autoLogin=staff.stadium@green.de" id="iframe-partner-stadium" title="Stadium Manager"></iframe>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
   </div><!-- /canvas -->
 
   <!-- LEGEND -->
@@ -900,11 +987,13 @@
       // Hide cockpit
       document.getElementById('section-cockpit').classList.add('hidden');
       
-      const all = ['passenger', 'driver', 'manager', 'admin'];
+      const all = ['passenger', 'driver', 'manager', 'admin', 'partners'];
       all.forEach(r => {
         const s = document.getElementById('section-' + r);
-        if (r === role) s.classList.remove('hidden');
-        else s.classList.add('hidden');
+        if (s) {
+          if (r === role) s.classList.remove('hidden');
+          else s.classList.add('hidden');
+        }
       });
       
       // Reset cockpit tab styles

@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -17,7 +19,78 @@ import { triggerNotification } from '../components/NotificationToast';
 const OrderReceiptPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { cart = [], venueName = "The Skyline Club", tableId = "Unknown", totalCost = 0, orderId = Date.now(), isHotel = false, guestName = null, paymentStatus = "PAID" } = location.state || {};
+    const { cart = [], venueName = "The Skyline Club", venueAddress = "", tableId = "Unknown", totalCost = 0, orderId = Date.now(), guestName = null, paymentStatus = "PAID", guestDetails = {}, attendees = [] } = location.state || {};
+    
+    const isHotel = venueName.toLowerCase().includes('hotel') || venueName.toLowerCase().includes('luxe');
+    const isBooking = cart.some(item => 
+        item.category?.toLowerCase().includes('room') || 
+        item.category?.toLowerCase().includes('zimmer') || 
+        item.name?.toLowerCase().includes('room') || 
+        item.name?.toLowerCase().includes('suite') || 
+        item.name?.toLowerCase().includes('zimmer')
+    ) || (isHotel && cart.some(item => item.tags?.includes('Luxury') || item.tags?.includes('Elite')));
+    const stayDuration = isBooking ? (guestDetails.stayDuration || 1) : 1;
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    const generatePDF = async (action = 'download') => {
+        try {
+            setIsGenerating(true);
+            const receiptElement = document.getElementById('receipt-card');
+            if (!receiptElement) return;
+
+            // Generate high quality canvas
+            const canvas = await html2canvas(receiptElement, {
+                scale: 3, // High quality
+                backgroundColor: '#ffffff',
+                useCORS: true
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            
+            const fileName = `Green-Ticket-${orderId}.pdf`;
+
+            if (action === 'share' && navigator.canShare) {
+                // Convert PDF to Blob for sharing
+                const pdfBlob = pdf.output('blob');
+                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+                
+                if (navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Green Access Ticket',
+                            text: 'Here is your official Green Access Ticket.',
+                        });
+                        triggerNotification("SENT", "Ticket shared successfully.");
+                    } catch (shareErr) {
+                        console.error('Share failed, falling back to download:', shareErr);
+                        pdf.save(fileName);
+                        triggerNotification("EXPORT SUCCESS", "Saved to device for sharing.");
+                    }
+                } else {
+                    // Fallback to download
+                    pdf.save(fileName);
+                    triggerNotification("EXPORT SUCCESS", "Saved to your device.");
+                }
+            } else {
+                // Download
+                pdf.save(fileName);
+                triggerNotification("EXPORT SUCCESS", "Saved to your device.");
+            }
+        } catch (error) {
+            console.error("PDF Generation failed", error);
+            triggerNotification("ERROR", "Failed to generate ticket.");
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-white text-black font-sans selection:bg-brand/30">
@@ -40,8 +113,9 @@ const OrderReceiptPage = () => {
                         <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-1">Ref #{orderId}</p>
                     </div>
                     <button 
-                        onClick={() => triggerNotification("EXPORT SUCCESS", "Digital receipt saved to your vault.")}
-                        className="w-12 h-12 bg-brand/10 border border-brand/20 rounded-2xl flex items-center justify-center text-brand"
+                        onClick={() => generatePDF('download')}
+                        disabled={isGenerating}
+                        className="w-12 h-12 bg-brand/10 border border-brand/20 rounded-2xl flex items-center justify-center text-brand disabled:opacity-50"
                     >
                         <Download size={20} />
                     </button>
@@ -69,10 +143,15 @@ const OrderReceiptPage = () => {
                         />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black italic uppercase tracking-tighter">Mission Success</h1>
+                        <h1 className="text-3xl font-black italic uppercase tracking-tighter">{isBooking ? 'Reservation Confirmed' : 'Mission Success'}</h1>
                         <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mt-1 italic">
-                            {isHotel ? 'Room' : 'Table'} {tableId} • {venueName}
+                            {isBooking ? `Hotel Booking • ${stayDuration} Night(s)` : `${isHotel ? 'Room' : 'Table'} ${tableId} • ${venueName}`}
                         </p>
+                        {venueAddress && (
+                            <p className="text-[8px] text-gray-300 font-bold uppercase tracking-widest text-center mt-2">
+                                MADE BY GREEN • OFFICIAL RECEIPT • {new Date().toLocaleDateString()}
+                            </p>
+                        )}
                         {guestName && (
                             <p className="text-[9px] text-brand font-black uppercase tracking-widest mt-1">Verified Guest: {guestName}</p>
                         )}
@@ -81,6 +160,7 @@ const OrderReceiptPage = () => {
 
                 {/* Main Receipt Card */}
                 <motion.div 
+                    id="receipt-card"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3 }}
@@ -106,6 +186,67 @@ const OrderReceiptPage = () => {
                             </div>
                         </div>
 
+                        {/* Guest Registration */}
+                        {(guestDetails?.dob || attendees.length > 0 || isBooking) && (
+                            <div className="py-6 border-b border-black/5 space-y-4">
+                                <h4 className="text-[10px] font-black uppercase text-black tracking-widest flex items-center gap-2">
+                                    <ShieldCheck size={12} className="text-brand" /> {isBooking ? 'Booking & Guest Registration' : 'Guest Registration'}
+                                </h4>
+                                
+                                {isBooking && (
+                                    <div className="bg-gray-50 rounded-2xl p-4 border border-black/5 space-y-3">
+                                        <div>
+                                            <p className="text-[9px] font-black uppercase text-brand tracking-widest mb-1">Accommodation Info</p>
+                                            <p className="text-xs font-black uppercase text-black italic">
+                                                {venueName}
+                                            </p>
+                                            <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">
+                                                {venueAddress || 'The Skyline Club • Frankfurt'}
+                                            </p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-0.5">Check-In</p>
+                                                <p className="text-[10px] font-black text-black">{guestDetails?.checkIn || '15:00'}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-0.5">Check-Out</p>
+                                                <p className="text-[10px] font-black text-black">{guestDetails?.checkOut || '11:00'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="space-y-3">
+                                    <div className="bg-gray-50 rounded-2xl p-4 border border-black/5">
+                                        <p className="text-[9px] font-black uppercase text-brand tracking-widest mb-1">
+                                            {isBooking ? 'Primary Guest & Billing' : 'Lead Ticket Holder'}
+                                        </p>
+                                        <p className="text-xs font-black uppercase text-black italic">
+                                            {guestDetails?.companyName ? `${guestDetails.companyName} (c/o ${guestName})` : guestName}
+                                        </p>
+                                        <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">
+                                            {guestDetails?.companyName ? (guestDetails.companyAddress || 'N/A') : `${guestDetails?.address || 'N/A'}, ${guestDetails?.zip || ''} ${guestDetails?.city || ''}`}
+                                        </p>
+                                        {!isBooking && guestDetails?.dob && (
+                                            <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">
+                                                DOB: {guestDetails?.dob}
+                                            </p>
+                                        )}
+                                    </div>
+                                    {attendees.map((attendee, idx) => (
+                                        <div key={idx} className="bg-gray-50 rounded-2xl p-4 border border-black/5">
+                                            <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-1">Member #{idx + 2}</p>
+                                            <p className="text-xs font-black uppercase text-black italic">{attendee.name || 'Unregistered'}</p>
+                                            <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">
+                                                DOB: {attendee.dob || 'N/A'}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Items List */}
                         <div className="space-y-6">
                             {cart.map((item, idx) => (
@@ -113,11 +254,20 @@ const OrderReceiptPage = () => {
                                     <div className="flex items-center gap-4">
                                         <span className="text-[10px] font-black text-gray-200 italic">0{idx + 1}</span>
                                         <div>
-                                            <p className="text-xs font-black italic uppercase text-black group-hover/item:text-brand transition-colors">{item.name}</p>
+                                            <p className="text-xs font-black italic uppercase text-black group-hover/item:text-brand transition-colors">
+                                                {item.name} {isBooking && `(x${stayDuration} Nights)`}
+                                            </p>
                                             <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{item.tags?.[0] || 'Premium Selection'}</p>
+                                            {(item.desc || item.description) && (
+                                                <p className="text-[8px] font-bold text-brand uppercase tracking-widest mt-0.5 max-w-[200px] truncate">
+                                                    {item.desc || item.description}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
-                                    <p className="text-sm font-black italic text-black group-hover/item:text-brand transition-colors">€{item.price.toFixed(2)}</p>
+                                    <p className="text-sm font-black italic text-black group-hover/item:text-brand transition-colors">
+                                        €{(item.price * (isBooking ? stayDuration : 1)).toFixed(2)}
+                                    </p>
                                 </div>
                             ))}
                         </div>
@@ -135,7 +285,7 @@ const OrderReceiptPage = () => {
                             <div className="flex justify-between items-center pt-4">
                                 <div className="flex flex-col">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-brand">Total Settled</span>
-                                    <span className="text-[7px] text-gray-300 font-bold uppercase tracking-widest">Verified by Green Hub</span>
+                                    <span className="text-[7px] text-gray-300 font-bold uppercase tracking-widest">MADE BY GREEN</span>
                                 </div>
                                 <span className="text-4xl font-black italic text-black tracking-tighter">€{totalCost.toFixed(2)}</span>
                             </div>
@@ -163,10 +313,11 @@ const OrderReceiptPage = () => {
                     className="mt-12 grid grid-cols-2 gap-4"
                 >
                     <button 
-                        onClick={() => triggerNotification("SENT", "Receipt shared to your secure contact list.")}
-                        className="py-5 bg-black/5 border border-black/10 rounded-[2rem] text-[10px] font-black uppercase tracking-widest text-black hover:bg-black/10 transition-all flex items-center justify-center gap-3"
+                        onClick={() => generatePDF('share')}
+                        disabled={isGenerating}
+                        className="py-5 bg-black/5 border border-black/10 rounded-[2rem] text-[10px] font-black uppercase tracking-widest text-black hover:bg-black/10 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                     >
-                        <Share2 size={16} /> Share
+                        <Share2 size={16} /> {isGenerating ? 'Processing...' : 'Share Ticket'}
                     </button>
                     <button 
                         onClick={() => navigate('/greens')}
@@ -179,7 +330,7 @@ const OrderReceiptPage = () => {
                 {/* Footer Insight */}
                 <div className="mt-12 text-center flex items-center justify-center gap-3 opacity-30">
                     <ShieldCheck size={14} className="text-brand" />
-                    <p className="text-[8px] font-black uppercase tracking-widest text-black italic">Green Hub Verified Transaction</p>
+                    <p className="text-[8px] font-black uppercase tracking-widest text-black italic">MADE BY GREEN</p>
                 </div>
             </div>
         </div>

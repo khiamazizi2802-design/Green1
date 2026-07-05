@@ -386,7 +386,7 @@ const Signup = () => {
                                     className="w-5 h-5 rounded-md border-white/10 bg-white/5 text-brand focus:ring-brand accent-brand cursor-pointer"
                                 />
                                 <label htmlFor="privacy-check" className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest cursor-pointer hover:text-white transition-colors">
-                                    I acknowledge the <Link to="/privacy" className="text-brand border-b border-white/20">Privacy Manifesto</Link>
+                                    I acknowledge the <Link to="/privacy" className="text-brand border-b border-white/20">Datenschutzerklärung (DSGVO)</Link>
                                 </label>
                             </div>
 

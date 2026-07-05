@@ -20,7 +20,7 @@ import StaffOnboarding from './pages/StaffOnboarding';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Privacy from './pages/Privacy';
-import VerificationPage from './pages/VerificationPage';
+import VerificationGateway from './pages/VerificationGateway';
 import PartnerDetailsPage from './pages/PartnerDetailsPage';
 import DiscoveryGallery from './pages/DiscoveryGallery';
 import FriendsListPage from './pages/FriendsListPage';
@@ -69,9 +69,9 @@ function App() {
                             <Route path="/ux-lab" element={<UXLab />} />
                             
                             {/* New Verification Gate */}
-                            <Route path="/verify" element={<VerificationPage />} />
-                            <Route path="/security-recovery" element={<SecurityRecovery />} />
+                            <Route path="/verify" element={<VerificationGateway />} />
                             <Route path="/green-id-pending" element={<GreenIdPendingPage />} />
+                            <Route path="/security-recovery" element={<SecurityRecovery />} />
 
                             {/* Ban Check Gate */}
                             {isBanned && (

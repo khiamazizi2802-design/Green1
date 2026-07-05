@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ArrowLeft, UserPlus, Users, Wallet, CreditCard, Star, Search, X, Check, 
     ArrowRight, User, Wine, Utensils, BedDouble, Map, Compass, Gem, Sparkles, Zap, GlassWater, ChevronRight, Trophy, Ticket, Activity, MapPin, Droplets, Target,
-    ShieldCheck, Crown, UserCheck
+    ShieldCheck, Crown, UserCheck, QrCode, ShoppingBag
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Sheet from '../components/Sheet';
@@ -17,6 +17,7 @@ const GreenSPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { venueTickets, mutualFriends } = useRide();
+    const [showTicketHub, setShowTicketHub] = useState(false);
     
     // --- Group Flow States (Hoisted to top for safe initialization across all hooks) ---
     const [groupState, setGroupState] = useState(() => {
@@ -344,19 +345,7 @@ const GreenSPage = () => {
                                 }}
                                 transition={{ duration: 2, repeat: Infinity }}
                                 onClick={() => {
-                                    const activeTicket = venueTickets[0];
-                                    navigate('/order/tracker', {
-                                        state: {
-                                            cart: activeTicket.items || [],
-                                            venueName: activeTicket.venueName || "The Skyline Club",
-                                            venueOffer: activeTicket.venueOffer || "",
-                                            orderId: activeTicket.id,
-                                            tableId: activeTicket.tableId || "Unknown",
-                                            paymentStatus: activeTicket.paymentStatus || "PAID",
-                                            orderStatus: activeTicket.orderStatus || "PENDING",
-                                            guestName: activeTicket.guestName || ""
-                                        }
-                                    });
+                                    setShowTicketHub(true);
                                 }}
                                 className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/30 text-brand flex items-center justify-center relative transition-all shadow-lg active:scale-90"
                             >
@@ -900,6 +889,129 @@ const GreenSPage = () => {
                         </AnimatePresence>
                     </div>
                 </section>
+
+                {/* TICKET HUB SHEET */}
+                <AnimatePresence>
+                    {showTicketHub && (
+                        <div className="fixed inset-0 z-[120] flex items-end justify-center">
+                            <motion.div 
+                                initial={{ opacity: 0 }} 
+                                animate={{ opacity: 1 }} 
+                                exit={{ opacity: 0 }} 
+                                onClick={() => setShowTicketHub(false)} 
+                                className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+                            />
+                            <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="bg-[var(--bg-primary)] border-t border-white/10 rounded-t-[3.5rem] p-8 pb-12 space-y-8 shadow-2xl relative z-10 w-full max-w-lg overflow-y-auto max-h-[80vh] no-scrollbar">
+                                 <div className="w-12 h-1 bg-white/10 rounded-full mx-auto" />
+                                <div className="text-center pt-2 relative">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-brand text-white rounded-full text-[7px] font-black uppercase tracking-[0.3em] shadow-lg whitespace-nowrap">Operational Hub 🛰️</div>
+                                    <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter mt-4">Active Missions & Bookings</h3>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {venueTickets.map((ticket) => {
+                                        let locationLabel = 'Table';
+                                        let displayTitle = 'Digital Order';
+                                        
+                                        if (ticket.type === 'booking') {
+                                            locationLabel = 'Status';
+                                            displayTitle = 'Hotel Booking';
+                                        } else if (ticket.type === 'room_service') {
+                                            locationLabel = 'Room';
+                                            displayTitle = 'Room Service';
+                                        } else if (ticket.type === 'stadium_ticket' || ticket.type === 'club_ticket') {
+                                            locationLabel = 'Ticket';
+                                            displayTitle = 'Digital Ticket';
+                                        } else if (ticket.type === 'parking') {
+                                            locationLabel = 'Pass';
+                                            displayTitle = 'Parking Pass';
+                                        }
+
+                                        // Dynamic Status Mapping from B2B Manager Dashboard
+                                        let currentStatus = ticket.orderStatus || 'PENDING';
+                                        try {
+                                            const savedOrders = JSON.parse(localStorage.getItem('green_active_orders') || '[]');
+                                            const matchedOrder = savedOrders.find(o => String(o.id) === String(ticket.id));
+                                            if (matchedOrder) {
+                                                const b2bStatus = matchedOrder.status;
+                                                if (ticket.type === 'booking') {
+                                                    if (b2bStatus === 'Received' || b2bStatus === 'Booked') {
+                                                        currentStatus = 'CONFIRMED';
+                                                    } else if (b2bStatus === 'Check-In' || b2bStatus === 'Staying') {
+                                                        currentStatus = 'CHECKED IN';
+                                                    } else if (b2bStatus === 'Departed') {
+                                                        currentStatus = 'CHECKED OUT';
+                                                    } else {
+                                                        currentStatus = b2bStatus.toUpperCase();
+                                                    }
+                                                } else {
+                                                    if (b2bStatus === 'Received' || b2bStatus === 'Preparing') {
+                                                        currentStatus = 'PENDING';
+                                                    } else if (b2bStatus === 'Ready') {
+                                                        currentStatus = 'READY';
+                                                    } else if (b2bStatus === 'Served' || b2bStatus === 'Paid' || b2bStatus === 'Departed') {
+                                                        currentStatus = 'SERVED';
+                                                    } else {
+                                                        currentStatus = b2bStatus.toUpperCase();
+                                                    }
+                                                }
+                                            }
+                                        } catch (e) {
+                                            console.error('Failed to resolve dynamic ticket status:', e);
+                                        }
+                                        
+                                        return (
+                                            <div 
+                                                key={ticket.id}
+                                                className="bg-[var(--bg-secondary)] border border-white/5 p-5 rounded-[2.5rem] flex items-center justify-between group hover:border-brand/30 transition-all cursor-pointer"
+                                                onClick={() => {
+                                                    navigate('/order/tracker', { 
+                                                        state: { 
+                                                            cart: ticket.items, 
+                                                            venueName: ticket.venueName, 
+                                                            venueAddress: ticket.venueAddress,
+                                                            tableId: ticket.tableId, 
+                                                            orderId: ticket.id, 
+                                                            paymentMethod: ticket.paymentMethod, 
+                                                            paymentStatus: ticket.paymentStatus, 
+                                                            orderStatus: currentStatus,
+                                                            guestName: ticket.guestName
+                                                        } 
+                                                    });
+                                                }}
+                                            >
+                                                <div className="flex items-center gap-4 pointer-events-none">
+                                                    <div className="w-14 h-14 rounded-2xl bg-brand/10 flex items-center justify-center text-brand border border-brand/20">
+                                                        {ticket.type === 'parking' ? <QrCode size={24} /> : (ticket.type === 'stadium_ticket' || ticket.type === 'booking') ? <Ticket size={24} /> : ticket.type === 'service' ? <Sparkles size={24} /> : <ShoppingBag size={24} />}
+                                                    </div>
+                                                    <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <h4 className="text-sm font-black italic uppercase text-[var(--text-primary)] leading-none">{displayTitle}</h4>
+                                                            <span className={`text-[7px] font-black px-1.5 py-0.5 rounded ${ticket.paymentStatus === 'PAID' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+                                                                {ticket.paymentStatus}
+                                                            </span>
+                                                            <span className={`text-[7px] font-black px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500`}>
+                                                                ORDER: {currentStatus}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">
+                                                            {ticket.venueName} • {locationLabel} #{ticket.tableId} • {ticket.timestamp}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <button 
+                                                    className="px-5 py-2.5 bg-black text-white rounded-xl text-[9px] font-black tracking-widest uppercase hover:bg-brand active:scale-95 transition-all pointer-events-none"
+                                                >
+                                                    Open
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
 
                 {/* --- CHIPS / SOCIAL LEDGER SHEETS & DIALOGS --- */}
                 <Sheet isOpen={isSplitOptionsOpen} onClose={() => setIsSplitOptionsOpen(false)} className="rounded-t-[3.5rem]">
@@ -1449,9 +1561,9 @@ const GreenSPage = () => {
                             {!sharingToFriend ? (
                                 <div className="grid grid-cols-2 gap-4">
                                     <button 
-                                        onClick={() => navigate('/venue/menu', { state: { venueName: selectedOffer.label, venueOffer: selectedOffer.offer } })}
+                                        onClick={() => navigate('/discovery', { state: { category: selectedOffer.id } })}
                                         className="py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-brand/10 transition-all text-brand">
-                                        See Offer
+                                        Browse Venues
                                     </button>
                                     <button 
                                         onClick={() => setSharingToFriend(true)}

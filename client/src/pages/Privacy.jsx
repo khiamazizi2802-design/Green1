@@ -33,19 +33,33 @@ Operating primarily in Frankfurt, Germany, the platform adheres to the "Neural-G
 ## 4. SECURITY & THE VAULT
 All sensitive data is stored in the "MFA Secure Vault." Unauthorized attempts to access the vault trigger a "Global Lockdown" protocol.`;
 
-    const defaultTermsOfServiceText = `# GREEN ECOSYSTEM: TERMS OF SERVICE (OPERATIONAL MANDATE)
+    const defaultTermsOfServiceText = `# ALLGEMEINE GESCHÄFTSBEDINGUNGEN (AGB) – GREEN ECOSYSTEM
 
-## 1. ACCESS & CLEARANCE
-Access to the "Director Command Center" is restricted to authorized personnel. Sharing credentials constitutes a Level-5 security breach and results in immediate "PRIME-ID Revocation."
+## Präambel
+Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Vermittlungsplattform für Mobilitäts- und Servicedienstleistungen. Diese AGB regeln die vertraglichen Beziehungen zwischen dem Plattformbetreiber und den Nutzern. Die Nutzerstruktur unterteilt sich in Endkunden (Fahrgäste), Transportpartner (Flotten-Manager) und deren Fahrpersonal (Fahrer), sowie B2B-Partner (Venues/Hotels) und deren autorisiertes Personal (Staff).
 
-## 2. PARTNER OBLIGATIONS
-Partners (Fleet Owners, Venues) must maintain 100% compliance with local transport laws (e.g., German PBefG). Failure to sync telemetry with the "Guardian AI" will result in a 24-hour operational suspension.
+## 1. Nutzungsbedingungen für Endkunden (Passengers)
+* **Vermittlungsleistung:** Die App vermittelt Beförderungsverträge zwischen dem Endkunden und lizenzierten Transportpartnern (Flotten-Managern). Der Plattformbetreiber wird selbst nicht Vertragspartner der Beförderungsleistung.
+* **Zahlungsabwicklung:** Zahlungen erfolgen bargeldlos über integrierte Zahlungsdienstleister. Der Endkunde autorisiert die Abbuchung des Fahrpreises und etwaiger Stornierungsgebühren.
+* **Privatsphäre:** Die Kommunikation mit dem Fahrpersonal erfolgt ausschließlich anonymisiert über die App-interne Maskierung.
 
-## 3. "INVISIBLE NUMBER" MORATORIUM
-Direct phone number display is restricted for the first 180 days of operation. All communication must be routed through the "Neural CS Bridge" to protect user privacy.
+## 2. Pflichten der Transportpartner (Flotten-Manager) & Fahrpersonal
+* **Verantwortlichkeit des Flotten-Managers:** Der Flotten-Manager ist der direkte B2B-Vertragspartner der Green GmbH. Er ist vollumfänglich dafür verantwortlich, dass sein eingesetztes Fahrpersonal über alle gesetzlichen Qualifikationen (z.B. nach dem PBefG) verfügt. Die Auszahlung der Fahrtumsätze erfolgt ausschließlich an den Flotten-Manager.
+* **Status des Fahrpersonals (Drivers):** Das Fahrpersonal handelt im Auftrag des Flotten-Managers. Die Fahrer-Accounts (Driver Dashboard) sind streng an die jeweilige Flotte gebunden.
+* **Telemetrie und Disposition:** Zur Gewährleistung der Sicherheit ist die kontinuierliche Übermittlung von Standortdaten (GPS-Telemetrie) der eingesetzten Fahrzeuge durch das Fahrpersonal zwingend erforderlich.
 
-## 4. RECOVERY OF ASSETS
-The "Guardian Protocol" for lost items is a mandatory coordination service. Drivers are required to report "Seat Pressure Variance" immediately upon detecting left-behind items.`;
+## 3. Bedingungen für B2B-Partner (Venues / Hotels / Clubs)
+* **Provisionsmodell (Kickbacks):** B2B-Partner, die über ihr Dashboard Fahrten für Gäste vermitteln, erhalten eine vertraglich vereinbarte Umsatzbeteiligung. Die Abrechnung erfolgt automatisiert über das Settlement-Hub.
+* **Account-Administration:** Manager sind für die Verwaltung ihrer Profile sowie die Zuweisung von Rechten für ihr Personal (Staff) verantwortlich.
+* **Haftung:** Der B2B-Partner haftet für missbräuchliche Buchungen, die über seine autorisierten Unternehmenszugänge getätigt werden.
+
+## 4. Richtlinien für berechtigtes Venue-Personal (Staff / Night Crew)
+* **Nutzungsbindung:** Staff-Accounts sind streng an das Partner-Unternehmen gebunden und dürfen ausschließlich zur betrieblichen Vermittlung von Fahrten für Gäste genutzt werden.
+* **Vertraulichkeit:** Das Personal verpflichtet sich, Gastdaten strikt vertraulich zu behandeln und nicht für private Zwecke zu nutzen.
+
+## 5. Haftungsbeschränkung und Verlust von Gegenständen
+* Die Green GmbH haftet nur für Schäden, die auf vorsätzlicher oder grob fahrlässiger Pflichtverletzung beruhen.
+* Für im Fahrzeug vergessene Gegenstände wird ein digitaler Koordinationsprozess bereitgestellt; eine Haftung der Green GmbH ist jedoch ausgeschlossen.`;
 
     const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtocolText);
     const [termsOfServiceText, setTermsOfServiceText] = useState(defaultTermsOfServiceText);

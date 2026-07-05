@@ -40,10 +40,12 @@ const OrderTrackerPage = () => {
     const isStadium = venueName.toLowerCase().includes('stadium') || venueName.toLowerCase().includes('arena');
     const isParking = false;
     const guestName = location.state?.guestName;
+    const guestDetails = location.state?.guestDetails;
     const isGroupActive = localStorage.getItem('green_group_state') === 'active';
+    const totalCost = location.state?.totalCost ?? cart.reduce((sum, item) => sum + item.price, 0);
 
     // Check if the order is a ticket order (e.g. Club entry, Event ticket, Stadium seat)
-    const hasTickets = cart.some(item => 
+    const hasTickets = !isBooking && cart.some(item => 
         item.tags?.includes('Ticket') || 
         item.tags?.includes('Fast-Lane') || 
         item.tags?.includes('VIP') ||
@@ -103,7 +105,7 @@ const OrderTrackerPage = () => {
     const [orderStatus, setOrderStatus] = useState(() => {
         const initial = location.state?.orderStatus || 'PENDING';
         if (initial === 'PENDING' && hasTickets) {
-            return 'PENDING_EMAIL_VERIFICATION';
+            return 'TICKET_GENERATING';
         }
         if (!hasTickets && (initial === 'PENDING' || initial === 'GROUP ORDER')) {
             return 'ORDER RECEIVED';
@@ -149,24 +151,21 @@ const OrderTrackerPage = () => {
     };
 
     useEffect(() => {
-        let interval;
-        if (orderStatus === 'PENDING' || orderStatus === 'PENDING_EMAIL_VERIFICATION') {
-            interval = setInterval(() => {
-                setSecondsLeft(prev => {
-                    if (prev > 1) {
-                        return prev - 1;
-                    } else {
-                        clearInterval(interval);
-                        if (orderStatus === 'PENDING_EMAIL_VERIFICATION') {
-                            handleVerifyEmail();
-                        }
-                        return 0;
-                    }
+        let timeout;
+        if (orderStatus === 'TICKET_GENERATING') {
+            setProgress(50);
+            setStatusText("Ticket wird generiert...");
+            timeout = setTimeout(() => {
+                navigate('/order/receipt', { 
+                    state: { 
+                        ...location.state, 
+                        totalCost
+                    } 
                 });
-            }, 1000);
+            }, 2000);
         }
-        return () => clearInterval(interval);
-    }, [orderStatus]);
+        return () => clearTimeout(timeout);
+    }, [orderStatus, navigate, location.state]);
     
     useEffect(() => {
         if (orderStatus === 'GROUP ORDER') {
@@ -290,7 +289,7 @@ const OrderTrackerPage = () => {
                 if (currentOrder.type === 'Stay Booking') {
                     // For Room stay bookings
                     if (b2bStatus === 'Received' || b2bStatus === 'Booked') {
-                        setOrderStatus('PENDING');
+                        setOrderStatus('CONFIRMED');
                         setStatusText("Booking Confirmed • Awaiting Check-In 🏨");
                         setProgress(30);
                     } else if (b2bStatus === 'Check-In' || b2bStatus === 'Staying') {
@@ -362,8 +361,6 @@ const OrderTrackerPage = () => {
         };
     }, [orderId, statusText]);
 
-    const totalCost = cart.reduce((sum, item) => sum + item.price, 0);
-
     const triggerToast = (msg) => {
         setToastMessage(msg);
         setShowToast(true);
@@ -375,7 +372,7 @@ const OrderTrackerPage = () => {
             triggerToast("Bitte bestätigen Sie den Empfang der Tickets in E-Mail 2! 🎟️");
             return;
         }
-        if (orderStatus === 'PENDING_EMAIL_VERIFICATION') {
+        if (hasTickets && orderStatus === 'PENDING_EMAIL_VERIFICATION') {
             handleVerifyEmail();
             return;
         }
@@ -393,7 +390,8 @@ const OrderTrackerPage = () => {
                     orderId: orderIdValue,
                     isHotel,
                     guestName,
-                    paymentStatus
+                    paymentStatus,
+                    guestDetails
                 } 
             });
             return;
@@ -461,6 +459,30 @@ const OrderTrackerPage = () => {
                     <motion.div initial={{ y: -50, opacity: 0, x: "-50%" }} animate={{ y: 20, opacity: 1, x: "-50%" }} exit={{ y: -50, opacity: 0, x: "-50%" }} className="fixed top-12 left-1/2 z-[100] px-6 py-3 bg-brand text-dark-950 font-black italic uppercase text-[10px] rounded-full shadow-[0_0_30px_rgba(255,255,255,0.1)] flex items-center gap-3 whitespace-nowrap">
                         <Zap size={14} className="fill-dark-900" />
                         {toastMessage}
+                    </motion.div>
+                )}
+
+                {/* Ticket Generation Floating Alert */}
+                {hasTickets && orderStatus === 'TICKET_GENERATING' && (
+                    <motion.div 
+                        initial={{ y: -100, opacity: 0, x: "-50%" }} 
+                        animate={{ y: 20, opacity: 1, x: "-50%" }} 
+                        exit={{ y: -100, opacity: 0, x: "-50%" }} 
+                        className="fixed top-16 left-1/2 z-[90] w-[calc(100%-2rem)] max-w-md bg-black/90 backdrop-blur-md border border-brand/30 rounded-3xl p-5 shadow-[0_20px_50px_rgba(var(--brand),0.25)] flex items-start gap-4"
+                    >
+                        <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center text-brand border border-brand/20 shrink-0">
+                            <Loader2 size={24} className="animate-spin" />
+                        </div>
+                        <div className="flex-1 space-y-1 text-left">
+                            <div className="flex justify-between items-center">
+                                <h4 className="text-[9px] font-black uppercase text-brand tracking-widest">System Processing</h4>
+                                <span className="text-[7px] text-gray-500 font-bold uppercase tracking-widest">Jetzt</span>
+                            </div>
+                            <p className="text-xs font-black uppercase italic text-white leading-none pt-0.5">Ticket wird generiert...</p>
+                            <p className="text-[9px] text-gray-400 font-medium leading-relaxed pt-1">
+                                Dein Kauf war erfolgreich. Dein sicheres PDF-Ticket wird erstellt.
+                            </p>
+                        </div>
                     </motion.div>
                 )}
 
@@ -548,7 +570,7 @@ const OrderTrackerPage = () => {
                 <div className="absolute bottom-8 left-0 w-full px-8 z-10 text-center">
                     <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white drop-shadow-xl">{venueName}</h1>
                     <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em] mt-2 drop-shadow-xl">
-                        {isHotel ? 'Room' : 'Table'} {tableId} {guestName && `• ${guestName}`}
+                        {tableId === 'Check-in Assigned' ? 'Room Booking' : (isHotel ? 'Room' : 'Table')} {tableId === 'Check-in Assigned' ? '' : tableId} {guestName && `• ${guestName}`}
                     </p>
                 </div>
             </div>
@@ -635,17 +657,17 @@ const OrderTrackerPage = () => {
                                 {activeItems.map((item, index) => (
                                     <div key={index} className="flex justify-between items-center group">
                                         <div className="flex items-center gap-4">
-                                                <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border transition-all ${item.status === 'received' || item.status === 'sent' ? 'border-brand/40 text-brand' : 'border-white/10 text-gray-500'}`}>
-                                                    {item.status === 'received' || item.status === 'sent' ? <CheckCircle size={18} /> : <Loader2 size={18} className="animate-spin" />}
+                                            <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border transition-all ${item.status === 'received' || item.status === 'sent' || isBooking || hasTickets ? 'border-brand/40 text-brand' : 'border-white/10 text-gray-500'}`}>
+                                                {item.status === 'received' || item.status === 'sent' || isBooking || hasTickets ? <CheckCircle size={18} /> : <Loader2 size={18} className="animate-spin" />}
+                                            </div>
+                                            <div>
+                                                <p className={`text-xs font-black italic uppercase transition-colors ${item.status === 'received' || item.status === 'sent' || isBooking || hasTickets ? 'text-primary' : 'text-gray-500'}`}>{item.name}</p>
+                                                <div className="flex items-center gap-2 mt-0.5">
+                                                    <span className={`text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${['received', 'sent', 'served'].includes(item.status) || isBooking || hasTickets ? 'bg-brand/10 text-brand' : 'bg-white/5 text-gray-600'}`}>
+                                                        {isBooking || hasTickets ? 'Confirmed' : item.status === 'received' ? 'Received' : item.status === 'sent' ? 'Sent' : item.status === 'served' ? 'Served' : 'Pending'}
+                                                    </span>
                                                 </div>
-                                                <div>
-                                                    <p className={`text-xs font-black italic uppercase transition-colors ${item.status === 'received' || item.status === 'sent' ? 'text-primary' : 'text-gray-500'}`}>{item.name}</p>
-                                                    <div className="flex items-center gap-2 mt-0.5">
-                                                        <span className={`text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${['received', 'sent', 'served'].includes(item.status) ? 'bg-brand/10 text-brand' : 'bg-white/5 text-gray-600'}`}>
-                                                            {item.status === 'received' ? 'Received' : item.status === 'sent' ? 'Sent' : (item.status === 'served' && isBooking) ? 'Checked In' : item.status === 'served' ? 'Served' : 'Pending'}
-                                                        </span>
-                                                    </div>
-                                                </div>
+                                            </div>
                                         </div>
                                         <p className="text-sm font-black italic text-brand">€{item.price.toFixed(2)}</p>
                                     </div>
@@ -749,6 +771,48 @@ const OrderTrackerPage = () => {
                                             <CheckCircle size={16} />
                                             <span className="text-[9px] font-black uppercase tracking-widest">Empfang am {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} Uhr bestätigt • Eintritt aktiv</span>
                                         </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {guestDetails && isBooking && (
+                            <div className="bg-glass border border-brand/20 rounded-2xl p-5 mt-2 space-y-3 relative overflow-hidden shadow-2xl">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 blur-[50px] rounded-full -mr-10 -mt-10" />
+                                <div className="flex items-center gap-2 mb-2 relative z-10">
+                                    <div className="w-1.5 h-1.5 bg-brand rounded-full" />
+                                    <h4 className="text-[10px] font-black uppercase text-brand tracking-[0.2em] leading-none">Registration Overview</h4>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 relative z-10">
+                                    <div className="bg-black/40 rounded-xl p-3 border border-white/5 space-y-1">
+                                        <span className="text-[7px] font-black text-gray-500 uppercase tracking-widest block">Check-In</span>
+                                        <span className="text-xs font-black italic text-white block">{guestDetails.checkIn || 'N/A'}</span>
+                                    </div>
+                                    <div className="bg-black/40 rounded-xl p-3 border border-white/5 space-y-1">
+                                        <span className="text-[7px] font-black text-gray-500 uppercase tracking-widest block">Check-Out</span>
+                                        <span className="text-xs font-black italic text-white block">{guestDetails.checkOut || 'N/A'}</span>
+                                    </div>
+                                </div>
+                                <div className="bg-black/40 rounded-xl p-3 border border-white/5 space-y-2 relative z-10">
+                                    <div className="flex justify-between items-center text-[9px]">
+                                        <span className="text-gray-500 font-bold uppercase tracking-wider">Booking Type:</span>
+                                        <span className={`font-black uppercase tracking-widest ${guestDetails.bookingType === 'business' ? 'text-brand' : 'text-white'}`}>
+                                            {guestDetails.bookingType === 'business' ? 'Business' : 'Private'}
+                                        </span>
+                                    </div>
+                                    {guestDetails.bookingType === 'business' && guestDetails.companyName && (
+                                        <>
+                                            <div className="flex justify-between items-center text-[9px]">
+                                                <span className="text-gray-500 font-bold uppercase tracking-wider">Company:</span>
+                                                <span className="text-white font-black uppercase italic truncate max-w-[150px]">{guestDetails.companyName}</span>
+                                            </div>
+                                            {guestDetails.companyAddress && (
+                                                <div className="flex justify-between items-center text-[9px]">
+                                                    <span className="text-gray-500 font-bold uppercase tracking-wider">Address:</span>
+                                                    <span className="text-gray-300 font-black uppercase italic truncate max-w-[150px]">{guestDetails.companyAddress}</span>
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </div>
