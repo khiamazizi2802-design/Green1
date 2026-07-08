@@ -21,7 +21,8 @@ import {
     Smartphone,
     ShoppingBag,
     Check,
-    BedDouble
+    BedDouble,
+    Download
 } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
@@ -35,8 +36,8 @@ const OrderTrackerPage = () => {
     const orderId = location.state?.orderId;
     
     const isWashHub = venueName.toLowerCase().includes('wash') || cart.some(item => item.tags?.includes('Service'));
-    const isHotel = venueName.toLowerCase().includes('hotel') || venueName.toLowerCase().includes('luxe');
-    const isBooking = isHotel && cart.some(item => item.tags?.includes('Luxury') || item.tags?.includes('Elite'));
+    const isHotel = venueName.toLowerCase().includes('hotel') || venueName.toLowerCase().includes('luxe') || cart.some(item => item.name.toLowerCase().includes('room') || item.category === 'Rooms');
+    const isBooking = isHotel && cart.some(item => item.tags?.includes('Luxury') || item.tags?.includes('Elite') || item.name.toLowerCase().includes('room'));
     const isStadium = venueName.toLowerCase().includes('stadium') || venueName.toLowerCase().includes('arena');
     const isParking = false;
     const guestName = location.state?.guestName;
@@ -564,7 +565,7 @@ const OrderTrackerPage = () => {
                                         : 'bg-white/10 text-gray-500 cursor-not-allowed'
                         }`}
                     >
-                        {orderStatus === 'GROUP ORDER' ? 'Group Tab' : paymentStatus === 'PAID' ? 'Close Table' : paymentStatus === 'BILLED TO ROOM' ? 'View Folio' : orderStatus === 'SERVED' ? 'Settle Bill' : 'Order Pending'}
+                        {orderStatus === 'GROUP ORDER' ? 'Group Tab' : paymentStatus === 'PAID' ? (isHotel ? 'Close Folio' : (isStadium || isParking || hasTickets) ? 'Close Mission' : 'Close Table') : paymentStatus === 'BILLED TO ROOM' ? 'View Folio' : orderStatus === 'SERVED' ? 'Settle Bill' : 'Order Pending'}
                     </button>
                 </div>
                 <div className="absolute bottom-8 left-0 w-full px-8 z-10 text-center">
@@ -575,7 +576,7 @@ const OrderTrackerPage = () => {
                 </div>
             </div>
 
-            <div className="max-w-lg mx-auto p-6 space-y-8 -mt-6 relative z-20">
+            <div id="ticket-receipt-container" className="max-w-lg mx-auto p-6 space-y-8 -mt-6 relative z-20">
                 {isWashHub && (
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-black border-2 border-white/10 rounded-[3rem] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] relative">
                         <div className="relative h-48">
@@ -654,24 +655,29 @@ const OrderTrackerPage = () => {
                             ))
                         ) : (
                             <div className="space-y-4">
-                                {activeItems.map((item, index) => (
-                                    <div key={index} className="flex justify-between items-center group">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border transition-all ${item.status === 'received' || item.status === 'sent' || isBooking || hasTickets ? 'border-brand/40 text-brand' : 'border-white/10 text-gray-500'}`}>
-                                                {item.status === 'received' || item.status === 'sent' || isBooking || hasTickets ? <CheckCircle size={18} /> : <Loader2 size={18} className="animate-spin" />}
-                                            </div>
-                                            <div>
-                                                <p className={`text-xs font-black italic uppercase transition-colors ${item.status === 'received' || item.status === 'sent' || isBooking || hasTickets ? 'text-primary' : 'text-gray-500'}`}>{item.name}</p>
-                                                <div className="flex items-center gap-2 mt-0.5">
-                                                    <span className={`text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${['received', 'sent', 'served'].includes(item.status) || isBooking || hasTickets ? 'bg-brand/10 text-brand' : 'bg-white/5 text-gray-600'}`}>
-                                                        {isBooking || hasTickets ? 'Confirmed' : item.status === 'received' ? 'Received' : item.status === 'sent' ? 'Sent' : item.status === 'served' ? 'Served' : 'Pending'}
-                                                    </span>
+                                {activeItems.map((item, index) => {
+                                    const isConfirmedContext = isBooking || hasTickets || (isHotel && (item.tags?.includes('Rooms') || item.tags?.includes('Booking') || item.category === 'Rooms' || item.name.toLowerCase().includes('room')));
+                                    const isItemConfirmed = ['received', 'sent', 'served'].includes(item.status) || isConfirmedContext;
+                                    
+                                    return (
+                                        <div key={index} className="flex justify-between items-center group">
+                                            <div className="flex items-center gap-4">
+                                                <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border transition-all ${isItemConfirmed ? 'border-brand/40 text-brand' : 'border-white/10 text-gray-500'}`}>
+                                                    {isItemConfirmed ? <CheckCircle size={18} /> : <Loader2 size={18} className="animate-spin" />}
+                                                </div>
+                                                <div>
+                                                    <p className={`text-xs font-black italic uppercase transition-colors ${isItemConfirmed ? 'text-primary' : 'text-gray-500'}`}>{item.name}</p>
+                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                        <span className={`text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${isItemConfirmed || ['served'].includes(item.status) ? 'bg-brand/10 text-brand' : 'bg-white/5 text-gray-600'}`}>
+                                                            {isConfirmedContext && !['received', 'sent', 'served'].includes(item.status) ? 'Confirmed' : item.status === 'received' ? 'Received' : item.status === 'sent' ? 'Sent' : item.status === 'served' ? 'Served' : 'Pending'}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
+                                            <p className="text-sm font-black italic text-brand">€{item.price.toFixed(2)}</p>
                                         </div>
-                                        <p className="text-sm font-black italic text-brand">€{item.price.toFixed(2)}</p>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
 
@@ -866,7 +872,7 @@ const OrderTrackerPage = () => {
 
                 <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-bg-primary via-bg-primary/90 to-transparent z-40">
                     <div className="max-w-lg mx-auto space-y-3">
-                        <button onClick={() => navigate(-1)} className="w-full py-4 bg-black border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all text-white flex items-center justify-center gap-2 shadow-xl">
+                        <button onClick={() => navigate(-1)} className="w-full py-4 bg-black border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all text-white flex items-center justify-center gap-2 shadow-xl hover:bg-neutral-900 active:scale-95">
                             Back to Menu
                         </button>
                         <button 

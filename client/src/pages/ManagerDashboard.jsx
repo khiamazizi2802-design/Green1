@@ -83,6 +83,7 @@ import { useSocket } from '../context/SocketContext';
 import { Banknote, Check, Moon, Sun, Loader2 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import PostsFeed from '../components/PostsFeed';
+import MenuManagement from './MenuManagement';
 
 const compressBase64 = (base64, callback) => {
     const img = new Image();
@@ -195,7 +196,7 @@ const ManagerDashboard = () => {
     }, [notchAdjustment]);
     const [editingStaffIndex, setEditingStaffIndex] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [simRole, setSimRole] = useState(() => localStorage.getItem('green_sim_role') || user?.role || 'manager');
+    const simRole = user?.role || 'manager';
     const [simTemplate, setSimTemplate] = useState('pilot');
     const [langSearch, setLangSearch] = useState('');
     const [isLangExpanded, setIsLangExpanded] = useState(false);
@@ -294,7 +295,8 @@ const ManagerDashboard = () => {
         if (!user?.email) return;
         const ordersRef = collection(fbDb, 'orders');
         // Filter by venueEmail to satisfy Firestore security rules and only load relevant orders
-        const q = query(ordersRef, where('venueEmail', '==', user.email.toLowerCase()));
+        const targetEmail = (simRole === 'staff' && user?.managerId) ? user.managerId.toLowerCase() : user.email.toLowerCase();
+        const q = query(ordersRef, where('venueEmail', '==', targetEmail));
         
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const fetchedOrders = [];
@@ -317,7 +319,7 @@ const ManagerDashboard = () => {
         });
         
         return () => unsubscribe();
-    }, [user?.email, userEmailKey]);
+    }, [user?.email, userEmailKey, simRole, user?.managerId]);
 
     const requiredDocIds = simRole === 'staff'
         ? ['passport_id', 'work_permit', 'bank_details']
@@ -528,12 +530,13 @@ const ManagerDashboard = () => {
             .reduce((acc, curr) => acc + parseFloat(curr.total || 0), 0);
             
         const ancillarySales = completedOrders.reduce((acc, curr) => {
-            const hasAncillary = curr.items && curr.items.some(item => 
-                item.toLowerCase().includes('drink') || 
-                item.toLowerCase().includes('fries') || 
-                item.toLowerCase().includes('cocktail') || 
-                item.toLowerCase().includes('ancillary')
-            );
+            const hasAncillary = curr.items && curr.items.some(item => {
+                const itemName = typeof item === 'string' ? item : (item.name || '');
+                return itemName.toLowerCase().includes('drink') || 
+                       itemName.toLowerCase().includes('fries') || 
+                       itemName.toLowerCase().includes('cocktail') || 
+                       itemName.toLowerCase().includes('ancillary');
+            });
             return hasAncillary ? acc + parseFloat(curr.total || 0) : acc;
         }, 0);
         
@@ -2083,9 +2086,10 @@ const ManagerDashboard = () => {
         if (!userEmailKey || isDemo) return;
         const ordersRef = collection(fbDb, 'orders');
         // Query orders matching this venue, sorted by newest first
+        const targetEmail = (simRole === 'staff' && user?.managerId) ? user.managerId.toLowerCase() : (user?.email ? user.email.toLowerCase() : userEmailKey);
         const q = query(
             ordersRef,
-            where('venueEmail', '==', user?.email ? user.email.toLowerCase() : userEmailKey),
+            where('venueEmail', '==', targetEmail),
             orderBy('timestamp', 'desc')
         );
 
@@ -2102,7 +2106,7 @@ const ManagerDashboard = () => {
         });
 
         return () => unsubscribe();
-    }, [userEmailKey, isDemo, user?.email]);
+    }, [userEmailKey, isDemo, user?.email, simRole, user?.managerId]);
 
     // Real-Time stadium events sold counts synchronization
     useEffect(() => {
@@ -2253,26 +2257,16 @@ const ManagerDashboard = () => {
 
     const renderSidebarContent = () => (
         <>
-            <div className="p-6 pb-12 overflow-hidden flex items-center justify-between">
-                <div className="flex items-center gap-3 group cursor-pointer whitespace-nowrap">
-                    <div className="min-w-[48px] h-12 rounded-2xl bg-brand flex items-center justify-center text-dark-900 shadow-[0_0_20px_rgba(52,211,153,0.3)] group-hover:scale-110 transition-transform">
-                        <Zap size={24} fill="currentColor" />
-                    </div>
-                    <AnimatePresence>
-                        {(!isInternalSidebarCollapsed || isMobile) && (
-                            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                                <h1 className="text-xl font-black italic uppercase tracking-tighter leading-none">Green</h1>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand opacity-80">Partner Portal</p>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+            <div className="p-4 pb-8 overflow-hidden flex flex-col items-center justify-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-brand flex items-center justify-center text-dark-900 shadow-[0_0_20px_rgba(52,211,153,0.5)] transition-transform">
+                    <Zap size={24} fill="currentColor" />
                 </div>
                 {isMobile && (
                     <button 
                         onClick={() => setIsMobileSidebarOpen(false)}
-                        className="w-10 h-10 rounded-xl bg-btn-sec border border-main flex items-center justify-center text-secondary hover:text-primary hover:border-brand/40 transition-all shrink-0"
+                        className="w-8 h-8 rounded-xl bg-btn-sec border border-main flex items-center justify-center text-secondary hover:text-primary hover:border-brand/40 transition-all shrink-0"
                     >
-                        <X size={18} />
+                        <X size={14} />
                     </button>
                 )}
             </div>
@@ -2317,29 +2311,21 @@ const ManagerDashboard = () => {
                     <button
                         key={item.id}
                         onClick={() => {
-                            if (item.id === 'menu') {
-                                navigate(`/manager/menu-management${window.location.search}`);
-                                    return;
-                            }
                             setView(item.id);
                             setActiveSettingsEvent(null);
                             setShowSecurityGate(false);
-                            if (isMobile) setIsMobileSidebarOpen(false); // Auto close drawer on click!
+                            if (isMobile) setIsMobileSidebarOpen(false);
                         }}
-                        className={`w-full flex items-center p-4 rounded-2xl transition-all duration-300 group relative ${
+                        className={`w-full flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 group relative mb-2 ${
                             view === item.id 
-                            ? 'bg-brand/10 text-brand shadow-[inset_0_0_20px_rgba(52,211,153,0.05)] border border-brand/20' 
-                            : 'text-secondary hover:text-primary hover:bg-btn-sec border border-transparent'
+                            ? 'bg-brand/10 text-brand shadow-[0_0_15px_rgba(52,211,153,0.2)] border border-brand/50' 
+                            : 'text-secondary hover:text-primary hover:bg-white/5 border border-transparent'
                         }`}
                     >
-                        <div className="min-w-[20px] flex items-center justify-center">
-                            <item.icon size={20} className={view === item.id ? 'text-brand' : 'text-secondary group-hover:text-brand transition-colors'} />
-                        </div>
-                        {(!isInternalSidebarCollapsed || isMobile) && (
-                            <span className="text-xs font-black italic uppercase tracking-widest ml-4 whitespace-nowrap">{item.label}</span>
-                        )}
-                        {item.badge && (!isInternalSidebarCollapsed || isMobile) && (
-                            <span className="absolute right-4 px-2 py-0.5 bg-brand text-dark-900 text-[8px] font-black rounded-md">{item.badge}</span>
+                        <item.icon size={22} className={`mb-1.5 ${view === item.id ? 'text-brand' : 'text-secondary group-hover:text-brand transition-colors'}`} />
+                        <span className="text-[9px] font-black uppercase tracking-widest text-center leading-tight">{item.label}</span>
+                        {item.badge && (
+                            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-brand text-dark-900 text-[7px] font-black rounded-md">{item.badge}</span>
                         )}
                     </button>
                 ))}
@@ -2430,14 +2416,31 @@ const ManagerDashboard = () => {
         );
     }
 
+    const getBgImage = (ctx, currentTheme) => {
+        const isDark = currentTheme !== 'light';
+        switch (ctx) {
+            case 'HM': return isDark ? 'https://images.unsplash.com/photo-1542314831-c6a4d14d8373?w=1600&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=1600&auto=format&fit=crop&q=80';
+            case 'CM': return isDark ? 'https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=1600&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&auto=format&fit=crop&q=80';
+            case 'SM': return isDark ? 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1600&auto=format&fit=crop&q=80';
+            case 'RM': return isDark ? 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=1600&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&auto=format&fit=crop&q=80';
+            case 'BM': return isDark ? 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=1600&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=1600&auto=format&fit=crop&q=80';
+            case 'FM': return isDark ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1600&auto=format&fit=crop&q=80';
+            default: return isDark ? 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1600&auto=format&fit=crop&q=80';
+        }
+    };
+
     return (
         <div 
-            className="absolute left-0 right-0 bottom-0 overflow-hidden bg-dark-950 font-sans text-primary flex flex-row transition-all duration-300"
+            className="absolute left-0 right-0 bottom-0 overflow-hidden glass-bg-wrapper font-sans text-primary transition-all duration-500 flex flex-col p-2 md:p-6"
             style={{
                 top: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`,
-                height: `calc(100% - (${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px))`
+                height: `calc(100% - (${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px))`,
+                backgroundImage: `url("${getBgImage(managerContext, theme)}")`,
+                backgroundColor: theme === 'light' ? '#E5E7EB' : '#0B0F19'
             }}
         >
+            {/* FLOATING GLASS TABLET WRAPPER */}
+            <div className="flex-1 w-full h-full glass-panel rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-row relative shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10">
             {/* Mobile Sidebar Overlay Backdrop */}
             {isMobile && isMobileSidebarOpen && (
                 <div 
@@ -2450,16 +2453,10 @@ const ManagerDashboard = () => {
             {!isMobile && (
                 <motion.aside 
                     initial={false}
-                    animate={{ width: isInternalSidebarCollapsed ? 80 : 288 }}
+                    animate={{ width: 110 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    className="h-full bg-dark-900 border-r border-white/5 flex flex-col z-30 shadow-[10px_0_30px_rgba(0,0,0,0.3)] relative"
+                    className="h-full bg-transparent border-r border-white/5 flex flex-col z-30 relative shrink-0"
                 >
-                    <button 
-                        onClick={() => setIsInternalSidebarCollapsed(!isInternalSidebarCollapsed)}
-                        className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-12 bg-brand text-dark-900 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-50 border-2 border-[#0B121E]"
-                    >
-                        <ChevronRight size={14} className={`transition-transform duration-500 ${isInternalSidebarCollapsed ? '' : 'rotate-180'}`} />
-                    </button>
                     {renderSidebarContent()}
                 </motion.aside>
             )}
@@ -2473,7 +2470,7 @@ const ManagerDashboard = () => {
                             animate={{ x: 0 }}
                             exit={{ x: -288 }}
                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="fixed inset-y-0 left-0 w-[288px] h-full bg-dark-900 border-r border-white/5 flex flex-col z-[600] shadow-[10px_0_30px_rgba(0,0,0,0.5)] md:hidden"
+                            className="fixed inset-y-0 left-0 w-[288px] h-full bg-black/80 backdrop-blur-xl border-r border-white/5 flex flex-col z-[600] shadow-[10px_0_30px_rgba(0,0,0,0.5)] md:hidden"
                             style={{
                                 paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`
                             }}
@@ -2484,184 +2481,47 @@ const ManagerDashboard = () => {
                 </AnimatePresence>
             )}
 
-            <div className="flex-1 flex flex-col h-full overflow-hidden bg-dark-950">
-                <header className="h-20 border-b border-main bg-dark-900/30 backdrop-blur-3xl px-4 md:px-8 flex items-center justify-between z-20 shrink-0">
-                    <div className="flex items-center gap-2 md:gap-4">
-                        {isMobile && (
-                            <button 
-                                onClick={() => setIsMobileSidebarOpen(true)}
-                                className="w-10 h-10 bg-btn-sec border border-main rounded-xl flex items-center justify-center text-primary hover:border-brand/40 transition-all md:hidden"
-                            >
-                                <Menu size={20} />
-                            </button>
-                        )}
-                        <h2 className="text-xs md:text-sm font-black italic uppercase tracking-widest text-primary truncate max-w-[150px] md:max-w-none">{getBusinessName()}</h2>
-                        {user?.businessType === 'ALL' && (
-                            <div className="flex items-center gap-2 bg-brand/10 border border-brand/20 px-3 py-1.5 rounded-xl ml-2 md:ml-4 shrink-0 shadow-lg shadow-brand/5 animate-pulse">
-                                <Building2 size={13} className="text-brand shrink-0" />
-                                <select
-                                    value={managerContext}
-                                    onChange={(e) => {
-                                        const newCtx = e.target.value;
-                                        setManagerContext(newCtx);
-                                        localStorage.setItem(`green_manager_context_${user?.email || 'manager@green.de'}`, newCtx);
-                                    }}
-                                    className="bg-transparent text-[10px] font-black text-brand uppercase tracking-wider focus:outline-none cursor-pointer border-none py-0.5 pr-5 pl-0.5 font-sans"
-                                    style={{
-                                        appearance: 'none',
-                                        WebkitAppearance: 'none',
-                                        backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-                                        backgroundRepeat: 'no-repeat',
-                                        backgroundPosition: 'right center',
-                                        backgroundSize: '10px'
-                                    }}
+            <div className="flex-1 flex flex-col h-full overflow-hidden bg-transparent">
+                <header className="h-24 bg-transparent px-6 md:px-10 flex items-center justify-between z-20 shrink-0">
+                    <div className="flex flex-col justify-center">
+                        <div className="flex items-center gap-3">
+                            {isMobile && (
+                                <button 
+                                    onClick={() => setIsMobileSidebarOpen(true)}
+                                    className="w-10 h-10 bg-btn-sec border border-main rounded-xl flex items-center justify-center text-primary hover:border-brand/40 transition-all md:hidden"
                                 >
-                                    <option value="FM" className="bg-dark-900 text-brand">Fleet Operations 🚚</option>
-                                    <option value="RM" className="bg-dark-900 text-brand">Restaurant 🍽️</option>
-                                    <option value="HM" className="bg-dark-900 text-brand">Hotel & Spa 🏨</option>
-                                    <option value="CM" className="bg-dark-900 text-brand">Midnight Club 🍸</option>
-                                    <option value="BM" className="bg-dark-900 text-brand">Blue Velvet Bar 🍻</option>
-                                    <option value="SM" className="bg-dark-900 text-brand">Stadium Arena 🏟️</option>
-                                    <option value="VM" className="bg-dark-900 text-brand">Events Gala 🎉</option>
-                                </select>
-                            </div>
-                        )}
+                                    <Menu size={20} />
+                                </button>
+                            )}
+                            <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">Good Evening, {simRole === 'staff' ? 'Staff' : 'Manager'} {user?.name || 'Alex'}</h2>
+                        </div>
+                        <div className="text-[11px] font-medium text-gray-400 mt-1 flex items-center gap-2">
+                            <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                            <span>|</span>
+                            <span>{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-3 md:gap-6">
-                        {/* Notch / Header Height Fit Controller */}
-                        <div className="relative shrink-0 z-50">
-                            <button 
-                                onClick={() => setIsNotchPanelOpen(!isNotchPanelOpen)}
-                                className={`p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 text-primary transition-all flex items-center justify-center gap-1.5 ${notchAdjustment > 0 || useSafeArea ? 'border-brand/40 text-brand' : ''}`}
-                                title="Notch & Safe Area Alignment"
-                            >
-                                <Smartphone size={15} className={notchAdjustment > 0 ? 'text-brand animate-pulse' : 'text-secondary'} />
-                                {!isMobile && <span className="text-[9px] font-black uppercase tracking-wider">{notchAdjustment}px</span>}
-                            </button>
-                            
-                            <AnimatePresence>
-                                {isNotchPanelOpen && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        className="absolute right-0 mt-3 w-72 bg-[#0B121E]/95 backdrop-blur-2xl border border-brand/20 rounded-3xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.6)] z-[999]"
-                                    >
-                                        <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
-                                            <div className="flex items-center gap-2">
-                                                <Smartphone size={14} className="text-brand" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand">Notch & Safe-Fit</span>
-                                            </div>
-                                            <button onClick={() => setIsNotchPanelOpen(false)} className="text-secondary hover:text-primary">
-                                                <X size={14} />
-                                            </button>
-                                        </div>
-                                        
-                                        <div className="space-y-4 text-left">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-[9px] font-black uppercase text-secondary">Auto Safe Area</span>
-                                                <button 
-                                                    onClick={() => setUseSafeArea(!useSafeArea)}
-                                                    className={`w-9 h-5 rounded-full transition-colors relative flex items-center p-0.5 ${useSafeArea ? 'bg-brand' : 'bg-white/10'}`}
-                                                >
-                                                    <div className={`w-4 h-4 bg-dark-950 rounded-full transition-transform ${useSafeArea ? 'translate-x-4' : 'translate-x-0'}`} />
-                                                </button>
-                                            </div>
-                                            
-                                            <div className="space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-[9px] font-black uppercase text-secondary">Custom Offset</span>
-                                                    <span className="text-xs font-black text-brand italic">{notchAdjustment}px</span>
-                                                </div>
-                                                
-                                                <div className="flex items-center gap-3">
-                                                    <button 
-                                                        onClick={() => setNotchAdjustment(Math.max(0, notchAdjustment - 2))}
-                                                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-primary font-black"
-                                                    >
-                                                        -
-                                                    </button>
-                                                    <input 
-                                                        type="range" 
-                                                        min="0" 
-                                                        max="60" 
-                                                        value={notchAdjustment}
-                                                        onChange={(e) => setNotchAdjustment(parseInt(e.target.value, 10))}
-                                                        className="flex-1 accent-brand h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
-                                                    />
-                                                    <button 
-                                                        onClick={() => setNotchAdjustment(Math.min(60, notchAdjustment + 2))}
-                                                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-primary font-black"
-                                                    >
-                                                        +
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="grid grid-cols-3 gap-2 pt-2">
-                                                <button 
-                                                    onClick={() => setNotchAdjustment(0)}
-                                                    className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 0 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
-                                                >
-                                                    0px
-                                                    <span className="block text-[6px] opacity-40">Desktop</span>
-                                                </button>
-                                                <button 
-                                                    onClick={() => setNotchAdjustment(16)}
-                                                    className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 16 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
-                                                >
-                                                    16px
-                                                    <span className="block text-[6px] opacity-40">Compact</span>
-                                                </button>
-                                                <button 
-                                                    onClick={() => setNotchAdjustment(32)}
-                                                    className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 32 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
-                                                >
-                                                    32px
-                                                    <span className="block text-[6px] opacity-40">Tall Notch</span>
-                                                </button>
-                                            </div>
-                                            
-                                            <p className="text-[7px] text-gray-500 leading-normal uppercase tracking-wider">
-                                                Fits UI automatically to notches, status bars, and custom cases. Live syncing active.
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+
+                    <div className="flex items-center gap-4 md:gap-6">
+                        {/* Search Bar */}
+                        <div className="hidden md:flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2 w-64">
+                            <Search size={14} className="text-gray-400" />
+                            <input type="text" placeholder="Search" className="bg-transparent border-none outline-none text-sm text-white ml-2 w-full placeholder-gray-500" />
                         </div>
-                        {!isMobile && (
-                            <div className="px-4 py-2 bg-brand/10 border border-brand/20 rounded-xl">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-brand">{user?.role} MODE</span>
-                            </div>
-                        )}
-                        <div className="text-right flex items-center gap-3 md:gap-6">
-                            <div className="flex gap-2 md:gap-3">
-                                <div className="flex items-center gap-1.5 px-2 py-1 bg-white/10 rounded-lg border border-white/20">
-                                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-                                    <span className="text-[10px] font-black text-primary">{user?.greenFlags || 0}</span>
-                                </div>
-                                {user?.redFlags > 0 && !isMobile && (
-                                    <div className="flex items-center gap-1.5 px-2 py-1 bg-red-500/10 rounded-lg border border-red-500/20">
-                                        <ShieldAlert size={10} className="text-red-500" />
-                                        <span className="text-[10px] font-black text-red-500">{user.redFlags}</span>
-                                    </div>
-                                )}
-                            </div>
-                            {!isMobile && (
-                                <div>
-                                    <p className="text-xs font-black text-primary italic leading-none">{user?.name || 'Authorized Manager'}</p>
-                                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-1">Status: Online</p>
-                                </div>
-                            )}
+
+                        {/* Notification Bell */}
+                        <div className="relative cursor-pointer w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full text-[9px] font-bold flex items-center justify-center text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]">3</span>
                         </div>
-                        <div className="flex flex-col items-center gap-1.5 shrink-0">
-                            <div className="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 p-1">
-                                <img src={user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} alt="Avatar" className="w-full h-full rounded-lg" />
+
+                        {/* Profile */}
+                        <div className="flex items-center gap-3">
+                            <img src={user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-white/10" />
+                            <div className="hidden md:block text-left">
+                                <p className="text-sm font-bold text-white">{user?.name || 'Alex P.'}</p>
+                                <p className="text-[10px] text-gray-400">{simRole === 'staff' ? 'Staff Member' : 'Manager'}</p>
                             </div>
-                            {!isMobile && (
-                                <span className="text-[6px] font-black text-brand uppercase tracking-widest bg-brand/5 px-1 rounded border border-brand/10">ID: GRN-{user?.id || '284M'}</span>
-                            )}
                         </div>
                     </div>
                 </header>
@@ -2747,119 +2607,252 @@ const ManagerDashboard = () => {
                                 {view === 'overview' && (
                                     <motion.div key="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-10">
                                     {/* DYNAMIC STATS GRID */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                        {getStatsByContext().map((stat, i) => (
-                                            <div key={i} className="bg-btn-sec p-8 rounded-[2.5rem] border border-main relative group shadow-2xl">
-                                                <div className="absolute -top-3 left-8 px-3 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-[0.2em] shadow-lg z-10">{stat.label} 🛰️</div>
-                                                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                                                    <stat.icon size={64} />
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                        {/* STAT 1 */}
+                                        <div className="glass-panel-subtle p-5 rounded-2xl border border-white/5 hover:border-brand/30 transition-all relative flex flex-col justify-between h-[110px]">
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-[11px] font-medium text-gray-300">Reservations</span>
+                                                <span className="text-[9px] bg-white/5 text-gray-300 px-1 py-0.5 rounded flex items-center"><ChevronRight size={12} /></span>
+                                            </div>
+                                            <div className="flex justify-between items-end mt-2">
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-2xl font-bold text-white">88%</span>
+                                                    <span className="text-[10px] text-gray-400 font-medium">booked</span>
                                                 </div>
-                                                <div className={`w-12 h-12 rounded-xl bg-btn-sec flex items-center justify-center ${stat.color} mb-4 mt-2`}><stat.icon size={24} /></div>
-                                                <div className="flex justify-between items-end">
-                                                    <div>
-                                                        <p className="text-3xl font-black italic tracking-tighter leading-none text-primary">{stat.value}</p>
-                                                    </div>
-                                                    <span className="text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md bg-brand/10 text-brand">
-                                                        {stat.trend}
-                                                    </span>
+                                                <div className="w-14 h-8 opacity-70">
+                                                    <svg viewBox="0 0 100 30" className="w-full h-full stroke-gray-400" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M0,25 Q20,15 40,25 T80,10 T100,5" />
+                                                    </svg>
                                                 </div>
                                             </div>
-                                        ))}
+                                        </div>
+                                        {/* STAT 2 */}
+                                        <div className="glass-panel-subtle p-5 rounded-2xl border border-white/5 hover:border-brand/30 transition-all relative flex flex-col justify-between h-[110px]">
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-[11px] font-medium text-gray-300">Active Tables</span>
+                                                <span className="text-[9px] bg-brand/10 text-brand px-1 py-0.5 rounded flex items-center border border-brand/20"><Activity size={10} className="mr-0.5"/></span>
+                                            </div>
+                                            <div className="flex justify-between items-end mt-2">
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-2xl font-bold text-white">32/40</span>
+                                                </div>
+                                                <div className="w-14 h-8">
+                                                    <svg viewBox="0 0 100 30" className="w-full h-full stroke-brand" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M0,20 L20,25 L40,15 L60,20 L80,5 L100,10" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/* STAT 3 */}
+                                        <div className="glass-panel-subtle p-5 rounded-2xl border border-white/5 hover:border-brand/30 transition-all relative flex flex-col justify-between h-[110px]">
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-[11px] font-medium text-gray-300">Orders in Progress</span>
+                                                <span className="text-[10px] text-gray-500 flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-end mt-2">
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-2xl font-bold text-white">12</span>
+                                                </div>
+                                                <div className="w-14 h-8">
+                                                    <svg viewBox="0 0 100 30" className="w-full h-full stroke-purple-500 drop-shadow-[0_0_5px_rgba(168,85,247,0.5)]" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M0,15 Q20,25 40,10 T80,20 T100,5" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/* STAT 4 */}
+                                        <div className="glass-panel-subtle p-5 rounded-2xl border border-white/5 hover:border-brand/30 transition-all relative flex flex-col justify-between h-[110px]">
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-[11px] font-medium text-gray-300">Revenue Today</span>
+                                                <span className="text-[9px] bg-brand/10 text-brand px-1 py-0.5 rounded flex items-center border border-brand/20"><TrendingUp size={10} className="mr-0.5"/></span>
+                                            </div>
+                                            <div className="flex justify-between items-end mt-2">
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-2xl font-bold text-white">$7,450</span>
+                                                </div>
+                                                <div className="w-14 h-8">
+                                                    <svg viewBox="0 0 100 30" className="w-full h-full stroke-brand drop-shadow-[0_0_5px_rgba(52,211,153,0.5)]" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M0,25 L30,20 L50,10 L70,15 L100,0" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    {(managerContext !== 'CM' && managerContext !== 'RM' && managerContext !== 'HM') && (
-                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                        {/* PRIMARY MODULE */}
-                                        <div className="lg:col-span-2 bg-glass border border-glass rounded-[3rem] p-10 relative shadow-2xl">
-                                            <div className="absolute -top-3 left-10 px-4 py-1.5 bg-brand text-black rounded-full text-[8px] font-black uppercase tracking-[0.3em] shadow-lg">Operational Center 📡</div>
-                                            <div className="relative z-10">
-                                                <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-8 mt-2 text-primary">
-                                                    {managerContext === 'RM' ? 'Kitchen Command Hub' : 
-                                                     managerContext === 'CM' ? 'Live Entry Feed' :
-                                                     managerContext === 'HM' ? 'Guest Nightlife Monitor' :
-                                                     managerContext === 'SM' ? 'Arena Operations' :
-                                                     managerContext === 'FM' ? 'Fleet Dispatch Hub' : 'Operational Hub'}
-                                                </h3>
-                                                <div className="space-y-4">
-                                                    {getOperationalDataByContext().map((row, i) => (
-                                                        <div key={i} className="flex items-center justify-between p-5 bg-btn-sec rounded-2xl border border-main hover:bg-white/10 transition-all">
-                                                            <div className="flex items-center gap-4">
-                                                                <div className="w-12 h-12 rounded-xl bg-brand/10 flex flex-col items-center justify-center border border-brand/20">
-                                                                    <span className="text-[8px] font-black text-brand uppercase">UNIT</span>
-                                                                    <span className="text-sm font-black text-primary">{row.id}</span>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-sm font-black italic uppercase text-primary">{row.guest}</p>
-                                                                    <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{row.order}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="text-right">
-                                                                <p className="text-[9px] font-black text-brand uppercase tracking-widest">{row.status}</p>
-                                                                <p className="text-xs font-black italic text-primary leading-none mt-1">{row.time} active</p>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                    {/* MOCKUP 3-COLUMN HUBS */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                        
+                                        {/* COL 1: Table Reservations */}
+                                        <div className="glass-panel-subtle border border-white/5 rounded-3xl p-5 relative shadow-xl">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h3 className="text-[13px] font-bold text-white">Table Reservations</h3>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 cursor-pointer"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                            </div>
+                                            <div className="flex items-center gap-2 mb-4">
+                                                <span className="text-[10px] text-gray-400">Floor-time</span>
+                                                <span className="text-[10px] text-gray-500">Floor 1 & 2</span>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3 mb-6">
+                                                <div className="bg-[#0B121E]/50 border border-brand/50 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(52,211,153,0.15)] relative overflow-hidden">
+                                                    <div className="absolute top-0 left-0 w-full h-full bg-brand/5"></div>
+                                                    <span className="text-xl font-bold text-white relative z-10">101</span>
+                                                    <span className="text-[9px] font-bold text-brand relative z-10">Reserved</span>
+                                                    <span className="text-[8px] text-gray-400 mt-1 relative z-10">8 PM</span>
+                                                </div>
+                                                <div className="bg-[#0B121E]/50 border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                                                    <span className="text-xl font-bold text-white">102</span>
+                                                    <span className="text-[9px] text-gray-400 mt-1">4 Guest</span>
+                                                    <span className="text-[8px] text-gray-500">Detail</span>
+                                                </div>
+                                                <div className="bg-[#0B121E]/50 border border-brand/50 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(52,211,153,0.15)] relative overflow-hidden">
+                                                    <div className="absolute top-0 left-0 w-full h-full bg-brand/5"></div>
+                                                    <span className="text-xl font-bold text-white relative z-10">103</span>
+                                                    <span className="text-[9px] text-gray-400 relative z-10">4 Guest</span>
+                                                    <span className="text-[8px] text-gray-400 mt-1 relative z-10">8 PM</span>
+                                                </div>
+                                                <div className="bg-[#0B121E]/50 border border-purple-500/50 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(168,85,247,0.15)] relative overflow-hidden">
+                                                    <div className="absolute top-0 left-0 w-full h-full bg-purple-500/5"></div>
+                                                    <span className="text-xl font-bold text-white relative z-10">104</span>
+                                                    <span className="text-[9px] font-bold text-purple-400 relative z-10">Reserved</span>
+                                                    <span className="text-[8px] text-gray-400 mt-1 relative z-10">8:30 PM</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-[11px] font-bold text-white mb-2">Upcoming:</h4>
+                                                <p className="text-[10px] text-gray-400 mb-1">8:00 PM - Davis (4)</p>
+                                                <p className="text-[10px] text-gray-400">8:15 PM - Chen (2)</p>
+                                            </div>
+                                        </div>
 
-                                                    {(managerContext === 'RM' || managerContext === 'HM') && (
-                                                        <div className="pt-6 border-t border-white/10 mt-6 animate-in fade-in duration-700">
-                                                            <div className="flex items-center justify-between mb-4">
-                                                                <h4 className="text-[10px] font-black uppercase text-brand tracking-widest">Takeaway Requests 🥡</h4>
-                                                                <span className="px-2 py-0.5 bg-brand/10 text-brand rounded text-[8px] font-black uppercase">2 Pending</span>
-                                                            </div>
-                                                            <div className="p-4 bg-brand/5 rounded-2xl border border-brand/20 flex items-center justify-between mb-3">
-                                                                <div className="flex items-center gap-3">
-                                                                    <ShoppingBag size={16} className="text-brand" />
-                                                                    <div>
-                                                                        <p className="text-[11px] font-black uppercase text-white">Sarah V.</p>
-                                                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Wagyu Burger, Fries</p>
-                                                                    </div>
-                                                                </div>
-                                                                <p className="text-[8px] font-black text-brand uppercase">Driver Arriving 10m</p>
-                                                            </div>
-                                                            <div className="p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between opacity-60">
-                                                                <div className="flex items-center gap-3">
-                                                                    <ShoppingBag size={16} className="text-gray-500" />
-                                                                    <div>
-                                                                        <p className="text-[11px] font-black uppercase text-white">Pioneer #142</p>
-                                                                        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-wider">Midnight Neon (2x)</p>
-                                                                    </div>
-                                                                </div>
-                                                                <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Packed & Ready</p>
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                        {/* COL 2: Kitchen Command */}
+                                        <div className="glass-panel-subtle border border-white/5 rounded-3xl p-5 relative shadow-xl">
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h3 className="text-[13px] font-bold text-white">Kitchen Command</h3>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 cursor-pointer"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                             </div>
-                                                                {/* SECONDARY MODULE */}
-                                        <div className="bg-btn-sec border border-glass rounded-[3rem] p-10 flex flex-col justify-between shadow-2xl relative">
-                                            <div className="absolute -top-3 left-10 px-4 py-1.5 bg-brand text-black rounded-full text-[8px] font-black uppercase tracking-[0.3em] shadow-lg">City Analytics 📈</div>
-                                            <div className="space-y-6 mt-2">
-                                                <h3 className="text-xl font-black italic uppercase tracking-tighter text-primary">City Pulse IQ</h3>
-                                                <div className="space-y-4">
-                                                    {[
-                                                        { label: 'Demand Surge', value: 'High', color: 'text-brand' },
-                                                        { label: 'Traffic Density', value: 'Medium', color: 'text-primary' },
-                                                        { label: 'Event Bonus', value: '+€5.00', color: 'text-primary' }
-                                                    ].map((pulse, i) => (
-                                                        <div key={i} className="flex justify-between items-center pb-4 border-b border-main last:border-0">
-                                                            <span className="text-[10px] font-black uppercase text-secondary">{pulse.label}</span>
-                                                            <span className={`text-xs font-black italic uppercase ${pulse.color}`}>{pulse.value}</span>
+                                            
+                                            <div className="space-y-4">
+                                                {/* Ticket 1 */}
+                                                <div className="bg-[#0B121E]/50 border border-purple-500/30 rounded-xl p-4 shadow-[0_0_15px_rgba(168,85,247,0.1)] relative">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h4 className="text-[11px] text-white">Ticket #142 <span className="text-gray-400">(Table 103)</span></h4>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                                    </div>
+                                                    <div className="flex justify-between items-start mb-4">
+                                                        <div className="text-[10px] text-gray-400 leading-relaxed">
+                                                            <p>Steak Frites</p>
+                                                            <p>Salmon</p>
                                                         </div>
-                                                    ))}
+                                                        <span className="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30">In Prep</span>
+                                                    </div>
+                                                    <div className="h-1 w-full bg-white/5 rounded-full mb-3 overflow-hidden">
+                                                        <div className="h-full w-[60%] bg-purple-500"></div>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-[9px] text-gray-500">
+                                                        <span>Order at 7:45 PM</span>
+                                                        <span className="flex items-center gap-1"><Users size={10} /> 2</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="pt-8">
-                                                <div className="bg-brand/10 border border-brand/20 rounded-2xl p-4 flex items-center gap-4 shadow-[0_10px_20px_rgba(52,211,153,0.05)]">
-                                                    <Activity className="text-brand" size={20} />
-                                                    <p className="text-[9px] font-bold text-gray-300 leading-tight uppercase">
-                                                        Network Operating at Peak Efficiency.
-                                                        <span className="text-brand ml-1">No latency detected.</span>
-                                                    </p>
+
+                                                {/* Ticket 2 */}
+                                                <div className="bg-[#0B121E]/50 border border-brand/30 rounded-xl p-4 shadow-[0_0_15px_rgba(52,211,153,0.1)] relative">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h4 className="text-[11px] text-white">Ticket #143 <span className="text-gray-400">(Table 105)</span></h4>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                                    </div>
+                                                    <div className="flex justify-between items-start mb-4">
+                                                        <div className="text-[10px] text-gray-400 leading-relaxed">
+                                                            <p>Lobster Risotto</p>
+                                                            <p>Duck Breast</p>
+                                                        </div>
+                                                        <span className="text-[9px] bg-brand/20 text-brand px-2 py-0.5 rounded-full border border-brand/30">Pending</span>
+                                                    </div>
+                                                    <div className="h-1 w-full bg-white/5 rounded-full mb-3 overflow-hidden">
+                                                        <div className="h-full w-[15%] bg-brand"></div>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-[9px] text-gray-500">
+                                                        <span>Order at 7:35 PM</span>
+                                                        <span className="flex items-center gap-1"><Users size={10} /> 3</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* COL 3: Menu Catalog */}
+                                        <div className="glass-panel-subtle border border-white/5 rounded-3xl p-5 relative shadow-xl">
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h3 className="text-[13px] font-bold text-white">Menu Catalog</h3>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 cursor-pointer"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                {/* Item 1 */}
+                                                <div className="bg-[#0B121E]/50 border border-white/5 rounded-xl p-3 flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
+                                                        <Utensils size={16} className="text-orange-500" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex justify-between items-start">
+                                                            <div>
+                                                                <h4 className="text-[11px] text-white">Wagyu Ribeye</h4>
+                                                                <p className="text-[10px] text-gray-400">($140)</p>
+                                                            </div>
+                                                        </div>
+                                                        <p className="text-[8px] text-gray-500 mt-1 line-clamp-1">Description with seal and aircon glow.</p>
+                                                        <div className="flex justify-between items-center mt-2">
+                                                            <span className="text-[9px] text-brand">Active</span>
+                                                            <div className="w-7 h-4 bg-brand rounded-full relative">
+                                                                <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Item 2 */}
+                                                <div className="bg-[#0B121E]/50 border border-white/5 rounded-xl p-3 flex items-center gap-3 opacity-60">
+                                                    <div className="w-10 h-10 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
+                                                        <Utensils size={16} className="text-orange-500" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex justify-between items-start">
+                                                            <div>
+                                                                <h4 className="text-[11px] text-white">Lobster Bisque</h4>
+                                                                <p className="text-[10px] text-gray-400">($35)</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex justify-between items-center mt-4">
+                                                            <span className="text-[9px] text-gray-500">Sold Out</span>
+                                                            <div className="w-7 h-4 bg-white/20 rounded-full relative">
+                                                                <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-gray-400 rounded-full"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Item 3 */}
+                                                <div className="bg-[#0B121E]/50 border border-white/5 rounded-xl p-3 flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
+                                                        <Utensils size={16} className="text-orange-500" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex justify-between items-start">
+                                                            <div>
+                                                                <h4 className="text-[11px] text-white">Truffle Pasta</h4>
+                                                                <p className="text-[10px] text-gray-400">($45)</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex justify-between items-center mt-4">
+                                                            <span className="text-[9px] text-brand">Active</span>
+                                                            <div className="w-7 h-4 bg-brand rounded-full relative">
+                                                                <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    )}
                                 </motion.div>
                             )}
 
@@ -2951,13 +2944,29 @@ const ManagerDashboard = () => {
                                                     {/* RED MARKED AREA (Top Half: Guest Details & Table Info) */}
                                                     <div className="space-y-4 relative z-10">
                                                         <div className="flex items-start gap-4">
-                                                            {/* Table / Room Number block */}
+                                                            {/* Type-Specific Badge block */}
                                                             <div className="w-16 h-16 rounded-2xl bg-dark-900 border border-main flex flex-col items-center justify-center text-primary relative overflow-hidden group-hover:border-brand/40 transition-colors shrink-0">
                                                                 <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                                <span className="text-[7px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">{order.type === 'Stay Booking' ? 'ROOM' : 'TABLE'}</span>
-                                                                <span className="text-[6px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">NUMBER</span>
-                                                                <span className="text-base font-black italic text-brand leading-none">{order.table || order.room || order.id?.toString()?.replace('#', '') || ''}</span>
-                                                                <div className={`absolute bottom-0 left-0 right-0 h-1 ${order.status === 'Served' ? 'bg-brand' : 'bg-brand/20'}`} />
+                                                                {order.type === 'Stay Booking' || order.type === 'Room Service' ? (
+                                                                    <>
+                                                                        <span className="text-[7px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">ROOM</span>
+                                                                        <span className="text-[6px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">NUMBER</span>
+                                                                        <span className="text-base font-black italic text-brand leading-none">{order.room || 'TBD'}</span>
+                                                                    </>
+                                                                ) : order.type === 'Stadium E-Ticket' || order.type === 'Club Event Ticket' ? (
+                                                                    <>
+                                                                        <span className="text-[7px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">TICKET</span>
+                                                                        <span className="text-[6px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">DETAILS</span>
+                                                                        <span className="text-[10px] font-black italic text-brand leading-none truncate w-full text-center px-1">{order.id?.toString()?.replace('#', '')}</span>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <span className="text-[7px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">TABLE</span>
+                                                                        <span className="text-[6px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">NUMBER</span>
+                                                                        <span className="text-base font-black italic text-brand leading-none">{order.table || '0'}</span>
+                                                                    </>
+                                                                )}
+                                                                <div className={`absolute bottom-0 left-0 right-0 h-1 ${['Served', 'Departed', 'Delivered', 'Scanned', 'Valid', 'Paid'].includes(order.status) ? 'bg-brand' : 'bg-brand/20'}`} />
                                                             </div>
                                                             
                                                             {/* Guest details */}
@@ -2978,14 +2987,35 @@ const ManagerDashboard = () => {
                                                                         onChange={(e) => updateOrderStatus(order.id, e.target.value)}
                                                                         className="bg-dark-900 border border-main rounded-md px-1.5 py-0.5 text-[8px] font-black text-brand uppercase outline-none focus:border-brand/40 cursor-pointer h-[21px]"
                                                                     >
-                                                                        <option value="Received">Received</option>
-                                                                        <option value="Booked">Booked</option>
-                                                                        <option value="Preparing">Preparing</option>
-                                                                        <option value="Check-In">Check-In</option>
-                                                                        <option value="Ready">Ready</option>
-                                                                        <option value="Staying">Staying</option>
-                                                                        <option value="Served">Served</option>
-                                                                        <option value="Departed">Departed</option>
+                                                                        {order.type === 'Stay Booking' ? (
+                                                                            <>
+                                                                                <option value="Booked">Booked</option>
+                                                                                <option value="Check-In">Check-In</option>
+                                                                                <option value="Staying">Staying</option>
+                                                                                <option value="Departed">Departed</option>
+                                                                            </>
+                                                                        ) : order.type === 'Stadium E-Ticket' || order.type === 'Club Event Ticket' ? (
+                                                                            <>
+                                                                                <option value="Purchased">Purchased</option>
+                                                                                <option value="Issued">Issued</option>
+                                                                                <option value="Valid">Valid</option>
+                                                                                <option value="Scanned">Scanned</option>
+                                                                            </>
+                                                                        ) : order.type === 'Room Service' ? (
+                                                                            <>
+                                                                                <option value="Received">Received</option>
+                                                                                <option value="Preparing">Preparing</option>
+                                                                                <option value="On Route">On Route</option>
+                                                                                <option value="Delivered">Delivered</option>
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <option value="Received">Received</option>
+                                                                                <option value="Preparing">Preparing</option>
+                                                                                <option value="Ready">Ready</option>
+                                                                                <option value="Served">Served</option>
+                                                                            </>
+                                                                        )}
                                                                         <option value="Paid">Paid</option>
                                                                     </select>
                                                                     
@@ -3264,7 +3294,7 @@ const ManagerDashboard = () => {
                                                             
                                                             {/* Status labels */}
                                                             <div className="flex justify-between px-0.5 text-[6.5px] font-black uppercase text-secondary tracking-widest opacity-60">
-                                                                {(isBooking ? ['Booked', 'Check-In', 'Staying', 'Departed'] : ['Received', 'Preparing', 'Ready', 'Served']).map((label, idx) => {
+                                                                {(isBooking ? ['Booked', 'Check-In', 'Staying', 'Departed'] : order.type === 'Stadium E-Ticket' || order.type === 'Club Event Ticket' ? ['Purchased', 'Issued', 'Valid', 'Scanned'] : order.type === 'Room Service' ? ['Received', 'Preparing', 'On Route', 'Delivered'] : ['Received', 'Preparing', 'Ready', 'Served']).map((label, idx) => {
                                                                     const isActive = order.status === label;
                                                                     return (
                                                                         <span key={label} className={isActive ? 'text-brand opacity-100 font-extrabold scale-105 transition-all' : ''}>
@@ -3885,6 +3915,12 @@ const ManagerDashboard = () => {
                                             </div>
                                         </div>
                                     </div>
+                                </motion.div>
+                            )}
+
+                            {view === 'menu' && (
+                                <motion.div key="menu" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full">
+                                    <MenuManagement />
                                 </motion.div>
                             )}
 
@@ -6160,10 +6196,10 @@ const ManagerDashboard = () => {
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div className="p-6 bg-white/5 border border-white/10 rounded-3xl space-y-2">
                                                     <div className="flex justify-between items-center">
-                                                        <span className="text-[9px] font-black text-secondary uppercase tracking-widest">Table / Unit</span>
+                                                        <span className="text-[9px] font-black text-secondary uppercase tracking-widest">{selectedGuest.type === 'Stay Booking' || selectedGuest.type === 'Room Service' ? 'Room' : selectedGuest.type === 'Stadium E-Ticket' || selectedGuest.type === 'Club Event Ticket' ? 'Ticket Details' : 'Table / Unit'}</span>
                                                         <ShoppingBag size={14} className="text-brand" />
                                                     </div>
-                                                    <p className="text-2xl font-black italic text-brand">Table {selectedGuest.table || selectedGuest.room || selectedGuest.id?.toString()?.replace('#', '') || ''}</p>
+                                                    <p className="text-2xl font-black italic text-brand">{selectedGuest.type === 'Stay Booking' || selectedGuest.type === 'Room Service' ? `Room ${selectedGuest.room}` : selectedGuest.type === 'Stadium E-Ticket' || selectedGuest.type === 'Club Event Ticket' ? `ID ${selectedGuest.id?.toString()?.replace('#', '')}` : `Table ${selectedGuest.table || 'N/A'}`}</p>
                                                 </div>
                                                 <div className="p-6 bg-white/5 border border-white/10 rounded-3xl space-y-2">
                                                     <div className="flex justify-between items-center">
@@ -6182,8 +6218,8 @@ const ManagerDashboard = () => {
                                                 <div className="space-y-3">
                                                     {selectedGuest.items && selectedGuest.items.map((item, idx) => (
                                                         <div key={idx} className="flex justify-between items-center p-5 bg-dark-900 rounded-2xl border border-main">
-                                                            <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Item {idx + 1}</span>
-                                                            <span className="text-sm font-black text-brand italic">{item}</span>
+                                                            <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">{item.name || `Item ${idx + 1}`}</span>
+                                                            <span className="text-sm font-black text-brand italic">{typeof item === 'object' ? `€${(item.price || 0).toFixed(2)}` : item}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -6375,7 +6411,8 @@ const ManagerDashboard = () => {
                                                 Message to {messageOrder.guest}
                                             </h2>
                                             <p className="text-[10px] font-bold text-secondary uppercase tracking-widest mt-1 opacity-60">
-                                                Table {messageOrder.table || messageOrder.room || messageOrder.id?.toString()?.replace('#', '') || ''} • {messageOrder.id}
+                                                {messageOrder.type === 'Stay Booking' || messageOrder.type === 'Room Service' ? 'Room ' : messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket' ? 'Ticket Details: ' : 'Table '}
+                                                {messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket' ? (messageOrder.items ? messageOrder.items.map(i => typeof i === 'string' ? i : (i.name || '')).join(', ') : '') : (messageOrder.table || messageOrder.room || '')} • {messageOrder.id}
                                             </p>
                                         </div>
                                     </div>
@@ -6390,18 +6427,22 @@ const ManagerDashboard = () => {
                                             {[
                                                 (messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket') 
                                                 ? `🎟️ Ihre E-Tickets wurden generiert und stehen im Portal bereit!` 
+                                                : messageOrder.type === 'Room Service'
+                                                ? `🍽️ Ihre Bestellung wird frisch für Ihr Zimmer zubereitet!`
                                                 : `🍹 Ihre Getränke werden gerade frisch zubereitet!`,
                                                 
                                                 (messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket')
                                                 ? `📬 Bitte überprüfen Sie auch Ihren Spam-Ordner für die Bestätigungs-E-Mail (E-Mail 1)!`
-                                                : `🍔 Ihre ${messageOrder.items ? messageOrder.items.map(i => typeof i === 'string' ? i.split(' ').slice(1).join(' ') : (i.name || '')).join(', ') : 'Bestellung'} ist auf dem Weg zu Tisch ${messageOrder.table || messageOrder.room || messageOrder.id?.toString()?.replace('#', '') || ''}!`,
+                                                : messageOrder.type === 'Room Service'
+                                                ? `🍔 Ihre Bestellung ist auf dem Weg zu Zimmer ${messageOrder.room || ''}!`
+                                                : `🍔 Ihre ${messageOrder.items ? messageOrder.items.map(i => typeof i === 'string' ? i.split(' ').slice(1).join(' ') : (i.name || '')).join(', ') : 'Bestellung'} ist auf dem Weg zu Tisch ${messageOrder.table || ''}!`,
                                                 
                                                 (messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket')
-                                                ? `🎉 Einlass für ${messageOrder.items ? messageOrder.items.map(i => typeof i === 'string' ? i : (i.name || '')).join(', ') : 'Ihr Event'} hat begonnen. Wir freuen uns auf Sie!`
+                                                ? `🎉 Einlass für ${messageOrder.items ? messageOrder.items.map(i => typeof i === 'string' ? i : (i.name || '')).join(', ') : 'Ihr Event'} hat begonnen. Bitte prüfen Sie Ihre Ticket-Details im Profil!`
                                                 : `⏱️ Entschuldigung für die Verzögerung, wir beeilen uns!`,
                                                 
                                                 (messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket')
-                                                ? `✨ Wichtig: Bitte halten Sie Ihr Smartphone mit dem QR-Code am Einlass bereit!`
+                                                ? `✨ Wichtig: Bitte prüfen Sie die Ticket-Details sorgfältig!`
                                                 : `✨ Ihre Bestellung wurde erfolgreich serviert! Guten Appetit!`
                                             ].map((template, idx) => (
                                                 <button
@@ -6444,11 +6485,13 @@ const ManagerDashboard = () => {
                                                     socket.emit('send-guest-message', {
                                                         orderId: messageOrder.id,
                                                         guest: messageOrder.guest,
-                                                        table: messageOrder.table || messageOrder.room || messageOrder.id?.toString()?.replace('#', '') || '',
+                                                        table: messageOrder.type === 'Stay Booking' || messageOrder.type === 'Room Service' ? messageOrder.room : (messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket' ? 'Ticket' : messageOrder.table),
                                                         message: customMessage
                                                     });
                                                 }
-                                                alert(`MESSAGE DISPATCHED\n------------------\nTo: ${messageOrder.guest} (Table ${messageOrder.table || messageOrder.room || messageOrder.id?.toString()?.replace('#', '') || ''})\nMessage: "${customMessage}"\n\nStatus: Sent & Synced.`);
+                                                const locType = messageOrder.type === 'Stay Booking' || messageOrder.type === 'Room Service' ? 'Room ' : messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket' ? 'Ticket: ' : 'Table ';
+                                                const locValue = messageOrder.type === 'Stay Booking' || messageOrder.type === 'Room Service' ? messageOrder.room : messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket' ? (messageOrder.items ? messageOrder.items.map(i => typeof i === 'string' ? i : (i.name || '')).join(', ') : '') : messageOrder.table;
+                                                alert(`MESSAGE DISPATCHED\n------------------\nTo: ${messageOrder.guest} (${locType}${locValue})\nMessage: "${customMessage}"\n\nStatus: Sent & Synced.`);
                                                 setMessageOrder(null);
                                             }}
                                             disabled={!customMessage.trim()}
@@ -6499,6 +6542,7 @@ const ManagerDashboard = () => {
                     ))}
                 </AnimatePresence>
             </div>
+            </div> {/* END FLOATING GLASS TABLET WRAPPER */}
         </div>
     );
 };

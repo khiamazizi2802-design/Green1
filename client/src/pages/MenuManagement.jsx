@@ -245,8 +245,8 @@ const MenuManagement = () => {
 
     if (loading) {
         return (
-            <div className="w-screen h-screen bg-dark-950 flex items-center justify-center">
-                <div className="text-xl font-black italic uppercase text-brand animate-pulse">
+            <div className="w-full flex items-center justify-center p-20">
+                <div className="text-xl font-black italic uppercase text-[#00e5ff] animate-pulse">
                     Grid Intelligence Loading...
                 </div>
             </div>
@@ -346,51 +346,37 @@ const MenuManagement = () => {
     };
 
     return (
-        <div className="min-h-screen bg-dark-950 text-primary font-sans p-4 md:p-8 relative overflow-hidden">
-            {/* Background Aesthetics - Tactical Layer */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(var(--border-main) 1px, transparent 1px), linear-gradient(90deg, var(--border-main) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/3" />
-            <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-violet-500/5 blur-[150px] rounded-full translate-y-1/2 -translate-x-1/3" />
-
-            <div className="max-w-4xl mx-auto relative z-10">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <button 
-                        onClick={() => navigate(`/manager${window.location.search}`)}
-                        className="w-11 h-11 bg-glass border border-main rounded-xl flex items-center justify-center text-secondary hover:text-brand hover:border-brand/40 transition-all shadow-lg backdrop-blur-md group"
-                    >
-                        <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
-                    </button>
-                    <div className="text-center">
-                        <h1 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter leading-none">Catalog <span className="text-brand">Manager</span></h1>
-                        <p className="text-[8px] font-black text-secondary uppercase tracking-[0.2em] mt-1.5 opacity-50">Precision Manual Item Mapping</p>
-                    </div>
-                    <div className="w-11" />
+        <div className="space-y-10 pb-20 w-full">
+            <div className="flex justify-between items-end">
+                <div className="space-y-2">
+                    <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none text-[#ffffff]">Catalog <span className="text-[#00e5ff]">Manager</span></h1>
+                    <p className="text-[#9ca3af] text-sm font-bold uppercase tracking-widest leading-none">Precision Manual Item Mapping</p>
                 </div>
+            </div>
 
-                <div className="space-y-6">
+            <div className="space-y-6">
                     {/* Bulk Spreadsheet Editor Grid */}
-                    <div className="bg-glass border border-main rounded-[2rem] p-0.5 shadow-2xl relative overflow-hidden">
-                        <div className="bg-dark-900 rounded-[1.9rem] p-4 md:p-6 overflow-hidden space-y-4">
+                    <div className="bg-[#0a0f1c80] backdrop-blur-xl border border-[#ffffff1a] rounded-[2rem] p-0.5 shadow-2xl relative overflow-hidden">
+                        <div className="bg-[#0a0f1c] rounded-[1.9rem] p-4 md:p-6 overflow-hidden space-y-4">
                             <div className="flex justify-between items-center px-2">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 bg-brand/10 border border-brand/20 rounded-xl flex items-center justify-center text-brand shadow-md">
+                                    <div className="w-9 h-9 bg-[#00e5ff1a] border border-[#00e5ff33] rounded-xl flex items-center justify-center text-[#00e5ff] shadow-md">
                                         <Utensils size={18} />
                                     </div>
-                                    <h3 className="text-lg font-black italic uppercase text-primary tracking-tighter">Bulk Catalog <span className="text-brand">Definitions</span></h3>
+                                    <h3 className="text-lg font-black italic uppercase text-[#ffffff] tracking-tighter">Bulk Catalog <span className="text-[#00e5ff]">Definitions</span></h3>
                                 </div>
                                 <button 
                                     onClick={addNewRow}
-                                    className="px-4 py-2 bg-brand/10 border border-brand/20 hover:border-brand/50 rounded-xl text-[9px] font-black uppercase text-brand tracking-widest flex items-center gap-2 hover:scale-[1.03] transition-all"
+                                    className="px-4 py-2 bg-[#00e5ff1a] border border-[#00e5ff33] hover:border-[#00e5ff80] rounded-xl text-[9px] font-black uppercase text-[#00e5ff] tracking-widest flex items-center gap-2 hover:scale-[1.03] transition-all"
                                 >
                                     <Plus size={12} /> Add New Row
                                 </button>
                             </div>
 
-                            <div className="overflow-x-auto no-scrollbar rounded-2xl border border-main/50">
+                            <div className="overflow-x-auto no-scrollbar rounded-2xl border border-[#ffffff1a]">
                                 <table className="w-full text-left border-collapse min-w-[850px]">
                                     <thead>
-                                        <tr className="border-b border-main bg-btn-sec/30 text-[8px] font-black text-secondary uppercase tracking-[0.2em]">
+                                        <tr className="border-b border-[#ffffff1a] bg-[#ffffff05] text-[8px] font-black text-[#9ca3af] uppercase tracking-[0.2em]">
                                             <th className="p-3 pl-4 w-[25%]">Product Nomenclature</th>
                                             <th className="p-3 w-[20%]">Catalog Category</th>
                                             <th className="p-3 w-[12%] text-center">Price (€)</th>
@@ -399,23 +385,23 @@ const MenuManagement = () => {
                                             <th className="p-3 pr-4 w-[3%] text-right"></th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-main/20">
+                                    <tbody className="divide-y divide-[#ffffff1a]">
                                         {manualItems.map((item, index) => (
                                             <tr key={item.id} className="hover:bg-white/[0.01] transition-all">
                                                 {/* Name */}
                                                 <td className="p-2.5 pl-4">
-                                                    <input 
-                                                        type="text" 
-                                                        placeholder="e.g. Ribeye Steak"
-                                                        className="w-full bg-btn-sec/50 border border-main rounded-xl p-2.5 text-xs font-black text-primary focus:border-brand/40 outline-none transition-all placeholder:opacity-20"
-                                                        value={item.name}
-                                                        onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
-                                                    />
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="e.g. Premium Lager"
+                                                            className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[10px] font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
+                                                            value={item.name}
+                                                            onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
+                                                        />
                                                 </td>
                                                 {/* Category */}
                                                 <td className="p-2.5">
                                                     <select 
-                                                        className="w-full bg-btn-sec/50 border border-main rounded-xl p-2.5 text-xs font-black uppercase italic text-brand focus:border-brand/40 outline-none transition-all appearance-none"
+                                                        className="w-full bg-[#ffffff0d] border border-[#ffffff1a] rounded-xl p-2.5 text-xs font-black uppercase italic text-[#00e5ff] focus:border-[#00e5ff66] outline-none transition-all appearance-none"
                                                         value={item.category}
                                                         onChange={(e) => handleFieldChange(index, 'category', e.target.value)}
                                                         style={{
@@ -443,19 +429,19 @@ const MenuManagement = () => {
                                                 </td>
                                                 {/* Description */}
                                                 <td className="p-2.5">
-                                                    <input 
-                                                        type="text" 
-                                                        placeholder="Specs, ingredients..."
-                                                        className="w-full bg-btn-sec/50 border border-main rounded-xl p-2.5 text-xs font-bold text-primary focus:border-brand/40 outline-none transition-all placeholder:opacity-20"
-                                                        value={item.description || ''}
-                                                        onChange={(e) => handleFieldChange(index, 'description', e.target.value)}
-                                                    />
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="Internal notes..."
+                                                            className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[9px] font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
+                                                            value={item.description || ''}
+                                                            onChange={(e) => handleFieldChange(index, 'description', e.target.value)}
+                                                        />
                                                 </td>
                                                 {/* Visual Asset Upload/URL */}
                                                 <td className="p-2.5">
                                                     <div className="flex items-center gap-2">
                                                         {item.image ? (
-                                                            <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-main shrink-0 group/rowthumb">
+                                                            <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-[#ffffff1a] shrink-0 group/rowthumb">
                                                                 <img src={item.image} alt="Thumb" className="w-full h-full object-cover" />
                                                                 <button 
                                                                     type="button"
@@ -467,9 +453,9 @@ const MenuManagement = () => {
                                                             </div>
                                                         ) : (
                                                             <div className="flex gap-2 items-center w-full">
-                                                                <label htmlFor={`file-upload-${item.id}`} className="cursor-pointer px-2 py-2 bg-btn-sec border border-main rounded-lg hover:text-brand hover:border-brand/30 transition-all flex items-center justify-center gap-1 shrink-0">
-                                                                    <Upload size={10} className="text-secondary" />
-                                                                    <span className="text-[7px] font-black uppercase text-secondary">File</span>
+                                                                <label htmlFor={`file-upload-${item.id}`} className="cursor-pointer px-2 py-2 bg-[#ffffff0d] border border-[#ffffff1a] rounded-lg hover:text-[#00e5ff] hover:border-[#00e5ff4d] transition-all flex items-center justify-center gap-1 shrink-0">
+                                                                    <Upload size={10} className="text-[#9ca3af]" />
+                                                                    <span className="text-[7px] font-black uppercase text-[#9ca3af] tracking-widest text-left">File</span>
                                                                 </label>
                                                                 <input 
                                                                     id={`file-upload-${item.id}`}
@@ -481,7 +467,7 @@ const MenuManagement = () => {
                                                                 <input 
                                                                     type="text" 
                                                                     placeholder="Or URL"
-                                                                    className="w-full bg-btn-sec border border-main rounded-lg p-2 text-[9px] font-bold text-primary focus:border-brand/40 outline-none placeholder:opacity-20"
+                                                                    className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[9px] font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
                                                                     value={item.image || ''}
                                                                     onChange={(e) => handleFieldChange(index, 'image', e.target.value)}
                                                                 />
@@ -493,7 +479,7 @@ const MenuManagement = () => {
                                                 <td className="p-2.5 pr-4 text-right">
                                                     <button 
                                                         onClick={() => removeItem(item.id)} 
-                                                        className="w-8 h-8 bg-btn-sec/50 border border-main rounded-lg text-secondary hover:text-red-500 hover:border-red-500/40 transition-all flex items-center justify-center inline-flex"
+                                                        className="w-8 h-8 bg-[#ffffff0d] border border-[#ffffff1a] rounded-lg text-[#9ca3af] hover:text-red-500 hover:border-red-500/40 transition-all flex items-center justify-center inline-flex"
                                                     >
                                                         <Trash2 size={13} />
                                                     </button>
@@ -511,7 +497,7 @@ const MenuManagement = () => {
                         <button 
                             onClick={publishManualMenu}
                             disabled={isPublishing}
-                            className="w-full py-5 bg-brand text-dark-950 rounded-[1.5rem] text-xs font-black uppercase tracking-[0.3em] shadow-lg shadow-brand/10 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                            className="w-full py-5 bg-[#000000] text-[#ffffff] border border-[#00e5ff] rounded-[1.5rem] text-xs font-black uppercase tracking-[0.3em] shadow-lg hover:bg-[#00e5ff1a] hover:text-[#00e5ff] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                         >
                             {isPublishing ? (
                                 <>
@@ -525,7 +511,6 @@ const MenuManagement = () => {
                         </button>
                     </div>
                 </div>
-            </div>
         </div>
     );
 };

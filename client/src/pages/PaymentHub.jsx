@@ -449,7 +449,21 @@ const PaymentHub = () => {
                                             if (editingPaymentId !== method.id) {
                                                 setActiveMethodId(method.id);
                                                 setActiveInFirestore(method.id);
-                                                triggerNotification(`${method.provider.toUpperCase()} ACTIVATED`, "SUCCESS");
+                                                
+                                                if (location.state?.paymentFlowContext) {
+                                                    const flowContext = location.state.paymentFlowContext;
+                                                    navigate('/venue/menu', {
+                                                        replace: true,
+                                                        state: {
+                                                            ...flowContext,
+                                                            paymentMethod: method.id,
+                                                            showPaymentTerminal: true,
+                                                            paymentStep: 'method'
+                                                        }
+                                                    });
+                                                } else {
+                                                    triggerNotification(`${(method.provider || 'Card').toUpperCase()} ACTIVATED`, "SUCCESS");
+                                                }
                                             }
                                         }}
                                         className={`relative p-6 rounded-[2.5rem] border transition-all duration-300 cursor-pointer overflow-hidden shadow-2xl min-h-[235px] flex flex-col justify-between group/item ${
@@ -457,7 +471,7 @@ const PaymentHub = () => {
                                                 ? 'ring-2 ring-[var(--brand-accent,#ffffff)] border-[var(--brand-accent,#ffffff)] shadow-[0_0_35px_rgba(255,255,255,0.25)] z-20 scale-[1.02]' 
                                                 : 'border-main hover:border-white/40 hover:scale-[1.01] opacity-80 hover:opacity-100'
                                         } ${
-                                            method.type === 'Credit Card' 
+                                            (method.type === 'Credit Card' || !method.type)
                                                 ? 'bg-gradient-to-br from-neutral-900 via-neutral-850 to-neutral-950 text-white' 
                                                 : method.type === 'Bank Account'
                                                 ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white'
@@ -574,14 +588,14 @@ const PaymentHub = () => {
                                                 <div className="flex justify-between items-start">
                                                     <div>
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400 leading-none">{method.type}</span>
+                                                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400 leading-none">{method.type || 'Credit Card'}</span>
                                                             {isActive && (
                                                                 <span className="bg-white text-black text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1 leading-none shadow-md">
                                                                     <Check size={9} className="stroke-[3]" /> Active
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <h4 className="text-xl font-black italic tracking-tight uppercase text-white mt-2 leading-none">{method.provider}</h4>
+                                                        <h4 className="text-xl font-black italic tracking-tight uppercase text-white mt-2 leading-none">{method.provider || 'Secure Card'}</h4>
                                                     </div>
                                                     
                                                     {/* Universal Floating Actions */}
@@ -657,11 +671,11 @@ const PaymentHub = () => {
                                                 {/* Large Clear Card Number / IBAN */}
                                                 <div className="mt-6">
                                                     <p className="text-lg sm:text-xl font-mono font-bold tracking-[0.2em] text-white whitespace-nowrap overflow-x-auto scrollbar-hide py-1 text-left">
-                                                        {method.type === 'Credit Card' 
-                                                            ? method.last4 
+                                                        {(method.type === 'Credit Card' || !method.type)
+                                                            ? `•••• •••• •••• ${method.last4 ? method.last4.replace(/\\s/g, '').slice(-4) : '4242'}` 
                                                             : method.type === 'Bank Account'
-                                                            ? method.iban
-                                                            : method.email}
+                                                            ? `•••• ${method.iban ? method.iban.replace(/\\s/g, '').slice(-4) : '5678'}`
+                                                            : method.email || 'alex.p@uplink.net'}
                                                     </p>
                                                 </div>
 
@@ -674,7 +688,7 @@ const PaymentHub = () => {
                                                         <span className="text-sm text-white font-black uppercase truncate block leading-none">{method.holder || 'Alex Passenger'}</span>
                                                     </div>
                                                     
-                                                    {method.type === 'Credit Card' && (
+                                                    {(!method.type || method.type === 'Credit Card') && (
                                                         <div className="flex gap-4 shrink-0 justify-end text-right">
                                                             <div>
                                                                 <span className="text-[8px] text-neutral-400 block tracking-widest uppercase mb-1">Expires</span>

@@ -14,10 +14,10 @@ const ProtectedRoute = ({ roles }) => {
         return <Navigate to="/login" replace />;
     }
 
-    // Identity Verification Check
-    if (!isVerified) {
-        return <Navigate to="/verify" replace />;
-    }
+    // Identity Verification Check (Bypassed for now)
+    // if (!isVerified) {
+    //     return <Navigate to="/verify" replace />;
+    // }
 
     if (allowedRoles && !allowedRoles.includes(user.role)) {
         return <Navigate to="/" replace />;

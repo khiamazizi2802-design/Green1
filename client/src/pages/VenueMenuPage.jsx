@@ -691,10 +691,10 @@ const VenueMenuPage = () => {
                 const methods = JSON.parse(savedMethods);
                 if (methods && methods.length > 0) {
                     return methods.map(m => {
-                        let label = m.provider || m.type;
+                        let label = m.provider || m.type || 'Secure Card';
                         let icon = CreditCard;
                         
-                        if (m.type === 'Credit Card') {
+                        if (m.type === 'Credit Card' || !m.type) {
                             const last4Digits = m.last4 ? m.last4.replace(/\s/g, '').slice(-4) : '4242';
                             label = `${m.provider || 'Card'} (•••• ${last4Digits})`;
                             icon = CreditCard;
@@ -1526,41 +1526,56 @@ const VenueMenuPage = () => {
                                                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mb-4">
                                                             Lead Ticket Holder
                                                         </p>
-                                                        <input 
-                                                            type="text" 
-                                                            placeholder="Full Name / Primary Holder..."
-                                                            className="w-full py-5 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400 focus:border-brand/50 outline-none transition-all"
-                                                            value={guestName}
-                                                            onChange={(e) => setGuestName(e.target.value)}
-                                                        />
+                                                        <div>
+                                                            <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Full Name</span>
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="Primary Holder..."
+                                                                className="w-full py-5 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500 focus:border-brand/50 outline-none transition-all"
+                                                                value={guestName}
+                                                                onChange={(e) => setGuestName(e.target.value)}
+                                                            />
+                                                        </div>
                                                         {(hasTicketsInCart || isStadium || isClub) && (
                                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                                                                <input 
-                                                                    type="text" placeholder="Address..."
-                                                                    className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
-                                                                    value={guestDetails.address}
-                                                                    onChange={(e) => setGuestDetails({...guestDetails, address: e.target.value})}
-                                                                />
-                                                                <div className="grid grid-cols-2 gap-4">
+                                                                <div>
+                                                                    <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Address</span>
                                                                     <input 
-                                                                        type="text" placeholder="PLZ"
-                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
-                                                                        value={guestDetails.zip}
-                                                                        onChange={(e) => setGuestDetails({...guestDetails, zip: e.target.value})}
-                                                                    />
-                                                                    <input 
-                                                                        type="text" placeholder="Stadt"
-                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
-                                                                        value={guestDetails.city}
-                                                                        onChange={(e) => setGuestDetails({...guestDetails, city: e.target.value})}
+                                                                        type="text" placeholder="Street & Number..."
+                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                        value={guestDetails.address}
+                                                                        onChange={(e) => setGuestDetails({...guestDetails, address: e.target.value})}
                                                                     />
                                                                 </div>
-                                                                <input 
-                                                                    type="text" placeholder="Geburtsdatum (DD.MM.YYYY)"
-                                                                    className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] sm:col-span-2"
-                                                                    value={guestDetails.dob}
-                                                                    onChange={(e) => setGuestDetails({...guestDetails, dob: e.target.value})}
-                                                                />
+                                                                <div className="grid grid-cols-2 gap-4">
+                                                                    <div>
+                                                                        <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">ZIP / PLZ</span>
+                                                                        <input 
+                                                                            type="text" placeholder="12345"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                            value={guestDetails.zip}
+                                                                            onChange={(e) => setGuestDetails({...guestDetails, zip: e.target.value})}
+                                                                        />
+                                                                    </div>
+                                                                    <div>
+                                                                        <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">City</span>
+                                                                        <input 
+                                                                            type="text" placeholder="Berlin"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                            value={guestDetails.city}
+                                                                            onChange={(e) => setGuestDetails({...guestDetails, city: e.target.value})}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sm:col-span-2">
+                                                                    <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Date of Birth</span>
+                                                                    <input 
+                                                                        type="text" placeholder="DD.MM.YYYY"
+                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                        value={guestDetails.dob}
+                                                                        onChange={(e) => setGuestDetails({...guestDetails, dob: e.target.value})}
+                                                                    />
+                                                                </div>
                                                             </div>
                                                         )}
                                                     </div>
@@ -1568,21 +1583,25 @@ const VenueMenuPage = () => {
                                                     {(hasTicketsInCart || isStadium || isClub) && (
                                                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 gap-4 px-2">
                                                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mt-4">Communication Hub</p>
-                                                            <input 
-                                                                type="email" placeholder="Personal Email..."
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
-                                                                value={guestDetails.email}
-                                                                onChange={(e) => setGuestDetails({...guestDetails, email: e.target.value})}
-                                                            />
-                                                            {!hasTicketsInCart && (
-
+                                                            <div>
+                                                                <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Email Address</span>
                                                                 <input 
-                                                                type="tel" placeholder="Mobile Number (SMS Delivery)..."
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
-                                                                value={guestDetails.phone}
-                                                                onChange={(e) => setGuestDetails({...guestDetails, phone: e.target.value})}
-                                                            />
-
+                                                                    type="email" placeholder="Personal Email..."
+                                                                    className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                    value={guestDetails.email}
+                                                                    onChange={(e) => setGuestDetails({...guestDetails, email: e.target.value})}
+                                                                />
+                                                            </div>
+                                                            {!hasTicketsInCart && (
+                                                                <div>
+                                                                    <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Phone Number</span>
+                                                                    <input 
+                                                                        type="tel" placeholder="Mobile Number (SMS Delivery)..."
+                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                        value={guestDetails.phone}
+                                                                        onChange={(e) => setGuestDetails({...guestDetails, phone: e.target.value})}
+                                                                    />
+                                                                </div>
                                                             )}
                                                             
                                                             {hasTicketsInCart && attendees.length > 0 && (

@@ -35,65 +35,41 @@ const OrderReceiptPage = () => {
     const generatePDF = async (action = 'download') => {
         try {
             setIsGenerating(true);
-            const receiptElement = document.getElementById('receipt-card');
-            if (!receiptElement) return;
-
-            // Generate high quality canvas
-            const canvas = await html2canvas(receiptElement, {
-                scale: 3, // High quality
-                backgroundColor: '#ffffff',
-                useCORS: true
-            });
-
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'px',
-                format: [canvas.width, canvas.height]
-            });
-
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-            
-            const fileName = `Green-Ticket-${orderId}.pdf`;
-
-            if (action === 'share' && navigator.canShare) {
-                // Convert PDF to Blob for sharing
-                const pdfBlob = pdf.output('blob');
-                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-                
-                if (navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({
-                            files: [file],
-                            title: 'Green Access Ticket',
-                            text: 'Here is your official Green Access Ticket.',
-                        });
-                        triggerNotification("SENT", "Ticket shared successfully.");
-                    } catch (shareErr) {
-                        console.error('Share failed, falling back to download:', shareErr);
-                        pdf.save(fileName);
-                        triggerNotification("EXPORT SUCCESS", "Saved to device for sharing.");
-                    }
-                } else {
-                    // Fallback to download
-                    pdf.save(fileName);
-                    triggerNotification("EXPORT SUCCESS", "Saved to your device.");
-                }
-            } else {
-                // Download
-                pdf.save(fileName);
-                triggerNotification("EXPORT SUCCESS", "Saved to your device.");
-            }
+            setTimeout(() => {
+                window.print();
+                setIsGenerating(false);
+            }, 500);
         } catch (error) {
-            console.error("PDF Generation failed", error);
-            triggerNotification("ERROR", "Failed to generate ticket.");
-        } finally {
+            console.error("Print failed", error);
             setIsGenerating(false);
         }
     };
 
     return (
         <div className="min-h-screen bg-white text-black font-sans selection:bg-brand/30">
+            <style>
+                {`
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+                    #receipt-card, #receipt-card * {
+                        visibility: visible;
+                    }
+                    #receipt-card {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        margin: 0;
+                        padding: 0;
+                        box-shadow: none !important;
+                        border: none !important;
+                    }
+                }
+                `}
+            </style>
+            
             {/* Backdrop Glow */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-24 -left-24 w-96 h-96 bg-brand/10 rounded-full blur-[120px]" />
@@ -313,11 +289,11 @@ const OrderReceiptPage = () => {
                     className="mt-12 grid grid-cols-2 gap-4"
                 >
                     <button 
-                        onClick={() => generatePDF('share')}
+                        onClick={() => generatePDF('download')}
                         disabled={isGenerating}
                         className="py-5 bg-black/5 border border-black/10 rounded-[2rem] text-[10px] font-black uppercase tracking-widest text-black hover:bg-black/10 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                     >
-                        <Share2 size={16} /> {isGenerating ? 'Processing...' : 'Share Ticket'}
+                        <Download size={16} /> {isGenerating ? 'Processing...' : (isHotel ? 'Download Folio' : 'Download Receipt')}
                     </button>
                     <button 
                         onClick={() => navigate('/greens')}

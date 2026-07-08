@@ -583,13 +583,13 @@ h1, h2, h3, h4, h5, h6, strong, b {
 
 /* Force high-contrast dark text color for all text-white elements in Light Mode,
    EXCEPT inside explicitly dark panels (like floating assistant, modals, etc.) */
-[data-theme='light'] .text-white:not(.fixed *):not(.bg-\[\#0D1421\] *):not(.accent-white):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *):not(.greens-equal-share):not(.greens-equal-share *):not(.greens-friend-name):not(.greens-friend-name *) {
+[data-theme='light'] .text-white:not([data-theme='dark'] *):not(.fixed *):not(.bg-\[\#0D1421\] *):not(.accent-white):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *):not(.greens-equal-share):not(.greens-equal-share *):not(.greens-friend-name):not(.greens-friend-name *) {
     color: var(--text-primary) !important;
 }
 
 /* Force gray and text-gray elements to be deep black/charcoal in Light Mode for high contrast */
-[data-theme='light'] .text-gray-300:not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *),
-[data-theme='light'] .text-gray-400:not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *),
+[data-theme='light'] .text-gray-300:not([data-theme='dark'] *):not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *),
+[data-theme='light'] .text-gray-400:not([data-theme='dark'] *):not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *),
 [data-theme='light'] .text-slate-300:not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *),
 [data-theme='light'] .text-slate-400:not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *) {
     color: #111827 !important; /* Deep black-gray */
@@ -904,4 +904,96 @@ input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px #171717 inset !important;
     -webkit-text-fill-color: white !important;
     transition: background-color 5000s ease-in-out 0s;
+}
+
+/* --- PREMIUM GLASSMORPHISM UI --- */
+.glass-panel {
+    background-color: rgba(10, 10, 10, 0.45);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.glass-panel-subtle {
+    background-color: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='light'] .glass-panel {
+    background-color: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+[data-theme='light'] .glass-panel-subtle {
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.glass-bg-wrapper {
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    transition: background-image 0.5s ease-in-out;
+}
+
+/* Scoped Overrides to auto-convert existing cards to glass */
+.glass-bg-wrapper .bg-dark-950 {
+    background-color: transparent !important;
+}
+
+.glass-bg-wrapper .bg-dark-900,
+.glass-bg-wrapper .bg-glass,
+.glass-bg-wrapper .bg-dark-800,
+.glass-bg-wrapper .bg-black,
+.glass-bg-wrapper .bg-btn-sec,
+.glass-bg-wrapper .bg-white\/5,
+.glass-bg-wrapper .bg-white\/10 {
+    background-color: rgba(10, 10, 10, 0.45) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme='light'] .glass-bg-wrapper .bg-dark-900,
+[data-theme='light'] .glass-bg-wrapper .bg-glass,
+[data-theme='light'] .glass-bg-wrapper .bg-dark-800,
+[data-theme='light'] .glass-bg-wrapper .bg-black,
+[data-theme='light'] .glass-bg-wrapper .bg-btn-sec,
+[data-theme='light'] .glass-bg-wrapper .bg-white\/5,
+[data-theme='light'] .glass-bg-wrapper .bg-white\/10 {
+    background-color: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-color: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important;
+}
+
+/* Ensure text is readable in light mode */
+[data-theme='light'] .glass-bg-wrapper .text-white,
+[data-theme='light'] .glass-bg-wrapper .text-gray-300,
+[data-theme='light'] .glass-bg-wrapper .text-gray-400 {
+    color: #1a1a1a !important;
+}
+
+[data-theme='light'] .glass-bg-wrapper .border-white\/10,
+[data-theme='light'] .glass-bg-wrapper .border-white\/5 {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+
+[data-theme='dark'] {
+    --text-primary: #FFFFFF;
+    --text-secondary: #F3F4F6;
+    --text-muted: #E5E7EB;
+    --border-main: rgba(255, 255, 255, 0.2);
 }

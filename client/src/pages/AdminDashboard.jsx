@@ -7,7 +7,7 @@ import {
     Phone, Mail, MapPin, User as UserIcon, ExternalLink, ChevronDown, Shield, 
     ThumbsUp, ThumbsDown, Filter, FolderOpen, Quote, Bot, Sparkles, BarChart3, 
     ArrowLeft, Monitor, Radio, Target, Layers, Cpu, Database, Lock, Download, ShieldAlert,
-    Wallet, Landmark, Ticket, Tag, Percent, PlusCircle, FolderSearch, FileCheck2, FileClock, FileX2, FileWarning, CheckCircle, XCircle, AlertTriangle
+    Wallet, Landmark, Ticket, Tag, Percent, PlusCircle, FolderSearch, FileCheck2, FileClock, FileX2, FileWarning, CheckCircle, XCircle, AlertTriangle, LineChart
 } from 'lucide-react';
 import { triggerNotification } from '../components/NotificationToast';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -910,6 +910,15 @@ const [privacyPolicyText, setPrivacyPolicyText] = useState(defaultPrivacyProtoco
     const [simulatedTripFare, setSimulatedTripFare] = useState(75);
     const [simulatedHotelCost, setSimulatedHotelCost] = useState(240);
     const [simulatedTicketCost, setSimulatedTicketCost] = useState(150);
+    const [simulatedFnBCost, setSimulatedFnBCost] = useState(120);
+    const [simulatedGuestVolume, setSimulatedGuestVolume] = useState(10);
+    
+    // v2.0 Simulator States
+    const [simulatedEventType, setSimulatedEventType] = useState('football'); // 'football', 'club', 'concert'
+    const [simulatedTableSpend, setSimulatedTableSpend] = useState(0);
+    const [simWeatherRain, setSimWeatherRain] = useState(false);
+    const [simNightlifePeak, setSimNightlifePeak] = useState(false);
+    const [simPartnerTier, setSimPartnerTier] = useState('standard'); // 'standard', 'gold'
     
     const [stripeKycDocs, setStripeKycDocs] = useState(() => {
         try {
@@ -1569,6 +1578,11 @@ billing payouts are required.
     }, []);
 
     useEffect(() => {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        return () => document.documentElement.setAttribute('data-theme', 'light');
+    }, []);
+
+    useEffect(() => {
         const timer = setInterval(() => setSystemTime(new Date().toLocaleTimeString()), 1000);
         const handleKeyDown = (e) => {
             if (e.metaKey && e.key === 'k') {
@@ -2037,7 +2051,17 @@ billing payouts are required.
         localStorage.setItem('green_prov_trip_thresh', tripThreshold);
         localStorage.setItem('green_prov_hotel_rate', hotelProvisionRate);
         localStorage.setItem('green_prov_ticket_rate', ticketProvisionRate);
-        triggerNotification('success', 'Provisions Config Saved', 'Commission guidelines deployed to the platform router.');
+        
+        const provisionClause = `\n\n### SECTION 7: FINANCIAL PROVISIONS & COMMISSIONS\nAs a connected business partner, you agree to the following automated provision structure taken directly via Stripe Connect:\n- **Fleet Managers (Rides):** A base fee of €${parseFloat(tripBaseProvision).toFixed(2)} plus an increment of €${parseFloat(tripIncrementProvision).toFixed(2)} per €30.00 of the total ride price.\n- **Hotels & Stadiums:** A flat platform fee of ${parseFloat(hotelProvisionRate).toFixed(1)}% on all bookings.\n- **Football Match Tickets:** A flat platform fee of ${parseFloat(ticketProvisionRate).toFixed(1)}% applies exclusively to the sale of official football match tickets. This provision does NOT apply to any other events held in the stadium, nor does it apply to club events, parties, or general nightlife admissions.\nThese fees are automatically deducted prior to your payout.\n`;
+        
+        let newTerms = defaultTermsOfServiceText;
+        if (newTerms.includes('### SECTION 7: FINANCIAL PROVISIONS')) {
+            newTerms = newTerms.split('### SECTION 7: FINANCIAL PROVISIONS')[0];
+        }
+        newTerms += provisionClause;
+        setDefaultTermsOfServiceText(newTerms);
+
+        triggerNotification('success', 'Provisions Config Saved', 'Commission guidelines and Legal Terms deployed to the platform router.');
     };
     
     const handleInsightAction = (id, action) => {
@@ -2251,7 +2275,8 @@ billing payouts are required.
 
     return (
         <div 
-            className={`absolute left-0 right-0 bottom-0 overflow-hidden font-sans text-primary flex flex-row selection:bg-brand selection:text-dark-900 transition-colors duration-1000 transition-all duration-300 ${systemLockdown ? 'bg-red-950/20' : 'bg-dark-950'}`}
+            data-theme="dark"
+            className={`absolute left-0 right-0 bottom-0 overflow-hidden font-sans text-primary flex flex-row selection:bg-brand selection:text-dark-900 transition-colors duration-1000 transition-all duration-300 ${systemLockdown ? 'bg-red-950/20' : 'bg-gradient-to-br from-[#0A1A2F] via-[#050B14] to-[#020202]'}`}
             style={{
                 top: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`,
                 height: `calc(100% - (${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px))`
@@ -2267,7 +2292,7 @@ billing payouts are required.
             <motion.aside 
                 initial={false}
                 animate={{ width: isSidebarCollapsed ? 96 : 320 }}
-                className="h-full bg-dark-900/80 backdrop-blur-3xl border-r border-white/5 flex flex-col z-50 relative group app-sidebar"
+                className="h-full bg-transparent flex flex-col z-50 relative group app-sidebar"
             >
                 {/* Sidebar Toggle */}
                 <button 
@@ -2312,18 +2337,18 @@ billing payouts are required.
                         <button
                             key={item.id}
                             onClick={() => setView(item.id)}
-                            className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all group relative ${view === item.id ? 'bg-brand text-dark-900 shadow-lg shadow-brand/10' : 'hover:bg-white/5 text-gray-500'}`}
+                            className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all group relative ${view === item.id ? 'text-brand' : 'hover:bg-white/5 text-gray-500'}`}
                         >
-                            <div className={`${view === item.id ? 'text-dark-900' : 'group-hover:text-brand'} transition-colors`}>
+                            <div className={`${view === item.id ? 'text-brand' : 'group-hover:text-brand'} transition-colors`}>
                                 <item.icon size={20} />
                             </div>
                             {!isSidebarCollapsed && (
                                 <div className="flex-1 flex items-center justify-between overflow-hidden">
                                     <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
-                                    {item.badge && <span className={`text-[7px] font-black px-2 py-0.5 rounded uppercase ${view === item.id ? 'bg-dark-900/20' : 'bg-brand/10 text-brand'}`}>{item.badge}</span>}
+                                    {item.badge && <span className={`text-[7px] font-black px-2 py-0.5 rounded uppercase ${view === item.id ? 'bg-brand text-dark-900' : 'bg-brand/10 text-brand'}`}>{item.badge}</span>}
                                 </div>
                             )}
-                            {view === item.id && <motion.div layoutId="active-indicator" className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-dark-900 rounded-full" />}
+                            {view === item.id && <motion.div layoutId="active-indicator" className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl rounded-full" />}
                         </button>
                     ))}
                 </nav>
@@ -2347,7 +2372,7 @@ billing payouts are required.
             <AnimatePresence>
                 {isCommandBarOpen && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[110] flex items-start justify-center pt-32 bg-dark-950/80 backdrop-blur-md p-6" onClick={() => setIsCommandBarOpen(false)}>
-                        <motion.div initial={{ y: -20, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: -20, scale: 0.95 }} className="w-full max-w-2xl bg-dark-900 border border-brand/30 rounded-[2rem] shadow-[0_0_50px_rgba(52,211,153,0.2)] overflow-hidden" onClick={e => e.stopPropagation()}>
+                        <motion.div initial={{ y: -20, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: -20, scale: 0.95 }} className="w-full max-w-2xl bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-brand/30 rounded-[2rem] shadow-[0_0_50px_rgba(52,211,153,0.2)] overflow-hidden" onClick={e => e.stopPropagation()}>
                             <div className="p-6 flex items-center gap-4 border-b border-white/5">
                                 <Search size={24} className="text-brand" />
                                 <input autoFocus placeholder="Neural Search..." className="flex-1 bg-transparent border-none outline-none text-xl font-medium" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
@@ -2422,7 +2447,7 @@ billing payouts are required.
                             <motion.div key="ticket-hub" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-12">
                                 {/* Statistics Cards */}
                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                                    <div className="bg-dark-900 border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
+                                    <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand shadow-[0_0_20px_var(--brand-glow)]" />
                                         <div className="space-y-2">
                                             <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Total Active Event Tickets</h4>
@@ -2437,7 +2462,7 @@ billing payouts are required.
                                         <p className="text-[8px] font-black text-brand uppercase tracking-widest mt-6">Across 4 primary sectors</p>
                                     </div>
                                     
-                                    <div className="bg-dark-900 border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
+                                    <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand/50" />
                                         <div className="space-y-2">
                                             <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Club Event Folders</h4>
@@ -2452,7 +2477,7 @@ billing payouts are required.
                                         <p className="text-[8px] font-black text-brand/60 uppercase tracking-widest mt-6">Bar & Concert Tiers</p>
                                     </div>
 
-                                    <div className="bg-dark-900 border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
+                                    <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-amber-500/50" />
                                         <div className="space-y-2">
                                             <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Hospitality Partys Events</h4>
@@ -2467,7 +2492,7 @@ billing payouts are required.
                                         <p className="text-[8px] font-black text-amber-500/60 uppercase tracking-widest mt-6">VIP Partys & Stay Packages</p>
                                     </div>
 
-                                    <div className="bg-dark-900 border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
+                                    <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-violet-500/50" />
                                         <div className="space-y-2">
                                             <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Stadium Main Folders</h4>
@@ -2486,7 +2511,7 @@ billing payouts are required.
                                 {/* Folders View */}
                                 {ticketActiveFolder === 'none' ? (
                                     <div className="space-y-8">
-                                        <div className="flex justify-between items-center bg-dark-900/50 border border-white/5 rounded-3xl p-6">
+                                        <div className="flex justify-between items-center bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl/50 border border-white/5 rounded-3xl p-6">
                                             <div>
                                                 <h3 className="text-xl font-black italic uppercase tracking-tighter">Ticket Hub <span className="text-brand">Repositories</span></h3>
                                                 <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mt-1">Select a tactical folder to inspect active files</p>
@@ -2511,7 +2536,7 @@ billing payouts are required.
                                                 <div 
                                                     key={folder.id} 
                                                     onClick={() => setTicketActiveFolder(folder.id)}
-                                                    className="bg-dark-900 hover:bg-dark-900/80 border border-white/10 hover:border-white/30 rounded-[3rem] p-10 flex flex-col justify-between h-72 cursor-pointer transition-all hover:-translate-y-2 relative group"
+                                                    className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl hover:bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl/80 border border-white/10 hover:border-white/30 rounded-[3rem] p-10 flex flex-col justify-between h-72 cursor-pointer transition-all hover:-translate-y-2 relative group"
                                                 >
                                                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border ${folder.color}`}>
                                                         <FolderOpen size={28} />
@@ -2531,7 +2556,7 @@ billing payouts are required.
                                 ) : (
                                     <div className="space-y-8 animate-in fade-in duration-300">
                                         {/* Active Folder Header */}
-                                        <div className="flex justify-between items-center bg-dark-900 border border-white/10 rounded-[2.5rem] p-8">
+                                        <div className="flex justify-between items-center bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[2.5rem] p-8">
                                             <div className="flex items-center gap-6">
                                                 <button 
                                                     onClick={() => setTicketActiveFolder('none')}
@@ -2568,7 +2593,7 @@ billing payouts are required.
 
                                         {/* Grid Container supporting Side Ingested Manifest Details */}
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                                            <div className={`${expandedTicketEvent ? 'lg:col-span-2' : 'lg:col-span-3'} bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 overflow-hidden relative transition-all duration-300`}>
+                                            <div className={`${expandedTicketEvent ? 'lg:col-span-2' : 'lg:col-span-3'} bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 overflow-hidden relative transition-all duration-300`}>
                                                 <div className="overflow-x-auto no-scrollbar">
                                                     <table className="w-full text-left border-collapse">
                                                         <thead>
@@ -2655,7 +2680,7 @@ billing payouts are required.
                                                         initial={{ opacity: 0, x: 40, scale: 0.95 }}
                                                         animate={{ opacity: 1, x: 0, scale: 1 }}
                                                         exit={{ opacity: 0, x: 40, scale: 0.95 }}
-                                                        className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-8 flex flex-col justify-between h-[500px] overflow-hidden relative"
+                                                        className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-8 flex flex-col justify-between h-[500px] overflow-hidden relative"
                                                     >
                                                         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand to-transparent" />
                                                         
@@ -2776,11 +2801,11 @@ billing payouts are required.
                         {view === 'angebot-hub' && (
                             <motion.div key="angebot-hub" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="h-full max-h-[calc(100vh-180px)] grid grid-cols-1 lg:grid-cols-4 gap-10">
                                 {/* Autonomous Campaign Creator & Scanner Grid - 3 Cols */}
-                                <div className="lg:col-span-3 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col h-[calc(100vh-220px)] relative overflow-hidden">
+                                <div className="lg:col-span-3 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col h-[calc(100vh-220px)] relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-brand to-transparent z-10" />
                                     
                                     {/* Dispatch Header */}
-                                    <div className="p-6 bg-dark-900/90 border-b border-white/5 flex items-center gap-4">
+                                    <div className="p-6 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl/90 border-b border-white/5 flex items-center gap-4">
                                         <div className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/40 flex items-center justify-center text-brand">
                                             <Radio size={24} className="animate-pulse" />
                                         </div>
@@ -3048,7 +3073,7 @@ billing payouts are required.
                                                 </MapContainer>
 
                                                 {/* Mini Stats overlay */}
-                                                <div className="absolute bottom-4 right-4 z-10 bg-dark-900/90 px-4 py-3 rounded-2xl border border-white/10 shadow-xl">
+                                                <div className="absolute bottom-4 right-4 z-10 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl/90 px-4 py-3 rounded-2xl border border-white/10 shadow-xl">
                                                     <p className="text-[6px] font-black text-gray-500 uppercase tracking-widest">
                                                         Geofence Status
                                                     </p>
@@ -3095,7 +3120,7 @@ billing payouts are required.
 
                                 {/* Active Campaigns Sidebar - 1 Col */}
                                 <div className="space-y-6 overflow-y-auto pr-4 custom-scrollbar">
-                                    <div className="p-8 bg-dark-900 border border-white/10 rounded-[3rem]">
+                                    <div className="p-8 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3rem]">
                                         <div className="flex justify-between items-center mb-6">
                                             <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-500">Active Live Offers</h4>
                                             <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
@@ -3142,7 +3167,7 @@ billing payouts are required.
                             <motion.div key="deck" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-12">
                                 {/* OVERRIDES & TELEMETRY */}
                                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                                    <div className="lg:col-span-3 bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 flex flex-col md:flex-row gap-12 items-center relative overflow-hidden">
+                                    <div className="lg:col-span-3 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 flex flex-col md:flex-row gap-12 items-center relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
                                         <div className="space-y-2">
                                             <h3 className="text-2xl font-black italic uppercase tracking-tighter">Master <span className="text-brand">Overrides</span></h3>
@@ -3178,7 +3203,7 @@ billing payouts are required.
 
                                 {/* SECTOR GRID */}
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                                    <div className="lg:col-span-2 bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 relative group hover:border-white/30 transition-all">
+                                    <div className="lg:col-span-2 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 relative group hover:border-white/30 transition-all">
                                         <h3 className="text-3xl font-black italic uppercase tracking-tighter mb-12">Nightlife <span className="text-brand">Network</span></h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <div className="space-y-6">
@@ -3197,7 +3222,7 @@ billing payouts are required.
                                     </div>
 
                                     {/* SECURE VAULT (PHONE/EMAIL VERIFIED) */}
-                                    <div className="bg-dark-900 border border-brand/20 rounded-[3.5rem] p-10 flex flex-col relative overflow-hidden shadow-2xl">
+                                    <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-brand/20 rounded-[3.5rem] p-10 flex flex-col relative overflow-hidden shadow-2xl">
                                         <div className="flex items-center gap-6 mb-12">
                                             <div className={`w-16 h-16 rounded-[2rem] flex items-center justify-center ${isVaultUnlocked ? 'bg-brand text-dark-900' : 'bg-white/5 text-gray-500'}`}>
                                                 {isVaultUnlocked ? <ShieldCheck size={32} /> : <Lock size={32} />}
@@ -3275,7 +3300,7 @@ billing payouts are required.
                                     ))}
                                 </div>
 
-                                <div className="lg:col-span-2 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col overflow-hidden relative">
+                                <div className="lg:col-span-2 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col overflow-hidden relative">
                                     <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
                                         <div className="flex items-center gap-4">
                                             <div className="w-3 h-3 bg-brand rounded-full" />
@@ -3416,8 +3441,8 @@ billing payouts are required.
                         {view === 'settlements' && (
                              <motion.div key="settlements" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
                                 <h2 className="text-5xl font-black italic uppercase tracking-tighter">Settlement <span className="text-amber-500">Ledger</span></h2>
-                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                                    <div className="lg:col-span-2 space-y-10">
+                                <div className="flex flex-col gap-10">
+                                    <div className="space-y-10">
                                         <div className="grid grid-cols-3 gap-8">
                                             {[
                                                 { l: 'Daily Flow', v: `€${(stripeConnectedPartners.reduce((acc, p) => acc + p.grossContribution, 0) * 0.25).toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, c: 'text-white' },
@@ -3430,7 +3455,7 @@ billing payouts are required.
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 space-y-8">
+                                        <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 space-y-8">
                                             <div className="flex justify-between items-center mb-4">
                                                 <div className="space-y-1">
                                                     <h3 className="text-2xl font-black italic uppercase text-white">Weekly Payout Clearance</h3>
@@ -3470,150 +3495,187 @@ billing payouts are required.
                                     </div>
                                     <div className="space-y-10">
                                         {/* COMMISSION & PROVISIONS CONFIGURATOR */}
-                                        <div className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 space-y-8 relative overflow-hidden shadow-2xl">
-                                            <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 bg-brand/20 border border-brand/40 text-brand rounded-2xl flex items-center justify-center">
-                                                    <Calculator size={24} />
-                                                </div>
-                                                <div>
-                                                    <h4 className="text-2xl font-black italic uppercase text-white">Provisions Config</h4>
-                                                    <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Dynamic Commission Rates Router</p>
+                                        <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 space-y-8 relative overflow-hidden shadow-2xl">
+                                            <div className="absolute top-0 left-0 w-1 h-full bg-brand/50 shadow-[0_0_20px_rgba(52,211,153,0.5)]" />
+                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 bg-brand/20 border border-brand/40 text-brand rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(52,211,153,0.2)]">
+                                                        <Calculator size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-3xl font-black italic uppercase text-white tracking-tighter">Smart Provision <span className="text-brand">Simulator</span></h4>
+                                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Multi-Step Scenario Modeling & Live Config</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             
-                                            <div className="space-y-6">
-                                                {/* FLEET TRIP COMMISSION FORMULA */}
-                                                <div className="p-6 bg-white/5 border border-white/5 rounded-[2rem] space-y-4">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-[10px] font-black text-brand uppercase tracking-wider">🚗 Trip Base Provision</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-xs font-mono text-gray-400">€</span>
-                                                            <input 
-                                                                type="number"
-                                                                value={tripBaseProvision}
-                                                                onChange={e => setTripBaseProvision(parseFloat(e.target.value) || 0)}
-                                                                className="w-16 bg-white/5 border border-white/10 rounded px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/40"
-                                                            />
-                                                        </div>
-                                                    </div>
+                                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                                                {/* COLUMN 1: LIVE PLATFORM FEES */}
+                                                <div className="space-y-6 bg-white/5 border border-white/5 rounded-[2rem] p-6 relative overflow-hidden">
+                                                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 blur-[50px] rounded-full pointer-events-none" />
+                                                    <h5 className="text-[10px] font-black uppercase tracking-widest text-brand border-b border-white/10 pb-3 flex items-center gap-2"><ShieldCheck size={12}/> 1. Live Platform Config</h5>
                                                     
-                                                    <div className="flex justify-between items-center text-[9px] font-bold text-gray-500">
-                                                        <span>Threshold Step Base</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-[8px] font-mono">€</span>
-                                                            <input 
-                                                                type="number"
-                                                                value={tripThreshold}
-                                                                onChange={e => setTripThreshold(parseFloat(e.target.value) || 30)}
-                                                                className="w-12 bg-white/5 border border-white/10 rounded px-2 py-0.5 text-center font-mono text-[9px] text-white outline-none focus:border-brand/40"
-                                                            />
+                                                    <div className="space-y-4">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-gray-300 uppercase">🚗 Trip Base (Fixed)</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs font-mono text-gray-500">€</span>
+                                                                <input type="number" value={tripBaseProvision} onChange={e => setTripBaseProvision(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/50 transition-all" />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="flex justify-between items-center text-[9px] font-bold text-gray-500">
-                                                        <span>Additional Increment Fee</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-[8px] font-mono">+ €</span>
-                                                            <input 
-                                                                type="number"
-                                                                value={tripIncrementProvision}
-                                                                onChange={e => setTripIncrementProvision(parseFloat(e.target.value) || 2)}
-                                                                className="w-12 bg-white/5 border border-white/10 rounded px-2 py-0.5 text-center font-mono text-[9px] text-white outline-none focus:border-brand/40"
-                                                            />
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-gray-300 uppercase">🚗 Trip Increment</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs font-mono text-gray-500">+ €</span>
+                                                                <input type="number" value={tripIncrementProvision} onChange={e => setTripIncrementProvision(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/50 transition-all" />
+                                                            </div>
                                                         </div>
-                                                    </div>
-
-                                                    {/* TRIP SIMULATION */}
-                                                    <div className="pt-2 border-t border-white/5 space-y-2">
-                                                        <div className="flex justify-between items-center text-[9px] font-black uppercase text-gray-400">
-                                                            <span>Simulate Trip Fare</span>
-                                                            <input 
-                                                                type="number"
-                                                                value={simulatedTripFare}
-                                                                onChange={e => setSimulatedTripFare(parseFloat(e.target.value) || 0)}
-                                                                className="w-16 bg-white/5 border border-white/10 rounded px-2 py-0.5 text-center font-mono text-[9px] text-white outline-none focus:border-brand/40"
-                                                            />
+                                                        <div className="w-full h-[1px] bg-white/5 my-2" />
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-gray-300 uppercase">🏨 Hotel / VIP Rate</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <input type="number" value={hotelProvisionRate} onChange={e => setHotelProvisionRate(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/50 transition-all" />
+                                                                <span className="text-xs font-bold text-gray-500">%</span>
+                                                            </div>
                                                         </div>
-                                                        <div className="flex justify-between items-center p-3 bg-brand/5 rounded-xl border border-brand/20 text-brand">
-                                                            <span className="text-[9px] font-black uppercase tracking-wider">Calculated Trip Provision</span>
-                                                            <span className="text-sm font-mono font-black">€{calculateTripProvision(simulatedTripFare)}</span>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-gray-300 uppercase">🎟️ Club & Ticket Rate</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <input type="number" value={ticketProvisionRate} onChange={e => setTicketProvisionRate(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/50 transition-all" />
+                                                                <span className="text-xs font-bold text-gray-500">%</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                {/* HOTEL COMMISSION */}
-                                                <div className="p-6 bg-white/5 border border-white/5 rounded-[2rem] space-y-4">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-[10px] font-black text-white uppercase tracking-wider">🏨 Hotel Provision Rate</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <input 
-                                                                type="number"
-                                                                value={hotelProvisionRate}
-                                                                onChange={e => setHotelProvisionRate(parseFloat(e.target.value) || 0)}
-                                                                className="w-12 bg-white/5 border border-white/10 rounded px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/40"
-                                                            />
-                                                            <span className="text-xs font-bold text-gray-400">%</span>
+                                                {/* COLUMN 2: SCENARIO INPUTS */}
+                                                <div className="space-y-6 bg-white/5 border border-white/5 rounded-[2rem] p-6">
+                                                    <h5 className="text-[10px] font-black uppercase tracking-widest text-brand border-b border-white/10 pb-3 flex items-center gap-2"><Target size={12}/> 2. Scenario Variables</h5>
+                                                    
+                                                    <div className="space-y-4">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">🎪 Event Type</span>
+                                                            <select value={simulatedEventType} onChange={e => setSimulatedEventType(e.target.value)} className="bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold text-brand outline-none focus:border-brand/50 uppercase">
+                                                                <option value="football">⚽ Football Match</option>
+                                                                <option value="club">🪩 Club Party</option>
+                                                                <option value="concert">🎤 Stadium Concert</option>
+                                                            </select>
                                                         </div>
-                                                    </div>
-
-                                                    {/* HOTEL SIMULATION */}
-                                                    <div className="pt-2 border-t border-white/5 space-y-2">
-                                                        <div className="flex justify-between items-center text-[9px] font-black uppercase text-gray-400">
-                                                            <span>Simulate Suite Cost</span>
-                                                            <input 
-                                                                type="number"
-                                                                value={simulatedHotelCost}
-                                                                onChange={e => setSimulatedHotelCost(parseFloat(e.target.value) || 0)}
-                                                                className="w-16 bg-white/5 border border-white/10 rounded px-2 py-0.5 text-center font-mono text-[9px] text-white outline-none focus:border-brand/40"
-                                                            />
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">👥 Expected Volume (Guests)</span>
+                                                            <input type="number" value={simulatedGuestVolume} onChange={e => setSimulatedGuestVolume(parseFloat(e.target.value) || 0)} className="w-20 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/50 transition-all" />
                                                         </div>
-                                                        <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5 text-white">
-                                                            <span className="text-[9px] font-black uppercase tracking-wider text-gray-400">Calculated Provision</span>
-                                                            <span className="text-sm font-mono font-black">€{calculateHotelProvision(simulatedHotelCost)}</span>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Avg. Trip Fare / Guest</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs font-mono text-gray-600">€</span>
+                                                                <input type="number" value={simulatedTripFare} onChange={e => setSimulatedTripFare(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-gray-300 outline-none focus:border-brand/50" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Avg. Hotel Spend / Guest</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs font-mono text-gray-600">€</span>
+                                                                <input type="number" value={simulatedHotelCost} onChange={e => setSimulatedHotelCost(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-gray-300 outline-none focus:border-brand/50" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Avg. Ticket Spend / Guest</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs font-mono text-gray-600">€</span>
+                                                                <input type="number" value={simulatedFnBCost} onChange={e => setSimulatedFnBCost(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-gray-300 outline-none focus:border-brand/50" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-amber-500/80 uppercase">👑 VIP Table Spend (Total)</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs font-mono text-amber-600">€</span>
+                                                                <input type="number" value={simulatedTableSpend} onChange={e => setSimulatedTableSpend(parseFloat(e.target.value) || 0)} className="w-20 bg-black/40 border border-amber-500/30 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-amber-400 outline-none focus:border-amber-500" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="w-full h-[1px] bg-white/5 my-2" />
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Partner Tier</span>
+                                                            <select value={simPartnerTier} onChange={e => setSimPartnerTier(e.target.value)} className="bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold text-gray-300 outline-none focus:border-brand/50 uppercase">
+                                                                <option value="standard">Standard</option>
+                                                                <option value="gold">Gold (15% Off)</option>
+                                                            </select>
+                                                        </div>
+                                                        <div className="flex gap-2 mt-2">
+                                                            <button onClick={() => setSimWeatherRain(!simWeatherRain)} className={`flex-1 py-1 rounded text-[9px] font-bold uppercase transition-all ${simWeatherRain ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-black/40 text-gray-500 border border-white/5'}`}>🌧️ Rain (+20% Surge)</button>
+                                                            <button onClick={() => setSimNightlifePeak(!simNightlifePeak)} className={`flex-1 py-1 rounded text-[9px] font-bold uppercase transition-all ${simNightlifePeak ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30' : 'bg-black/40 text-gray-500 border border-white/5'}`}>🌙 Peak (+50% Surge)</button>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                {/* TICKET COMMISSION */}
-                                                <div className="p-6 bg-white/5 border border-white/5 rounded-[2rem] space-y-4">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-[10px] font-black text-amber-500 uppercase tracking-wider">🎟️ Ticket Provision Rate</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <input 
-                                                                type="number"
-                                                                value={ticketProvisionRate}
-                                                                onChange={e => setTicketProvisionRate(parseFloat(e.target.value) || 0)}
-                                                                className="w-12 bg-white/5 border border-white/10 rounded px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/40"
-                                                            />
-                                                            <span className="text-xs font-bold text-gray-400">%</span>
-                                                        </div>
+                                                {/* COLUMN 3: OUTPUT & VISUALIZER */}
+                                                <div className="space-y-6 bg-brand/5 border border-brand/20 rounded-[2rem] p-6 relative overflow-hidden flex flex-col justify-between">
+                                                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand/20 blur-[60px] rounded-full pointer-events-none" />
+                                                    
+                                                    <div className="space-y-4 relative z-10">
+                                                        <h5 className="text-[10px] font-black uppercase tracking-widest text-brand border-b border-brand/20 pb-3 flex items-center gap-2"><LineChart size={12}/> 3. Projection & Output</h5>
+                                                        
+                                                        {(() => {
+                                                            let actualSurge = globalSurge;
+                                                            if (simWeatherRain) actualSurge *= 1.2;
+                                                            if (simNightlifePeak) actualSurge *= 1.5;
+                                                            
+                                                            const tierDiscount = simPartnerTier === 'gold' ? 0.85 : 1; // 15% discount for Gold
+
+                                                            const tripProv = calculateTripProvision(simulatedTripFare) * simulatedGuestVolume * actualSurge;
+                                                            const hotelProv = calculateHotelProvision(simulatedHotelCost) * simulatedGuestVolume * actualSurge * tierDiscount;
+                                                            
+                                                            // Ticket/Club provision ONLY applies to football matches
+                                                            const baseTicketYield = simulatedEventType === 'football' ? calculateTicketProvision(simulatedFnBCost) * simulatedGuestVolume : 0;
+                                                            // For tables, same rule: only if football (though table spend at a football match is rare, we keep the rule consistent)
+                                                            const tableYield = simulatedEventType === 'football' ? calculateTicketProvision(simulatedTableSpend) : 0;
+                                                            
+                                                            const clubProv = (baseTicketYield + parseFloat(tableYield)) * actualSurge * tierDiscount;
+
+                                                            const totalYield = tripProv + hotelProv + clubProv;
+                                                            
+                                                            const tripPct = totalYield > 0 ? (tripProv / totalYield) * 100 : 0;
+                                                            const hotelPct = totalYield > 0 ? (hotelProv / totalYield) * 100 : 0;
+                                                            const clubPct = totalYield > 0 ? (clubProv / totalYield) * 100 : 0;
+
+                                                            return (
+                                                                <div className="space-y-6">
+                                                                    <div className="flex flex-col items-center justify-center p-4 bg-black/20 rounded-2xl border border-white/5">
+                                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Platform Margin</span>
+                                                                        <span className="text-4xl font-black font-mono text-white tracking-tighter shadow-brand/50 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">
+                                                                            €{totalYield.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                        </span>
+                                                                        {actualSurge > 1 && <span className="text-[9px] font-black text-brand mt-1 uppercase">Surge Active ({actualSurge.toFixed(2)}x)</span>}
+                                                                        {simulatedEventType !== 'football' && <span className="text-[8px] font-black text-red-400 mt-1 uppercase">0% Ticket Provision (Non-Football Event)</span>}
+                                                                    </div>
+                                                                    
+                                                                    <div className="space-y-2">
+                                                                        <div className="flex justify-between text-[8px] font-black uppercase text-gray-500">
+                                                                            <span>Fleet: €{tripProv.toFixed(2)}</span>
+                                                                            <span>Hotel: €{hotelProv.toFixed(2)}</span>
+                                                                            <span>Ticket/VIP: €{clubProv.toFixed(2)}</span>
+                                                                        </div>
+                                                                        {totalYield > 0 && (
+                                                                            <div className="w-full h-3 bg-black/40 rounded-full overflow-hidden flex shadow-inner">
+                                                                                <div className="h-full bg-emerald-400 transition-all duration-500" style={{ width: `${tripPct}%` }} />
+                                                                                <div className="h-full bg-blue-500 transition-all duration-500" style={{ width: `${hotelPct}%` }} />
+                                                                                <div className="h-full bg-violet-500 transition-all duration-500" style={{ width: `${clubPct}%` }} />
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })()}
                                                     </div>
 
-                                                    {/* TICKET SIMULATION */}
-                                                    <div className="pt-2 border-t border-white/5 space-y-2">
-                                                        <div className="flex justify-between items-center text-[9px] font-black uppercase text-gray-400">
-                                                            <span>Simulate Ticket Cost</span>
-                                                            <input 
-                                                                type="number"
-                                                                value={simulatedTicketCost}
-                                                                onChange={e => setSimulatedTicketCost(parseFloat(e.target.value) || 0)}
-                                                                className="w-16 bg-white/5 border border-white/10 rounded px-2 py-0.5 text-center font-mono text-[9px] text-white outline-none focus:border-brand/40"
-                                                            />
-                                                        </div>
-                                                        <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5 text-white">
-                                                            <span className="text-[9px] font-black uppercase tracking-wider text-gray-400">Calculated Provision</span>
-                                                            <span className="text-sm font-mono font-black">€{calculateTicketProvision(simulatedTicketCost)}</span>
-                                                        </div>
-                                                    </div>
+                                                    <button 
+                                                        onClick={saveProvisionsConfig}
+                                                        className="w-full py-4 mt-6 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(52,211,153,0.3)] hover:shadow-[0_0_30px_rgba(52,211,153,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all relative z-10 flex items-center justify-center gap-2"
+                                                    >
+                                                        <ShieldCheck size={14} /> SECURE TO LIVE GRID
+                                                    </button>
                                                 </div>
                                             </div>
-
-                                            <button 
-                                                onClick={saveProvisionsConfig}
-                                                className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                                            >
-                                                COMMIT PROVISIONS TO ROUTER
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -3922,7 +3984,7 @@ billing payouts are required.
                         {view === 'events' && (
                             <motion.div key="events" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
                                 <h2 className="text-5xl font-black italic uppercase tracking-tighter">Strategic <span className="text-amber-500">Calendar</span></h2>
-                                <div className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 overflow-hidden">
+                                <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 overflow-hidden">
                                     <div className="grid grid-cols-7 gap-4 mb-10">
                                         {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => <div key={d} className="text-center text-[10px] font-black text-gray-600 uppercase tracking-widest">{d}</div>)}
                                         {[...Array(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate())].map((_, i) => {
@@ -3960,7 +4022,7 @@ billing payouts are required.
                                         { label: 'Driver Portal', sub: 'Fleet Interface', color: 'bg-brand', path: '/driver', icon: Car },
                                         { id: 'manager', label: 'Manager Portal', sub: 'Fleet Operations', color: 'bg-amber-500', path: '/manager', icon: Briefcase }
                                     ].map((door, i) => (
-                                        <button key={i} onClick={() => window.open(door.path, '_blank')} className="group p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col items-center text-center space-y-8 hover:border-white/30 transition-all hover:scale-[1.02]">
+                                        <button key={i} onClick={() => window.open(door.path, '_blank')} className="group p-10 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col items-center text-center space-y-8 hover:border-white/30 transition-all hover:scale-[1.02]">
                                             <div className={`w-24 h-24 ${door.color} rounded-[2.5rem] flex items-center justify-center text-dark-900 shadow-2xl group-hover:scale-110 transition-transform`}><door.icon size={48} /></div>
                                             <div><p className="text-3xl font-black italic uppercase text-white tracking-tighter">{door.label}</p><p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-2">{door.sub}</p></div>
                                             <div className="w-full py-4 bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">Enter Door</div>
@@ -3974,7 +4036,7 @@ billing payouts are required.
                             <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
                                 <h2 className="text-5xl font-black italic uppercase tracking-tighter">System <span className="text-brand">Settings</span> & Compliance</h2>
                                 {/* Smart Intermediary Pricing Engine */}
-                                <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] space-y-10">
+                                <div className="p-10 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] space-y-10">
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/5">
                                         <div>
                                             <h3 className="text-3xl font-black italic uppercase text-white tracking-tight">Smart Intermediary Pricing Engine</h3>
@@ -4563,7 +4625,7 @@ billing payouts are required.
                                 </div>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                                    <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
+                                    <div className="p-10 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
                                         <div className="space-y-8">
                                             <h3 className="text-2xl font-black italic uppercase text-white">Global Config</h3>
                                             <div className="space-y-6">
@@ -4576,7 +4638,7 @@ billing payouts are required.
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
+                                    <div className="p-10 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
                                         <div className="space-y-8">
                                             <div className="flex justify-between items-center">
                                                 <h3 className="text-2xl font-black italic uppercase text-white">Compliance & Legal</h3>
@@ -4607,7 +4669,7 @@ billing payouts are required.
                                             <button onClick={handleCommitPolicies} className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT POLICIES</button>
                                         </div>
                                     </div>
-                                    <div className="p-10 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
+                                    <div className="p-10 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
                                         <div className="space-y-8">
                                             <h4 className="text-xl font-black italic uppercase text-white">Security Patch</h4>
                                             <p className="text-xs text-gray-500 italic leading-relaxed">"Latest firmware v1.2.4-ALPHA deployed. All Director access logs are encrypted and hashed on cold-storage."</p>
@@ -4670,7 +4732,7 @@ billing payouts are required.
                                         <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
                                             {/* LEFT COLUMN: INTERACTIVE SPLIT TRANSACTION SIMULATOR */}
                                             <div className="lg:col-span-2 space-y-6">
-                                                <div className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden h-full flex flex-col justify-between">
+                                                <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden h-full flex flex-col justify-between">
                                                     <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
                                                     
                                                     <div className="space-y-6">
@@ -4794,7 +4856,7 @@ billing payouts are required.
 
                                             {/* RIGHT COLUMN: SCROLLING WEBHOOK LOG TERMINAL */}
                                             <div className="lg:col-span-3">
-                                                <div className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 flex flex-col h-full relative overflow-hidden">
+                                                <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 flex flex-col h-full relative overflow-hidden">
                                                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
                                                     <div className="flex justify-between items-center mb-6">
                                                         <div className="flex items-center gap-3">
@@ -4831,7 +4893,7 @@ billing payouts are required.
                                         </div>
 
                                         {/* Dynamic Split Settlements Ledger list Table */}
-                                        <div className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 space-y-8 relative overflow-hidden">
+                                        <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 space-y-8 relative overflow-hidden">
                                             <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
                                             <h3 className="text-2xl font-black italic uppercase text-white flex items-center gap-3">
                                                 <Activity size={20} className="text-brand animate-pulse" />
@@ -4923,7 +4985,7 @@ billing payouts are required.
 
                                 {/* TAB 2: CONNECTED PARTNERS DIRECTORY */}
                                 {stripeActiveSubTab === 'partners-directory' && (
-                                    <div className="space-y-8 bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden">
+                                    <div className="space-y-8 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
                                         
                                         <div>
@@ -5006,7 +5068,7 @@ billing payouts are required.
                                     <div className="space-y-12 animate-fadeIn">
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                                             {/* Left Column: KYC Business Details */}
-                                            <div className="lg:col-span-2 space-y-8 bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden">
+                                            <div className="lg:col-span-2 space-y-8 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden">
                                                 <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
                                                 <h3 className="text-2xl font-black italic uppercase text-white mb-6">Legal Business Profile</h3>
                                                 
@@ -5052,7 +5114,7 @@ billing payouts are required.
                                             </div>
 
                                             {/* Right Column: Bank Details */}
-                                            <div className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 flex flex-col justify-between relative overflow-hidden shadow-2xl">
+                                            <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 flex flex-col justify-between relative overflow-hidden shadow-2xl">
                                                 <div className="space-y-6">
                                                     <h3 className="text-2xl font-black italic uppercase text-white">Payout Bank Account</h3>
                                                     <p className="text-xs text-gray-500 italic">"German commercial payouts must resolve to valid SEPA banking channels under GwG Art. 12."</p>
@@ -5115,7 +5177,7 @@ billing payouts are required.
                                         </div>
 
                                         {/* Mandatory Verification Documents Upload Grid */}
-                                        <div className="bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 space-y-8 relative overflow-hidden">
+                                        <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 space-y-8 relative overflow-hidden">
                                             <h3 className="text-3xl font-black italic uppercase text-white mb-6">Required KYC Document Audits</h3>
                                             <p className="text-xs text-gray-500 italic max-w-2xl">
                                                 Germany mandates clear corporate, identity, and transport permitting credentials to decouple payouts. Click any source to upload document.
@@ -5226,7 +5288,7 @@ billing payouts are required.
                                 )}
 
                                 {stripeActiveSubTab === 'partner-compliance' && (
-                                    <div className="space-y-8 bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden">
+                                    <div className="space-y-8 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
                                         
                                         <div>
@@ -5368,7 +5430,7 @@ billing payouts are required.
                                                 initial={{ scale: 0.9, y: 20 }} 
                                                 animate={{ scale: 1, y: 0 }} 
                                                 exit={{ scale: 0.9, y: 20 }} 
-                                                className="w-full max-w-3xl bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden shadow-[0_0_50px_rgba(52,211,153,0.15)] space-y-6"
+                                                className="w-full max-w-3xl bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden shadow-[0_0_50px_rgba(52,211,153,0.15)] space-y-6"
                                                 onClick={e => e.stopPropagation()}
                                             >
                                                 {/* Visual Header */}
@@ -5477,7 +5539,7 @@ billing payouts are required.
 
                                 {/* TAB 5: DYNAMIC PROVISION RULES */}
                                 {stripeActiveSubTab === 'provision-rules' && (
-                                    <div className="space-y-8 bg-dark-900 border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden">
+                                    <div className="space-y-8 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
                                         <div>
                                             <h3 className="text-3xl font-black italic uppercase text-white">Dynamic Provisions & Fees</h3>
@@ -5542,7 +5604,7 @@ billing payouts are required.
                         {view === 'customer-service' && (
                             <motion.div key="customer-service" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="p-8 bg-dark-900 border border-white/10 rounded-[3.5rem] space-y-6 group hover:border-white/30 transition-all">
+                                    <div className="p-8 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] space-y-6 group hover:border-white/30 transition-all">
                                         <div className="flex items-center gap-4"><Car size={24} className="text-brand" /><h3 className="text-xl font-black italic uppercase text-white">Partner & Driver Intel</h3></div>
                                         <div className="relative">
                                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
@@ -5552,7 +5614,7 @@ billing payouts are required.
                                             {stripeConnectedPartners.map(p => <span key={p.id} className="px-4 py-2 bg-white/5 rounded-xl text-[8px] font-black text-gray-500 border border-white/5 cursor-pointer hover:text-brand transition-colors whitespace-nowrap">{p.name}</span>)}
                                         </div>
                                     </div>
-                                    <div className="p-8 bg-dark-900 border border-white/10 rounded-[3.5rem] space-y-6 group hover:border-white/30 transition-all">
+                                    <div className="p-8 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] space-y-6 group hover:border-white/30 transition-all">
                                         <div className="flex items-center gap-4"><UserIcon size={24} className="text-white" /><h3 className="text-xl font-black italic uppercase text-white">Customer Intelligence</h3></div>
                                         <div className="relative">
                                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
@@ -5565,7 +5627,7 @@ billing payouts are required.
                                 </div>
 
                                 <div className="flex gap-10 h-[700px]">
-                                    <div className="w-[450px] bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col overflow-hidden">
+                                    <div className="w-[450px] bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col overflow-hidden">
                                         <div className="p-8 border-b border-white/5 bg-white/5 flex justify-between items-center">
                                             <h3 className="text-xl font-black italic uppercase text-white">Live Communications</h3>
                                             <div className="px-3 py-1 bg-brand/20 text-brand text-[8px] font-black rounded-full">ACTIVE SESSION</div>
@@ -5605,7 +5667,7 @@ billing payouts are required.
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex-1 bg-dark-900 border border-white/10 rounded-[3.5rem] flex flex-col overflow-hidden relative">
+                                    <div className="flex-1 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col overflow-hidden relative">
                                         <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
                                             <div className="flex items-center gap-6">
                                                 <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center">
@@ -5764,7 +5826,7 @@ billing payouts are required.
                                             ].map(s => {
                                                 const SIcon = s.icon;
                                                 return (
-                                                    <div key={s.label} className={`bg-dark-900 border ${s.color} rounded-[2rem] p-7 flex justify-between items-start`}>
+                                                    <div key={s.label} className={`bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border ${s.color} rounded-[2rem] p-7 flex justify-between items-start`}>
                                                         <div>
                                                             <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-3">{s.label}</p>
                                                             <p className="text-4xl font-black italic text-white">{s.val}</p>
@@ -5792,7 +5854,7 @@ billing payouts are required.
                                             const missing  = partner.docs.filter(d => d.status === 'missing').length;
                                             const allOk    = missing === 0 && pending === 0;
                                             return (
-                                                <div key={pi} className="bg-dark-900 border border-white/8 rounded-[2.5rem] overflow-hidden">
+                                                <div key={pi} className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/8 rounded-[2.5rem] overflow-hidden">
                                                     {/* Partner header */}
                                                     <div className={`px-8 py-6 border-b border-white/5 flex items-center justify-between ${
                                                         allOk ? 'bg-brand/5' : missing > 0 ? 'bg-red-500/5' : 'bg-amber-500/5'
@@ -5908,7 +5970,7 @@ billing payouts are required.
                                     <div><h2 className="text-6xl font-black italic uppercase tracking-tighter leading-none">{dossierFullName || 'Chief Director'}</h2><p className="text-brand text-sm font-bold uppercase tracking-[0.5em] mt-2 italic">Clearance Level: ALPHA PRIME</p></div>
                                 </div>
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                                    <div className="lg:col-span-2 bg-dark-900 border border-white/10 rounded-[3.5rem] p-12 space-y-10">
+                                    <div className="lg:col-span-2 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-12 space-y-10">
                                         <h3 className="text-2xl font-black italic uppercase text-white">Identity Dossier</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                             <div className="space-y-6">
@@ -6204,18 +6266,7 @@ billing payouts are required.
                 )}
             </AnimatePresence>
 
-            {/* SYSTEM STATUS FOOTER */}
-            <footer className="h-12 px-10 border-t border-white/5 bg-[#05080F]/80 flex items-center justify-between text-[8px] font-black uppercase tracking-[0.3em] text-gray-600 admin-footer">
-                <div className="flex gap-12 items-center">
-                    <div className="flex items-center gap-3"><div className={`w-1.5 h-1.5 rounded-full ${systemLockdown ? 'bg-red-500' : 'bg-emerald-500'}`} /><span>GRID: {systemLockdown ? 'LOCKED' : 'ONLINE'}</span></div>
-                    <div className="flex items-center gap-3"><Cpu size={12} className="text-brand" /><span>CPU: 12.4%</span></div>
-                    <div className="flex items-center gap-3"><ShieldCheck size={12} className={isVaultUnlocked ? 'text-brand' : 'text-gray-700'} /><span>VAULT: {isVaultUnlocked ? 'OPEN' : 'SEALED'}</span></div>
-                </div>
-                <div className="flex gap-8">
-                    <span className="text-brand/50">ENCRYPTION: AES-256-SHA3</span>
-                    <span className="text-gray-700">PRIME-ID: {user?.id?.slice(0,8) || 'D-000-01'}</span>
-                </div>
-            </footer>
+
 
             {/* --- FLOATING NEURAL ASSISTANT (ALWAYS ON) --- */}
             <div className="fixed bottom-20 right-10 z-[100] flex flex-col items-end gap-4 pointer-events-none">
@@ -6265,7 +6316,7 @@ billing payouts are required.
                                 <div className={`w-8 h-4 rounded-full relative transition-colors ${isListening ? 'bg-brand' : 'bg-white/10'}`}>
                                     <motion.div 
                                         animate={{ x: isListening ? 16 : 2 }}
-                                        className={`absolute top-1 w-2 h-2 rounded-full ${isListening ? 'bg-dark-900' : 'bg-gray-600'}`} 
+                                        className={`absolute top-1 w-2 h-2 rounded-full ${isListening ? 'bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl' : 'bg-gray-600'}`} 
                                     />
                                 </div>
                             </div>
@@ -6331,7 +6382,7 @@ billing payouts are required.
                 
                 <button 
                     onClick={() => setIsAssistantExpanded(!isAssistantExpanded)}
-                    className={`w-16 h-16 rounded-[2rem] flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-95 pointer-events-auto group ${isAssistantExpanded ? 'bg-brand text-dark-900 rotate-90' : 'bg-dark-900 border border-brand/40 text-brand'}`}
+                    className={`w-16 h-16 rounded-[2rem] flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-95 pointer-events-auto group ${isAssistantExpanded ? 'bg-brand text-dark-900 rotate-90' : 'bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-brand/40 text-brand'}`}
                 >
                     <motion.div animate={isAssistantExpanded ? { rotate: -90 } : { rotate: 0 }}>
                         {isAssistantExpanded ? <X size={24} /> : <Zap size={24} className="group-hover:animate-pulse" />}
@@ -6649,7 +6700,7 @@ billing payouts are required.
                             initial={{ y: 50, scale: 0.95 }} 
                             animate={{ y: 0, scale: 1 }} 
                             exit={{ y: 50, scale: 0.95 }} 
-                            className="w-full max-w-2xl bg-dark-900 border border-brand/30 rounded-[3.5rem] shadow-[0_0_100px_rgba(52,211,153,0.3)] overflow-hidden flex flex-col items-center p-10 relative"
+                            className="w-full max-w-2xl bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-brand/30 rounded-[3.5rem] shadow-[0_0_100px_rgba(52,211,153,0.3)] overflow-hidden flex flex-col items-center p-10 relative"
                         >
                             <button 
                                 onClick={() => setIsCameraScanOpen(false)} 

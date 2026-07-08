@@ -1612,13 +1612,7 @@ const DriverDashboard = () => {
                                     </AnimatePresence>
                                 </div>
 
-                                <button
-                                    onClick={() => setSharedTripsEnabled(!sharedTripsEnabled)}
-                                    className={`p-2 md:p-3 rounded-xl md:rounded-2xl transition-all flex items-center justify-center ${sharedTripsEnabled ? 'bg-[var(--brand)] text-[var(--bg-primary)] shadow-lg shadow-brand/30 ring-2 ring-brand/50' : 'glass text-muted hover:text-primary'}`}
-                                    title={sharedTripsEnabled ? "Shared Trips: ON" : "Shared Trips: OFF"}
-                                >
-                                    <Users size={18} className={`md:w-[22px] md:h-[22px] ${sharedTripsEnabled ? 'opacity-100' : 'opacity-50'}`} />
-                                </button>
+
                             </>
                         )}
                     </div>
