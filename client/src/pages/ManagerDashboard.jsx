@@ -2316,16 +2316,16 @@ const ManagerDashboard = () => {
                             setShowSecurityGate(false);
                             if (isMobile) setIsMobileSidebarOpen(false);
                         }}
-                        className={`w-full flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 group relative mb-2 ${
+                        className={`w-full flex ${isMobile ? 'flex-row items-center justify-start px-5 gap-4 py-3.5' : 'flex-col items-center justify-center p-3'} rounded-2xl transition-all duration-300 group relative mb-2 ${
                             view === item.id 
                             ? 'bg-brand/10 text-brand shadow-[0_0_15px_rgba(52,211,153,0.2)] border border-brand/50' 
-                            : 'text-secondary hover:text-primary hover:bg-white/5 border border-transparent'
+                            : 'text-secondary hover:text-primary hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'
                         }`}
                     >
-                        <item.icon size={22} className={`mb-1.5 ${view === item.id ? 'text-brand' : 'text-secondary group-hover:text-brand transition-colors'}`} />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-center leading-tight">{item.label}</span>
+                        <item.icon size={22} className={`${isMobile ? '' : 'mb-1.5'} ${view === item.id ? 'text-brand' : 'text-secondary group-hover:text-brand transition-colors'}`} />
+                        <span className={`font-black uppercase tracking-widest leading-tight ${isMobile ? 'text-[10px] text-left' : 'text-[9px] text-center'}`}>{item.label}</span>
                         {item.badge && (
-                            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-brand text-dark-900 text-[7px] font-black rounded-md">{item.badge}</span>
+                            <span className={`absolute px-1.5 py-0.5 bg-brand text-dark-900 text-[7px] font-black rounded-md ${isMobile ? 'right-4 top-1/2 -translate-y-1/2' : '-top-1 -right-1'}`}>{item.badge}</span>
                         )}
                     </button>
                 ))}
@@ -2362,7 +2362,7 @@ const ManagerDashboard = () => {
                         )}
                     </div>
                     {isLangExpanded && (!isInternalSidebarCollapsed || isMobile) && (
-                        <div className="max-h-40 overflow-y-auto no-scrollbar bg-dark-900/80 backdrop-blur-xl border border-white/5 rounded-2xl p-2 space-y-1 shadow-2xl">
+                        <div className="max-h-40 overflow-y-auto no-scrollbar bg-glass backdrop-blur-xl border border-main rounded-2xl p-2 space-y-1 shadow-2xl">
                             {filteredLangs.map((l) => (
                                 <button
                                     key={l.code}
@@ -2455,7 +2455,7 @@ const ManagerDashboard = () => {
                     initial={false}
                     animate={{ width: 110 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    className="h-full bg-transparent border-r border-white/5 flex flex-col z-30 relative shrink-0"
+                    className="h-full bg-transparent border-r border-main flex flex-col z-30 relative shrink-0"
                 >
                     {renderSidebarContent()}
                 </motion.aside>
@@ -2470,7 +2470,7 @@ const ManagerDashboard = () => {
                             animate={{ x: 0 }}
                             exit={{ x: -288 }}
                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="fixed inset-y-0 left-0 w-[288px] h-full bg-black/80 backdrop-blur-xl border-r border-white/5 flex flex-col z-[600] shadow-[10px_0_30px_rgba(0,0,0,0.5)] md:hidden"
+                            className="fixed inset-y-0 left-0 w-[288px] h-full bg-glass backdrop-blur-xl border-r border-main flex flex-col z-[600] shadow-[10px_0_30px_rgba(0,0,0,0.5)] md:hidden"
                             style={{
                                 paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px)`
                             }}
