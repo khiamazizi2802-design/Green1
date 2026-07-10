@@ -154,9 +154,9 @@ To maintain system integrity and dispatch efficiency, the Platform assigns a uni
 ### 3.1 GPS Tracking for Dispatch (Art. 6(1)(b) GDPR)
 Real-time tracking of passenger and driver location is technically necessary to facilitate ride-hailing services. GPS tracking commences upon launching the dispatch screen and terminates upon completion of the service contract.
 
-### 3.2 Nightlife Marketing & Local Promos (Art. 6(1)(a) GDPR)
-If you voluntarily grant consent (via opt-in settings), we process your location coordinates to display nightlife vouchers, local discounts, and partner promotions near you.
-* **Withdrawal of Consent**: You may revoke this consent instantly inside the application settings without affecting your core service availability.
+### 3.2 Nightlife-Marketing & Lokale Promos (Art. 6(1)(a) DSGVO)
+Wenn du freiwillig deine Zustimmung erteilst (über Opt-in-Einstellungen), verarbeiten wir deine Standortkoordinaten, um dir Nightlife-Gutscheine, lokale Rabatte und Partner-Aktionen in deiner Nähe anzuzeigen.
+* **Widerruf der Zustimmung**: Du kannst diese Zustimmung jederzeit in den App-Einstellungen widerrufen, ohne dass deine grundsätzliche Servicenutzung beeinträchtigt wird.
 
 ---
 

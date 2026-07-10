@@ -106,38 +106,38 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
     const sections = [
         {
             icon: ShieldCheck,
-            title: "1. Data Controller & Youth Protection",
-            content: "Green Nightlife & Logistics GmbH is the primary data controller under GDPR. To ensure child safety, registration is strictly prohibited for children under 16 years of age. Minors aged 16-17 can only register and use the app if they receive a verified parental invitation from an active adult account."
+            title: "1. Verantwortlicher & Jugendschutz",
+            content: "Green Nightlife & Logistics GmbH ist der Hauptverantwortliche im Sinne der DSGVO. Um den Schutz von Minderjährigen zu gewährleisten, ist die Registrierung für Personen unter 16 Jahren strengstens untersagt. Minderjährige im Alter von 16-17 Jahren können die App nur nutzen, wenn sie eine verifizierte Einladung durch einen Erwachsenen erhalten."
         },
         {
             icon: MapPin,
-            title: "2. Tactical Telemetry & Local Offers",
-            content: "We process high-precision GPS telemetry to facilitate ride-hailing (contractual fulfillment, Art. 6.1.b). Additionally, with your voluntary consent (Art. 6.1.a), we use location data to push exclusive local discounts, VIP vouchers, and promotions near you. You can toggle this off in settings at any time."
+            title: "2. Telemetrie & Lokale Angebote",
+            content: "Wir verarbeiten hochpräzise GPS-Telemetriedaten, um Ride-Hailing zu ermöglichen (Vertragserfüllung, Art. 6.1.b DSGVO). Zusätzlich nutzen wir mit deiner freiwilligen Zustimmung (Art. 6.1.a DSGVO) Standortdaten, um dir exklusive lokale Rabatte, VIP-Gutscheine und Aktionen in deiner Nähe anzuzeigen. Du kannst dies jederzeit in den Einstellungen deaktivieren."
         },
         {
             icon: UserCheck,
             title: "3. Social Media Wall & 15s Clips",
-            content: "Our app includes an integrated Social Media Wall where customers and partners can voluntarily upload photos and short videos (up to 15 seconds) to share nightlife experiences. Uploads are based on voluntary consent (Art. 6.1.a), stored on secure servers, and can be permanently deleted by you at any time."
+            content: "Unsere App enthält eine integrierte Social Media Wall, auf der Kunden und Partner freiwillig Fotos und kurze Videos (bis zu 15 Sekunden) hochladen können, um Nightlife-Erlebnisse zu teilen. Uploads basieren auf freiwilliger Zustimmung (Art. 6.1.a DSGVO), werden auf sicheren Servern gespeichert und können von dir jederzeit dauerhaft gelöscht werden."
         },
         {
             icon: CreditCard,
-            title: "4. Financial & Partner Verification",
-            content: "All payments are routed through secure, PCI-compliant Stripe/PayPal gateways. For B2B partners, we verify business registrations, commercial addresses, tax credentials, driving licenses, and Personenbeförderungsscheins (P-Scheins) under strict legal obligations (Art. 6.1.c) to ensure compliance."
+            title: "4. Finanzen & Partner-Verifizierung",
+            content: "Alle Zahlungen werden sicher über PCI-konforme Gateways (Stripe/PayPal) abgewickelt. Bei B2B-Partnern überprüfen wir Gewerbeanmeldungen, Geschäftsadressen, Steuerdaten, Führerscheine und Personenbeförderungsscheine (P-Scheine) unter strengen rechtlichen Auflagen (Art. 6.1.c DSGVO)."
         },
         {
             icon: Globe,
-            title: "5. Feedback, Support & Anonymous Intel",
-            content: "Complaints and support tickets are processed to resolve service disputes. Feedback is used for app optimization. Before sharing any insights with our 3 selected market research partners, we strip all PII (names, emails, GPS) to render the data fully and irreversibly anonymous (exempt from GDPR)."
+            title: "5. Feedback, Support & Anonyme Daten",
+            content: "Beschwerden und Support-Tickets werden zur Lösung von Servicefällen verarbeitet. Feedback dient der App-Optimierung. Bevor wir Erkenntnisse mit unseren 3 ausgewählten Marktforschungspartnern teilen, entfernen wir alle personenbezogenen Daten (Namen, E-Mails, GPS), um die Daten vollständig und unwiderruflich zu anonymisieren."
         },
         {
             icon: Smartphone,
-            title: "6. Shift-Based Session Expiration",
-            content: "While passengers remain logged in persistently, Manager, Staff, and Driver sessions are configured with a secure daily expiration limit. All active staff/fleet sessions automatically expire and force a secure logout daily at exactly 5:00 AM, coinciding with the end of the nightly operational shift."
+            title: "6. Schichtbasierter Sitzungsablauf",
+            content: "Während Fahrgäste dauerhaft eingeloggt bleiben, haben die Sitzungen von Managern, Mitarbeitern und Fahrern ein sicheres tägliches Ablaufdatum. Alle aktiven Mitarbeiter-/Flotten-Sitzungen laufen automatisch ab und erzwingen einen sicheren Logout jeden Tag um exakt 5:00 Uhr morgens, zeitgleich mit dem Ende der nächtlichen Schicht."
         },
         {
             icon: Bell,
-            title: "7. Strategic Enforcement: Red Flag Protocol",
-            content: "To protect community integrity, we enforce a strict behavioral 'Red Flag' system. Accumulating 3 Red Flags within 2 months triggers an automatic 1-year suspension. A repeat violation after suspension results in a permanent and irreversible ecosystem-wide ban."
+            title: "7. Strategische Durchsetzung: Red Flag Protokoll",
+            content: "Um die Integrität der Community zu schützen, setzen wir ein strenges verhaltensbasiertes 'Red Flag'-System um. Das Ansammeln von 3 Red Flags innerhalb von 2 Monaten führt zu einer automatischen 1-jährigen Sperre. Ein erneuter Verstoß nach der Sperre führt zu einem permanenten und unwiderruflichen Ausschluss aus dem gesamten System."
         }
     ];
 

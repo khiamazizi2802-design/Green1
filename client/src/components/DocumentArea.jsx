@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { FileText, CheckCircle2, AlertCircle, Clock, Upload, Edit3 } from 'lucide-react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
@@ -161,16 +161,16 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                                             onClick={() => setShowTermsModal(true)}
                                             className="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
                                         >
-                                            Read Agreement
+                                            Bedingungen Lesen
                                         </button>
                                         {doc.status === 'verified' ? (
                                             <div className="w-full py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest text-emerald-500 text-center">
-                                                Agreement Accepted
+                                                Bedingungen Akzeptiert
                                             </div>
                                         ) : (
                                             <div className="flex gap-2">
-                                                <button onClick={() => onAccept && onAccept(doc.id)} className="flex-1 py-3 bg-brand text-dark-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-brand/20">Accept Terms</button>
-                                                <button onClick={() => onDeny && onDeny(doc.id)} className="flex-1 py-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500/20 transition-all">Deny</button>
+                                                <button onClick={() => onAccept && onAccept(doc.id)} className="flex-1 py-3 bg-brand text-dark-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-brand/20">Akzeptieren</button>
+                                                <button onClick={() => onDeny && onDeny(doc.id)} className="flex-1 py-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500/20 transition-all">Ablehnen</button>
                                             </div>
                                         )}
                                     </div>
@@ -180,7 +180,7 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                                         disabled={isUploading}
                                         className={`flex-1 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg ${isUploading ? 'bg-gray-700 text-gray-500' : 'bg-brand text-dark-900 hover:scale-105 shadow-brand/20'}`}
                                     >
-                                        {isUploading ? <><Clock size={14} className="animate-spin" /> {progress > 0 ? `${progress}%` : 'Uploading...'}</> : <><Upload size={14} /> Upload Now</>}
+                                        {isUploading ? <><Clock size={14} className="animate-spin" /> {progress > 0 ? `${progress}%` : 'Lädt hoch...'}</> : <><Upload size={14} /> Jetzt Hochladen</>}
                                     </button>
                                 ) : (
                                     <>
@@ -188,14 +188,14 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                                             onClick={() => setPreviewDoc(doc)}
                                             className="flex-1 py-3 bg-white/5 border border-white/5 rounded-xl font-black text-[10px] uppercase tracking-widest text-white/70 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-2"
                                         >
-                                            <Clock size={14} /> Open Photo
+                                            <Clock size={14} /> Foto Öffnen
                                         </button>
                                         <button
                                             onClick={() => handleUploadClick(doc.id)}
                                             disabled={isUploading}
                                             className={`flex-1 py-3 border border-white/5 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${isUploading ? 'bg-white/5 text-gray-600' : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'}`}
                                         >
-                                            {isUploading ? <><Clock size={14} className="animate-spin" /> {progress > 0 ? `${progress}%` : 'Updating...'}</> : <><Edit3 size={14} /> Update</>}
+                                            {isUploading ? <><Clock size={14} className="animate-spin" /> {progress > 0 ? `${progress}%` : 'Aktualisiert...'}</> : <><Edit3 size={14} /> Aktualisieren</>}
                                         </button>
                                     </>
                                 )}
@@ -255,26 +255,26 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                     <div className="absolute inset-0 bg-black/90 backdrop-blur-sm cursor-pointer" onClick={() => setShowTermsModal(false)} />
                     <div className="relative w-full max-w-[500px] max-h-[80vh] bg-neutral-950 border border-neutral-800 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col p-6 space-y-6">
                         <div className="flex justify-between items-center pb-4 border-b border-neutral-800/60">
-                            <h4 className="font-black italic uppercase tracking-tighter text-white">Partner Terms & Data Agreement</h4>
-                            <button onClick={() => setShowTermsModal(false)} className="text-white/50 hover:text-white text-lg font-bold">âœ•</button>
+                            <h4 className="font-black italic uppercase tracking-tighter text-white">Partner-Bedingungen & Datenvereinbarung</h4>
+                            <button onClick={() => setShowTermsModal(false)} className="text-white/50 hover:text-white text-lg font-bold">✕</button>
                         </div>
                         <div className="flex-1 overflow-y-auto pr-2 space-y-4 text-xs text-white/70 leading-relaxed font-medium">
-                            <p className="text-brand font-bold uppercase tracking-wider">Last Updated: June 2026</p>
-                            <p>Welcome to the GreenRide Platform. By accepting, you agree to enter a binding partnership agreement with GreenRide.</p>
-                            <h5 className="font-black text-white uppercase tracking-tight">1. Partner Relationship & Scope</h5>
-                            <p>As a registered fleet driver partner, you act as an independent service provider or employee of an affiliated fleet manager. You agree to comply with all regional passenger transport permits, vehicle inspection schedules, and platform quality benchmarks.</p>
-                            <h5 className="font-black text-white uppercase tracking-tight">2. Compliance & Verification</h5>
-                            <p>Drivers must maintain valid driving credentials, passenger transport licenses (P-Schein), and registration documents. Any lapse will lead to immediate temporary suspension of dispatch access.</p>
-                            <h5 className="font-black text-white uppercase tracking-tight">3. Data Usage & Location Tracking</h5>
-                            <p>The GreenRide app collects real-time location and GPS data while you are active or online. By accepting, you grant consent for location streaming, telemetry analytics, and storage of dispatch histories.</p>
-                            <h5 className="font-black text-white uppercase tracking-tight">4. Safety & Standards</h5>
-                            <p>You agree to operate vehicles in a safe, lawful manner. Cleanliness, vehicle care, and professional customer etiquette must be upheld at all times.</p>
-                            <h5 className="font-black text-white uppercase tracking-tight">5. Commission & Settlement</h5>
-                            <p>Platform fees and payouts are calculated dynamically and cleared weekly through the Settlement Ledger, subject to verified ride compliance.</p>
+                            <p className="text-brand font-bold uppercase tracking-wider">Zuletzt aktualisiert: Juni 2026</p>
+                            <p>Willkommen auf der GreenRide Plattform. Durch die Zustimmung erklärst du dich bereit, eine verbindliche Partnerschaftsvereinbarung mit GreenRide einzugehen.</p>
+                            <h5 className="font-black text-white uppercase tracking-tight">1. Partnerschaft & Umfang</h5>
+                            <p>Als registrierter Flottenfahrer handelst du als unabhängiger Dienstleister oder als Mitarbeiter eines angeschlossenen Flottenmanagers. Du erklärst dich einverstanden, alle regionalen Personenbeförderungsgenehmigungen, Fahrzeugprüfungspläne und Qualitätsstandards der Plattform einzuhalten.</p>
+                            <h5 className="font-black text-white uppercase tracking-tight">2. Compliance & Verifizierung</h5>
+                            <p>Fahrer müssen gültige Fahrdokumente, Personenbeförderungsscheine (P-Schein) und Zulassungsbescheinigungen vorweisen. Jegliche Unterbrechung führt zur sofortigen vorübergehenden Sperrung des Dispositionszugangs.</p>
+                            <h5 className="font-black text-white uppercase tracking-tight">3. Datennutzung & Standortverfolgung</h5>
+                            <p>Die GreenRide App erfasst Echtzeit-Standort- und GPS-Daten, während du aktiv oder online bist. Mit deiner Zustimmung erteilst du die Erlaubnis für das Streaming deines Standorts, Telemetrie-Analysen und die Speicherung von Fahrtenhistorien.</p>
+                            <h5 className="font-black text-white uppercase tracking-tight">4. Sicherheit & Standards</h5>
+                            <p>Du verpflichtest dich, Fahrzeuge sicher und gesetzmäßig zu führen. Sauberkeit, Fahrzeugpflege und professionelles Verhalten gegenüber Kunden müssen jederzeit gewährleistet sein.</p>
+                            <h5 className="font-black text-white uppercase tracking-tight">5. Provision & Abrechnung</h5>
+                            <p>Plattformgebühren und Auszahlungen werden dynamisch berechnet und wöchentlich über das Abrechnungssystem (Settlement Ledger) beglichen, vorbehaltlich der überprüften Fahrten-Compliance.</p>
                         </div>
                         <div className="pt-4 border-t border-neutral-800/60">
                             <button onClick={() => setShowTermsModal(false)} className="w-full py-4 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all">
-                                Close & Return
+                                Schließen & Zurückkehren
                             </button>
                         </div>
                     </div>
