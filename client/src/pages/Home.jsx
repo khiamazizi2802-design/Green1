@@ -2176,37 +2176,55 @@ const Home = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ type: "spring", bounce: 0.4, duration: 0.8 }}
-                        className="fixed inset-0 z-[200] bg-[var(--bg-primary)]/80 backdrop-blur-2xl flex items-center justify-center p-6"
+                        className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-3xl flex items-center justify-center p-6 md:p-12"
                     >
-                        <div className="max-w-xs w-full relative overflow-hidden rounded-[2.5rem] p-8 text-center shadow-[0_30px_60px_rgba(0,0,0,0.4)] border border-white/10 bg-[var(--bg-secondary)]/90 backdrop-blur-3xl">
+                        {/* Background Decor for iPad */}
+                        <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block">
+                            <div className="absolute top-[20%] left-[20%] w-[500px] h-[500px] bg-brand/10 rounded-full blur-[120px]" />
+                            <div className="absolute bottom-[20%] right-[20%] w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px]" />
+                        </div>
+
+                        <div className="max-w-sm md:max-w-md w-full relative overflow-hidden rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-12 text-center shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-white/10 bg-neutral-900/80 backdrop-blur-3xl">
                             {/* Glowing Orbs */}
-                            <div className="absolute -top-20 -left-20 w-40 h-40 bg-brand/20 rounded-full blur-[60px]" />
-                            <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-blue-500/20 rounded-full blur-[60px]" />
+                            <div className="absolute -top-20 -left-20 w-40 md:w-64 h-40 md:h-64 bg-brand/20 rounded-full blur-[60px] md:blur-[80px]" />
+                            <div className="absolute -bottom-20 -right-20 w-40 md:w-64 h-40 md:h-64 bg-blue-500/20 rounded-full blur-[60px] md:blur-[80px]" />
                             
                             <div className="relative z-10">
-                                <div className="w-20 h-20 bg-gradient-to-br from-gray-900 to-black rounded-3xl flex items-center justify-center text-white mx-auto shadow-2xl mb-8 relative border border-white/10">
-                                    <MapPin size={32} className="animate-bounce" />
-                                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-brand rounded-full flex items-center justify-center shadow-lg border-2 border-[#1A1A1A]">
-                                        <Camera size={14} className="text-black" />
+                                <div className="w-20 md:w-24 h-20 md:h-24 bg-gradient-to-br from-gray-900 to-black rounded-3xl flex items-center justify-center text-white mx-auto shadow-2xl mb-8 relative border border-white/10">
+                                    <MapPin size={32} className="animate-bounce md:w-10 md:h-10" />
+                                    <div className="absolute -bottom-2 -right-2 w-8 h-8 md:w-10 md:h-10 bg-brand rounded-full flex items-center justify-center shadow-lg border-2 border-[#1A1A1A]">
+                                        <Camera size={14} className="text-black md:w-5 md:h-5" />
                                     </div>
                                 </div>
                                 
-                                <h3 className="text-2xl font-black tracking-tight text-white mb-3">Erlebnis Freischalten</h3>
+                                <h3 className="text-2xl md:text-3xl font-black tracking-tight text-white mb-4">Erlebnis Freischalten</h3>
                                 
-                                <p className="text-[11px] text-gray-400 font-medium leading-relaxed mb-8 px-1">
+                                <p className="text-[11px] md:text-sm text-gray-400 font-medium leading-relaxed mb-8 px-1 md:px-4">
                                     Um dir das bestmögliche Erlebnis zu bieten und alle Funktionen der App optimal nutzen zu können, benötigt GREEN Zugriff auf deinen <strong className="text-white">Standort</strong> und deine <strong className="text-white">Kamera</strong>.
                                 </p>
 
-                                <button 
-                                    onClick={() => {
-                                        localStorage.setItem('green_permissions_granted', 'true');
-                                        window.location.reload();
-                                    }}
-                                    className="w-full py-4 bg-white text-black rounded-2xl font-black text-xs shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300 relative overflow-hidden group uppercase tracking-widest"
-                                >
-                                    <div className="absolute inset-0 bg-brand translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                                    <span className="relative z-10 group-hover:text-black transition-colors">Weiter</span>
-                                </button>
+                                <div className="space-y-3">
+                                    <button 
+                                        onClick={() => {
+                                            localStorage.setItem('green_permissions_granted', 'true');
+                                            window.location.reload();
+                                        }}
+                                        className="w-full py-4 bg-white text-black rounded-2xl font-black text-xs md:text-sm shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300 relative overflow-hidden group uppercase tracking-widest"
+                                    >
+                                        <div className="absolute inset-0 bg-brand translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                                        <span className="relative z-10 group-hover:text-black transition-colors">Weiter</span>
+                                    </button>
+
+                                    <button 
+                                        onClick={() => {
+                                            localStorage.setItem('green_permissions_granted', 'true');
+                                            window.location.reload();
+                                        }}
+                                        className="w-full py-4 bg-transparent text-gray-500 hover:text-white rounded-2xl font-bold text-xs uppercase tracking-widest transition-colors duration-300"
+                                    >
+                                        Später fragen
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </motion.div>
