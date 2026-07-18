@@ -1,0 +1,5 @@
+"NSCameraUsageDescription" = "Wir benötigen Zugriff auf deine Kamera, um ein Selfie für dein Profilbild aufzunehmen.";
+"NSPhotoLibraryUsageDescription" = "Wir benötigen Zugriff auf deine Galerie, um ein Profilbild hochzuladen.";
+"NSPhotoLibraryAddUsageDescription" = "Wir benötigen Zugriff auf deine Galerie, um Fotos zu speichern.";
+"NSLocationWhenInUseUsageDescription" = "Wir benötigen Zugriff auf deinen Standort, um dich auf der Karte anzuzeigen und Fahrten zu vermitteln.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Wir benötigen Zugriff auf deinen Standort, um dich auf der Karte anzuzeigen und Fahrten zu vermitteln.";
