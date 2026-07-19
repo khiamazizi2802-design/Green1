@@ -41,7 +41,7 @@ const FriendsListPage = () => {
                         </button>
                         <div>
                             <h1 className="text-2xl font-black italic tracking-tighter uppercase leading-none">Inner Circle</h1>
-                            <p className="text-brand font-black uppercase tracking-[0.2em] text-[8px] italic mt-1">{friends.length} Active Connections</p>
+                            <p className="text-brand font-black uppercase tracking-[0.2em] text-[8px] md:text-[10px] lg:text-xs italic mt-1">{friends.length} Active Connections</p>
                         </div>
                     </div>
                     <button 
@@ -93,15 +93,15 @@ const FriendsListPage = () => {
                                             <h3 className="text-sm font-black italic uppercase tracking-tight text-white">{friend.name}</h3>
                                             <span className="text-[7px] bg-brand/10 text-brand px-1.5 py-0.5 rounded-md font-black uppercase tracking-widest">{friend.rank}</span>
                                         </div>
-                                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{friend.username}</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-500 uppercase tracking-widest">{friend.username}</p>
                                         <div className="flex items-center gap-3 mt-1.5">
                                             <div className="flex items-center gap-1">
                                                 <Users size={10} className="text-gray-600" />
-                                                <span className="text-[8px] font-black text-gray-600 uppercase">{friend.mutuals} Mutuals</span>
+                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-600 uppercase">{friend.mutuals} Mutuals</span>
                                             </div>
                                             <div className="flex items-center gap-1">
                                                 <Sparkles size={10} className="text-brand" />
-                                                <span className="text-[8px] font-black text-brand uppercase">{friend.status}</span>
+                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase">{friend.status}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -124,7 +124,7 @@ const FriendsListPage = () => {
                             <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto text-gray-600">
                                 <X size={30} />
                             </div>
-                            <p className="text-xs font-black uppercase tracking-widest text-gray-500">No members found</p>
+                            <p className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-gray-500">No members found</p>
                         </div>
                     )}
                 </div>

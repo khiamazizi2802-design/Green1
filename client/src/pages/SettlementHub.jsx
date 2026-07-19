@@ -51,8 +51,8 @@ const SettlementHub = () => {
                     <ArrowLeft size={18} />
                 </button>
                 <div className="text-center">
-                    <h1 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand">Settlement Hub</h1>
-                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">The Morning After Ledger</p>
+                    <h1 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-brand">Settlement Hub</h1>
+                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest mt-0.5">The Morning After Ledger</p>
                 </div>
                 <div className="w-10 h-10 bg-brand/10 border border-brand/20 rounded-xl flex items-center justify-center text-brand">
                     <History size={18} />
@@ -65,7 +65,7 @@ const SettlementHub = () => {
                 <section className="bg-gradient-to-br from-brand/20 to-brand/5 border border-brand/20 rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 p-8 opacity-10"><TrendingUp size={120} className="text-brand" /></div>
                     <div className="relative z-10 space-y-4">
-                        <p className="text-[10px] font-black text-brand uppercase tracking-[0.2em]">April Expenditure</p>
+                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em]">April Expenditure</p>
                         <h2 className="text-4xl font-black italic tracking-tighter leading-none">€412.30</h2>
                         <div className="flex gap-4 pt-4">
                             <div className="flex-1 p-3 bg-dark-950/40 rounded-2xl border border-white/5">
@@ -82,7 +82,7 @@ const SettlementHub = () => {
 
                 {/* TRANSACTION HISTORY */}
                 <section className="space-y-4">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Recent Settlements</h3>
+                    <h3 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-gray-500 ml-2">Recent Settlements</h3>
                     
                     <div className="space-y-3">
                         {history.map((tx, i) => (
@@ -99,11 +99,11 @@ const SettlementHub = () => {
                                             <p className="text-sm font-black italic uppercase text-white">{tx.venue}</p>
                                             <span className="px-2 py-0.5 bg-white/10 text-white text-[7px] font-black rounded uppercase">Settled</span>
                                         </div>
-                                        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{tx.date}</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest">{tx.date}</p>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-lg font-black italic text-white leading-none">{tx.yourPart}</p>
-                                        <p className="text-[8px] font-bold text-gray-500 uppercase mt-1">Total: {tx.total}</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-500 uppercase mt-1">Total: {tx.total}</p>
                                     </div>
                                 </div>
 
@@ -111,11 +111,11 @@ const SettlementHub = () => {
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center gap-1.5">
                                             <Users size={12} className="text-gray-500" />
-                                            <span className="text-[9px] font-black text-gray-400 uppercase">{tx.splitWith > 1 ? `Split with ${tx.splitWith}` : 'Personal'}</span>
+                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-400 uppercase">{tx.splitWith > 1 ? `Split with ${tx.splitWith}` : 'Personal'}</span>
                                         </div>
                                         <div className="flex items-center gap-1.5">
                                             <Receipt size={12} className="text-gray-500" />
-                                            <span className="text-[9px] font-black text-gray-400 uppercase">{tx.items.length} Items</span>
+                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-400 uppercase">{tx.items.length} Items</span>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
@@ -134,8 +134,8 @@ const SettlementHub = () => {
                         <CheckCircle2 size={20} />
                     </div>
                     <div>
-                        <h4 className="text-[10px] font-black uppercase text-white tracking-widest mb-1">Fiscal Precision</h4>
-                        <p className="text-[9px] text-gray-500 font-bold leading-relaxed uppercase">
+                        <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-white tracking-widest mb-1">Fiscal Precision</h4>
+                        <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-bold leading-relaxed uppercase">
                             All receipts are digitally signed and optimized for DATEV/SKR03 exports. Your Morning After Ledger is a certified financial record.
                         </p>
                     </div>
@@ -147,7 +147,7 @@ const SettlementHub = () => {
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#0B121E] via-[#0B121E]/95 to-transparent">
                 <button 
                     onClick={() => navigate('/greens')}
-                    className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-[0_0_50px_rgba(52,211,153,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] shadow-[0_0_50px_rgba(52,211,153,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                     Back to Radar
                 </button>

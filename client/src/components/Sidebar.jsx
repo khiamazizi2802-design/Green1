@@ -247,7 +247,7 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                         <div className="p-8 border-b border-white/5 flex justify-between items-center">
                             <div>
                                 <h2 className="text-2xl font-black italic tracking-tighter text-white uppercase">Green</h2>
-                                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-brand mt-1 italic">
+                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.25em] text-brand mt-1 italic">
                                     {currentRole === 'driver' 
                                         ? (user?.greenId || "GRN-MICK-DRIV")
                                         : (user?.businessName || `${currentRole === 'staff' ? (localStorage.getItem('green_staff_template') || 'Staff').replace('_', ' ') : currentRole.replace('_', ' ')} GRID SYSTEM`)
@@ -265,7 +265,7 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                         <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-8">
                             {filteredSections.map((section, idx) => (
                                 <div key={idx} className="space-y-3">
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand/60 px-2 italic">
+                                    <h3 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-brand/60 px-2 italic">
                                         {section.title}
                                     </h3>
                                     <div className="space-y-1">
@@ -287,7 +287,7 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                                                             {item.label}
                                                         </p>
                                                         {(item.subtext || item.value) && (
-                                                            <p className="text-[10px] font-bold text-gray-500 uppercase">
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-500 uppercase">
                                                                 {item.subtext || item.value}
                                                             </p>
                                                         )}
@@ -295,12 +295,12 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     {item.badge && (
-                                                        <span className="text-[8px] font-black bg-brand/10 text-brand px-2 py-0.5 rounded-full uppercase">
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black bg-brand/10 text-brand px-2 py-0.5 rounded-full uppercase">
                                                             {item.badge}
                                                         </span>
                                                     )}
                                                     {item.status && (
-                                                        <span className="text-[8px] font-black bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full uppercase">
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full uppercase">
                                                             {item.status}
                                                         </span>
                                                     )}
@@ -319,21 +319,21 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                                 <div className="grid grid-cols-1 gap-2">
                                     <button
                                         onClick={() => window.open('/home', '_blank')}
-                                        className="w-full p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-500 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-blue-500 hover:text-white transition-all"
+                                        className="w-full p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-500 font-black uppercase tracking-widest text-xs md:text-sm lg:text-base flex items-center justify-center gap-2 hover:bg-blue-500 hover:text-white transition-all"
                                     >
                                         <Globe size={16} />
                                         Customer Portal
                                     </button>
                                     <button
                                         onClick={() => window.open('/driver', '_blank')}
-                                        className="w-full p-4 rounded-2xl bg-brand/10 border border-brand/20 text-brand font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-brand hover:text-dark-900 transition-all"
+                                        className="w-full p-4 rounded-2xl bg-brand/10 border border-brand/20 text-brand font-black uppercase tracking-widest text-xs md:text-sm lg:text-base flex items-center justify-center gap-2 hover:bg-brand hover:text-dark-900 transition-all"
                                     >
                                         <Car size={16} />
                                         Driver Portal
                                     </button>
                                     <button
                                         onClick={() => window.open('/manager', '_blank')}
-                                        className="w-full p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-amber-500 hover:text-white transition-all"
+                                        className="w-full p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 font-black uppercase tracking-widest text-xs md:text-sm lg:text-base flex items-center justify-center gap-2 hover:bg-amber-500 hover:text-white transition-all"
                                     >
                                         <Briefcase size={16} />
                                         Manager Portal
@@ -342,7 +342,7 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                             )}
                             <div className="space-y-2 mb-4">
                                 <div className="flex items-center justify-between px-2 mb-1">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand/60 italic">Language Hub</span>
+                                    <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-brand/60 italic">Language Hub</span>
                                     <Languages size={14} className="text-brand/40" />
                                 </div>
                                 <div className="relative">
@@ -356,7 +356,7 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                                             setIsLangExpanded(true);
                                         }}
                                         onFocus={() => setIsLangExpanded(true)}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 pl-10 text-[10px] font-black uppercase tracking-widest focus:border-brand/40 outline-none"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 pl-10 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest focus:border-brand/40 outline-none"
                                     />
                                 </div>
                                 {isLangExpanded && (
@@ -372,14 +372,14 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                                                 className={`w-full p-3 rounded-xl flex items-center justify-between transition-all ${i18n.language === lang.code ? 'bg-brand/10 text-brand border border-brand/20' : 'hover:bg-white/5 text-gray-500'}`}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-[10px] font-black uppercase">{lang.name}</span>
-                                                    <span className="text-[8px] font-bold opacity-40">{lang.native}</span>
+                                                    <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase">{lang.name}</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-bold opacity-40">{lang.native}</span>
                                                 </div>
                                                 {i18n.language === lang.code && <CheckCircle size={12} />}
                                             </button>
                                         ))}
                                         {filteredLangs.length === 0 && (
-                                            <p className="text-[8px] text-center text-gray-600 p-4 uppercase font-black">No matches found</p>
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs text-center text-gray-600 p-4 uppercase font-black">No matches found</p>
                                         )}
                                     </div>
                                 )}
@@ -391,7 +391,7 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                                     navigate('/login');
                                     onClose();
                                 }}
-                                className="w-full p-4 rounded-2xl bg-red-500/5 border border-red-500/10 text-red-500 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-red-500/10 transition-all group"
+                                className="w-full p-4 rounded-2xl bg-red-500/5 border border-red-500/10 text-red-500 font-black uppercase tracking-widest text-xs md:text-sm lg:text-base flex items-center justify-center gap-2 hover:bg-red-500/10 transition-all group"
                             >
                                 <LogOut size={16} className="group-hover:-translate-x-1 transition-transform" />
                                 Sign Out
@@ -403,12 +403,12 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                                             if (onItemClick) onItemClick('privacy');
                                             onClose();
                                         }}
-                                        className="text-[9px] font-black uppercase tracking-[0.3em] text-brand hover:text-white transition-colors"
+                                        className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.3em] text-brand hover:text-white transition-colors"
                                     >
                                         Privacy Manifesto
                                     </button>
                                 )}
-                                <p className="text-center text-[8px] text-gray-600 font-black uppercase tracking-[0.4em] italic">
+                                <p className="text-center text-[8px] md:text-[10px] lg:text-xs text-gray-600 font-black uppercase tracking-[0.4em] italic">
                                     Version 1.2.0-{currentRole.toUpperCase()}
                                 </p>
                             </div>

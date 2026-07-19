@@ -93,7 +93,7 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
 
             <div className="flex flex-col gap-1">
                 <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">{title}</h3>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">{description}</p>
+                <p className="text-gray-500 text-xs md:text-sm lg:text-base font-bold uppercase tracking-widest">{description}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -121,15 +121,15 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                                 </div>
                                 <div className="flex items-center gap-2">
                                     {doc.status === 'verified' ? (
-                                        <span className="flex items-center gap-1 text-[10px] font-black uppercase text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full">
+                                        <span className="flex items-center gap-1 text-[10px] md:text-xs lg:text-sm font-black uppercase text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full">
                                             <CheckCircle2 size={10} /> Verified
                                         </span>
                                     ) : doc.status === 'pending' ? (
-                                        <span className="flex items-center gap-1 text-[10px] font-black uppercase text-amber-500 bg-amber-500/10 px-3 py-1 rounded-full">
+                                        <span className="flex items-center gap-1 text-[10px] md:text-xs lg:text-sm font-black uppercase text-amber-500 bg-amber-500/10 px-3 py-1 rounded-full">
                                             <Clock size={10} /> Pending Review
                                         </span>
                                     ) : (
-                                        <span className="flex items-center gap-1 text-[10px] font-black uppercase text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
+                                        <span className="flex items-center gap-1 text-[10px] md:text-xs lg:text-sm font-black uppercase text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
                                             <AlertCircle size={10} /> Missing
                                         </span>
                                     )}
@@ -138,15 +138,15 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
 
                             <div className="mb-4">
                                 <h4 className="text-lg font-black tracking-tight text-white mb-1 uppercase italic">{doc.name}</h4>
-                                <p className="text-gray-500 text-[10px] leading-relaxed font-bold uppercase tracking-wider">{doc.requirement}</p>
+                                <p className="text-gray-500 text-[10px] md:text-xs lg:text-sm leading-relaxed font-bold uppercase tracking-wider">{doc.requirement}</p>
                             </div>
 
                             {/* Progress bar */}
                             {isUploading && progress > 0 && (
                                 <div className="mb-4">
                                     <div className="flex justify-between items-center mb-1">
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-brand">Uploading to Cloud...</span>
-                                        <span className="text-[9px] font-black text-brand">{progress}%</span>
+                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-brand">Uploading to Cloud...</span>
+                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand">{progress}%</span>
                                     </div>
                                     <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                                         <div className="h-full bg-brand rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
@@ -159,18 +159,18 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                                     <div className="flex flex-col gap-2 w-full">
                                         <button
                                             onClick={() => setShowTermsModal(true)}
-                                            className="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
+                                            className="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-black text-[10px] md:text-xs lg:text-sm uppercase tracking-widest transition-all"
                                         >
                                             Bedingungen Lesen
                                         </button>
                                         {doc.status === 'verified' ? (
-                                            <div className="w-full py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest text-emerald-500 text-center">
+                                            <div className="w-full py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl font-black text-[10px] md:text-xs lg:text-sm uppercase tracking-widest text-emerald-500 text-center">
                                                 Bedingungen Akzeptiert
                                             </div>
                                         ) : (
                                             <div className="flex gap-2">
-                                                <button onClick={() => onAccept && onAccept(doc.id)} className="flex-1 py-3 bg-brand text-dark-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-brand/20">Akzeptieren</button>
-                                                <button onClick={() => onDeny && onDeny(doc.id)} className="flex-1 py-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500/20 transition-all">Ablehnen</button>
+                                                <button onClick={() => onAccept && onAccept(doc.id)} className="flex-1 py-3 bg-brand text-dark-900 rounded-xl font-black text-[10px] md:text-xs lg:text-sm uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-brand/20">Akzeptieren</button>
+                                                <button onClick={() => onDeny && onDeny(doc.id)} className="flex-1 py-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl font-black text-[10px] md:text-xs lg:text-sm uppercase tracking-widest hover:bg-red-500/20 transition-all">Ablehnen</button>
                                             </div>
                                         )}
                                     </div>
@@ -178,7 +178,7 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                                     <button
                                         onClick={() => handleUploadClick(doc.id)}
                                         disabled={isUploading}
-                                        className={`flex-1 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg ${isUploading ? 'bg-gray-700 text-gray-500' : 'bg-brand text-dark-900 hover:scale-105 shadow-brand/20'}`}
+                                        className={`flex-1 py-3 rounded-xl font-black text-[10px] md:text-xs lg:text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg ${isUploading ? 'bg-gray-700 text-gray-500' : 'bg-brand text-dark-900 hover:scale-105 shadow-brand/20'}`}
                                     >
                                         {isUploading ? <><Clock size={14} className="animate-spin" /> {progress > 0 ? `${progress}%` : 'Lädt hoch...'}</> : <><Upload size={14} /> Jetzt Hochladen</>}
                                     </button>
@@ -186,14 +186,14 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                                     <>
                                         <button
                                             onClick={() => setPreviewDoc(doc)}
-                                            className="flex-1 py-3 bg-white/5 border border-white/5 rounded-xl font-black text-[10px] uppercase tracking-widest text-white/70 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-2"
+                                            className="flex-1 py-3 bg-white/5 border border-white/5 rounded-xl font-black text-[10px] md:text-xs lg:text-sm uppercase tracking-widest text-white/70 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-2"
                                         >
                                             <Clock size={14} /> Foto Öffnen
                                         </button>
                                         <button
                                             onClick={() => handleUploadClick(doc.id)}
                                             disabled={isUploading}
-                                            className={`flex-1 py-3 border border-white/5 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${isUploading ? 'bg-white/5 text-gray-600' : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'}`}
+                                            className={`flex-1 py-3 border border-white/5 rounded-xl font-black text-[10px] md:text-xs lg:text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${isUploading ? 'bg-white/5 text-gray-600' : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'}`}
                                         >
                                             {isUploading ? <><Clock size={14} className="animate-spin" /> {progress > 0 ? `${progress}%` : 'Aktualisiert...'}</> : <><Edit3 size={14} /> Aktualisieren</>}
                                         </button>
@@ -222,7 +222,7 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                                     <div className="absolute inset-0 bg-gradient-to-br from-brand/10 to-transparent" />
                                     <FileText size={64} className="text-brand/20" />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/50 italic text-center px-8">
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-white/50 italic text-center px-8">
                                             [ Document Photo Preview ]<br /><br />
                                             {previewDoc.name}<br />Status: {previewDoc.status?.toUpperCase()}
                                         </p>
@@ -232,16 +232,16 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                         </div>
                         <div className="space-y-4">
                             <div className="p-4 bg-[#1e2520] rounded-2xl space-y-2">
-                                <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">Requirement</p>
-                                <p className="text-xs text-white/70 font-medium leading-relaxed">{previewDoc.requirement}</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-black text-white/50 uppercase tracking-widest">Requirement</p>
+                                <p className="text-xs md:text-sm lg:text-base text-white/70 font-medium leading-relaxed">{previewDoc.requirement}</p>
                             </div>
                             {getDisplayUrl(previewDoc) && (
                                 <a href={getDisplayUrl(previewDoc)} target="_blank" rel="noopener noreferrer"
-                                    className="block w-full py-3 bg-white/5 border border-white/10 text-white/70 hover:text-white rounded-2xl font-black uppercase tracking-widest text-xs text-center transition-all">
+                                    className="block w-full py-3 bg-white/5 border border-white/10 text-white/70 hover:text-white rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm lg:text-base text-center transition-all">
                                     Open Full Size â†—
                                 </a>
                             )}
-                            <button onClick={() => setPreviewDoc(null)} className="w-full py-4 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-xs">
+                            <button onClick={() => setPreviewDoc(null)} className="w-full py-4 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm lg:text-base">
                                 Close Preview
                             </button>
                         </div>
@@ -258,7 +258,7 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                             <h4 className="font-black italic uppercase tracking-tighter text-white">Partner-Bedingungen & Datenvereinbarung</h4>
                             <button onClick={() => setShowTermsModal(false)} className="text-white/50 hover:text-white text-lg font-bold">✕</button>
                         </div>
-                        <div className="flex-1 overflow-y-auto pr-2 space-y-4 text-xs text-white/70 leading-relaxed font-medium">
+                        <div className="flex-1 overflow-y-auto pr-2 space-y-4 text-xs md:text-sm lg:text-base text-white/70 leading-relaxed font-medium">
                             <p className="text-brand font-bold uppercase tracking-wider">Zuletzt aktualisiert: Juni 2026</p>
                             <p>Willkommen auf der GreenRide Plattform. Durch die Zustimmung erklärst du dich bereit, eine verbindliche Partnerschaftsvereinbarung mit GreenRide einzugehen.</p>
                             <h5 className="font-black text-white uppercase tracking-tight">1. Partnerschaft & Umfang</h5>
@@ -273,7 +273,7 @@ const DocumentArea = ({ title, description, documents, userEmail, onUpload, onAc
                             <p>Plattformgebühren und Auszahlungen werden dynamisch berechnet und wöchentlich über das Abrechnungssystem (Settlement Ledger) beglichen, vorbehaltlich der überprüften Fahrten-Compliance.</p>
                         </div>
                         <div className="pt-4 border-t border-neutral-800/60">
-                            <button onClick={() => setShowTermsModal(false)} className="w-full py-4 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all">
+                            <button onClick={() => setShowTermsModal(false)} className="w-full py-4 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm lg:text-base hover:scale-[1.02] transition-all">
                                 Schließen & Zurückkehren
                             </button>
                         </div>

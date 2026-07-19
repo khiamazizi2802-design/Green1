@@ -85,10 +85,10 @@ const GreenIdPendingPage = () => {
                     <h1 className="text-3xl font-black italic uppercase tracking-tighter mb-2">
                         Registration <span className="text-brand">Complete</span>
                     </h1>
-                    <p className="text-[var(--text-muted)] font-bold uppercase tracking-widest text-[11px]">
+                    <p className="text-[var(--text-muted)] font-bold uppercase tracking-widest text-[11px] md:text-sm lg:text-base">
                         Welcome to the Green Network, {userName}
                     </p>
-                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mt-1">
+                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase tracking-widest mt-1">
                         {userRole}
                     </p>
                 </div>
@@ -105,7 +105,7 @@ const GreenIdPendingPage = () => {
 
                     <div className="flex items-center gap-3 mb-5">
                         <Sparkles size={14} className="text-brand" />
-                        <p className="text-[9px] font-black text-brand uppercase tracking-[0.25em]">Your Unique Green ID</p>
+                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-[0.25em]">Your Unique Green ID</p>
                     </div>
 
                     <div className="flex items-center justify-between gap-4">
@@ -114,7 +114,7 @@ const GreenIdPendingPage = () => {
                         </p>
                         <button
                             onClick={handleCopy}
-                            className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border ${
+                            className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all border ${
                                 copied
                                     ? 'bg-brand text-dark-950 border-brand shadow-[0_0_20px_var(--brand-glow)]'
                                     : 'bg-white/5 border-white/10 text-gray-400 hover:border-brand/40 hover:text-brand'
@@ -125,7 +125,7 @@ const GreenIdPendingPage = () => {
                         </button>
                     </div>
 
-                    <p className="text-[9px] text-gray-500 font-bold mt-4 uppercase tracking-wider">
+                    <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-bold mt-4 uppercase tracking-wider">
                         Share this ID with your Manager so they can onboard you
                     </p>
                 </motion.div>
@@ -142,8 +142,8 @@ const GreenIdPendingPage = () => {
                             <Clock size={18} className="text-amber-400" />
                         </div>
                         <div>
-                            <p className="text-[11px] font-black text-white uppercase tracking-widest mb-1">Waiting for Manager Onboarding</p>
-                            <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">
+                            <p className="text-[11px] md:text-sm lg:text-base font-black text-white uppercase tracking-widest mb-1">Waiting for Manager Onboarding</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm text-[var(--text-muted)] font-medium leading-relaxed">
                                 Your account is registered but not yet active. Your Manager must enter your Green ID in their dashboard to link you to the business and activate your access.
                             </p>
                         </div>
@@ -158,12 +158,12 @@ const GreenIdPendingPage = () => {
                             { step: '04', label: 'You receive access and can log in to your dashboard', done: false },
                         ].map(({ step, label, done }) => (
                             <div key={step} className="flex items-center gap-3">
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-black shrink-0 border ${
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[8px] md:text-[10px] lg:text-xs font-black shrink-0 border ${
                                     done ? 'bg-brand border-brand text-dark-950' : 'bg-white/5 border-white/10 text-gray-500'
                                 }`}>
                                     {done ? <CheckCircle2 size={12} /> : step}
                                 </div>
-                                <p className={`text-[10px] font-bold ${done ? 'text-brand' : 'text-gray-500'}`}>{label}</p>
+                                <p className={`text-[10px] md:text-xs lg:text-sm font-bold ${done ? 'text-brand' : 'text-gray-500'}`}>{label}</p>
                             </div>
                         ))}
                     </div>
@@ -210,7 +210,7 @@ const GreenIdPendingPage = () => {
                                 navigate(user?.role === 'driver' ? '/driver' : '/manager');
                             }
                         }}
-                        className="w-full py-5 bg-[var(--bg-secondary)] border border-brand/20 rounded-[2.4rem] text-[10px] font-black uppercase tracking-[0.25em] text-brand hover:bg-brand hover:text-dark-950 hover:border-brand transition-all flex items-center justify-center gap-3 cursor-pointer"
+                        className="w-full py-5 bg-[var(--bg-secondary)] border border-brand/20 rounded-[2.4rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.25em] text-brand hover:bg-brand hover:text-dark-950 hover:border-brand transition-all flex items-center justify-center gap-3 cursor-pointer"
                     >
                         <Sparkles size={16} /> Bypass Onboarding (Instant Approved)
                     </button>
@@ -222,7 +222,7 @@ const GreenIdPendingPage = () => {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.65 }}
                     onClick={handleLogout}
-                    className="w-full py-4 bg-white/5 border border-white/8 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white hover:border-white/20 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-white/5 border border-white/8 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 hover:text-white hover:border-white/20 transition-all flex items-center justify-center gap-2"
                 >
                     <LogOut size={14} />
                     Return to Home

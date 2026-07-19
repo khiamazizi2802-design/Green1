@@ -43,8 +43,8 @@ const NotificationToast = () => {
                     >
                         <div className="mt-1">{getIcon(n.type)}</div>
                         <div className="flex-1">
-                            <p className="text-xs font-black uppercase text-white tracking-tighter">{n.title}</p>
-                            <p className="text-[10px] text-gray-400 font-medium mt-1 leading-relaxed">{n.message}</p>
+                            <p className="text-xs md:text-sm lg:text-base font-black uppercase text-white tracking-tighter">{n.title}</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 font-medium mt-1 leading-relaxed">{n.message}</p>
                         </div>
                         <button 
                             onClick={() => setNotifications(prev => prev.filter(notif => notif.id !== n.id))}

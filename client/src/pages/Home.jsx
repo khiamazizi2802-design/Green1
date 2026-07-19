@@ -534,24 +534,24 @@ const Home = () => {
                                 
                                 <div className="space-y-2">
                                     <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white">Deletion <span className="text-red-500">Active</span></h1>
-                                    <p className="text-red-500/80 text-[10px] font-black uppercase tracking-[0.2em] italic">Account Scheduled for Destruction</p>
+                                    <p className="text-red-500/80 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] italic">Account Scheduled for Destruction</p>
                                 </div>
                             </div>
 
                             <div className="p-6 bg-red-500/5 border border-red-500/20 rounded-[2rem] space-y-4">
                                 <div className="flex items-center gap-2 text-red-500">
                                     <Shield size={16} />
-                                    <span className="text-[10px] font-black uppercase tracking-wider">GDPR (DSGVO) Security Protocol</span>
+                                    <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-wider">GDPR (DSGVO) Security Protocol</span>
                                 </div>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide leading-relaxed">
+                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 font-bold uppercase tracking-wide leading-relaxed">
                                     Your account is scheduled for permanent deactivation and deletion. To comply with GDPR guidelines, all data is retained in a secure, encrypted quarantine for a **15-day grace period**. 
                                 </p>
-                                <p className="text-[10px] text-gray-300 font-black uppercase tracking-wide leading-relaxed">
+                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-300 font-black uppercase tracking-wide leading-relaxed">
                                     If you change your mind, you can cancel this deletion now. If not, your account, payment credentials, trips, tickets, and active ledgers will be permanently and irreversibly destroyed on:
                                 </p>
                                 <div className="p-4 bg-black/40 rounded-xl border border-red-500/10 flex items-center justify-between">
-                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Permanent Deletion Date:</span>
-                                    <span className="text-xs font-black text-red-500 italic uppercase">
+                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Permanent Deletion Date:</span>
+                                    <span className="text-xs md:text-sm lg:text-base font-black text-red-500 italic uppercase">
                                         {deletionDeadline ? new Date(deletionDeadline).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Pending'}
                                     </span>
                                 </div>
@@ -560,14 +560,14 @@ const Home = () => {
                             <div className="space-y-4">
                                 <button 
                                     onClick={handleCancelDeletion}
-                                    className="w-full py-5 bg-brand text-dark-950 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-5 bg-brand text-dark-950 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                                 >
                                     <CheckCircle size={16} /> Cancel Deletion & Restore
                                 </button>
                                 
                                 <button 
                                     onClick={() => performCompleteDataWipe(user?.email?.toLowerCase())}
-                                    className="w-full py-5 bg-red-500/10 border border-red-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-5 bg-red-500/10 border border-red-500/20 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-red-500 hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                                 >
                                     <Zap size={16} /> Simulate 15 Days Passed (Wipe Now)
                                 </button>
@@ -663,7 +663,7 @@ const Home = () => {
                                 <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
                                     <div className="flex items-center gap-2">
                                         <Smartphone size={14} className="text-brand" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand">Notch & Safe-Fit</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-brand">Notch & Safe-Fit</span>
                                     </div>
                                     <button onClick={() => setIsNotchPanelOpen(false)} className="text-secondary hover:text-primary">
                                         <X size={14} />
@@ -672,7 +672,7 @@ const Home = () => {
                                 
                                 <div className="space-y-4 text-left">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[9px] font-black uppercase text-secondary">Auto Safe Area</span>
+                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-secondary">Auto Safe Area</span>
                                         <button 
                                             onClick={() => setUseSafeArea(!useSafeArea)}
                                             className={`w-9 h-5 rounded-full transition-colors relative flex items-center p-0.5 ${useSafeArea ? 'bg-brand' : 'bg-white/10'}`}
@@ -683,8 +683,8 @@ const Home = () => {
                                     
                                     <div className="space-y-1.5">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[9px] font-black uppercase text-secondary">Custom Offset</span>
-                                            <span className="text-xs font-black text-brand italic">{notchAdjustment}px</span>
+                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-secondary">Custom Offset</span>
+                                            <span className="text-xs md:text-sm lg:text-base font-black text-brand italic">{notchAdjustment}px</span>
                                         </div>
                                         
                                         <div className="flex items-center gap-3">
@@ -714,21 +714,21 @@ const Home = () => {
                                     <div className="grid grid-cols-3 gap-2 pt-2">
                                         <button 
                                             onClick={() => setNotchAdjustment(0)}
-                                            className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 0 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
+                                            className={`py-1.5 rounded-lg border text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider transition-all ${notchAdjustment === 0 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
                                         >
                                             0px
                                             <span className="block text-[6px] opacity-40">Desktop</span>
                                         </button>
                                         <button 
                                             onClick={() => setNotchAdjustment(20)}
-                                            className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 20 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
+                                            className={`py-1.5 rounded-lg border text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider transition-all ${notchAdjustment === 20 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
                                         >
                                             20px
                                             <span className="block text-[6px] opacity-40">Compact</span>
                                         </button>
                                         <button 
                                             onClick={() => setNotchAdjustment(44)}
-                                            className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 44 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
+                                            className={`py-1.5 rounded-lg border text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider transition-all ${notchAdjustment === 44 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
                                         >
                                             44px
                                             <span className="block text-[6px] opacity-40">Sim Notch</span>
@@ -757,7 +757,7 @@ const Home = () => {
                         </div>
                     </div>
                     <h2 className="text-3xl font-black italic tracking-tighter uppercase text-white mb-2">Analyzing Grid</h2>
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-80" style={{ color: 'var(--accent-primary)' }}>Locating 1km Range Matches...</p>
+                    <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.4em] opacity-80" style={{ color: 'var(--accent-primary)' }}>Locating 1km Range Matches...</p>
                 </div>
             )}
 
@@ -804,7 +804,7 @@ const Home = () => {
                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${activeSheet === item.id ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] scale-110 shadow-lg' : 'text-[var(--text-primary)] opacity-70 hover:opacity-100 hover:bg-[var(--text-primary)]/5'}`}>
                                 <item.icon size={22} strokeWidth={2.5} />
                             </div>
-                            <span className={`text-[9px] font-black uppercase tracking-[0.2em] italic transition-all ${activeSheet === item.id ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)] opacity-60'}`}>{item.label}</span>
+                            <span className={`text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] italic transition-all ${activeSheet === item.id ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)] opacity-60'}`}>{item.label}</span>
                             {activeSheet === item.id && (
                                 <motion.div layoutId="nav-glow" className="absolute -bottom-2 w-1.5 h-1.5 rounded-full bg-[var(--text-primary)] shadow-[0_0_10px_var(--text-primary)]" />
                             )}
@@ -827,14 +827,14 @@ const Home = () => {
                             </div>
                             <div>
                                 <h4 className="text-2xl font-black italic tracking-tighter">JOIN & SAVE 20%</h4>
-                                <p className="text-xs text-gray-400 mt-2 font-bold uppercase tracking-widest">Neighboring ride detected at {distanceToNearestOrder}km</p>
+                                <p className="text-xs md:text-sm lg:text-base text-gray-400 mt-2 font-bold uppercase tracking-widest">Neighboring ride detected at {distanceToNearestOrder}km</p>
                             </div>
                             <button className="w-full py-4 rounded-2xl bg-[var(--text-primary)] text-[var(--bg-primary)] font-black uppercase tracking-widest text-sm italic shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all border border-[var(--border-main)]"
                                 style={{ borderColor: 'var(--border-main)' }}>Connect View</button>
                         </div>
                     ) : (
                         <div className="rounded-[2rem] p-8 text-center text-gray-500" style={{ background: 'var(--bg-secondary)' }}>
-                            <p className="font-black uppercase tracking-widest text-xs">No neighbors detected in range</p>
+                            <p className="font-black uppercase tracking-widest text-xs md:text-sm lg:text-base">No neighbors detected in range</p>
                         </div>
                     )}
                 </div>
@@ -852,9 +852,9 @@ const Home = () => {
                                         <img src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`} alt="Me" className="w-full h-full rounded-2xl transition-transform group-hover:scale-110" style={{ background: 'var(--bg-secondary)' }} />
                                     </div>
                                     <div>
-                                        <h3 className="text-2xl font-black italic tracking-tighter uppercase">{userInfo.firstName} <span className="text-[10px] ml-2 opacity-50 font-bold tracking-widest leading-none align-middle border border-white/10 px-2 py-0.5 rounded-md">#{user?.id || '482X'}</span></h3>
+                                        <h3 className="text-2xl font-black italic tracking-tighter uppercase">{userInfo.firstName} <span className="text-[10px] md:text-xs lg:text-sm ml-2 opacity-50 font-bold tracking-widest leading-none align-middle border border-white/10 px-2 py-0.5 rounded-md">#{user?.id || '482X'}</span></h3>
                                         <div className="flex items-center gap-2">
-                                            <p className="font-black uppercase tracking-[0.2em] text-[10px] italic" style={{ color: 'var(--accent-primary)' }}>Premium Status</p>
+                                            <p className="font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm italic" style={{ color: 'var(--accent-primary)' }}>Premium Status</p>
                                             <div className="w-1 h-1 rounded-full bg-[var(--accent-primary)]" />
                                         </div>
                                     </div>
@@ -903,7 +903,7 @@ const Home = () => {
                                         <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">Language Preferences</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[10px] font-black text-gray-500 uppercase">{lang}</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase">{lang}</span>
                                         <ChevronRight size={18} className="text-gray-600 group-hover:translate-x-1 transition-transform" />
                                     </div>
                                 </button>
@@ -999,19 +999,19 @@ const Home = () => {
                                         style={{ border: '1px solid' }}
                                     >
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black uppercase text-xs ${lang === l.code ? 'bg-brand text-dark-900' : 'bg-[var(--bg-secondary)] text-gray-500'}`}>
+                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black uppercase text-xs md:text-sm lg:text-base ${lang === l.code ? 'bg-brand text-dark-900' : 'bg-[var(--bg-secondary)] text-gray-500'}`}>
                                                 {l.code}
                                             </div>
                                             <div className="text-left">
                                                 <p className={`text-base font-black italic uppercase ${lang === l.code ? 'text-white' : 'text-gray-400'}`}>{l.name}</p>
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-gray-600">{l.native}</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-gray-600">{l.native}</p>
                                             </div>
                                         </div>
                                         {lang === l.code && <CheckCircle size={20} className="text-brand" />}
                                     </button>
                                 ))}
                                 {filteredLangs.length === 0 && (
-                                    <div className="py-12 text-center opacity-30 uppercase font-black tracking-widest text-[10px]">No languages match your search</div>
+                                    <div className="py-12 text-center opacity-30 uppercase font-black tracking-widest text-[10px] md:text-xs lg:text-sm">No languages match your search</div>
                                 )}
                             </div>
                         </div>
@@ -1045,7 +1045,7 @@ const Home = () => {
 
                             {/* History List */}
                             <div className="space-y-4">
-                                <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Past Services</h4>
+                                <h4 className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Past Services</h4>
                                 <div className="space-y-3">
                                     {rideHistory.map(ride => (
                                         <div key={ride.id} className="p-5 rounded-3xl group transition-all" style={{ background: '#131820', border: '1px solid rgba(255,255,255,0.05)' }} onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'}>
@@ -1055,8 +1055,8 @@ const Home = () => {
                                                         <RenderIcon icon={ride.icon} size={18} />
                                                     </div>
                                                     <div>
-                                                        <p className="text-[10px] font-black uppercase tracking-widest text-brand">{ride.service}</p>
-                                                        <p className="text-[8px] text-gray-500 uppercase font-black">{ride.date}</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand">{ride.service}</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 uppercase font-black">{ride.date}</p>
                                                     </div>
                                                 </div>
                                                 <p className="text-sm font-black italic text-[var(--text-primary)]">{ride.price}</p>
@@ -1064,11 +1064,11 @@ const Home = () => {
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-2">
                                                     <MapPin size={12} className="text-gray-600" />
-                                                    <p className="text-xs font-black italic text-gray-300">{ride.destination}</p>
+                                                    <p className="text-xs md:text-sm lg:text-base font-black italic text-gray-300">{ride.destination}</p>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <User size={12} className="text-gray-600" />
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Driver: {ride.driver}</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">Driver: {ride.driver}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -1103,13 +1103,13 @@ const Home = () => {
                                                     <h5 className="text-lg font-black italic text-[var(--text-primary)] tracking-tight uppercase leading-none">{driver.name}</h5>
                                                     <div className="flex items-center gap-1 mt-1">
                                                         <Star size={10} className="text-amber-400 fill-amber-400" />
-                                                        <span className="text-[10px] font-black text-amber-400">{driver.rating}</span>
-                                                        <span className="text-[8px] text-gray-500 font-bold ml-1 uppercase">{driver.trips} Trips</span>
+                                                        <span className="text-[10px] md:text-xs lg:text-sm font-black text-amber-400">{driver.rating}</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 font-bold ml-1 uppercase">{driver.trips} Trips</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${driver.status === 'Available' ? 'bg-brand/10 text-brand border border-brand/20' : 'bg-white/5 text-gray-500 border border-white/10'}`}>
+                                                <div className={`px-3 py-1 rounded-full text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest ${driver.status === 'Available' ? 'bg-brand/10 text-brand border border-brand/20' : 'bg-white/5 text-gray-500 border border-white/10'}`}>
                                                     {driver.status}
                                                 </div>
                                                 <button
@@ -1123,8 +1123,8 @@ const Home = () => {
                                         </div>
                                         <div className="bg-white/5 p-4 rounded-2xl flex justify-between items-center border border-white/5 group-hover:border-danger/10 transition-all">
                                             <div>
-                                                <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest">Active Asset</p>
-                                                <p className="text-[10px] font-black italic text-gray-300 uppercase">{driver.vehicle}</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-500 tracking-widest">Active Asset</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-black italic text-gray-300 uppercase">{driver.vehicle}</p>
                                             </div>
                                             <button className="p-3 bg-danger text-white rounded-xl hover:scale-110 active:scale-95 transition-all shadow-lg shadow-danger/20">
                                                 <Zap size={16} className="fill-white" />
@@ -1136,7 +1136,7 @@ const Home = () => {
 
                             <button 
                                 onClick={addDriverFromHistory}
-                                className="w-full py-5 border border-dashed border-[var(--border-main)] text-[var(--text-secondary)] font-black uppercase tracking-widest text-[10px] rounded-[2rem] hover:border-danger/30 hover:text-danger transition-all cursor-pointer"
+                                className="w-full py-5 border border-dashed border-[var(--border-main)] text-[var(--text-secondary)] font-black uppercase tracking-widest text-[10px] md:text-xs lg:text-sm rounded-[2rem] hover:border-danger/30 hover:text-danger transition-all cursor-pointer"
                             >
                                 + Add New Favorite from History
                             </button>
@@ -1163,7 +1163,7 @@ const Home = () => {
                                         <Star size={24} className="fill-amber-400" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-amber-400">Green 10k Member</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-amber-400">Green 10k Member</p>
                                         <h4 className="text-xl font-black italic tracking-tighter">Unlimited Partner Access</h4>
                                     </div>
                                 </div>
@@ -1171,7 +1171,7 @@ const Home = () => {
 
                             {/* Offers List */}
                             <div className="space-y-4">
-                                <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Active Founder Offers</h4>
+                                <h4 className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Active Founder Offers</h4>
                                 <div className="space-y-3">
                                     {[
                                         { shop: 'The Blue Velvet Bar', offer: '50% OFF ALL DRINKS', icon: GlassWater, category: 'Bar & Lounge', color: 'text-brand' },
@@ -1186,15 +1186,15 @@ const Home = () => {
                                                         <perk.icon size={20} />
                                                     </div>
                                                     <div>
-                                                        <p className="text-[8px] font-black uppercase tracking-widest text-gray-500">{perk.category}</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">{perk.category}</p>
                                                         <h5 className="text-sm font-black italic tracking-tight text-white uppercase">{perk.shop}</h5>
                                                     </div>
                                                 </div>
-                                                <div className="bg-amber-400/10 text-amber-400 text-[8px] font-black px-2 py-1 rounded-lg border border-amber-400/20 uppercase">Active</div>
+                                                <div className="bg-amber-400/10 text-amber-400 text-[8px] md:text-[10px] lg:text-xs font-black px-2 py-1 rounded-lg border border-amber-400/20 uppercase">Active</div>
                                             </div>
                                             <div className="bg-white/5 p-4 rounded-2xl border border-white/5 flex items-center justify-between">
-                                                <p className="text-[11px] font-black italic tracking-widest text-amber-400">{perk.offer}</p>
-                                                <button className="text-[9px] font-black uppercase text-white/40 hover:text-white transition-colors">Details →</button>
+                                                <p className="text-[11px] md:text-sm lg:text-base font-black italic tracking-widest text-amber-400">{perk.offer}</p>
+                                                <button className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-white/40 hover:text-white transition-colors">Details →</button>
                                             </div>
                                         </div>
                                     ))}
@@ -1202,7 +1202,7 @@ const Home = () => {
                             </div>
 
                             <div className="p-6 bg-white/5 border border-white/10 rounded-[2rem] text-center">
-                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
+                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
                                     New offers are added every week. Show your <span className="text-amber-400">Founder Star</span> at any partner location to redeem.
                                 </p>
                             </div>
@@ -1224,7 +1224,7 @@ const Home = () => {
                             <div className="bg-dark-900 border border-white/5 p-8 rounded-[2rem] space-y-6">
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-brand">Secure Channel</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand">Secure Channel</p>
                                         <h4 className="text-2xl font-black italic tracking-tighter text-white">BANK VERIFIED</h4>
                                     </div>
                                     <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center text-brand border border-brand/20">
@@ -1234,18 +1234,18 @@ const Home = () => {
                                 <div className="pt-6 border-t border-white/5 flex justify-between items-center">
                                     <div className="flex items-center gap-2">
                                         <div className="w-2 h-2 rounded-full bg-brand" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Encrypted Flow Active</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-gray-400">Encrypted Flow Active</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Landmark size={14} className="text-brand" />
-                                        <span className="text-xs font-black italic">DE91 •••• 5678</span>
+                                        <span className="text-xs md:text-sm lg:text-base font-black italic">DE91 •••• 5678</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Payment Methods List */}
                             <div className="space-y-4">
-                                <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Active Channels</h4>
+                                <h4 className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Active Channels</h4>
                                 <div className="space-y-3">
                                     {paymentMethods.map(method => (
                                         <div key={method.id} className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-5 rounded-3xl flex flex-col gap-4 group hover:border-brand/20 transition-all">
@@ -1259,7 +1259,7 @@ const Home = () => {
                                                             <div className="space-y-3 mt-4">
                                                                 <div className="bg-[var(--bg-primary)] p-4 rounded-2xl space-y-3 border border-[var(--border-main)]">
                                                                     <div className="space-y-1">
-                                                                        <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest">Account Holder Name</p>
+                                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest">Account Holder Name</p>
                                                                         <input
                                                                             type="text"
                                                                             placeholder="Full Name"
@@ -1274,7 +1274,7 @@ const Home = () => {
                                                                     {method.type === 'Credit Card' ? (
                                                                         <div className="space-y-3">
                                                                             <div className="space-y-1">
-                                                                                <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest">Card Number</p>
+                                                                                <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest">Card Number</p>
                                                                                 <input
                                                                                     type="text"
                                                                                     placeholder="0000 0000 0000 0000"
@@ -1288,7 +1288,7 @@ const Home = () => {
                                                                             </div>
                                                                             <div className="grid grid-cols-2 gap-4">
                                                                                 <div className="space-y-1">
-                                                                                    <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest">Expiry Date</p>
+                                                                                    <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest">Expiry Date</p>
                                                                                     <input
                                                                                         type="text"
                                                                                         placeholder="MM/YY"
@@ -1301,7 +1301,7 @@ const Home = () => {
                                                                                     />
                                                                                 </div>
                                                                                 <div className="space-y-1">
-                                                                                    <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest">CVV</p>
+                                                                                    <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest">CVV</p>
                                                                                     <input
                                                                                         type="text"
                                                                                         placeholder="123"
@@ -1319,7 +1319,7 @@ const Home = () => {
                                                                     ) : method.type === 'Bank Account' ? (
                                                                         <div className="space-y-3">
                                                                             <div className="space-y-1">
-                                                                                <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest">IBAN</p>
+                                                                                <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest">IBAN</p>
                                                                                 <input
                                                                                     type="text"
                                                                                     placeholder="DE00 0000..."
@@ -1333,7 +1333,7 @@ const Home = () => {
                                                                             </div>
                                                                             <div className="grid grid-cols-2 gap-4">
                                                                                 <div className="space-y-1">
-                                                                                    <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest">BIC</p>
+                                                                                    <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest">BIC</p>
                                                                                     <input
                                                                                         type="text"
                                                                                         placeholder="AAAA BB CC"
@@ -1346,7 +1346,7 @@ const Home = () => {
                                                                                     />
                                                                                 </div>
                                                                                 <div className="space-y-1">
-                                                                                    <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest">Expiry Date</p>
+                                                                                    <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest">Expiry Date</p>
                                                                                     <input
                                                                                         type="text"
                                                                                         placeholder="MM/YYYY"
@@ -1362,7 +1362,7 @@ const Home = () => {
                                                                         </div>
                                                                     ) : (
                                                                         <div className="space-y-1">
-                                                                            <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest">Email Address</p>
+                                                                            <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest">Email Address</p>
                                                                             <input
                                                                                 type="email"
                                                                                 value={method.email || ''}
@@ -1380,8 +1380,8 @@ const Home = () => {
                                                         </div>
                                                     ) : (
                                                         <div>
-                                                            <p className="text-xs font-black italic text-white uppercase">{method.provider}</p>
-                                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                                            <p className="text-xs md:text-sm lg:text-base font-black italic text-white uppercase">{method.provider}</p>
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">
                                                                 {method.last4 ? `Ending in •••• ${method.last4}` : method.email}
                                                             </p>
                                                         </div>
@@ -1391,7 +1391,7 @@ const Home = () => {
                                                     {editingPaymentId === method.id ? (
                                                         <button
                                                             onClick={() => setEditingPaymentId(null)}
-                                                            className="text-[10px] text-brand font-black uppercase tracking-widest hover:scale-105 transition-all"
+                                                            className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-widest hover:scale-105 transition-all"
                                                         >
                                                             Save
                                                         </button>
@@ -1423,21 +1423,21 @@ const Home = () => {
 
                             {/* Add New Method Options */}
                             <div className="space-y-4 pt-2">
-                                <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Add New Channel</h4>
+                                <h4 className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Add New Channel</h4>
                                 <div className="grid grid-cols-2 gap-3 pb-8">
                                     <button
                                         onClick={() => handleAddPayment('Credit Card')}
                                         className="bg-dark-900 border border-white/10 p-5 rounded-3xl group hover:border-brand/30 transition-all flex flex-col items-center gap-2"
                                     >
                                         <CreditCard size={20} className="text-brand" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-brand transition-colors">Card</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-brand transition-colors">Card</span>
                                     </button>
                                     <button
                                         onClick={() => handleAddPayment('Bank Account')}
                                         className="bg-dark-900 border border-white/10 p-5 rounded-3xl group hover:border-brand/30 transition-all flex flex-col items-center gap-2"
                                     >
                                         <Landmark size={20} className="text-brand" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-brand transition-colors">Bank</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-brand transition-colors">Bank</span>
                                     </button>
                                     <button
                                         onClick={() => handleAddPayment('PayPal')}
@@ -1446,28 +1446,28 @@ const Home = () => {
                                         <div className="flex gap-1 text-[#0070ba]">
                                             <Zap size={20} className="fill-current" />
                                         </div>
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-[#0070ba] transition-colors">PayPal</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-[#0070ba] transition-colors">PayPal</span>
                                     </button>
                                     <button
                                         onClick={() => handleAddPayment('Klarna')}
                                         className="bg-dark-900 border border-white/10 p-5 rounded-3xl group hover:border-[#ffb3c7]/30 transition-all flex flex-col items-center gap-2"
                                     >
                                         <Zap size={20} className="text-[#ffb3c7]" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-[#ffb3c7] transition-colors">Klarna</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-[#ffb3c7] transition-colors">Klarna</span>
                                     </button>
                                     <button
                                         onClick={() => handleAddPayment('Revolut')}
                                         className="bg-dark-900 border border-white/10 p-5 rounded-3xl group hover:border-white/20 transition-all flex flex-col items-center gap-2"
                                     >
                                         <Shield size={20} className="text-white" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-white transition-colors">Revolut</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-white transition-colors">Revolut</span>
                                     </button>
                                     <button
                                         onClick={() => handleAddPayment('Cash')}
                                         className="bg-dark-900 border border-white/10 p-5 rounded-3xl group hover:border-brand/30 transition-all flex flex-col items-center gap-2 col-span-2"
                                     >
                                         <Coins size={20} className="text-brand" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-brand transition-colors">Physical Cash</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-400 font-bold group-hover:text-brand transition-colors">Physical Cash</span>
                                     </button>
                                 </div>
                             </div>
@@ -1509,33 +1509,33 @@ const Home = () => {
                                 <>
                                     {/* Contact Channels */}
                                     <div className="space-y-4">
-                                        <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Direct Support</h4>
+                                        <h4 className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Direct Support</h4>
                                         <div className="grid grid-cols-2 gap-3">
                                             <button onClick={() => setHelpSubView('chat')} className="bg-brand/10 border border-brand/35 p-5 rounded-3xl group hover:scale-[1.02] transition-all flex flex-col items-center gap-3">
                                                 <div className="p-3 bg-brand/20 rounded-2xl text-brand">
                                                     <MessageSquare size={24} />
                                                 </div>
-                                                <span className="text-[10px] font-black uppercase tracking-widest">AI Chat</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">AI Chat</span>
                                             </button>
                                             <button onClick={() => setHelpSubView('email')} className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-5 rounded-3xl group hover:scale-[1.02] transition-all flex flex-col items-center gap-3">
                                                 <div className="p-3 bg-[var(--bg-secondary)] rounded-2xl text-brand">
                                                     <Mail size={24} />
                                                 </div>
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Email Us</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-400">Email Us</span>
                                             </button>
                                         </div>
                                     </div>
 
                                     {/* Legal & App Details */}
                                     <div className="space-y-4 pt-2">
-                                        <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Privacy & Info</h4>
+                                        <h4 className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Privacy & Info</h4>
                                         <div className="space-y-2">
                                             <button onClick={() => navigate('/privacy')} className="w-full p-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl flex items-center justify-between group hover:border-brand/30 transition-all">
                                                 <div className="flex items-center gap-4">
                                                     <FileText className="text-brand" size={18} />
                                                     <div className="text-left">
-                                                        <p className="font-black italic tracking-tight uppercase text-[10px]">DSGVO (Germany)</p>
-                                                        <p className="text-[8px] text-gray-500 uppercase font-black">Data Privacy Compliance</p>
+                                                        <p className="font-black italic tracking-tight uppercase text-[10px] md:text-xs lg:text-sm">DSGVO (Germany)</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 uppercase font-black">Data Privacy Compliance</p>
                                                     </div>
                                                 </div>
                                                 <ChevronRight size={14} className="text-gray-600" />
@@ -1545,8 +1545,8 @@ const Home = () => {
                                                 <div className="flex items-center gap-4">
                                                     <Info className="text-brand" size={18} />
                                                     <div className="text-left">
-                                                        <p className="font-black italic tracking-tight uppercase text-[10px]">App Information</p>
-                                                        <p className="text-[8px] text-gray-500 uppercase font-black">Global Transport Services</p>
+                                                        <p className="font-black italic tracking-tight uppercase text-[10px] md:text-xs lg:text-sm">App Information</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 uppercase font-black">Global Transport Services</p>
                                                     </div>
                                                 </div>
                                                 <ChevronRight size={14} className="text-gray-600" />
@@ -1559,8 +1559,8 @@ const Home = () => {
                                                 <div className="flex items-center gap-4">
                                                     <Trash2 className="text-red-500" size={18} />
                                                     <div className="text-left">
-                                                        <p className="font-black italic tracking-tight uppercase text-[10px] text-red-500">Delete Account</p>
-                                                        <p className="text-[8px] text-red-500/60 uppercase font-black">Permanent Data Purge</p>
+                                                        <p className="font-black italic tracking-tight uppercase text-[10px] md:text-xs lg:text-sm text-red-500">Delete Account</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-red-500/60 uppercase font-black">Permanent Data Purge</p>
                                                     </div>
                                                 </div>
                                                 <ChevronRight size={14} className="text-red-500/40" />
@@ -1578,10 +1578,10 @@ const Home = () => {
                                                         {msg.sender === 'user' ? <User size={14} /> : <Zap size={14} />}
                                                     </div>
                                                     <div className={`p-3 rounded-2xl border border-[var(--border-main)] ${msg.sender === 'user' ? 'bg-brand text-dark-950 rounded-tr-none' : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-tl-none'}`}>
-                                                        <p className={`text-[8px] uppercase font-black tracking-widest mb-1 ${msg.sender === 'user' ? 'text-dark-900/60' : 'text-brand'}`}>
+                                                        <p className={`text-[8px] md:text-[10px] lg:text-xs uppercase font-black tracking-widest mb-1 ${msg.sender === 'user' ? 'text-dark-900/60' : 'text-brand'}`}>
                                                             {msg.sender === 'user' ? 'You' : 'Green AI'}
                                                         </p>
-                                                        <p className="text-xs font-bold leading-relaxed">{msg.text}</p>
+                                                        <p className="text-xs md:text-sm lg:text-base font-bold leading-relaxed">{msg.text}</p>
                                                     </div>
                                                 </div>
                                             ))}
@@ -1590,7 +1590,7 @@ const Home = () => {
                                                     <div className="w-8 h-8 rounded-full bg-brand/20 flex items-center justify-center shrink-0">
                                                         <Zap size={14} className="text-brand" />
                                                     </div>
-                                                    <div className="bg-[var(--bg-secondary)] p-3 rounded-2xl rounded-tl-none border border-[var(--border-main)] text-[var(--text-muted)] text-xs italic">
+                                                    <div className="bg-[var(--bg-secondary)] p-3 rounded-2xl rounded-tl-none border border-[var(--border-main)] text-[var(--text-muted)] text-xs md:text-sm lg:text-base italic">
                                                         Green AI is typing...
                                                     </div>
                                                 </div>
@@ -1617,8 +1617,8 @@ const Home = () => {
                                 </div>
                             ) : helpSubView === 'dsgvo' ? (
                                 <div className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-6 rounded-[2rem] space-y-4 h-[50vh] overflow-y-auto scrollbar-hide">
-                                    <h4 className="text-xs font-black italic text-brand uppercase tracking-widest border-b border-brand/20 pb-2">Datenschutzerklärung (DSGVO)</h4>
-                                    <div className="space-y-4 text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest leading-relaxed">
+                                    <h4 className="text-xs md:text-sm lg:text-base font-black italic text-brand uppercase tracking-widest border-b border-brand/20 pb-2">Datenschutzerklärung (DSGVO)</h4>
+                                    <div className="space-y-4 text-[10px] md:text-xs lg:text-sm text-[var(--text-muted)] font-bold uppercase tracking-widest leading-relaxed">
                                         <p className="text-[var(--text-primary)]">1. Verantwortliche Stelle</p>
                                         <p>Green GmbH, Cyber Strasse 404, 10117 Berlin. info@greenmobility.de</p>
                                         <p className="text-[var(--text-primary)]">2. Datenerhebung</p>
@@ -1636,10 +1636,10 @@ const Home = () => {
                                             <div className="p-3 bg-red-500/10 rounded-2xl text-red-500"><Shield size={24} /></div>
                                             <div>
                                                 <h4 className="text-sm font-black italic uppercase text-red-500">Security Warning Protocol</h4>
-                                                <p className="text-[9px] font-black uppercase text-red-500/60 tracking-widest">Account Deletion Scheduled</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-red-500/60 tracking-widest">Account Deletion Scheduled</p>
                                             </div>
                                         </div>
-                                        <div className="space-y-3 text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider leading-relaxed">
+                                        <div className="space-y-3 text-[10px] md:text-xs lg:text-sm text-[var(--text-muted)] font-bold uppercase tracking-wider leading-relaxed">
                                             <p className="text-[var(--text-primary)]">1. 15-Day Grace Period (DSGVO/GDPR)</p>
                                             <p>Your data is placed in secure quarantine for exactly 15 days. If you change your mind, cancel the deletion and restore everything instantly.</p>
                                             
@@ -1649,27 +1649,27 @@ const Home = () => {
                                     </div>
                                     
                                     <div className="space-y-3 px-2">
-                                        <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Type "DELETE" to confirm your decision:</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Type "DELETE" to confirm your decision:</p>
                                         <input 
                                             type="text" 
                                             placeholder="Type DELETE here..."
                                             value={confirmDeleteInput}
                                             onChange={(e) => setConfirmDeleteInput(e.target.value)}
-                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400 focus:border-red-500 outline-none transition-all"
+                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400 focus:border-red-500 outline-none transition-all"
                                         />
                                     </div>
 
                                     <div className="flex gap-4">
                                         <button 
                                             onClick={() => setHelpSubView(null)}
-                                            className="px-6 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
+                                            className="px-6 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
                                         >
                                             Abort
                                         </button>
                                         <button 
                                             onClick={handleConfirmDeletion}
                                             disabled={confirmDeleteInput !== 'DELETE'}
-                                            className={`flex-1 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                            className={`flex-1 py-5 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${
                                                 confirmDeleteInput === 'DELETE' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]/50'
                                             }`}
                                         >
@@ -1685,10 +1685,10 @@ const Home = () => {
                                                 <div className="p-3 bg-brand/20 rounded-2xl text-brand"><Zap size={24} /></div>
                                                 <div>
                                                     <h4 className="text-sm font-black italic uppercase">Green Services v1.2</h4>
-                                                    <p className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">Premium Core Network</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-[var(--text-muted)] tracking-widest">Premium Core Network</p>
                                                 </div>
                                             </div>
-                                            <p className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest leading-relaxed mb-4">
+                                            <p className="text-[10px] md:text-xs lg:text-sm text-[var(--text-muted)] font-black uppercase tracking-widest leading-relaxed mb-4">
                                                 Explore our five specialized premium lifestyle & transport service hubs:
                                             </p>
                                             <div className="space-y-3">
@@ -1709,8 +1709,8 @@ const Home = () => {
                                                                 <service.icon size={20} />
                                                             </div>
                                                             <div>
-                                                                <p className="text-xs font-black italic uppercase text-[var(--text-primary)]">{service.label}</p>
-                                                                <p className="text-[8px] text-[var(--text-muted)] font-black uppercase tracking-widest mt-1">{service.desc}</p>
+                                                                <p className="text-xs md:text-sm lg:text-base font-black italic uppercase text-[var(--text-primary)]">{service.label}</p>
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs text-[var(--text-muted)] font-black uppercase tracking-widest mt-1">{service.desc}</p>
                                                             </div>
                                                         </div>
                                                         <ChevronRight size={16} className="text-[var(--text-muted)] group-hover:translate-x-1 transition-transform" />
@@ -1724,15 +1724,15 @@ const Home = () => {
                                                 <>
                                                     <div className="w-20 h-20 bg-brand/10 rounded-[2rem] mx-auto flex items-center justify-center text-brand"><Car size={40} /></div>
                                                     <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">Premium Trips</h4>
-                                                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
+                                                    <div className="space-y-4 text-xs md:text-sm lg:text-base font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
                                                         <p className="text-[var(--text-primary)]">🚗 Chauffeur-Service</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Fahrten in modernsten Elektro- und Hybridfahrzeugen mit professionellen Fahrern.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Fahrten in modernsten Elektro- und Hybridfahrzeugen mit professionellen Fahrern.</p>
                                                         <p className="text-[var(--text-primary)]">📶 Premium Ausstattung</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Kostenfreies WLAN, Erfrischungsgetränke und Ambientelicht an Bord jeder Fahrt.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Kostenfreies WLAN, Erfrischungsgetränke und Ambientelicht an Bord jeder Fahrt.</p>
                                                         <p className="text-[var(--text-primary)]">🕒 24/7 Support</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Immer für dich erreichbar. Bearbeitungszeit für Rückfragen stets innerhalb von 3 Werktagen.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Immer für dich erreichbar. Bearbeitungszeit für Rückfragen stets innerhalb von 3 Werktagen.</p>
                                                     </div>
-                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/green-ride'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/green-ride'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
                                                         Fahrt Buchen
                                                     </button>
                                                 </>
@@ -1741,15 +1741,15 @@ const Home = () => {
                                                 <>
                                                     <div className="w-20 h-20 bg-brand/10 rounded-[2rem] mx-auto flex items-center justify-center text-brand"><Trophy size={40} /></div>
                                                     <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">VIP Tickets</h4>
-                                                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
+                                                    <div className="space-y-4 text-xs md:text-sm lg:text-base font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
                                                         <p className="text-[var(--text-primary)]">🎟️ Fast-Lane Einlass</p>
-                                                        <p className="text-[10px] pl-6 font-normal">VIP-Zugang zu exklusiven Konzert-Events, Bars und erstklassigen Partner-Clubs.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">VIP-Zugang zu exklusiven Konzert-Events, Bars und erstklassigen Partner-Clubs.</p>
                                                         <p className="text-[var(--text-primary)]">🎫 Digitale Wallet</p>
-                                                        <p className="text-[10px] pl-6 font-normal">E-Tickets werden sofort personalisiert und sicher in deiner Green Wallet hinterlegt.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">E-Tickets werden sofort personalisiert und sicher in deiner Green Wallet hinterlegt.</p>
                                                         <p className="text-[var(--text-primary)]">🛡️ Käuferschutz</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Sichere Ticketstornierungen und Erstattungen werden garantiert in 3 Werktagen geprüft.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Sichere Ticketstornierungen und Erstattungen werden garantiert in 3 Werktagen geprüft.</p>
                                                     </div>
-                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
                                                         Tickets Entdecken
                                                     </button>
                                                 </>
@@ -1758,15 +1758,15 @@ const Home = () => {
                                                 <>
                                                     <div className="w-20 h-20 bg-brand/10 rounded-[2rem] mx-auto flex items-center justify-center text-brand"><BedDouble size={40} /></div>
                                                     <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">Luxury Rooms</h4>
-                                                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
+                                                    <div className="space-y-4 text-xs md:text-sm lg:text-base font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
                                                         <p className="text-[var(--text-primary)]">🏨 Erstklassige Hotels</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Direkte Reservierung erstklassiger Partner-Hotelzimmer und Luxus-Suiten.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Direkte Reservierung erstklassiger Partner-Hotelzimmer und Luxus-Suiten.</p>
                                                         <p className="text-[var(--text-primary)]">🥞 VIP Privilegien</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Late Check-out, exklusiver Spa-Zugang und kostenloses Premium-Frühstück.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Late Check-out, exklusiver Spa-Zugang und kostenloses Premium-Frühstück.</p>
                                                         <p className="text-[var(--text-primary)]">💰 Club Rabatte</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Sonderkonditionen und Storno-Garantie (Bearbeitungsdauer maximal 3 Werktage).</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Sonderkonditionen und Storno-Garantie (Bearbeitungsdauer maximal 3 Werktage).</p>
                                                     </div>
-                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
                                                         Hotel Suchen
                                                     </button>
                                                 </>
@@ -1775,15 +1775,15 @@ const Home = () => {
                                                 <>
                                                     <div className="w-20 h-20 bg-brand/10 rounded-[2rem] mx-auto flex items-center justify-center text-brand"><Utensils size={40} /></div>
                                                     <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">Pre-Orders</h4>
-                                                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
+                                                    <div className="space-y-4 text-xs md:text-sm lg:text-base font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
                                                         <p className="text-[var(--text-primary)]">🍸 Keine Warteschlangen</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Speisen und Getränke vorab im Club oder direkt am Stadionplatz bestellen und bezahlen.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Speisen und Getränke vorab im Club oder direkt am Stadionplatz bestellen und bezahlen.</p>
                                                         <p className="text-[var(--text-primary)]">⚡ Express Abholung</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Schnelle Zubereitung an reservierten Terminals ohne Barzahlungs-Stress.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Schnelle Zubereitung an reservierten Terminals ohne Barzahlungs-Stress.</p>
                                                         <p className="text-[var(--text-primary)]">🔐 Abrechnungsgarantie</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Storno- und Rückerstattungsanträge werden lückenlos innerhalb von 3 Werktagen abgewickelt.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Storno- und Rückerstattungsanträge werden lückenlos innerhalb von 3 Werktagen abgewickelt.</p>
                                                     </div>
-                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
                                                         Karte Ansehen
                                                     </button>
                                                 </>
@@ -1792,15 +1792,15 @@ const Home = () => {
                                                 <>
                                                     <div className="w-20 h-20 bg-brand/10 rounded-[2rem] mx-auto flex items-center justify-center text-brand"><Bell size={40} /></div>
                                                     <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">VIP Waiter Call</h4>
-                                                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
+                                                    <div className="space-y-4 text-xs md:text-sm lg:text-base font-bold uppercase tracking-widest text-[var(--text-muted)] leading-relaxed text-left max-w-sm mx-auto">
                                                         <p className="text-[var(--text-primary)]">🛎️ Kellner Rufen</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Rufe den Tischservice in erstklassigen Partner-Venues mit nur einem Klick zu deinem Tisch.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Rufe den Tischservice in erstklassigen Partner-Venues mit nur einem Klick zu deinem Tisch.</p>
                                                         <p className="text-[var(--text-primary)]">🤵 Sofortiger Service</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Kein Suchen oder Warten – schnelle Orderübermittlung direkt an das Serviceteam.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Kein Suchen oder Warten – schnelle Orderübermittlung direkt an das Serviceteam.</p>
                                                         <p className="text-[var(--text-primary)]">🛡️ Qualitätssicherung</p>
-                                                        <p className="text-[10px] pl-6 font-normal">Unsere Partnergarantie verspricht stets erstklassige Betreuung. Reklamationsprüfungen in 3 Werktagen.</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm pl-6 font-normal">Unsere Partnergarantie verspricht stets erstklassige Betreuung. Reklamationsprüfungen in 3 Werktagen.</p>
                                                     </div>
-                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                                    <button onClick={() => { setActiveSheet(null); setServiceDetailView(null); navigate('/greens'); }} className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
                                                         Kellner Rufen
                                                     </button>
                                                 </>
@@ -1808,7 +1808,7 @@ const Home = () => {
                                             
                                             <button 
                                                 onClick={() => setServiceDetailView(null)}
-                                                className="w-full py-4 bg-white/5 border border-white/10 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] hover:bg-white/10 transition-all"
+                                                className="w-full py-4 bg-white/5 border border-white/10 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-[var(--text-primary)] hover:bg-white/10 transition-all"
                                             >
                                                 Zurück zur Übersicht
                                             </button>
@@ -1822,18 +1822,18 @@ const Home = () => {
                                     </div>
                                     <div>
                                         <h4 className="text-2xl font-black italic tracking-tighter uppercase text-brand">GreenEmail Access</h4>
-                                        <p className="text-xs text-[var(--text-muted)] font-black uppercase tracking-widest mt-2 leading-relaxed">
+                                        <p className="text-xs md:text-sm lg:text-base text-[var(--text-muted)] font-black uppercase tracking-widest mt-2 leading-relaxed">
                                             Send your official inquiries to our priority support channel:
                                         </p>
                                         <div className="mt-4 p-4 bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-main)] group hover:border-brand/50 transition-all cursor-pointer">
                                             <p className="text-lg font-black italic tracking-tight text-[var(--text-primary)]">support@greenemail.de</p>
                                         </div>
                                     </div>
-                                    <p className="text-[8px] text-[var(--text-muted)] font-black uppercase tracking-[0.2em]">Response time: ~15 minutes</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs text-[var(--text-muted)] font-black uppercase tracking-[0.2em]">Response time: ~15 minutes</p>
                                 </div>
                             )}
 
-                            <p className="text-[8px] text-gray-600 text-center uppercase font-black tracking-widest px-8 mt-auto italic">
+                            <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-600 text-center uppercase font-black tracking-widest px-8 mt-auto italic">
                                 Green is committed to secure and transparent passenger transport services across Germany.
                             </p>
                         </div>
@@ -1859,7 +1859,7 @@ const Home = () => {
                                     <div className="grid grid-cols-1 gap-2">
                                         <button
                                             onClick={handleUploadClick}
-                                            className="py-3 px-4 bg-brand text-dark-900 font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                                            className="py-3 px-4 bg-brand text-dark-900 font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm rounded-2xl flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]"
                                         >
                                             <Upload size={14} />
                                             Update Profile Picture
@@ -1867,14 +1867,14 @@ const Home = () => {
                                         <div className="grid grid-cols-2 gap-2">
                                             <button
                                                 onClick={handleUploadClick}
-                                                className="py-2.5 px-2 bg-dark-900 border border-brand/20 text-brand font-black uppercase tracking-widest text-[8px] rounded-xl flex items-center justify-center gap-1 hover:bg-brand/10 transition-all"
+                                                className="py-2.5 px-2 bg-dark-900 border border-brand/20 text-brand font-black uppercase tracking-widest text-[8px] md:text-[10px] lg:text-xs rounded-xl flex items-center justify-center gap-1 hover:bg-brand/10 transition-all"
                                             >
                                                 <Paperclip size={12} />
                                                 Gallery
                                             </button>
                                             <button
                                                 onClick={handleUploadClick}
-                                                className="py-2.5 px-2 bg-dark-900 border border-white/10 text-white font-black uppercase tracking-widest text-[8px] rounded-xl flex items-center justify-center gap-1 hover:bg-white/5 transition-all"
+                                                className="py-2.5 px-2 bg-dark-900 border border-white/10 text-white font-black uppercase tracking-widest text-[8px] md:text-[10px] lg:text-xs rounded-xl flex items-center justify-center gap-1 hover:bg-white/5 transition-all"
                                             >
                                                 <Zap size={12} />
                                                 Selfie
@@ -1883,7 +1883,7 @@ const Home = () => {
                                     </div>
                                     <button
                                         onClick={() => setIsEditingProfile(!isEditingProfile)}
-                                        className="py-2 px-4 bg-dark-900 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] rounded-xl hover:bg-[var(--bg-secondary)] transition-all mt-1"
+                                        className="py-2 px-4 bg-dark-900 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] md:text-xs lg:text-sm rounded-xl hover:bg-[var(--bg-secondary)] transition-all mt-1"
                                     >
                                         {isEditingProfile ? 'Cancel Edit' : 'Edit Profile'}
                                     </button>
@@ -1892,14 +1892,14 @@ const Home = () => {
                             {/* Personal Information Grid */}
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center px-2">
-                                    <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] italic">Personal Records</h4>
+                                    <h4 className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-black uppercase tracking-[0.3em] italic">Personal Records</h4>
                                     {isEditingProfile && (
                                         <button
                                             onClick={() => {
                                                 setIsEditingProfile(false);
                                                 alert("PROFILE UPDATED: Your personal records have been securely synchronized with the GREEN Network.");
                                             }}
-                                            className="px-4 py-2 bg-brand text-dark-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                                            className="px-4 py-2 bg-brand text-dark-900 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(255,255,255,0.3)]"
                                         >
                                             Save Changes
                                         </button>
@@ -1907,7 +1907,7 @@ const Home = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="bg-dark-900 border border-white/5 p-4 rounded-2xl">
-                                        <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest mb-1">First Name</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest mb-1">First Name</p>
                                         {isEditingProfile ? (
                                             <input
                                                 type="text"
@@ -1920,7 +1920,7 @@ const Home = () => {
                                         )}
                                     </div>
                                     <div className="bg-dark-900 border border-white/5 p-4 rounded-2xl">
-                                        <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest mb-1">Last Name</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest mb-1">Last Name</p>
                                         {isEditingProfile ? (
                                             <input
                                                 type="text"
@@ -1937,7 +1937,7 @@ const Home = () => {
                                 <div className="bg-dark-900 border border-white/5 p-4 rounded-2xl flex items-center gap-4">
                                     <MapPin size={18} className="text-brand/40" />
                                     <div className="flex-1">
-                                        <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest mb-1">Address</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest mb-1">Address</p>
                                         {isEditingProfile ? (
                                             <input
                                                 type="text"
@@ -1953,7 +1953,7 @@ const Home = () => {
 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="bg-dark-900 border border-white/5 p-4 rounded-2xl">
-                                        <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest mb-1">Zip Code</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest mb-1">Zip Code</p>
                                         {isEditingProfile ? (
                                             <input
                                                 type="text"
@@ -1966,7 +1966,7 @@ const Home = () => {
                                         )}
                                     </div>
                                     <div className="bg-dark-900 border border-white/5 p-4 rounded-2xl">
-                                        <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest mb-1">City</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest mb-1">City</p>
                                         {isEditingProfile ? (
                                             <input
                                                 type="text"
@@ -1983,7 +1983,7 @@ const Home = () => {
                                 <div className="bg-dark-900 border border-white/5 p-4 rounded-2xl flex items-center gap-4">
                                     <Mail size={18} className="text-brand/40" />
                                     <div className="flex-1">
-                                        <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest mb-1">Email Address</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest mb-1">Email Address</p>
                                         {isEditingProfile ? (
                                             <input
                                                 type="email"
@@ -2000,7 +2000,7 @@ const Home = () => {
                                 <div className="bg-dark-900 border border-white/5 p-4 rounded-2xl flex items-center gap-4">
                                     <Phone size={18} className="text-brand/40" />
                                     <div className="flex-1">
-                                        <p className="text-[8px] text-brand/60 uppercase font-black tracking-widest mb-1">Phone Number</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-brand/60 uppercase font-black tracking-widest mb-1">Phone Number</p>
                                         {isEditingProfile ? (
                                             <input
                                                 type="tel"
@@ -2017,9 +2017,9 @@ const Home = () => {
 
                             {/* Security & Password Section */}
                             <div className="space-y-4 pt-2">
-                                <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Security Access</h4>
+                                <h4 className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Security Access</h4>
                                 <div className="p-5 rounded-3xl space-y-4" style={{ background: 'var(--brand-glow)', border: '1px solid var(--glass-border)' }}>
-                                    <button className="w-full py-4 text-white font-black uppercase tracking-widest text-xs italic rounded-2xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                    <button className="w-full py-4 text-white font-black uppercase tracking-widest text-xs md:text-sm lg:text-base italic rounded-2xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
                                         style={{ background: 'linear-gradient(135deg, var(--brand), var(--brand-end))', boxShadow: '0 0 20px var(--brand-glow)' }}>
                                         <Lock size={16} />
                                         Change Password
@@ -2027,20 +2027,20 @@ const Home = () => {
 
                                     <button 
                                         onClick={() => navigate('/privacy')}
-                                        className="w-full py-3 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-[9px] italic rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all"
+                                        className="w-full py-3 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-[9px] md:text-[11px] lg:text-xs italic rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all"
                                     >
                                         <ShieldCheck size={14} className="text-brand" />
                                         Privacy Manifesto
                                     </button>
 
                                     <div className="flex flex-col gap-3">
-                                        <p className="text-[8px] text-center text-gray-500 uppercase font-black tracking-widest">Choose Reset Channel</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-center text-gray-500 uppercase font-black tracking-widest">Choose Reset Channel</p>
                                         <div className="flex gap-2">
-                                            <button className="flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-tighter flex items-center justify-center gap-2 transition-all bg-[var(--bg-secondary)] border border-[var(--border-main)]" onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--brand)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--glass-border)'}>
+                                            <button className="flex-1 py-3 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-tighter flex items-center justify-center gap-2 transition-all bg-[var(--bg-secondary)] border border-[var(--border-main)]" onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--brand)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--glass-border)'}>
                                                 <Mail size={12} style={{ color: 'var(--brand)' }} />
                                                 Via Email
                                             </button>
-                                            <button className="flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-tighter flex items-center justify-center gap-2 transition-all bg-[var(--bg-secondary)] border border-[var(--border-main)]" onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--brand)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--glass-border)'}>
+                                            <button className="flex-1 py-3 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-tighter flex items-center justify-center gap-2 transition-all bg-[var(--bg-secondary)] border border-[var(--border-main)]" onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--brand)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--glass-border)'}>
                                                 <Phone size={12} style={{ color: 'var(--brand)' }} />
                                                 Via Phone
                                             </button>
@@ -2053,7 +2053,7 @@ const Home = () => {
                                             onClick={() => {
                                                 alert("DELETION REQUEST SENT: The Super Admin and service staff have been notified. A representative will contact you to verify and process your account deletion.");
                                             }}
-                                            className="w-full py-3 bg-red-500/10 text-red-500 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] border border-red-500/10 flex items-center justify-center gap-2 hover:bg-red-500/20 transition-all"
+                                            className="w-full py-3 bg-red-500/10 text-red-500 rounded-xl font-black uppercase text-[10px] md:text-xs lg:text-sm tracking-[0.2em] border border-red-500/10 flex items-center justify-center gap-2 hover:bg-red-500/20 transition-all"
                                         >
                                             <Trash2 size={12} /> REQUEST DELETING ACCOUNT
                                         </button>
@@ -2091,10 +2091,10 @@ const Home = () => {
                     <div className="text-center space-y-2">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4" style={{ background: 'var(--brand-glow)', border: '1px solid var(--glass-border)', color: 'var(--brand)' }}>
                             <Sparkles size={14} className="animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-widest italic">Shared Ride Match Found</span>
+                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest italic">Shared Ride Match Found</span>
                         </div>
                         <h2 className="text-3xl font-black italic tracking-tighter uppercase leading-none">Someone is heading<br /><span style={{ color: 'var(--brand)' }}>Your way</span></h2>
-                        <p className="text-[9px] text-gray-500 font-black uppercase tracking-[0.3em] mt-2 italic">Matches your route within 1 km</p>
+                        <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-black uppercase tracking-[0.3em] mt-2 italic">Matches your route within 1 km</p>
                     </div>
 
                     {/* Passenger Profile Card */}
@@ -2102,7 +2102,7 @@ const Home = () => {
                         <div className="absolute top-0 right-0 p-4">
                             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-white" style={{ background: 'linear-gradient(135deg, var(--brand), var(--brand-end))' }}>
                                 <Star size={12} className="fill-white" />
-                                <span className="text-xs font-black">{sharingMatch?.rating}</span>
+                                <span className="text-xs md:text-sm lg:text-base font-black">{sharingMatch?.rating}</span>
                             </div>
                         </div>
 
@@ -2116,7 +2116,7 @@ const Home = () => {
 
                             <div>
                                 <h3 className="text-xl font-black italic tracking-tighter uppercase">{sharingMatch?.name}</h3>
-                                <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mt-1 italic leading-relaxed">
+                                <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-600 font-black uppercase tracking-widest mt-1 italic leading-relaxed">
                                     Pickup: {sharingMatch?.pickup} • <span style={{ color: 'var(--brand)' }}>{sharingMatch?.distance} Away</span>
                                 </p>
                             </div>
@@ -2137,12 +2137,12 @@ const Home = () => {
                         {/* Cost Benefit */}
                         <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
                             <div>
-                                <p className="text-[8px] text-gray-500 font-black uppercase tracking-widest">Est. Saving</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 font-black uppercase tracking-widest">Est. Saving</p>
                                 <p className="text-2xl font-black italic" style={{ color: 'var(--brand)' }}>-{sharingMatch?.savings}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-[8px] text-gray-500 font-black uppercase tracking-widest leading-tight">Environmental Impact</p>
-                                <p className="text-xs font-black italic text-white uppercase">CO2 Optimized ✨</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 font-black uppercase tracking-widest leading-tight">Environmental Impact</p>
+                                <p className="text-xs md:text-sm lg:text-base font-black italic text-white uppercase">CO2 Optimized ✨</p>
                             </div>
                         </div>
                     </div>
@@ -2150,7 +2150,7 @@ const Home = () => {
                     <div className="flex gap-3">
                         <button
                             onClick={() => setShowSharingDialog(false)}
-                            className="flex-1 py-5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-white/5 transition-all"
+                            className="flex-1 py-5 border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 hover:bg-white/5 transition-all"
                         >
                             Decline
                         </button>
@@ -2159,7 +2159,7 @@ const Home = () => {
                                 setShowSharingDialog(false);
                                 navigate('/sharing-tracking');
                             }}
-                            className="flex-[2] py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] italic hover:scale-[1.02] active:scale-[0.98] transition-all text-white"
+                            className="flex-[2] py-5 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.4em] italic hover:scale-[1.02] active:scale-[0.98] transition-all text-white"
                             style={{ background: 'linear-gradient(135deg, var(--brand), var(--brand-end))', boxShadow: '0 0 24px var(--brand-glow)' }}
                         >
                             Accept & Split

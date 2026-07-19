@@ -115,12 +115,12 @@ const Signup = () => {
             <div className="w-full max-w-lg relative z-10 bg-[var(--bg-secondary)]/50 backdrop-blur-2xl border border-white/5 p-8 md:p-10 rounded-[40px] shadow-2xl">
                 <div className="mb-8 text-center">
                     <h1 className="text-4xl font-black tracking-tighter italic uppercase mb-2" style={{ color: 'var(--text-primary)' }}>Create <span className="text-brand">Account</span></h1>
-                    <p className="text-[var(--text-muted)] font-black uppercase tracking-widest text-[11px]">Become a Green Member</p>
+                    <p className="text-[var(--text-muted)] font-black uppercase tracking-widest text-[11px] md:text-sm lg:text-base">Become a Green Member</p>
                 </div>
 
                 <form onSubmit={handleSignup} className="space-y-5">
                     {inviteEmail && (
-                        <div className="p-4 bg-brand/10 border border-brand/20 rounded-2xl text-[9px] font-black uppercase tracking-widest text-brand flex items-center gap-2">
+                        <div className="p-4 bg-brand/10 border border-brand/20 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-brand flex items-center gap-2">
                             <Handshake size={14} className="shrink-0" /> Joining Fleet of {inviteEmail}
                         </div>
                     )}
@@ -133,13 +133,13 @@ const Signup = () => {
                                         key={r}
                                         type="button"
                                         onClick={() => setRole(r)}
-                                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${role === r ? 'bg-brand text-dark-950 shadow-lg' : 'text-gray-500 hover:text-white'}`}
+                                        className={`flex-1 py-3 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${role === r ? 'bg-brand text-dark-950 shadow-lg' : 'text-gray-500 hover:text-white'}`}
                                     >
                                         {r}
                                     </button>
                                 ))}
                             </div>
-                            <p className="text-[9px] font-black text-brand/80 uppercase tracking-widest text-center italic">
+                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand/80 uppercase tracking-widest text-center italic">
                                 💡 Note: To become a B2B partner, please use a separate email address from your customer account.
                             </p>
                         </div>
@@ -230,7 +230,7 @@ const Signup = () => {
                             </div>
                         )}
                         {role === 'passenger' && (formData.age === '16' || formData.age === '17') && (
-                            <div className="p-4 bg-brand/10 border border-brand/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-brand md:col-span-2 flex items-center gap-2 animate-pulse">
+                            <div className="p-4 bg-brand/10 border border-brand/20 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand md:col-span-2 flex items-center gap-2 animate-pulse">
                                 <ShieldCheck size={14} /> Einladung erforderlich: Sie benötigen eine aktive elterliche Einladung per E-Mail!
                             </div>
                         )}
@@ -260,7 +260,7 @@ const Signup = () => {
                                         key={type.id}
                                         type="button"
                                         onClick={() => setFormData({...formData, businessType: type.id})}
-                                        className={`p-4 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all ${formData.businessType === type.id ? 'bg-brand/10 border-brand text-brand shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-white/5 border-white/5 text-[var(--text-muted)] hover:border-white/10'}`}
+                                        className={`p-4 rounded-2xl border text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${formData.businessType === type.id ? 'bg-brand/10 border-brand text-brand shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-white/5 border-white/5 text-[var(--text-muted)] hover:border-white/10'}`}
                                     >
                                         {type.label}
                                     </button>
@@ -277,7 +277,7 @@ const Signup = () => {
                                         key={type.id}
                                         type="button"
                                         onClick={() => setFormData({...formData, businessType: type.id})}
-                                        className={`p-4 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all ${formData.businessType === type.id ? 'bg-brand/10 border-brand text-brand shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-white/5 border-white/5 text-[var(--text-muted)] hover:border-white/10'}`}
+                                        className={`p-4 rounded-2xl border text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${formData.businessType === type.id ? 'bg-brand/10 border-brand text-brand shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-white/5 border-white/5 text-[var(--text-muted)] hover:border-white/10'}`}
                                     >
                                         {type.label}
                                     </button>
@@ -287,15 +287,15 @@ const Signup = () => {
                             <button
                                 type="button"
                                 onClick={() => setFormData({...formData, businessType: 'SM'})}
-                                className={`w-full p-4 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all ${formData.businessType === 'SM' ? 'bg-brand/10 border-brand text-brand shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-white/5 border-white/5 text-[var(--text-muted)] hover:border-white/10'}`}
+                                className={`w-full p-4 rounded-2xl border text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${formData.businessType === 'SM' ? 'bg-brand/10 border-brand text-brand shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-white/5 border-white/5 text-[var(--text-muted)] hover:border-white/10'}`}
                             >
                                 Stadium
                             </button>
 
                             <div className="p-6 bg-brand/5 border border-brand/20 rounded-[2.5rem] relative mt-4 shadow-xl">
                                 <div className="absolute -top-3 left-8 px-3 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-widest shadow-lg">Network Protocol 🛰️</div>
-                                <p className="text-[11px] font-black italic text-brand leading-relaxed">Partner Onboarding Active</p>
-                                <p className="text-[9px] text-[var(--text-muted)] mt-1 font-bold">Full business licensing and venue registration will be finalized in the Partner Dashboard.</p>
+                                <p className="text-[11px] md:text-sm lg:text-base font-black italic text-brand leading-relaxed">Partner Onboarding Active</p>
+                                <p className="text-[9px] md:text-[11px] lg:text-xs text-[var(--text-muted)] mt-1 font-bold">Full business licensing and venue registration will be finalized in the Partner Dashboard.</p>
                             </div>
                         </div>
                     )}
@@ -312,18 +312,18 @@ const Signup = () => {
                                     <ShieldCheck size={16} className="text-brand" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black text-brand uppercase tracking-widest">Green ID System</p>
-                                    <p className="text-[9px] text-[var(--text-muted)] font-bold mt-0.5">No company search needed</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest">Green ID System</p>
+                                    <p className="text-[9px] md:text-[11px] lg:text-xs text-[var(--text-muted)] font-bold mt-0.5">No company search needed</p>
                                 </div>
                             </div>
-                            <p className="text-[9px] text-[var(--text-muted)] font-medium leading-relaxed">
+                            <p className="text-[9px] md:text-[11px] lg:text-xs text-[var(--text-muted)] font-medium leading-relaxed">
                                 After registering, you will receive a unique <strong className="text-white">Green ID</strong>. Share it with your Manager — they will link you to your business from their dashboard.
                             </p>
                         </motion.div>
                     )}
 
                     {signupError && (
-                        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-center text-[10px] font-black uppercase tracking-widest text-red-500 animate-pulse">
+                        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-center text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-red-500 animate-pulse">
                             ⚠️ {signupError}
                         </div>
                     )}
@@ -336,7 +336,7 @@ const Signup = () => {
                     </button>
                 </form>
 
-                <p className="mt-8 text-center text-[var(--text-muted)] text-[11px] font-black uppercase tracking-widest">
+                <p className="mt-8 text-center text-[var(--text-muted)] text-[11px] md:text-sm lg:text-base font-black uppercase tracking-widest">
                     Already a member? <Link to="/login" className="text-brand hover:underline">Log In</Link>
                 </p>
             </div>
@@ -359,21 +359,21 @@ const Signup = () => {
                                     <ShieldCheck size={40} />
                                 </div>
                                 <h2 className="text-3xl font-black italic tracking-tighter uppercase">Privacy <span className="text-brand">Protocol</span></h2>
-                                <p className="text-xs text-[var(--text-muted)] font-bold uppercase tracking-widest leading-relaxed">
+                                <p className="text-xs md:text-sm lg:text-base text-[var(--text-muted)] font-bold uppercase tracking-widest leading-relaxed">
                                     To enter the GREEN network, you must acknowledge our data governance standards. We prioritize your digital autonomy.
                                 </p>
                             </div>
 
                             <div className="space-y-4 bg-white/5 border border-white/5 p-6 rounded-3xl max-h-48 overflow-y-auto no-scrollbar">
                                 <div className="space-y-4">
-                                    <h4 className="text-[10px] font-black text-brand uppercase tracking-widest italic">1. Media Autonomy</h4>
-                                    <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">You have total control over the photos and videos you post. Media is encrypted and served only to authorized members of the network.</p>
+                                    <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest italic">1. Media Autonomy</h4>
+                                    <p className="text-[10px] md:text-xs lg:text-sm text-[var(--text-muted)] font-medium leading-relaxed">You have total control over the photos and videos you post. Media is encrypted and served only to authorized members of the network.</p>
                                     
-                                    <h4 className="text-[10px] font-black text-brand uppercase tracking-widest italic">2. Tactical Telemetry</h4>
-                                    <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">GPS is active only during mission cycles to ensure service precision and safety.</p>
+                                    <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest italic">2. Tactical Telemetry</h4>
+                                    <p className="text-[10px] md:text-xs lg:text-sm text-[var(--text-muted)] font-medium leading-relaxed">GPS is active only during mission cycles to ensure service precision and safety.</p>
 
-                                    <h4 className="text-[10px] font-black text-brand uppercase tracking-widest italic">3. Financial Integrity</h4>
-                                    <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">All financial settlements are processed via encrypted, weekly automated cycles.</p>
+                                    <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest italic">3. Financial Integrity</h4>
+                                    <p className="text-[10px] md:text-xs lg:text-sm text-[var(--text-muted)] font-medium leading-relaxed">All financial settlements are processed via encrypted, weekly automated cycles.</p>
                                 </div>
                             </div>
 
@@ -385,7 +385,7 @@ const Signup = () => {
                                     onChange={(e) => setPrivacyAccepted(e.target.checked)}
                                     className="w-5 h-5 rounded-md border-white/10 bg-white/5 text-brand focus:ring-brand accent-brand cursor-pointer"
                                 />
-                                <label htmlFor="privacy-check" className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest cursor-pointer hover:text-white transition-colors">
+                                <label htmlFor="privacy-check" className="text-[9px] md:text-[11px] lg:text-xs font-black text-[var(--text-muted)] uppercase tracking-widest cursor-pointer hover:text-white transition-colors">
                                     I acknowledge the <Link to="/privacy" className="text-brand border-b border-white/20">Datenschutzerklärung (DSGVO)</Link>
                                 </label>
                             </div>
@@ -393,7 +393,7 @@ const Signup = () => {
                             <button 
                                 disabled={!privacyAccepted}
                                 onClick={() => setShowPrivacyModal(false)}
-                                className={`w-full py-5 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${privacyAccepted ? 'bg-brand text-dark-950 shadow-2xl shadow-brand/30 hover:scale-105' : 'bg-white/5 text-gray-600 grayscale cursor-not-allowed'}`}
+                                className={`w-full py-5 rounded-2xl font-black uppercase text-xs md:text-sm lg:text-base tracking-widest transition-all ${privacyAccepted ? 'bg-brand text-dark-950 shadow-2xl shadow-brand/30 hover:scale-105' : 'bg-white/5 text-gray-600 grayscale cursor-not-allowed'}`}
                             >
                                 Enter Network
                             </button>

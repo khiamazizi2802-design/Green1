@@ -137,13 +137,13 @@ const VerificationGateway = () => {
                                 </div>
                                 <div className="text-left">
                                     <h3 className="font-bold text-sm text-gray-900">Email Verification</h3>
-                                    <p className="text-xs text-gray-500">{user?.email}</p>
+                                    <p className="text-xs md:text-sm lg:text-base text-gray-500">{user?.email}</p>
                                 </div>
                             </div>
                             {!emailVerified && <Loader2 className="animate-spin text-brand" size={18} />}
                         </div>
                         {!emailVerified && (
-                            <div className="mt-3 text-xs text-gray-500 text-left">
+                            <div className="mt-3 text-xs md:text-sm lg:text-base text-gray-500 text-left">
                                 We sent a verification link to your email. Click it to proceed. Waiting for confirmation...
                             </div>
                         )}
@@ -158,7 +158,7 @@ const VerificationGateway = () => {
                                 </div>
                                 <div className="text-left">
                                     <h3 className="font-bold text-sm text-gray-900">Phone Verification</h3>
-                                    <p className="text-xs text-gray-500">{user?.phone || 'No phone provided'}</p>
+                                    <p className="text-xs md:text-sm lg:text-base text-gray-500">{user?.phone || 'No phone provided'}</p>
                                 </div>
                             </div>
                         </div>
@@ -196,7 +196,7 @@ const VerificationGateway = () => {
                 </div>
 
                 {error && (
-                    <div className="mt-4 p-3 bg-red-50 border border-red-100 text-red-600 text-xs rounded-xl font-medium text-center">
+                    <div className="mt-4 p-3 bg-red-50 border border-red-100 text-red-600 text-xs md:text-sm lg:text-base rounded-xl font-medium text-center">
                         {error}
                     </div>
                 )}
@@ -204,7 +204,7 @@ const VerificationGateway = () => {
                 <div className="mt-8 pt-6 border-t border-gray-100 text-center">
                     <button 
                         onClick={handleLogout}
-                        className="text-xs text-gray-400 hover:text-gray-900 font-medium transition-colors"
+                        className="text-xs md:text-sm lg:text-base text-gray-400 hover:text-gray-900 font-medium transition-colors"
                     >
                         Return to Login
                     </button>

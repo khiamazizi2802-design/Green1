@@ -385,7 +385,7 @@ const PaymentHub = () => {
                 </button>
                 <div className="text-center">
                     <h1 className="text-xl font-black italic tracking-tighter uppercase text-primary">Bank Hub</h1>
-                    <p className="text-[8px] font-black uppercase tracking-[0.3em] text-secondary mt-0.5">Secure Transaction Network</p>
+                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] text-secondary mt-0.5">Secure Transaction Network</p>
                 </div>
                 <div className="w-12 h-12 bg-dark-900 border border-main rounded-2xl flex items-center justify-center text-primary">
                     <ShieldCheck size={24} />
@@ -400,7 +400,7 @@ const PaymentHub = () => {
                     </div>
                     <div className="flex justify-between items-center relative z-10">
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary">Secure Channel</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-secondary">Secure Channel</p>
                             <h4 className="text-3xl font-black italic tracking-tighter text-primary uppercase">
                                 {activeMethod.type === 'Credit Card' ? 'Card Secured' : activeMethod.type === 'Bank Account' ? 'Bank Verified' : 'Session Active'}
                             </h4>
@@ -409,13 +409,13 @@ const PaymentHub = () => {
                     <div className="pt-6 border-t border-main flex justify-between items-center relative z-10">
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary">
+                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-secondary">
                                 {activeMethod.type === 'PayPal' ? 'Authorized Gateway' : 'Encrypted Flow Active'}
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
                             {React.createElement(activeMethod.icon || Landmark, { size: 14, className: "text-primary" })}
-                            <span className="text-xs font-black italic text-primary">
+                            <span className="text-xs md:text-sm lg:text-base font-black italic text-primary">
                                 {activeMethod.type === 'Credit Card' 
                                     ? `•••• •••• •••• ${activeMethod.last4 ? activeMethod.last4.slice(-4) : '4242'}`
                                     : activeMethod.type === 'Bank Account'
@@ -429,8 +429,8 @@ const PaymentHub = () => {
                 {/* Active Channels List */}
                 <section className="space-y-4">
                     <div className="flex items-center justify-between px-2">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-secondary italic">Active Channels</h3>
-                        <span className="text-[8px] font-black px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>{paymentMethods.length} Total</span>
+                        <h3 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-secondary italic">Active Channels</h3>
+                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>{paymentMethods.length} Total</span>
                     </div>
                     
                     <div className="space-y-5">
@@ -484,7 +484,7 @@ const PaymentHub = () => {
                                         {editingPaymentId === method.id ? (
                                             <div className="space-y-5 w-full text-left z-10" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                                                    <span className="text-xs font-black uppercase tracking-widest text-neutral-400">Edit Channel Details</span>
+                                                    <span className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-neutral-400">Edit Channel Details</span>
                                                     <button
                                                         onClick={() => { setEditingPaymentId(null); triggerNotification("CHANNEL SECURED", "SUCCESS"); }}
                                                         className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-90 transition-all shrink-0"
@@ -495,7 +495,7 @@ const PaymentHub = () => {
 
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Provider Name</label>
+                                                        <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400">Provider Name</label>
                                                         <input
                                                             type="text"
                                                             value={method.provider}
@@ -505,7 +505,7 @@ const PaymentHub = () => {
                                                     </div>
 
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Holder Name</label>
+                                                        <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400">Holder Name</label>
                                                         <input
                                                             type="text"
                                                             value={method.holder || ''}
@@ -518,7 +518,7 @@ const PaymentHub = () => {
                                                 {method.type === 'Credit Card' ? (
                                                     <>
                                                         <div className="space-y-1.5">
-                                                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Card Number</label>
+                                                            <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400">Card Number</label>
                                                             <input
                                                                 type="text"
                                                                 value={method.last4 || ''}
@@ -528,7 +528,7 @@ const PaymentHub = () => {
                                                         </div>
                                                         <div className="grid grid-cols-2 gap-4">
                                                             <div className="space-y-1.5">
-                                                                 <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Expiry (MM/YY)</label>
+                                                                 <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400">Expiry (MM/YY)</label>
                                                                 <input
                                                                     type="text"
                                                                     value={method.expiry || ''}
@@ -538,7 +538,7 @@ const PaymentHub = () => {
                                                                 />
                                                             </div>
                                                             <div className="space-y-1.5">
-                                                                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">CVV</label>
+                                                                <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400">CVV</label>
                                                                 <input
                                                                     type="text"
                                                                     value={method.cvv || ''}
@@ -552,7 +552,7 @@ const PaymentHub = () => {
                                                 ) : method.type === 'Bank Account' ? (
                                                     <>
                                                         <div className="space-y-1.5">
-                                                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">IBAN</label>
+                                                            <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400">IBAN</label>
                                                             <input
                                                                 type="text"
                                                                 value={method.iban || ''}
@@ -561,7 +561,7 @@ const PaymentHub = () => {
                                                             />
                                                         </div>
                                                         <div className="space-y-1.5">
-                                                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">SWIFT / BIC</label>
+                                                            <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400">SWIFT / BIC</label>
                                                             <input
                                                                 type="text"
                                                                 value={method.swift || ''}
@@ -572,7 +572,7 @@ const PaymentHub = () => {
                                                     </>
                                                 ) : (
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Account Email</label>
+                                                        <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400">Account Email</label>
                                                         <input
                                                             type="text"
                                                             value={method.email || ''}
@@ -588,9 +588,9 @@ const PaymentHub = () => {
                                                 <div className="flex justify-between items-start">
                                                     <div>
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400 leading-none">{method.type || 'Credit Card'}</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400 leading-none">{method.type || 'Credit Card'}</span>
                                                             {isActive && (
-                                                                <span className="bg-white text-black text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1 leading-none shadow-md">
+                                                                <span className="bg-white text-black text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1 leading-none shadow-md">
                                                                     <Check size={9} className="stroke-[3]" /> Active
                                                                 </span>
                                                             )}
@@ -682,7 +682,7 @@ const PaymentHub = () => {
                                                 {/* Card Footer Details */}
                                                 <div className="flex justify-between items-end mt-6 pt-4 border-t border-white/10 w-full gap-4">
                                                     <div className="min-w-0 flex-1 text-left">
-                                                        <span className="text-[8px] text-neutral-400 block tracking-widest uppercase mb-1">
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs text-neutral-400 block tracking-widest uppercase mb-1">
                                                             {method.type === 'Credit Card' ? 'Cardholder' : method.type === 'Bank Account' ? 'Account Holder' : 'Associated Account'}
                                                         </span>
                                                         <span className="text-sm text-white font-black uppercase truncate block leading-none">{method.holder || 'Alex Passenger'}</span>
@@ -691,11 +691,11 @@ const PaymentHub = () => {
                                                     {(!method.type || method.type === 'Credit Card') && (
                                                         <div className="flex gap-4 shrink-0 justify-end text-right">
                                                             <div>
-                                                                <span className="text-[8px] text-neutral-400 block tracking-widest uppercase mb-1">Expires</span>
+                                                                <span className="text-[8px] md:text-[10px] lg:text-xs text-neutral-400 block tracking-widest uppercase mb-1">Expires</span>
                                                                 <span className="text-sm text-white font-mono font-bold leading-none">{method.expiry || '12/28'}</span>
                                                             </div>
                                                             <div>
-                                                                <span className="text-[8px] text-neutral-400 block tracking-widest uppercase mb-1">CVV</span>
+                                                                <span className="text-[8px] md:text-[10px] lg:text-xs text-neutral-400 block tracking-widest uppercase mb-1">CVV</span>
                                                                 <span className="text-sm text-white font-mono font-bold leading-none">{method.cvv || '•••'}</span>
                                                             </div>
                                                         </div>
@@ -703,7 +703,7 @@ const PaymentHub = () => {
 
                                                     {method.type === 'Bank Account' && (
                                                         <div className="shrink-0 text-right">
-                                                            <span className="text-[8px] text-neutral-400 block tracking-widest uppercase mb-1">SWIFT / BIC</span>
+                                                            <span className="text-[8px] md:text-[10px] lg:text-xs text-neutral-400 block tracking-widest uppercase mb-1">SWIFT / BIC</span>
                                                             <span className="text-sm text-white font-mono font-bold leading-none">{method.swift || 'DBANKDEMXXX'}</span>
                                                         </div>
                                                     )}
@@ -719,7 +719,7 @@ const PaymentHub = () => {
 
                 {/* Add New Channel Grid */}
                 <section className="space-y-4">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-2 italic">Add New Channel</h3>
+                    <h3 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-gray-500 px-2 italic">Add New Channel</h3>
                     <div className="grid grid-cols-2 gap-4">
                         {[
                             { id: 'card', label: 'Card', icon: CreditCard, type: 'Credit Card' },
@@ -735,7 +735,7 @@ const PaymentHub = () => {
                                 <div className="p-4 bg-dark-950 rounded-2xl text-secondary group-hover:text-primary group-hover:bg-primary/5 transition-all">
                                     <type.icon size={24} />
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-secondary group-hover:text-primary transition-colors">{type.label}</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-secondary group-hover:text-primary transition-colors">{type.label}</span>
                             </button>
                         ))}
                     </div>
@@ -745,7 +745,7 @@ const PaymentHub = () => {
                 <div className="pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)]">
                     <button 
                         onClick={handleGoBack}
-                        className="w-full py-6 border border-main rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-0.98 transition-all font-sans"
+                        className="w-full py-6 border border-main rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-0.98 transition-all font-sans"
                         style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                     >
                         Confirm & Return to Mission
@@ -785,7 +785,7 @@ const PaymentHub = () => {
                                 </div>
                                 <button 
                                     onClick={() => setShowStripeModal(false)}
-                                    className="text-xs font-black uppercase tracking-widest text-neutral-400 hover:text-white"
+                                    className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-neutral-400 hover:text-white"
                                 >
                                     Cancel
                                 </button>
@@ -796,7 +796,7 @@ const PaymentHub = () => {
                                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none" />
                                 <div className="flex justify-between items-start z-10">
                                     <div>
-                                        <span className="text-[8px] font-black tracking-widest uppercase text-emerald-400">SECURE NETWORK</span>
+                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black tracking-widest uppercase text-emerald-400">SECURE NETWORK</span>
                                         <h5 className="text-base font-black italic uppercase text-white mt-1">
                                             {stripeForm.cardNumber.startsWith('4') ? 'Visa' : 'Mastercard'}
                                         </h5>
@@ -813,16 +813,16 @@ const PaymentHub = () => {
                                 <div className="flex justify-between items-end border-t border-white/5 pt-3 z-10">
                                     <div>
                                         <span className="text-[7px] text-neutral-400 block tracking-widest uppercase mb-0.5">Cardholder</span>
-                                        <span className="text-xs text-white font-black uppercase tracking-wide truncate max-w-[150px] block">{stripeForm.holder || 'Alex Passenger'}</span>
+                                        <span className="text-xs md:text-sm lg:text-base text-white font-black uppercase tracking-wide truncate max-w-[150px] block">{stripeForm.holder || 'Alex Passenger'}</span>
                                     </div>
                                     <div className="flex gap-4">
                                         <div>
                                             <span className="text-[7px] text-neutral-400 block tracking-widest uppercase mb-0.5">Expiry</span>
-                                            <span className="text-xs text-white font-mono font-bold">{stripeForm.expiry || 'MM/YY'}</span>
+                                            <span className="text-xs md:text-sm lg:text-base text-white font-mono font-bold">{stripeForm.expiry || 'MM/YY'}</span>
                                         </div>
                                         <div>
                                             <span className="text-[7px] text-neutral-400 block tracking-widest uppercase mb-0.5">CVV</span>
-                                            <span className="text-xs text-white font-mono font-bold">{stripeForm.cvv || '•••'}</span>
+                                            <span className="text-xs md:text-sm lg:text-base text-white font-mono font-bold">{stripeForm.cvv || '•••'}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -831,11 +831,11 @@ const PaymentHub = () => {
                             {/* Form fields */}
                             <form onSubmit={handleStripeSubmit} className="space-y-4 text-left">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Card Parameters</label>
+                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-neutral-400">Card Parameters</label>
                                 </div>
 
                                 <div className="space-y-1">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">Card Number</label>
+                                    <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-emerald-500/70 ml-2">Card Number</label>
                                     <input
                                         type="text"
                                         placeholder="4242 4242 4242 4242"
@@ -849,7 +849,7 @@ const PaymentHub = () => {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">Expiry Date</label>
+                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-emerald-500/70 ml-2">Expiry Date</label>
                                         <input
                                             type="text"
                                             placeholder="MM/YY"
@@ -867,7 +867,7 @@ const PaymentHub = () => {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">CVV</label>
+                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-emerald-500/70 ml-2">CVV</label>
                                         <input
                                             type="password"
                                             placeholder="•••"
@@ -881,7 +881,7 @@ const PaymentHub = () => {
                                 </div>
 
                                 <div className="space-y-1">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">Cardholder Name</label>
+                                    <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-emerald-500/70 ml-2">Cardholder Name</label>
                                     <input
                                         type="text"
                                         placeholder="e.g. John Doe"
@@ -894,24 +894,24 @@ const PaymentHub = () => {
 
                                 <div className="grid grid-cols-3 gap-2">
                                     <div className="col-span-1 space-y-1">
-                                        <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">Zip Code</label>
+                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-emerald-500/70 ml-2">Zip Code</label>
                                         <input
                                             type="text"
                                             placeholder="10115"
                                             value={stripeForm.postalCode}
                                             onChange={(e) => setStripeForm({ ...stripeForm, postalCode: e.target.value })}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3.5 text-xs text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3.5 text-xs md:text-sm lg:text-base text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
                                             required
                                         />
                                     </div>
                                     <div className="col-span-2 space-y-1">
-                                        <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500/70 ml-2">City</label>
+                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-emerald-500/70 ml-2">City</label>
                                         <input
                                             type="text"
                                             placeholder="Berlin"
                                             value={stripeForm.city}
                                             onChange={(e) => setStripeForm({ ...stripeForm, city: e.target.value })}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3.5 text-xs text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-3 py-3.5 text-xs md:text-sm lg:text-base text-white outline-none focus:border-emerald-500 focus:bg-white/10 transition-all placeholder:text-neutral-600"
                                             required
                                         />
                                     </div>
@@ -920,7 +920,7 @@ const PaymentHub = () => {
                                 <button
                                     type="submit"
                                     disabled={isProcessing}
-                                    className="w-full mt-6 py-4 bg-emerald-500 text-black font-black uppercase tracking-[0.2em] text-xs rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-400 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                                    className="w-full mt-6 py-4 bg-emerald-500 text-black font-black uppercase tracking-[0.2em] text-xs md:text-sm lg:text-base rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-400 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                                 >
                                     {isProcessing ? (
                                         <>
@@ -972,7 +972,7 @@ const PaymentHub = () => {
                                 </div>
                                 <button 
                                     onClick={() => setShowPayPalModal(false)}
-                                    className="text-xs font-black uppercase tracking-widest text-neutral-400 hover:text-white"
+                                    className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-neutral-400 hover:text-white"
                                 >
                                     Cancel
                                 </button>
@@ -986,9 +986,9 @@ const PaymentHub = () => {
                                 <h3 className="text-3xl font-black italic tracking-tighter text-blue-400 flex items-center justify-center gap-1">
                                     Pay<span className="text-amber-400">Pal</span>
                                 </h3>
-                                <p className="text-[8px] font-black tracking-[0.2em] text-neutral-500 uppercase mt-2">SECURE ENDPOINT CHECKOUT</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black tracking-[0.2em] text-neutral-500 uppercase mt-2">SECURE ENDPOINT CHECKOUT</p>
                                 {paypalForm.email && (
-                                    <span className="mt-3 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-mono px-3 py-1 rounded-full truncate max-w-xs block">
+                                    <span className="mt-3 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] md:text-xs lg:text-sm font-mono px-3 py-1 rounded-full truncate max-w-xs block">
                                         {paypalForm.email}
                                     </span>
                                 )}
@@ -997,7 +997,7 @@ const PaymentHub = () => {
                             {/* Form fields */}
                             <form onSubmit={handlePayPalSubmit} className="space-y-4 text-left">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Sign-in Parameters</label>
+                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-neutral-400">Sign-in Parameters</label>
                                 </div>
 
                                 <div className="space-y-1">
@@ -1025,7 +1025,7 @@ const PaymentHub = () => {
                                 <button
                                     type="submit"
                                     disabled={isProcessing}
-                                    className="w-full mt-6 py-4 bg-amber-400 text-slate-900 font-black uppercase tracking-[0.2em] text-xs rounded-2xl flex items-center justify-center gap-2 hover:bg-amber-300 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                                    className="w-full mt-6 py-4 bg-amber-400 text-slate-900 font-black uppercase tracking-[0.2em] text-xs md:text-sm lg:text-base rounded-2xl flex items-center justify-center gap-2 hover:bg-amber-300 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                                 >
                                     {isProcessing ? (
                                         <>

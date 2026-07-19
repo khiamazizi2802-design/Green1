@@ -136,7 +136,7 @@ const FamilyHub = () => {
                         <Users size={40} />
                     </div>
                     <div className="text-center">
-                        <p className="text-[10px] font-black text-brand uppercase tracking-[0.4em] italic mb-1">Family Administration Hub</p>
+                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.4em] italic mb-1">Family Administration Hub</p>
                         <h1 className="text-5xl font-black italic tracking-tighter uppercase leading-none">
                             Family <span className="text-brand">Hub</span>
                         </h1>
@@ -157,14 +157,14 @@ const FamilyHub = () => {
                             <h3 className="text-2xl font-black italic uppercase text-white tracking-tight flex items-center gap-3">
                                 <UserPlus className="text-brand" size={24} /> Neue Einladung
                             </h3>
-                            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">
+                            <p className="text-gray-500 text-xs md:text-sm lg:text-base font-bold uppercase tracking-widest">
                                 Teenager per E-Mail freischalten
                             </p>
                         </div>
 
                         <form onSubmit={handleSendInvitation} className="space-y-6">
                             <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">E-Mail-Adresse des Kindes</label>
+                                <label className="block text-[10px] md:text-xs lg:text-sm font-black text-gray-400 uppercase tracking-widest px-1">E-Mail-Adresse des Kindes</label>
                                 <div className="relative">
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                                     <input
@@ -179,14 +179,14 @@ const FamilyHub = () => {
                             </div>
 
                             <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Alter des Kindes</label>
+                                <label className="block text-[10px] md:text-xs lg:text-sm font-black text-gray-400 uppercase tracking-widest px-1">Alter des Kindes</label>
                                 <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10">
                                     {['16', '17'].map((age) => (
                                         <button
                                             key={age}
                                             type="button"
                                             onClick={() => setChildAge(age)}
-                                            className={`flex-1 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${childAge === age ? 'bg-brand text-dark-950 shadow-lg font-black' : 'text-gray-500 hover:text-white'}`}
+                                            className={`flex-1 py-3.5 rounded-xl text-xs md:text-sm lg:text-base font-black uppercase tracking-widest transition-all ${childAge === age ? 'bg-brand text-dark-950 shadow-lg font-black' : 'text-gray-500 hover:text-white'}`}
                                         >
                                             {age} Jahre alt
                                         </button>
@@ -195,13 +195,13 @@ const FamilyHub = () => {
                             </div>
 
                             {errorMsg && (
-                                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-center text-xs font-black uppercase tracking-widest text-red-400 flex items-center justify-center gap-2">
+                                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-center text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-red-400 flex items-center justify-center gap-2">
                                     <AlertCircle size={16} /> {errorMsg}
                                 </div>
                             )}
 
                             {successMsg && (
-                                <div className="p-4 bg-brand/10 border border-brand/20 rounded-2xl text-center text-xs font-black uppercase tracking-widest text-brand flex items-center justify-center gap-2">
+                                <div className="p-4 bg-brand/10 border border-brand/20 rounded-2xl text-center text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-brand flex items-center justify-center gap-2">
                                     <CheckCircle size={16} /> {successMsg}
                                 </div>
                             )}
@@ -209,7 +209,7 @@ const FamilyHub = () => {
                             <button
                                 type="submit"
                                 disabled={isSending}
-                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all ${isSending ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-brand text-dark-950 shadow-xl shadow-brand/10 hover:scale-105 active:scale-95'}`}
+                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm lg:text-base flex items-center justify-center gap-2 transition-all ${isSending ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-brand text-dark-950 shadow-xl shadow-brand/10 hover:scale-105 active:scale-95'}`}
                             >
                                 {isSending ? 'Sende Einladung...' : 'Einladung senden'}
                                 <Send size={14} />
@@ -218,7 +218,7 @@ const FamilyHub = () => {
 
                         <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex items-start gap-3">
                             <ShieldCheck className="text-brand shrink-0 mt-0.5" size={16} />
-                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider leading-relaxed">
+                            <p className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-bold uppercase tracking-wider leading-relaxed">
                                 **Jugendschutz & DSGVO:** Jugendliche unter 16 Jahren dürfen sich absolut nicht registrieren. Jugendliche ab 16 benötigen diese elterliche Freigabe. Mit dem Absenden bestätigen Sie Ihre Erziehungsberechtigung.
                             </p>
                         </div>
@@ -235,7 +235,7 @@ const FamilyHub = () => {
                                 <h3 className="text-2xl font-black italic uppercase text-white tracking-tight flex items-center gap-3">
                                     <Clock className="text-brand" size={24} /> Status Einladungen
                                 </h3>
-                                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">
+                                <p className="text-gray-500 text-xs md:text-sm lg:text-base font-bold uppercase tracking-widest">
                                     Verwalte deine aktiven Einladungen
                                 </p>
                             </div>
@@ -250,16 +250,16 @@ const FamilyHub = () => {
                                             <div className="space-y-1.5">
                                                 <p className="text-sm font-bold text-white tracking-tight leading-none">{inv.childEmail}</p>
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[8px] font-black uppercase text-gray-500 tracking-wider">Alter: {inv.age} Jahre</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-500 tracking-wider">Alter: {inv.age} Jahre</span>
                                                     <div className="w-1.5 h-1.5 rounded-full bg-gray-700" />
-                                                    <span className="text-[8px] font-black uppercase text-gray-500 tracking-wider">
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-500 tracking-wider">
                                                         {new Date(inv.sentAt).toLocaleDateString('de-DE')}
                                                     </span>
                                                 </div>
                                             </div>
                                             
                                             <div className="flex items-center gap-3">
-                                                <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                                                <span className={`px-3 py-1 rounded-full text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest ${
                                                     inv.status === 'registered' 
                                                         ? 'bg-brand/10 text-brand border border-brand/20' 
                                                         : 'bg-white/5 text-gray-400 border border-white/10'
@@ -282,14 +282,14 @@ const FamilyHub = () => {
                                 ) : (
                                     <div className="py-12 text-center text-gray-500">
                                         <Users className="mx-auto text-gray-600 mb-3 opacity-30 animate-pulse" size={40} />
-                                        <p className="font-black uppercase tracking-widest text-[10px]">Keine Einladungen gefunden</p>
-                                        <p className="text-[9px] text-gray-600 mt-1 uppercase font-bold">Nutzen Sie das linke Formular, um eine Einladung zu senden.</p>
+                                        <p className="font-black uppercase tracking-widest text-[10px] md:text-xs lg:text-sm">Keine Einladungen gefunden</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-600 mt-1 uppercase font-bold">Nutzen Sie das linke Formular, um eine Einladung zu senden.</p>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        <div className="pt-6 border-t border-white/5 mt-6 flex justify-between items-center text-xs font-black uppercase tracking-widest text-gray-600">
+                        <div className="pt-6 border-t border-white/5 mt-6 flex justify-between items-center text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-gray-600">
                             <span>Gesamt Einladungen</span>
                             <span className="text-white text-base font-black italic">{invitations.length}</span>
                         </div>

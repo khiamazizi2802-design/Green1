@@ -82,7 +82,7 @@ const BusinessProfilePage = () => {
                                 <h1 className="text-3xl font-black italic uppercase tracking-tighter leading-none">{business.name}</h1>
                                 <CheckCircle size={20} className="text-violet-400" />
                             </div>
-                            <p className="text-brand text-[10px] font-black uppercase tracking-[0.2em]">{business.type}</p>
+                            <p className="text-brand text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em]">{business.type}</p>
                         </div>
                     </div>
                 </div>
@@ -94,22 +94,22 @@ const BusinessProfilePage = () => {
                 <section className="flex flex-col md:flex-row gap-8 justify-between items-start md:items-center">
                     <div className="flex gap-8">
                         <div>
-                            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Followers</p>
+                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Followers</p>
                             <p className="text-xl font-black italic text-white leading-none mt-1">{business.followers}</p>
                         </div>
                         <div>
-                            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Rating</p>
+                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Rating</p>
                             <p className="text-xl font-black italic text-brand leading-none mt-1 flex items-center gap-1">{business.rating} <Star size={14} fill="currentColor" /></p>
                         </div>
                     </div>
                     <div className="flex gap-4 w-full md:w-auto">
                         <button 
                             onClick={() => setIsFollowed(!isFollowed)}
-                            className={`flex-1 md:flex-none px-10 py-4 ${isFollowed ? 'bg-white/5 border border-white/10 text-white' : 'bg-brand text-dark-900 shadow-[0_0_30px_rgba(33,255,165,0.3)]'} rounded-2xl font-black uppercase tracking-widest text-xs transition-all`}
+                            className={`flex-1 md:flex-none px-10 py-4 ${isFollowed ? 'bg-white/5 border border-white/10 text-white' : 'bg-brand text-dark-900 shadow-[0_0_30px_rgba(33,255,165,0.3)]'} rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm lg:text-base transition-all`}
                         >
                             {isFollowed ? 'Following' : 'Follow'}
                         </button>
-                        <button className="flex-1 md:flex-none px-10 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all">Message</button>
+                        <button className="flex-1 md:flex-none px-10 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm lg:text-base hover:bg-white/10 transition-all">Message</button>
                     </div>
                 </section>
 
@@ -128,7 +128,7 @@ const BusinessProfilePage = () => {
                                 className={`flex items-center gap-3 pb-4 border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id ? 'border-brand text-brand' : 'border-transparent text-gray-500'}`}
                             >
                                 <tab.icon size={16} />
-                                <span className="text-[10px] font-black uppercase tracking-widest">{tab.label}</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">{tab.label}</span>
                             </button>
                         ))}
                     </div>
@@ -161,10 +161,10 @@ const BusinessProfilePage = () => {
                                             <img src={post.url} className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" alt="Post" />
                                         )}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">
-                                            <p className="text-[10px] font-bold text-white line-clamp-2">{post.caption}</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-bold text-white line-clamp-2">{post.caption}</p>
                                             <div className="flex items-center gap-3 mt-2 text-brand">
                                                 <Heart size={12} fill="currentColor" />
-                                                <span className="text-[8px] font-black">{post.likes}</span>
+                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black">{post.likes}</span>
                                             </div>
                                         </div>
                                     </motion.div>
@@ -174,7 +174,7 @@ const BusinessProfilePage = () => {
                                     className="aspect-[9/16] border-2 border-dashed border-white/5 rounded-[2.5rem] flex flex-col items-center justify-center text-gray-700 hover:border-brand/30 hover:text-brand/50 transition-all"
                                 >
                                     <Plus size={32} />
-                                    <p className="text-[8px] font-black uppercase mt-2">More Content Coming</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase mt-2">More Content Coming</p>
                                 </motion.div>
                             </div>
                         )}
@@ -191,16 +191,16 @@ const BusinessProfilePage = () => {
                                         >
                                             <div>
                                                 <h4 className="text-xl font-black italic uppercase text-white">{item.name}</h4>
-                                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">{item.desc}</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-500 uppercase tracking-widest mt-1">{item.desc}</p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-2xl font-black italic text-brand leading-none">{item.price}</p>
-                                                <button className="mt-2 text-[8px] font-black uppercase tracking-widest text-gray-500 hover:text-brand transition-all flex items-center gap-1">Add to Order <Plus size={10} /></button>
+                                                <button className="mt-2 text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500 hover:text-brand transition-all flex items-center gap-1">Add to Order <Plus size={10} /></button>
                                             </div>
                                         </motion.div>
                                     ))}
                                 </div>
-                                <button className="w-full py-6 bg-white/5 border border-white/10 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-white transition-all">View Full Digital Menu Hub</button>
+                                <button className="w-full py-6 bg-white/5 border border-white/10 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-gray-400 hover:text-white transition-all">View Full Digital Menu Hub</button>
                             </div>
                         )}
 
@@ -216,14 +216,14 @@ const BusinessProfilePage = () => {
                                             <Zap size={64} className="text-brand" />
                                         </div>
                                         <div className="relative z-10 space-y-4">
-                                            <div className="px-3 py-1 bg-brand text-dark-900 text-[8px] font-black uppercase rounded-lg w-fit">Active Offer</div>
+                                            <div className="px-3 py-1 bg-brand text-dark-900 text-[8px] md:text-[10px] lg:text-xs font-black uppercase rounded-lg w-fit">Active Offer</div>
                                             <div>
                                                 <h4 className="text-3xl font-black italic uppercase text-white tracking-tighter">{offer.title}</h4>
                                                 <p className="text-sm font-bold text-gray-400 mt-1">{offer.desc}</p>
                                             </div>
                                             <div className="flex items-center gap-4 pt-4">
                                                 <div className="px-6 py-3 bg-black/40 rounded-xl border border-white/10 font-black italic text-brand uppercase tracking-widest">{offer.code}</div>
-                                                <button className="px-8 py-3 bg-brand text-dark-900 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-brand/20">Apply to Tab</button>
+                                                <button className="px-8 py-3 bg-brand text-dark-900 rounded-xl font-black uppercase text-[10px] md:text-xs lg:text-sm tracking-widest shadow-lg shadow-brand/20">Apply to Tab</button>
                                             </div>
                                         </div>
                                     </motion.div>
@@ -234,19 +234,19 @@ const BusinessProfilePage = () => {
                         {activeTab === 'info' && (
                             <motion.div variants={itemVariants} className="space-y-10">
                                 <div className="space-y-6 bg-white/5 border border-white/10 rounded-[3rem] p-10">
-                                    <h4 className="text-[10px] font-black text-brand uppercase tracking-[0.2em] mb-4">Location & Access</h4>
+                                    <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em] mb-4">Location & Access</h4>
                                     <div className="flex items-center gap-6">
                                         <div className="w-14 h-14 bg-dark-900 rounded-2xl flex items-center justify-center text-brand"><MapPin size={28} /></div>
                                         <div>
                                             <p className="text-sm font-black italic text-white uppercase">{business.address}</p>
-                                            <button className="text-[8px] font-black text-gray-500 uppercase tracking-widest mt-1 hover:text-brand transition-all flex items-center gap-1">Open in Mission Control <ChevronRight size={10} /></button>
+                                            <button className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest mt-1 hover:text-brand transition-all flex items-center gap-1">Open in Mission Control <ChevronRight size={10} /></button>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-6 pt-4">
                                         <div className="w-14 h-14 bg-dark-900 rounded-2xl flex items-center justify-center text-brand"><Clock size={28} /></div>
                                         <div>
                                             <p className="text-sm font-black italic text-white uppercase">{business.hours}</p>
-                                            <p className="text-[8px] font-black text-emerald-500 uppercase tracking-widest mt-1">Open Now</p>
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-emerald-500 uppercase tracking-widest mt-1">Open Now</p>
                                         </div>
                                     </div>
                                 </div>
@@ -254,11 +254,11 @@ const BusinessProfilePage = () => {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] flex flex-col items-center gap-3">
                                         <Globe size={24} className="text-gray-500" />
-                                        <span className="text-[8px] font-black uppercase text-gray-400">Website</span>
+                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-400">Website</span>
                                     </div>
                                     <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] flex flex-col items-center gap-3">
                                         <ShoppingBag size={24} className="text-gray-500" />
-                                        <span className="text-[8px] font-black uppercase text-gray-400">Store Front</span>
+                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-400">Store Front</span>
                                     </div>
                                 </div>
                             </motion.div>

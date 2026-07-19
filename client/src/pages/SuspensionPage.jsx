@@ -44,11 +44,11 @@ const SuspensionPage = () => {
 
                     <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 pt-8">
                         <div className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5 text-center">
-                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Ban Tier</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest mb-2">Ban Tier</p>
                             <p className="text-xl font-black italic text-red-500 uppercase leading-none">{getBanDuration()}</p>
                         </div>
                         <div className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5 text-center">
-                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Time to Restore</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest mb-2">Time to Restore</p>
                             <div className="flex items-center justify-center gap-2">
                                 <Clock size={16} className="text-white" />
                                 <p className="text-xl font-black italic text-white uppercase leading-none">{getRemainingTime()}</p>
@@ -57,15 +57,15 @@ const SuspensionPage = () => {
                     </div>
 
                     <div className="w-full p-8 bg-white/5 rounded-[2.5rem] border border-white/5 space-y-4">
-                        <h3 className="text-xs font-black uppercase text-gray-400 tracking-widest">Behavioral Ledger</h3>
+                        <h3 className="text-xs md:text-sm lg:text-base font-black uppercase text-gray-400 tracking-widest">Behavioral Ledger</h3>
                         <div className="space-y-3">
                             {[1, 2, 3].map((i) => (
                                 <div key={i} className={`flex items-center justify-between p-4 rounded-xl ${i <= (user?.redFlags || 0) ? 'bg-red-500/10 border border-red-500/20' : 'bg-white/5 border border-white/5 opacity-30'}`}>
                                     <div className="flex items-center gap-3">
                                         <div className={`w-2 h-2 rounded-full ${i <= (user?.redFlags || 0) ? 'bg-red-500' : 'bg-gray-600'}`} />
-                                        <span className="text-[10px] font-black uppercase text-white">Strike {i}</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-white">Strike {i}</span>
                                     </div>
-                                    <span className="text-[8px] font-black text-gray-500 uppercase">Triggered</span>
+                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase">Triggered</span>
                                 </div>
                             ))}
                         </div>
@@ -74,13 +74,13 @@ const SuspensionPage = () => {
                     <div className="w-full pt-8 space-y-4">
                         <button 
                             onClick={() => alert("Redirecting to Green Arbitration Hub... Maintain your dignity.")}
-                            className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all flex items-center justify-center gap-3"
+                            className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all flex items-center justify-center gap-3"
                         >
                             <MessageCircle size={16} /> Appeal This Decision
                         </button>
                         <button 
                             onClick={logout}
-                            className="w-full py-5 bg-red-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-red-500/20 hover:scale-105 transition-all flex items-center justify-center gap-3"
+                            className="w-full py-5 bg-red-500 text-white rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-2xl shadow-red-500/20 hover:scale-105 transition-all flex items-center justify-center gap-3"
                         >
                             <LogOut size={16} /> Logout From Network
                         </button>

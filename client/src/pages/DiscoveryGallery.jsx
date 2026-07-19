@@ -131,7 +131,7 @@ const DiscoveryGallery = () => {
                         </button>
                         <div>
                             <h1 className="text-2xl font-black italic tracking-tighter uppercase leading-none">Discover</h1>
-                            <p className="text-brand font-black uppercase tracking-[0.2em] text-[8px] italic mt-1">Exclusive Network</p>
+                            <p className="text-brand font-black uppercase tracking-[0.2em] text-[8px] md:text-[10px] lg:text-xs italic mt-1">Exclusive Network</p>
                         </div>
                     </div>
                     <div className="p-3 bg-brand/10 border border-brand/20 rounded-2xl text-brand animate-pulse">
@@ -158,7 +158,7 @@ const DiscoveryGallery = () => {
                             <button
                                 key={filter}
                                 onClick={() => setActiveFilter(filter)}
-                                className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeFilter === filter ? 'bg-brand text-dark-900 shadow-lg' : 'text-gray-500 hover:text-white'}`}
+                                className={`flex-1 py-3 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all ${activeFilter === filter ? 'bg-brand text-dark-900 shadow-lg' : 'text-gray-500 hover:text-white'}`}
                             >
                                 {filter}
                             </button>
@@ -202,7 +202,7 @@ const DiscoveryGallery = () => {
                                 <div className={`w-20 h-20 rounded-[1.75rem] flex items-center justify-center border-2 transition-all duration-300 ${activeCategory === cat.id ? 'bg-brand shadow-[0_0_30px_rgba(52,211,153,0.4)] border-brand text-dark-900' : 'bg-[var(--bg-secondary)] border-white/10 text-[var(--text-primary)]/60 group-hover:border-white/30'}`}>
                                     <cat.icon size={32} strokeWidth={2.5} className="transition-transform group-hover:scale-110" />
                                 </div>
-                                <span className={`text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap transition-colors ${activeCategory === cat.id ? 'text-brand' : 'text-gray-500'}`}>
+                                <span className={`text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] whitespace-nowrap transition-colors ${activeCategory === cat.id ? 'text-brand' : 'text-gray-500'}`}>
                                     {cat.label}
                                 </span>
                             </button>
@@ -240,20 +240,20 @@ const DiscoveryGallery = () => {
                                         {/* Top Badges */}
                                         <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
                                             {venue.discount && (
-                                                <div className="bg-brand text-dark-900 px-3 py-1.5 rounded-xl font-black italic text-xs shadow-lg shadow-brand/20">
+                                                <div className="bg-brand text-dark-900 px-3 py-1.5 rounded-xl font-black italic text-xs md:text-sm lg:text-base shadow-lg shadow-brand/20">
                                                     {venue.discount} OFF
                                                 </div>
                                             )}
                                             <div className="bg-[var(--bg-primary)]/80 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-1.5 border border-white/10">
                                                 <Star size={12} className="text-amber-400 fill-amber-400" />
-                                                <span className="text-[10px] font-black">{venue.rating}</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm font-black">{venue.rating}</span>
                                             </div>
                                         </div>
 
                                         {/* Bottom Overlay Label */}
                                         <div className="absolute bottom-4 left-4 flex items-center gap-2">
                                             <div className="w-2 h-2 rounded-full bg-brand animate-pulse" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white shadow-sm">Verified Venue</span>
+                                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-white shadow-sm">Verified Venue</span>
                                         </div>
                                     </div>
 
@@ -264,7 +264,7 @@ const DiscoveryGallery = () => {
                                                 <h3 className="text-xl font-black italic tracking-tighter uppercase text-white leading-tight mb-1">{venue.name}</h3>
                                                 <div className="flex items-center gap-2 text-gray-500">
                                                     <MapPin size={12} />
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest">{venue.dist} Near You</span>
+                                                    <span className="text-[10px] md:text-xs lg:text-sm font-bold uppercase tracking-widest">{venue.dist} Near You</span>
                                                 </div>
                                             </div>
                                             <button className="w-10 h-10 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand">
@@ -275,14 +275,14 @@ const DiscoveryGallery = () => {
                                         <div className="bg-[var(--bg-primary)]/50 border border-white/5 rounded-2xl p-4 flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <Zap size={18} className="text-brand fill-brand" />
-                                                <span className="text-[11px] font-black italic tracking-tight text-white uppercase">{venue.offer}</span>
+                                                <span className="text-[11px] md:text-sm lg:text-base font-black italic tracking-tight text-white uppercase">{venue.offer}</span>
                                             </div>
                                             <Sparkles size={14} className="text-brand opacity-50" />
                                         </div>
 
                                         <div className="flex gap-2">
                                             {venue.tags.map(tag => (
-                                                <span key={tag} className="text-[8px] font-black uppercase tracking-widest text-gray-500 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
+                                                <span key={tag} className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
                                                     {tag}
                                                 </span>
                                             ))}
@@ -294,7 +294,7 @@ const DiscoveryGallery = () => {
                                     <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto text-gray-600">
                                         <Search size={30} />
                                     </div>
-                                    <p className="text-xs font-black uppercase tracking-widest text-gray-500">No venues found in this area</p>
+                                    <p className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-gray-500">No venues found in this area</p>
                                 </div>
                             )}
                         </AnimatePresence>

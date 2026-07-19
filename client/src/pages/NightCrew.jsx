@@ -42,7 +42,7 @@ const NightCrew = () => {
                         </button>
                         <div>
                             <h1 className="text-4xl font-black italic uppercase tracking-tighter">Night <span className="text-brand">Crew</span></h1>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1 italic">Hospitality Ledger & Social Settlement</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-500 uppercase tracking-widest mt-1 italic">Hospitality Ledger & Social Settlement</p>
                         </div>
                     </div>
                     <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center text-brand border border-brand/20">
@@ -60,7 +60,7 @@ const NightCrew = () => {
                             <UserPlus size={40} className="text-brand" />
                         </div>
                         <h2 className="text-2xl font-black italic uppercase text-white">Start Crew</h2>
-                        <p className="text-xs text-gray-400 leading-relaxed uppercase font-bold tracking-widest">Create a group to share rides, split bills, and use the QR Hospitality Ledger.</p>
+                        <p className="text-xs md:text-sm lg:text-base text-gray-400 leading-relaxed uppercase font-bold tracking-widest">Create a group to share rides, split bills, and use the QR Hospitality Ledger.</p>
                         
                         <div className="space-y-4">
                             <input 
@@ -89,17 +89,17 @@ const NightCrew = () => {
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand to-transparent" />
                             <div className="text-center">
                                 <h3 className="text-2xl font-black italic uppercase text-white tracking-tight">{groupName}</h3>
-                                <p className="text-[10px] font-bold text-brand uppercase tracking-[0.4em] mt-2">Group ID: #NC-9821</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-bold text-brand uppercase tracking-[0.4em] mt-2">Group ID: #NC-9821</p>
                             </div>
 
                             <QRCodeGenerator value={`RADAR_GROUP_9821_${Date.now()}`} size={240} />
 
                             <div className="flex items-center gap-3 bg-white/5 px-6 py-3 rounded-full border border-white/10">
                                 <Shield size={14} className="text-brand" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Verified Group Ledger Active</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-400 italic">Verified Group Ledger Active</span>
                             </div>
 
-                            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest text-center px-8 leading-relaxed italic">
+                            <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-bold uppercase tracking-widest text-center px-8 leading-relaxed italic">
                                 Show this QR at any Partner Hotel, Bar, or Club to add items to your group ledger.
                             </p>
                         </motion.div>
@@ -109,7 +109,7 @@ const NightCrew = () => {
                             <div className="flex justify-between items-end px-4">
                                 <h3 className="text-xl font-black italic uppercase tracking-tighter">Crew Audit</h3>
                                 <div className="text-right">
-                                    <p className="text-[8px] font-black text-gray-500 uppercase">Total Debt</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase">Total Debt</p>
                                     <p className="text-2xl font-black italic text-brand">€{totalSpent.toFixed(2)}</p>
                                 </div>
                             </div>
@@ -123,16 +123,16 @@ const NightCrew = () => {
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] font-black uppercase text-brand italic">{item.user}</span>
-                                                    <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">• {item.time}</span>
+                                                    <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-brand italic">{item.user}</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-600 uppercase tracking-widest">• {item.time}</span>
                                                 </div>
                                                 <h4 className="text-lg font-black italic uppercase text-white tracking-tight">{item.item}</h4>
-                                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">at {item.location}</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">at {item.location}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-xl font-black italic text-white tracking-tighter">€{item.price.toFixed(2)}</p>
-                                            <button className="text-[8px] font-black text-red-500 uppercase tracking-widest mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Dispute</button>
+                                            <button className="text-[8px] md:text-[10px] lg:text-xs font-black text-red-500 uppercase tracking-widest mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Dispute</button>
                                         </div>
                                     </div>
                                 ))}
@@ -146,11 +146,11 @@ const NightCrew = () => {
                                 <h3 className="text-xl font-black italic uppercase tracking-tighter">Ride Settlement</h3>
                             </div>
                             <div className="space-y-4">
-                                <div className="flex justify-between text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                <div className="flex justify-between text-xs md:text-sm lg:text-base font-bold text-gray-400 uppercase tracking-widest">
                                     <span>Hospitality Total</span>
                                     <span className="text-white">€{totalSpent.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                <div className="flex justify-between text-xs md:text-sm lg:text-base font-bold text-gray-400 uppercase tracking-widest">
                                     <span>Est. Return Ride</span>
                                     <span className="text-white">€14.50</span>
                                 </div>
@@ -168,7 +168,7 @@ const NightCrew = () => {
             <div className="fixed bottom-0 left-0 w-full p-8 bg-gradient-to-t from-dark-950 to-transparent pointer-events-none">
                 <div className="max-w-2xl mx-auto flex justify-center">
                     <div className="bg-brand/10 border border-brand/20 backdrop-blur-xl px-10 py-5 rounded-[2rem] pointer-events-auto">
-                        <p className="text-[10px] font-black text-brand uppercase tracking-[0.4em] italic leading-none">Scanning Active • Proactive Fraud Shield v1.4</p>
+                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.4em] italic leading-none">Scanning Active • Proactive Fraud Shield v1.4</p>
                     </div>
                 </div>
             </div>

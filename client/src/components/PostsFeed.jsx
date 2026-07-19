@@ -219,7 +219,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                 value={searchQuery}
                                 onFocus={() => setIsSearching(true)}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-dark-900/40 backdrop-blur-xl border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-[10px] font-black italic text-white placeholder:text-gray-600 focus:border-brand/40 outline-none transition-all"
+                                className="w-full bg-dark-900/40 backdrop-blur-xl border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-[10px] md:text-xs lg:text-sm font-black italic text-white placeholder:text-gray-600 focus:border-brand/40 outline-none transition-all"
                             />
                             
                             {/* Search Results Dropdown */}
@@ -243,8 +243,8 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                                         <div className="flex items-center gap-3">
                                                             <img src={f.avatar} className="w-8 h-8 rounded-lg border border-white/10" alt="User" />
                                                             <div>
-                                                                <p className="text-[10px] font-black italic text-white">{f.name}</p>
-                                                                <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">{f.handle}</p>
+                                                                <p className="text-[10px] md:text-xs lg:text-sm font-black italic text-white">{f.name}</p>
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 font-bold uppercase tracking-widest">{f.handle}</p>
                                                             </div>
                                                         </div>
                                                         <div className="flex gap-2">
@@ -338,7 +338,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                             <div className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all ${isLiked ? 'bg-brand text-dark-950 border-brand shadow-[0_0_20px_rgba(52,211,153,0.5)]' : 'bg-black/60 backdrop-blur-md border-brand/50 text-brand shadow-[0_0_15px_rgba(52,211,153,0.3)] hover:bg-brand/10'}`}>
                                                 <Heart size={24} fill={isLiked ? "currentColor" : "none"} className="transition-all" />
                                             </div>
-                                            <span className="text-[11px] font-black text-white mt-1.5 drop-shadow-lg">{getLikesDisplay(post)}</span>
+                                            <span className="text-[11px] md:text-sm lg:text-base font-black text-white mt-1.5 drop-shadow-lg">{getLikesDisplay(post)}</span>
                                         </button>
 
                                         {/* COMMENT BUTTON */}
@@ -349,7 +349,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                             <div className="w-12 h-12 bg-black/60 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-white/10 transition-colors">
                                                 <MessageCircle size={24} />
                                             </div>
-                                            <span className="text-[11px] font-black text-white mt-1.5 drop-shadow-lg">
+                                            <span className="text-[11px] md:text-sm lg:text-base font-black text-white mt-1.5 drop-shadow-lg">
                                                 {getCommentsForPost(post.id).length}
                                             </span>
                                         </button>
@@ -362,7 +362,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                             <div className="w-12 h-12 bg-black/60 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-white/10 transition-colors">
                                                 <Share2 size={24} />
                                             </div>
-                                            <span className="text-[9px] font-bold text-gray-400 mt-1 uppercase tracking-wider">Share</span>
+                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-400 mt-1 uppercase tracking-wider">Share</span>
                                         </button>
                                     </div>
 
@@ -375,12 +375,12 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                             <div className="flex flex-col">
                                                 <span className="font-black italic tracking-tighter text-white">@{post.user}</span>
                                                 <div className="flex items-center gap-3 mt-0.5">
-                                                    <span className={`text-[8px] ${post.isBusiness ? 'text-violet-400' : 'text-brand'} font-black uppercase tracking-widest flex items-center gap-1`}>
+                                                    <span className={`text-[8px] md:text-[10px] lg:text-xs ${post.isBusiness ? 'text-violet-400' : 'text-brand'} font-black uppercase tracking-widest flex items-center gap-1`}>
                                                         <div className={`w-1 h-1 ${post.isBusiness ? 'bg-violet-400' : 'bg-brand'} rounded-full animate-pulse`} /> {post.isBusiness ? 'Business Partner' : 'Official Pilot'}
                                                     </span>
                                                     <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20 shadow-[0_0_10px_rgba(52,211,153,0.1)]">
                                                         <Flag size={8} className="text-emerald-500" fill="currentColor" />
-                                                        <span className="text-[8px] font-black text-emerald-500">{post.greenFlags}</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-emerald-500">{post.greenFlags}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -403,7 +403,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                             >
                                 <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-4 cursor-pointer" onClick={() => setShowCommentsForPost(null)} />
                                 <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-4">
-                                    <span className="text-xs font-black uppercase tracking-widest text-brand">Comments ({getCommentsForPost(showCommentsForPost).length})</span>
+                                    <span className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-brand">Comments ({getCommentsForPost(showCommentsForPost).length})</span>
                                     <button onClick={() => setShowCommentsForPost(null)} className="text-secondary hover:text-primary active:scale-90">
                                         <X size={18} />
                                     </button>
@@ -414,10 +414,10 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                             <img src={c.avatar} className="w-8 h-8 rounded-lg border border-white/10 shrink-0" alt="Avatar" />
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] font-black italic text-brand">@{c.user}</span>
+                                                    <span className="text-[10px] md:text-xs lg:text-sm font-black italic text-brand">@{c.user}</span>
                                                     <span className="text-[7px] text-gray-500 uppercase tracking-widest">{c.time}</span>
                                                 </div>
-                                                <p className="text-xs text-primary font-medium mt-1">{c.text}</p>
+                                                <p className="text-xs md:text-sm lg:text-base text-primary font-medium mt-1">{c.text}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -429,11 +429,11 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                         value={newCommentText}
                                         onChange={(e) => setNewCommentText(e.target.value)}
                                         onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(); }}
-                                        className="flex-1 bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs outline-none text-primary focus:border-brand/40 transition-colors"
+                                        className="flex-1 bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base outline-none text-primary focus:border-brand/40 transition-colors"
                                     />
                                     <button
                                         onClick={handleAddComment}
-                                        className="px-4 bg-brand text-dark-900 rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                                        className="px-4 bg-brand text-dark-900 rounded-xl text-xs md:text-sm lg:text-base font-black uppercase flex items-center justify-center gap-1 active:scale-95 transition-transform"
                                     >
                                         <Send size={12} />
                                         <span>Post</span>
@@ -454,7 +454,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                             >
                                 <div className="w-full max-w-[360px] bg-dark-900 border border-brand/20 rounded-[2rem] p-6 shadow-2xl space-y-6">
                                     <div className="flex justify-between items-center pb-3 border-b border-white/5">
-                                        <span className="text-xs font-black uppercase tracking-widest text-brand">Share with friends</span>
+                                        <span className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-brand">Share with friends</span>
                                         <button onClick={() => setShowShareForPost(null)} className="text-secondary hover:text-primary active:scale-90">
                                             <X size={16} />
                                         </button>
@@ -470,8 +470,8 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                                 >
                                                     <img src={f.avatar} className="w-12 h-12 rounded-xl border border-white/10" alt="Friend" />
                                                     <div>
-                                                        <p className="text-[10px] font-black italic text-primary">{f.name}</p>
-                                                        <p className="text-[8px] opacity-40 font-bold uppercase mt-0.5">{f.username}</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black italic text-primary">{f.name}</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs opacity-40 font-bold uppercase mt-0.5">{f.username}</p>
                                                     </div>
                                                 </div>
                                             );
@@ -480,7 +480,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                     <button
                                         onClick={handleShareSubmit}
                                         disabled={selectedShareFriends.length === 0}
-                                        className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${selectedShareFriends.length > 0 ? 'bg-brand text-dark-900 shadow-lg shadow-brand/20 active:scale-95' : 'bg-btn-sec text-muted cursor-not-allowed'}`}
+                                        className={`w-full py-4 rounded-xl text-xs md:text-sm lg:text-base font-black uppercase tracking-widest transition-all ${selectedShareFriends.length > 0 ? 'bg-brand text-dark-900 shadow-lg shadow-brand/20 active:scale-95' : 'bg-btn-sec text-muted cursor-not-allowed'}`}
                                     >
                                         Share Now ({selectedShareFriends.length})
                                     </button>
@@ -503,12 +503,12 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                     className="pb-6 px-6 flex justify-between items-center border-b border-white/5 bg-gradient-to-b from-black/20 to-transparent transition-all duration-300" 
                                     style={{ paddingTop: `calc(${useSafeArea ? 'env(safe-area-inset-top, 0px)' : '0px'} + ${notchAdjustment}px + 1.25rem)` }}
                                 >
-                                    <button onClick={() => setIsCreating(false)} className="text-[var(--text-primary)] font-black uppercase text-xs tracking-widest active:scale-90 transition-transform">Cancel</button>
+                                    <button onClick={() => setIsCreating(false)} className="text-[var(--text-primary)] font-black uppercase text-xs md:text-sm lg:text-base tracking-widest active:scale-90 transition-transform">Cancel</button>
                                     <h3 className="font-black italic text-brand tracking-tighter uppercase">New Green Post</h3>
                                     <button 
                                         onClick={handleUploadPost} 
                                         disabled={!captionText.trim()} 
-                                        className={`font-black uppercase text-xs tracking-widest transition-colors ${captionText.trim() ? 'text-brand active:scale-90 transition-transform' : 'text-gray-600 cursor-not-allowed'}`}
+                                        className={`font-black uppercase text-xs md:text-sm lg:text-base tracking-widest transition-colors ${captionText.trim() ? 'text-brand active:scale-90 transition-transform' : 'text-gray-600 cursor-not-allowed'}`}
                                     >
                                         Share
                                     </button>
@@ -532,7 +532,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                         <div className="relative z-10 w-16 h-16 rounded-full bg-dark-900 border border-white/5 flex items-center justify-center text-gray-400 mb-2 group-hover:scale-110 transition-transform shadow-lg">
                                             <Plus size={30} className="text-brand" />
                                         </div>
-                                        <p className="relative z-10 font-black uppercase tracking-widest text-[9px] text-white">Tap to change mock image</p>
+                                        <p className="relative z-10 font-black uppercase tracking-widest text-[9px] md:text-[11px] lg:text-xs text-white">Tap to change mock image</p>
                                     </div>
 
                                     <textarea
@@ -548,7 +548,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                             className="flex-1 p-4 bg-[var(--bg-secondary)] rounded-2xl border border-white/5 flex items-center gap-3 cursor-pointer hover:border-brand/20 active:scale-95 transition-transform"
                                         >
                                             <MapPin size={20} className="text-brand" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Add Location</span>
+                                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-400">Add Location</span>
                                         </div>
                                         <div className="p-4 bg-[var(--bg-secondary)] rounded-2xl border border-white/5">
                                             <Zap size={20} className="text-brand animate-pulse" />
@@ -559,7 +559,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                                 <div className="p-8">
                                     <button 
                                         onClick={handleUploadPost}
-                                        className="w-full py-5 bg-brand text-dark-950 rounded-3xl font-black uppercase tracking-[0.4em] italic text-xs shadow-[0_0_30px_rgba(52,211,153,0.3)] active:scale-95 transition-transform"
+                                        className="w-full py-5 bg-brand text-dark-950 rounded-3xl font-black uppercase tracking-[0.4em] italic text-xs md:text-sm lg:text-base shadow-[0_0_30px_rgba(52,211,153,0.3)] active:scale-95 transition-transform"
                                     >
                                         Upload
                                     </button>

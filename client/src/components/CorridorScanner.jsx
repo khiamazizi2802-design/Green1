@@ -39,7 +39,7 @@ const CorridorScanner = ({ pickup, destination, isPooling }) => {
                     <div className="w-10 h-10 rounded-xl bg-dark-900 border border-brand/40 flex items-center justify-center shadow-[0_0_15px_var(--brand-glow)]">
                         <Navigation size={18} className="text-brand fill-brand/20" />
                     </div>
-                    <span className="text-[8px] font-black uppercase tracking-widest text-brand mt-2">Origin</span>
+                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-brand mt-2">Origin</span>
                 </motion.div>
 
                 {/* The "Black Lines" Scan Effect (User Request) */}
@@ -122,7 +122,7 @@ const CorridorScanner = ({ pickup, destination, isPooling }) => {
                     <div className="w-12 h-12 rounded-2xl bg-brand border border-white/20 flex items-center justify-center shadow-[0_0_25px_var(--brand-glow)]">
                         <MapPin size={22} className="text-dark-950 fill-dark-950/20" />
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white mt-2 italic">Target Locked</span>
+                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] text-white mt-2 italic">Target Locked</span>
                 </motion.div>
 
                 {/* Scanning Status Label */}
@@ -130,7 +130,7 @@ const CorridorScanner = ({ pickup, destination, isPooling }) => {
                     <motion.p
                         animate={{ opacity: [0.4, 1, 0.4] }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        className="text-[10px] font-black uppercase tracking-[0.4em] text-brand"
+                        className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.4em] text-brand"
                     >
                         {isPooling ? 'Pooling Corridors...' : 'Scanning Route Vector...'}
                     </motion.p>

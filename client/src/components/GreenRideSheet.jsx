@@ -14,7 +14,7 @@ const GreenRideSheet = ({ onExecute }) => {
             <div className="flex justify-between items-center">
                 <div>
                     <h3 className="text-2xl font-black italic tracking-tighter text-white uppercase leading-none">GreenRide</h3>
-                    <p className="text-[8px] font-black text-brand uppercase tracking-[0.3em] mt-1 drop-shadow-[0_0_5px_var(--brand-glow)]">Next-Gen Mobility</p>
+                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-[0.3em] mt-1 drop-shadow-[0_0_5px_var(--brand-glow)]">Next-Gen Mobility</p>
                 </div>
                 <div className="w-10 h-10 bg-dark-900 border border-brand/30 rounded-xl flex items-center justify-center text-brand shadow-[0_0_10px_var(--brand-glow)]">
                     <Navigation size={18} />
@@ -52,8 +52,8 @@ const GreenRideSheet = ({ onExecute }) => {
             {/* Available Cars Section */}
             <div className="space-y-4">
                 <div className="flex justify-between items-center px-1">
-                    <h4 className="text-[10px] font-black text-brand uppercase tracking-widest">Available Fleet</h4>
-                    <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">3 Units Near</span>
+                    <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest">Available Fleet</h4>
+                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">3 Units Near</span>
                 </div>
                 <div className="space-y-4">
                     {availableCars.map((car) => (
@@ -64,7 +64,7 @@ const GreenRideSheet = ({ onExecute }) => {
                                 </div>
                                 <div>
                                     <p className="font-black text-base uppercase italic tracking-tighter text-white">{car.mark}</p>
-                                    <p className="text-[8px] text-gray-500 font-black uppercase tracking-widest mt-0.5">{car.category} • <span className="text-brand">{car.eta}</span></p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 font-black uppercase tracking-widest mt-0.5">{car.category} • <span className="text-brand">{car.eta}</span></p>
                                 </div>
                             </div>
                             <div className="text-right">

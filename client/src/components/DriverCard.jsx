@@ -20,17 +20,17 @@ const DriverCard = ({ driver, onBook, onClose }) => {
                 </div>
                 <div className="ml-auto text-right">
                     <div className="text-2xl font-bold text-brand">3 min</div>
-                    <div className="text-xs text-gray-400">Away</div>
+                    <div className="text-xs md:text-sm lg:text-base text-gray-400">Away</div>
                 </div>
             </div>
 
             <div className="flex gap-2">
                 <div className="flex-1 bg-white/5 rounded-xl p-3 text-center">
-                    <div className="text-xs text-gray-400 uppercase">Car</div>
+                    <div className="text-xs md:text-sm lg:text-base text-gray-400 uppercase">Car</div>
                     <div className="font-bold">Tesla Model 3</div>
                 </div>
                 <div className="flex-1 bg-white/5 rounded-xl p-3 text-center">
-                    <div className="text-xs text-gray-400 uppercase">Plate</div>
+                    <div className="text-xs md:text-sm lg:text-base text-gray-400 uppercase">Plate</div>
                     <div className="font-bold">B-XY 1234</div>
                 </div>
             </div>

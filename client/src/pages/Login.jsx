@@ -87,7 +87,7 @@ const Login = () => {
             
             {/* Ambient Blurred Overlays */}
             <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-brand/5 blur-[130px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-10 right-10 text-[var(--text-muted)]/10 text-[8px] font-black uppercase tracking-[0.5em] rotate-90 origin-left">
+            <div className="absolute bottom-10 right-10 text-[var(--text-muted)]/10 text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.5em] rotate-90 origin-left">
                 SYSTEM_ONBOARDING_MODULE: v2.4
             </div>
 
@@ -136,7 +136,7 @@ const Login = () => {
                     <h1 className="text-4xl font-black tracking-tighter italic uppercase text-[var(--text-primary)]">
                         Green <span className="text-brand">Portal</span>
                     </h1>
-                    <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest mt-2 italic">
+                    <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-[var(--text-muted)] uppercase tracking-widest mt-2 italic">
                         {isBlocked ? 'ACCESS DENIED' : successMsg ? 'DECRYPTING SHELL' : isAuthenticating ? 'HANDSHAKE ACTIVE' : 'SECURED MULTI-NODE LOG IN'}
                     </p>
                 </div>
@@ -151,7 +151,7 @@ const Login = () => {
                                 initial={{ opacity: 0, y: -10 }} 
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0 }}
-                                className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-500 text-xs font-bold leading-normal"
+                                className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-500 text-xs md:text-sm lg:text-base font-bold leading-normal"
                             >
                                 <ShieldAlert size={20} className="shrink-0" />
                                 <div>{loginError}</div>
@@ -162,7 +162,7 @@ const Login = () => {
                                 initial={{ opacity: 0, y: -10 }} 
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0 }}
-                                className="p-4 bg-brand/10 border border-brand/20 rounded-2xl flex items-center gap-3 text-brand text-xs font-bold leading-normal"
+                                className="p-4 bg-brand/10 border border-brand/20 rounded-2xl flex items-center gap-3 text-brand text-xs md:text-sm lg:text-base font-bold leading-normal"
                             >
                                 <CheckCircle2 size={20} className="shrink-0" />
                                 <div>{successMsg}</div>
@@ -205,7 +205,7 @@ const Login = () => {
                     <button
                         type="submit"
                         disabled={isBlocked || isAuthenticating}
-                        className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl flex items-center justify-center gap-2 mt-4 transition-all duration-300 ${
+                        className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm lg:text-base shadow-xl flex items-center justify-center gap-2 mt-4 transition-all duration-300 ${
                             isBlocked ? 'bg-white/5 text-red-500/30 border border-red-500/10 cursor-not-allowed shadow-none' : 
                             isAuthenticating ? 'bg-brand-mid/20 text-brand border border-brand/20 cursor-wait' :
                             'bg-brand text-dark-950 hover:shadow-brand-glow hover:scale-[1.02] active:scale-95'
@@ -222,7 +222,7 @@ const Login = () => {
 
 
 
-                <p className="mt-8 text-center text-[var(--text-muted)] text-[11px] font-black uppercase tracking-widest">
+                <p className="mt-8 text-center text-[var(--text-muted)] text-[11px] md:text-sm lg:text-base font-black uppercase tracking-widest">
                     New Signal Detected? <Link to="/signup" className="text-brand hover:underline">Create Account</Link>
                 </p>
 

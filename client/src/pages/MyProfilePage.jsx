@@ -298,13 +298,13 @@ const MyProfilePage = () => {
                                 <Star size={14} fill="currentColor" />
                             </div>
                         </div>
-                        <p className="text-brand font-black uppercase tracking-[0.3em] text-xs italic">{user.username}</p>
+                        <p className="text-brand font-black uppercase tracking-[0.3em] text-xs md:text-sm lg:text-base italic">{user.username}</p>
                     </div>
 
                     <div className="flex gap-4 mt-8 w-full">
                         <div className="flex-1 px-4 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[2.5rem] text-center shadow-sm">
                             <span className="block text-4xl font-black italic text-brand leading-none drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">{user?.greenFlags || 0}</span>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black/60 mt-1">Green Flags</span>
+                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-black/60 mt-1">Green Flags</span>
                         </div>
                         {user?.redFlags > 0 && (
                             <div className="flex-1 px-4 py-4 bg-red-500/5 border border-red-500/20 rounded-[2rem] text-center">
@@ -370,13 +370,13 @@ const MyProfilePage = () => {
                     <div className="w-full mt-10 p-1.5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[3rem] flex gap-2 shadow-2xl">
                         <button 
                             onClick={() => document.getElementById('profile-pic-input').click()}
-                            className="flex-1 py-5 bg-[#1A1A1A] text-white border border-white/10 rounded-[2.5rem] font-black uppercase tracking-[0.2em] italic text-[10px] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
+                            className="flex-1 py-5 bg-[#1A1A1A] text-white border border-white/10 rounded-[2.5rem] font-black uppercase tracking-[0.2em] italic text-[10px] md:text-xs lg:text-sm flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
                         >
                             <Camera size={16} /> Update Avatar
                         </button>
                         <button 
                             onClick={() => document.getElementById('reel-upload-input').click()}
-                            className="flex-1 py-5 bg-[#1A1A1A] text-white border border-white/10 rounded-[2.5rem] font-black uppercase tracking-[0.2em] italic text-[10px] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
+                            className="flex-1 py-5 bg-[#1A1A1A] text-white border border-white/10 rounded-[2.5rem] font-black uppercase tracking-[0.2em] italic text-[10px] md:text-xs lg:text-sm flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
                         >
                             <Video size={16} /> Post Reel
                         </button>
@@ -393,7 +393,7 @@ const MyProfilePage = () => {
                         <button 
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex flex-col items-center gap-2 pb-4 text-[10px] font-black uppercase tracking-[0.2em] italic transition-all relative ${activeTab === tab.id ? 'text-brand' : 'text-gray-900 opacity-60 hover:opacity-100'}`}
+                            className={`flex flex-col items-center gap-2 pb-4 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] italic transition-all relative ${activeTab === tab.id ? 'text-brand' : 'text-gray-900 opacity-60 hover:opacity-100'}`}
                         >
                             <tab.icon size={20} />
                             {tab.label}
@@ -439,12 +439,12 @@ const MyProfilePage = () => {
                                                 <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500"><Flag size={20} /></div>
                                                 <div>
                                                     <p className="text-sm font-black italic uppercase text-white">{c.business}</p>
-                                                    <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">{c.reason}</p>
+                                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">{c.reason}</p>
                                                 </div>
                                             </div>
                                             <button 
                                                 onClick={() => setMockComplaints(prev => prev.filter(i => i.id !== c.id))}
-                                                className="px-4 py-2 bg-brand/10 border border-brand/20 text-brand rounded-xl text-[8px] font-black uppercase tracking-widest hover:bg-brand hover:text-dark-900 transition-all flex items-center gap-2"
+                                                className="px-4 py-2 bg-brand/10 border border-brand/20 text-brand rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest hover:bg-brand hover:text-dark-900 transition-all flex items-center gap-2"
                                             >
                                                 <Handshake size={12} /> Revoke Flag
                                             </button>
@@ -453,7 +453,7 @@ const MyProfilePage = () => {
                                 ) : (
                                     <div className="p-12 text-center space-y-4">
                                         <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-gray-600 mx-auto"><ShieldCheck size={32} /></div>
-                                        <p className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">All accounts are in good standing.</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-500 tracking-[0.2em]">All accounts are in good standing.</p>
                                     </div>
                                 )}
                             </motion.div>
@@ -473,7 +473,7 @@ const MyProfilePage = () => {
                                         <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
                                             <div className="flex items-center gap-1.5">
                                                 <Heart size={12} className={`transition-colors ${post.liked ? 'text-red-500 fill-red-500' : 'text-brand fill-brand'}`} />
-                                                <span className="text-[10px] font-black">{post.likes}</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm font-black">{post.likes}</span>
                                             </div>
                                             <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
                                                 <MoreHorizontal size={14} />
@@ -495,7 +495,7 @@ const MyProfilePage = () => {
                                     <div className="w-12 h-12 rounded-full bg-dark-950 border border-white/10 flex items-center justify-center">
                                         <Plus size={24} />
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest">New Moment</span>
+                                    <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">New Moment</span>
                                 </motion.button>
                             </div>
                         )}
@@ -520,7 +520,7 @@ const MyProfilePage = () => {
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
                                     <h2 className="text-2xl font-black italic uppercase text-white tracking-tighter">Social Signals</h2>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand">Incoming Connections</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-brand">Incoming Connections</p>
                                 </div>
                                 <button 
                                     onClick={() => setShowRequests(false)}
@@ -540,7 +540,7 @@ const MyProfilePage = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-black italic uppercase text-black tracking-tight">{req.name}</p>
-                                                    <p className="text-[8px] font-bold text-brand uppercase tracking-widest mt-0.5 flex items-center gap-1.5">
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-brand uppercase tracking-widest mt-0.5 flex items-center gap-1.5">
                                                         <Sparkles size={10} /> Secure Signal Sent
                                                     </p>
                                                 </div>
@@ -584,14 +584,14 @@ const MyProfilePage = () => {
                                         <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-gray-700 mx-auto">
                                             <Bell size={32} />
                                         </div>
-                                        <p className="text-[10px] font-black uppercase text-gray-600 tracking-[0.2em]">No pending social signals.</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-600 tracking-[0.2em]">No pending social signals.</p>
                                     </div>
                                 )}
                             </div>
 
                             <button 
                                 onClick={() => setShowRequests(false)}
-                                className="w-full py-5 bg-white/5 border border-white/10 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-all"
+                                className="w-full py-5 bg-white/5 border border-white/10 rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-all"
                             >
                                 Dismiss All
                             </button>
@@ -646,7 +646,7 @@ const MyProfilePage = () => {
                                         </div>
                                         <div>
                                             <p className="text-sm font-black italic uppercase text-white leading-none tracking-tight">{user.name}</p>
-                                            <p className="text-[9px] font-black uppercase text-brand tracking-widest mt-1">{selectedPost.time}</p>
+                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-brand tracking-widest mt-1">{selectedPost.time}</p>
                                         </div>
                                     </div>
                                     <button 
@@ -680,14 +680,14 @@ const MyProfilePage = () => {
                                                         : 'text-[var(--text-primary)] opacity-70 group-hover:opacity-100 group-hover:scale-110'
                                                 }`} 
                                             />
-                                            <span className="text-xs font-black italic uppercase tracking-wider">
-                                                {selectedPost.likes} <span className="text-[10px] font-medium tracking-normal lowercase text-[var(--text-secondary)]">likes</span>
+                                            <span className="text-xs md:text-sm lg:text-base font-black italic uppercase tracking-wider">
+                                                {selectedPost.likes} <span className="text-[10px] md:text-xs lg:text-sm font-medium tracking-normal lowercase text-[var(--text-secondary)]">likes</span>
                                             </span>
                                         </button>
                                         <div className="flex items-center gap-2">
                                             <MessageSquare size={20} className="text-[var(--text-primary)] opacity-70" />
-                                            <span className="text-xs font-black italic uppercase tracking-wider">
-                                                {selectedPost.comments} <span className="text-[10px] font-medium tracking-normal lowercase text-[var(--text-secondary)]">comments</span>
+                                            <span className="text-xs md:text-sm lg:text-base font-black italic uppercase tracking-wider">
+                                                {selectedPost.comments} <span className="text-[10px] md:text-xs lg:text-sm font-medium tracking-normal lowercase text-[var(--text-secondary)]">comments</span>
                                             </span>
                                         </div>
                                     </div>
@@ -705,20 +705,20 @@ const MyProfilePage = () => {
 
                                 {/* Comments List */}
                                 <div className="space-y-3">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand">Secure Comments</h4>
+                                    <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-brand">Secure Comments</h4>
                                     <div className="space-y-2">
                                         {selectedPost.commentsList && selectedPost.commentsList.length > 0 ? (
                                             selectedPost.commentsList.map(comment => (
                                                 <div key={comment.id} className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl flex flex-col gap-1">
                                                     <div className="flex justify-between items-center">
-                                                        <span className="text-xs font-black italic uppercase text-brand tracking-tight">{comment.author}</span>
-                                                        <span className="text-[8px] font-bold text-black/40 uppercase tracking-widest">{comment.time}</span>
+                                                        <span className="text-xs md:text-sm lg:text-base font-black italic uppercase text-brand tracking-tight">{comment.author}</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-black/40 uppercase tracking-widest">{comment.time}</span>
                                                     </div>
-                                                    <p className="text-xs text-[var(--text-primary)]/80 leading-snug">{comment.text}</p>
+                                                    <p className="text-xs md:text-sm lg:text-base text-[var(--text-primary)]/80 leading-snug">{comment.text}</p>
                                                 </div>
                                             ))
                                         ) : (
-                                            <p className="text-[10px] text-black/40 font-bold uppercase tracking-widest py-2">No comments yet. Secure line active.</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm text-black/40 font-bold uppercase tracking-widest py-2">No comments yet. Secure line active.</p>
                                         )}
                                     </div>
                                 </div>
@@ -733,11 +733,11 @@ const MyProfilePage = () => {
                                             if (e.key === 'Enter') handleAddComment(selectedPost.id);
                                         }}
                                         placeholder="Add secure comment..." 
-                                        className="flex-1 px-4 py-3 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl text-xs placeholder:text-black/30 focus:outline-none focus:border-brand/40"
+                                        className="flex-1 px-4 py-3 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl text-xs md:text-sm lg:text-base placeholder:text-black/30 focus:outline-none focus:border-brand/40"
                                     />
                                     <button 
                                         onClick={() => handleAddComment(selectedPost.id)}
-                                        className="px-4 bg-brand text-dark-900 rounded-xl text-[10px] font-black uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md shadow-brand/10"
+                                        className="px-4 bg-brand text-dark-900 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-md shadow-brand/10"
                                     >
                                         Send
                                     </button>

@@ -862,7 +862,7 @@ const GreenRidePage = () => {
                         )}
                     </button>
                     <div className="text-center pb-2">
-                        <p className={`text-[10px] font-black italic uppercase tracking-[0.4em] drop-shadow-md transition-colors ${hasWhistled ? 'text-white/20' : 'text-white'}`}>
+                        <p className={`text-[10px] md:text-xs lg:text-sm font-black italic uppercase tracking-[0.4em] drop-shadow-md transition-colors ${hasWhistled ? 'text-white/20' : 'text-white'}`}>
                             Whistle
                         </p>
                     </div>
@@ -881,7 +881,7 @@ const GreenRidePage = () => {
                     </div>
                     <div className="text-center space-y-2">
                         <h2 className="text-xl font-black italic uppercase text-black tracking-tighter">Scanning the Grid</h2>
-                        <p className="text-[10px] text-black/40 font-bold uppercase tracking-[0.3em]">Connecting to nearby Hubs...</p>
+                        <p className="text-[10px] md:text-xs lg:text-sm text-black/40 font-bold uppercase tracking-[0.3em]">Connecting to nearby Hubs...</p>
                     </div>
                     <div className="flex flex-col gap-3 w-full">
                         <div className="flex gap-2 items-center justify-center">
@@ -894,7 +894,7 @@ const GreenRidePage = () => {
                                 setRideStatus('idle');
                                 setHasWhistled(false);
                             }}
-                            className="w-full py-4 mt-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white/60 hover:bg-white/10 transition-all"
+                            className="w-full py-4 mt-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-white/40 hover:text-white/60 hover:bg-white/10 transition-all"
                         >
                             Cancel Search
                         </button>
@@ -911,7 +911,7 @@ const GreenRidePage = () => {
                         <div className="flex flex-col gap-3.5 flex-1">
                             {/* PICK-UP ORIGIN */}
                             <div className="space-y-1">
-                                <label className="text-[9px] font-black text-brand uppercase tracking-widest block ml-2">Pick-up Origin</label>
+                                <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-widest block ml-2">Pick-up Origin</label>
                                 <div className="relative">
                                     <div className="h-14 rounded-2xl flex items-center px-4 gap-4 bg-[#111A2E]/85 border border-white/20 focus-within:border-brand/60 focus-within:shadow-[0_0_15px_rgba(50,205,50,0.15)] transition-all">
                                         <div className="w-5 h-5 flex items-center justify-center text-brand">
@@ -936,7 +936,7 @@ const GreenRidePage = () => {
                                                         setPickup(item.display_name);
                                                         setPickupSuggestions([]);
                                                     }}
-                                                    className="w-full text-left px-3 py-2 text-[11px] font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
+                                                    className="w-full text-left px-3 py-2 text-[11px] md:text-sm lg:text-base font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
                                                 >
                                                     {item.display_name}
                                                 </button>
@@ -950,17 +950,17 @@ const GreenRidePage = () => {
                             {stops.map((stop, idx) => (
                                 <div key={stop.id} className="space-y-1">
                                     <div className="flex justify-between items-center ml-2">
-                                        <label className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Waypoint Stop {idx + 1}</label>
+                                        <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-amber-500 uppercase tracking-widest">Waypoint Stop {idx + 1}</label>
                                         <button 
                                             onClick={() => removeStopField(idx)}
-                                            className="text-[9px] font-black text-red-500 hover:text-red-400 uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
+                                            className="text-[9px] md:text-[11px] lg:text-xs font-black text-red-500 hover:text-red-400 uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
                                         >
                                             Remove Stop
                                         </button>
                                     </div>
                                     <div className="relative">
                                         <div className="h-14 rounded-2xl flex items-center px-4 gap-4 bg-[#111A2E]/85 border border-amber-500/30 focus-within:border-amber-500/60 focus-within:shadow-[0_0_15px_rgba(245,158,11,0.15)] transition-all">
-                                            <div className="w-5 h-5 flex items-center justify-center text-amber-500 font-black text-[10px] border border-amber-500/40 rounded-full">
+                                            <div className="w-5 h-5 flex items-center justify-center text-amber-500 font-black text-[10px] md:text-xs lg:text-sm border border-amber-500/40 rounded-full">
                                                 {idx + 1}
                                             </div>
                                             <input
@@ -996,7 +996,7 @@ const GreenRidePage = () => {
                                                             updated[idx].suggestions = [];
                                                             setStops(updated);
                                                         }}
-                                                        className="w-full text-left px-3 py-2 text-[11px] font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
+                                                        className="w-full text-left px-3 py-2 text-[11px] md:text-sm lg:text-base font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
                                                     >
                                                         {item.display_name}
                                                     </button>
@@ -1010,10 +1010,10 @@ const GreenRidePage = () => {
                             {/* TARGET DESTINATION */}
                             <div className="space-y-1">
                                 <div className="flex justify-between items-center ml-2">
-                                    <label className="text-[9px] font-black text-brand uppercase tracking-widest">Final Destination</label>
+                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-widest">Final Destination</label>
                                     <button 
                                         onClick={addStopField}
-                                        className="text-[9px] font-black text-brand hover:text-brand-glow uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
+                                        className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand hover:text-brand-glow uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
                                     >
                                         + Add Stop
                                     </button>
@@ -1042,7 +1042,7 @@ const GreenRidePage = () => {
                                                         setDestination(item.display_name);
                                                         setDestinationSuggestions([]);
                                                     }}
-                                                    className="w-full text-left px-3 py-2 text-[11px] font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
+                                                    className="w-full text-left px-3 py-2 text-[11px] md:text-sm lg:text-base font-bold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors truncate"
                                                 >
                                                     {item.display_name}
                                                 </button>
@@ -1075,8 +1075,8 @@ const GreenRidePage = () => {
                                 <Car size={16} />
                             </div>
                             <div>
-                                <p className="text-xs font-black uppercase tracking-widest text-white">Premium Fleet Selection</p>
-                                <p className="text-[10px] font-medium uppercase tracking-tighter mt-0.5 text-white/60">Choose specific vehicle marks</p>
+                                <p className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-white">Premium Fleet Selection</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-medium uppercase tracking-tighter mt-0.5 text-white/60">Choose specific vehicle marks</p>
                             </div>
                         </div>
                         <div className={`w-10 h-5 rounded-full relative transition-all bg-white/20`}>
@@ -1150,8 +1150,8 @@ const GreenRidePage = () => {
                                 <Zap size={16} />
                             </div>
                             <div>
-                                <p className="text-xs font-black uppercase tracking-widest text-white">FTD Search Mode</p>
-                                <p className="text-[10px] font-medium uppercase tracking-tighter mt-0.5 text-white/60">Prioritize favorite drivers</p>
+                                <p className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-white">FTD Search Mode</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-medium uppercase tracking-tighter mt-0.5 text-white/60">Prioritize favorite drivers</p>
                             </div>
                         </div>
                         <div className={`w-10 h-5 rounded-full relative transition-all bg-white/20`}>
@@ -1208,11 +1208,11 @@ const GreenRidePage = () => {
                                     )}
                                     <type.icon size={16} className={isSelected ? 'text-white' : 'text-black/40'} />
                                     <div className="text-center">
-                                        <p className={`text-[9px] font-black uppercase tracking-widest ${isSelected ? 'text-white' : 'text-black/60'}`}>{type.label}</p>
+                                        <p className={`text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest ${isSelected ? 'text-white' : 'text-black/60'}`}>{type.label}</p>
                                         <p className={`text-[6px] font-bold uppercase tracking-tighter mt-0.5 ${isSelected ? 'text-white/70' : 'text-black/30'}`}>{type.desc}</p>
                                     </div>
                                     <div className="mt-1">
-                                        <span className={`text-[8px] font-black ${isSelected ? 'text-white' : 'text-black/40'}`}>
+                                        <span className={`text-[8px] md:text-[10px] lg:text-xs font-black ${isSelected ? 'text-white' : 'text-black/40'}`}>
                                             {displayPrice}
                                         </span>
                                     </div>
@@ -1229,7 +1229,7 @@ const GreenRidePage = () => {
                                  borderColor: 'rgba(255,255,255,0.1)',
                                  boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
                              }}>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/50 text-center">
+                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-white/50 text-center">
                                 Geteilte Passagiere (Mitfahrer-Pool)
                             </p>
                             <div className="flex gap-2">
@@ -1248,7 +1248,7 @@ const GreenRidePage = () => {
                                                 : 'bg-black/35 border-white/5 text-white/50 hover:border-white/10 hover:text-white'
                                             }`}
                                         >
-                                            <span className="text-[10px] font-black">{count} Pers.</span>
+                                            <span className="text-[10px] md:text-xs lg:text-sm font-black">{count} Pers.</span>
                                             <span className="text-[7px] font-bold opacity-80">-{discounts[count]}</span>
                                         </button>
                                     );
@@ -1264,7 +1264,7 @@ const GreenRidePage = () => {
                             className="flex-1 h-14 bg-[#1A1A1A] border-none rounded-2xl flex items-center px-4 gap-3 hover:scale-[1.02] transition-all shadow-xl"
                         >
                             {React.createElement(selectedPayment.icon || CreditCard, { size: 18, className: "text-white" })}
-                            <span className="text-[10px] font-black text-white italic">{selectedPayment.label}</span>
+                            <span className="text-[10px] md:text-xs lg:text-sm font-black text-white italic">{selectedPayment.label}</span>
                             <ChevronRight size={14} className="ml-auto text-white/40" />
                         </button>
                         
@@ -1310,7 +1310,7 @@ const GreenRidePage = () => {
                             </AnimatePresence>
 
                             <div className="relative z-10 flex flex-col items-center">
-                                <span className={`text-[11px] font-black uppercase tracking-[0.2em] transition-all ${hasWhistled ? 'text-white/20' : 'text-white'}`}>
+                                <span className={`text-[11px] md:text-sm lg:text-base font-black uppercase tracking-[0.2em] transition-all ${hasWhistled ? 'text-white/20' : 'text-white'}`}>
                                     Whistle
                                     <Zap size={14} className={`inline-block ml-2 ${hasWhistled ? 'fill-white/20 text-white/20' : 'fill-white text-white animate-pulse'}`} />
                                 </span>
@@ -1336,14 +1336,14 @@ const GreenRidePage = () => {
                                 <div className="w-2.5 h-2.5 rounded-full absolute inset-0 opacity-75" style={{ background: 'var(--accent-primary)' }}></div>
                                 <div className="w-2.5 h-2.5 rounded-full relative z-10" style={{ background: 'var(--accent-primary)' }}></div>
                             </div>
-                            <span className="text-[11px] font-black uppercase tracking-[0.2em]" style={{ color: 'var(--accent-primary)' }}>Heading to Destination</span>
+                            <span className="text-[11px] md:text-sm lg:text-base font-black uppercase tracking-[0.2em]" style={{ color: 'var(--accent-primary)' }}>Heading to Destination</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-[var(--text-secondary)] opacity-60 text-[9px] font-mono font-bold tracking-widest">{driverInfo.plate}</span>
+                            <span className="text-[var(--text-secondary)] opacity-60 text-[9px] md:text-[11px] lg:text-xs font-mono font-bold tracking-widest">{driverInfo.plate}</span>
                             <div className="h-4 w-[1px] bg-[var(--border-main)]" />
                             <div className="flex items-center gap-1">
                                 <Star size={10} className="fill-yellow-400 text-yellow-400" />
-                                <span className="text-[var(--text-primary)] text-[10px] font-black">{driverInfo.rating}</span>
+                                <span className="text-[var(--text-primary)] text-[10px] md:text-xs lg:text-sm font-black">{driverInfo.rating}</span>
                             </div>
                         </div>
                     </div>
@@ -1359,22 +1359,22 @@ const GreenRidePage = () => {
                                     <span className="text-[7px] font-black uppercase tracking-tighter text-[var(--accent-primary)]">Auto Rating: 4.8</span>
                                 </div>
                             </div>
-                            <p className="text-[var(--text-secondary)] opacity-60 text-[10px] font-black uppercase tracking-tight mt-0.5">{driverInfo.car} • {driverInfo.color}</p>
+                            <p className="text-[var(--text-secondary)] opacity-60 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-tight mt-0.5">{driverInfo.car} • {driverInfo.color}</p>
 
                             {/* Ride Stats: KM & Price */}
                             <div className="flex items-center gap-3 mt-2">
                                 <div className="flex flex-col">
                                     <span className="text-[var(--text-secondary)] opacity-60 text-[7px] uppercase tracking-widest font-black">Distance</span>
-                                    <span className="text-[var(--text-primary)] text-[10px] font-black">{liveDistance.toFixed(1)} km</span>
+                                    <span className="text-[var(--text-primary)] text-[10px] md:text-xs lg:text-sm font-black">{liveDistance.toFixed(1)} km</span>
                                 </div>
                                 <div className="w-[1px] h-5 bg-[var(--border-main)]" />
                                 <div className="flex flex-col">
                                     <span className="text-[var(--text-secondary)] opacity-60 text-[7px] uppercase tracking-widest font-black">Est. Fare</span>
                                     <div className="flex items-center gap-2">
                                         {isPoolingEnabled && (
-                                            <span className="text-[var(--text-secondary)] opacity-30 text-[8px] line-through font-black">€{(parseFloat(calculatePrice(liveDistance, 1).discountedPrice) * (serviceType === 'max' ? 1.5 : 1)).toFixed(2)}</span>
+                                            <span className="text-[var(--text-secondary)] opacity-30 text-[8px] md:text-[10px] lg:text-xs line-through font-black">€{(parseFloat(calculatePrice(liveDistance, 1).discountedPrice) * (serviceType === 'max' ? 1.5 : 1)).toFixed(2)}</span>
                                         )}
-                                        <span className="text-[10px] font-black" style={{ color: 'var(--accent-primary)' }}>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black" style={{ color: 'var(--accent-primary)' }}>
                                             €{(parseFloat(calculatePrice(liveDistance, isPoolingEnabled ? poolPassengers : 1).discountedPrice) * (serviceType === 'max' ? 1.5 : 1)).toFixed(2)}
                                         </span>
                                     </div>
@@ -1393,7 +1393,7 @@ const GreenRidePage = () => {
                     <div className="grid grid-cols-4 gap-2">
                         <button
                             onClick={() => setIsFavorite(!isFavorite)}
-                            className="col-span-2 h-11 rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border shadow-sm"
+                            className="col-span-2 h-11 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border shadow-sm"
                             style={{
                                 background: isFavorite ? 'rgba(255,105,180,0.1)' : 'var(--bg-secondary)',
                                 borderColor: isFavorite ? '#FF69B4' : 'var(--border-main)',
@@ -1405,13 +1405,13 @@ const GreenRidePage = () => {
                         </button>
                         <button 
                             onClick={() => setShowFeedbackModal(true)}
-                            className="h-10 rounded-lg text-[9px] font-black uppercase flex flex-col items-center justify-center gap-0.5 transition-all shadow-sm bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-primary)]"
+                            className="h-10 rounded-lg text-[9px] md:text-[11px] lg:text-xs font-black uppercase flex flex-col items-center justify-center gap-0.5 transition-all shadow-sm bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-primary)]"
                         >
                             <span>💬</span> Feedback
                         </button>
                         <button
                             onClick={() => setShowEndTripReasons(true)}
-                            className="h-10 rounded-lg text-[9px] font-black uppercase flex flex-col items-center justify-center gap-0.5 transition-all shadow-sm bg-red-500/10 border border-red-900/35 text-red-500"
+                            className="h-10 rounded-lg text-[9px] md:text-[11px] lg:text-xs font-black uppercase flex flex-col items-center justify-center gap-0.5 transition-all shadow-sm bg-red-500/10 border border-red-900/35 text-red-500"
                         >
                             <span>🛑</span> <span className="text-[6px]">End Early</span>
                         </button>
@@ -1432,10 +1432,10 @@ const GreenRidePage = () => {
                     </motion.div>
                     <div className="text-center space-y-2">
                         <h2 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">Safe Boarding</h2>
-                        <p className="text-[10px] text-[var(--accent-primary)] font-black uppercase tracking-[0.4em]">Synchronizing Passenger Profile...</p>
+                        <p className="text-[10px] md:text-xs lg:text-sm text-[var(--accent-primary)] font-black uppercase tracking-[0.4em]">Synchronizing Passenger Profile...</p>
                         <button 
                             onClick={() => setRideStatus('in_ride')}
-                            className="mt-6 px-8 py-3.5 bg-[var(--text-primary)] text-[var(--bg-primary)] rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all shadow-2xl hover:scale-105 active:scale-95 border border-[var(--border-main)]"
+                            className="mt-6 px-8 py-3.5 bg-[var(--text-primary)] text-[var(--bg-primary)] rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all shadow-2xl hover:scale-105 active:scale-95 border border-[var(--border-main)]"
                         >
                             Manual Boarding Confirm
                         </button>
@@ -1451,13 +1451,13 @@ const GreenRidePage = () => {
                     {/* Success Header */}
                     <div className="text-center">
                         <h2 className="text-2xl font-black italic text-[var(--text-primary)] uppercase tracking-tighter">You've Arrived</h2>
-                        <p className="text-[var(--text-secondary)] text-[10px] uppercase tracking-[0.3em] mt-1">Ride Completed • {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                        <p className="text-[var(--text-secondary)] text-[10px] md:text-xs lg:text-sm uppercase tracking-[0.3em] mt-1">Ride Completed • {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                     </div>
 
                     {/* Receipt Card */}
                     <div className="rounded-xl p-4 flex flex-col gap-3 relative overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-main)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
                         <div className="flex items-center justify-between relative z-10">
-                            <span className="text-[var(--text-secondary)] opacity-60 text-[10px] uppercase tracking-wider font-bold">Total Fare</span>
+                            <span className="text-[var(--text-secondary)] opacity-60 text-[10px] md:text-xs lg:text-sm uppercase tracking-wider font-bold">Total Fare</span>
                             <span className="text-2xl font-black text-[var(--text-primary)]">€{serviceType === "shared" ? "19.60" : "24.50"}</span>
                         </div>
                         <div className="h-px bg-[var(--border-main)]" />
@@ -1465,7 +1465,7 @@ const GreenRidePage = () => {
                             <div className="w-6 h-4 rounded flex items-center justify-center bg-[var(--accent-primary)]/10">
                                 <selectedPayment.icon size={10} className="text-[var(--accent-primary)]" />
                             </div>
-                            <span className="text-[var(--text-secondary)] opacity-60 text-[10px] font-black uppercase tracking-tight">{selectedPayment.label}</span>
+                            <span className="text-[var(--text-secondary)] opacity-60 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-tight">{selectedPayment.label}</span>
                         </div>
                         <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full blur-2xl pointer-events-none bg-[var(--accent-primary)]/10" />
                     </div>
@@ -1475,8 +1475,8 @@ const GreenRidePage = () => {
                         <div className="flex items-center gap-3">
                             <img src={driverInfo.image} alt="Driver" className="w-8 h-8 rounded-full border border-[var(--border-main)] shadow-sm" />
                             <div className="flex-1">
-                                <p className="text-[var(--text-primary)] text-xs font-black uppercase italic tracking-tight">Rate {driverInfo.name}</p>
-                                <p className="text-[var(--text-secondary)] opacity-60 text-[9px] font-bold uppercase tracking-widest">How was your ride?</p>
+                                <p className="text-[var(--text-primary)] text-xs md:text-sm lg:text-base font-black uppercase italic tracking-tight">Rate {driverInfo.name}</p>
+                                <p className="text-[var(--text-secondary)] opacity-60 text-[9px] md:text-[11px] lg:text-xs font-bold uppercase tracking-widest">How was your ride?</p>
                             </div>
                         </div>
 
@@ -1507,7 +1507,7 @@ const GreenRidePage = () => {
                                 <button
                                     key={tag.label}
                                     onClick={() => toggleTag(tag.label)}
-                                    className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase border transition-all flex items-center gap-1.5 ${selectedTags.includes(tag.label)
+                                    className={`px-3 py-1.5 rounded-full text-[10px] md:text-xs lg:text-sm font-black uppercase border transition-all flex items-center gap-1.5 ${selectedTags.includes(tag.label)
                                         ? 'text-white border-transparent'
                                         : 'border-[var(--border-main)] text-[var(--text-secondary)] opacity-70 hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)]'
                                         }`}
@@ -1544,13 +1544,13 @@ const GreenRidePage = () => {
                                         <div className="flex-1">
                                             <p className="text-black text-[12px] font-black uppercase italic tracking-tight">{rider.name}</p>
                                             {friendRequests[rider.id] === 'pending' ? (
-                                                <span className="text-[8px] font-black uppercase text-black/40 italic">Request Sent...</span>
+                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-black/40 italic">Request Sent...</span>
                                             ) : friendRequests[rider.id] === 'accepted' ? (
-                                                <span className="text-[8px] font-black uppercase text-black italic">Mutual Friend</span>
+                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-black italic">Mutual Friend</span>
                                             ) : (
                                                 <button 
                                                     onClick={() => setShowFriendConfirm(rider)}
-                                                    className="flex items-center gap-1 text-[8px] font-black uppercase text-black/60 hover:text-black transition-colors"
+                                                    className="flex items-center gap-1 text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-black/60 hover:text-black transition-colors"
                                                 >
                                                     <Users size={8} /> Add as Friend
                                                 </button>
@@ -1572,7 +1572,7 @@ const GreenRidePage = () => {
                                                         return { ...prev, [rider.id]: newRiderTags };
                                                     });
                                                 }}
-                                                className={`px-2 py-1 rounded-lg text-[8px] font-bold border transition-all flex items-center gap-1 ${(selectedCoRiderTags[rider.id] || []).includes(tag.label)
+                                                className={`px-2 py-1 rounded-lg text-[8px] md:text-[10px] lg:text-xs font-bold border transition-all flex items-center gap-1 ${(selectedCoRiderTags[rider.id] || []).includes(tag.label)
                                                     ? 'bg-black/10 border-black/20 text-black'
                                                     : 'bg-white/50 border-black/5 text-black/40'
                                                 }`}
@@ -1626,7 +1626,7 @@ const GreenRidePage = () => {
                             setHasWhistled(false);
                             setFriendRequests({});
                         }}
-                        className="w-full h-12 font-black uppercase text-[10px] tracking-[0.2em] italic rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-2 text-white bg-[#1A1A1A] shadow-xl shadow-black/20"
+                        className="w-full h-12 font-black uppercase text-[10px] md:text-xs lg:text-sm tracking-[0.2em] italic rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-2 text-white bg-[#1A1A1A] shadow-xl shadow-black/20"
                     >
                         Close Mission Ledger
                     </button>
@@ -1641,10 +1641,10 @@ const GreenRidePage = () => {
                     <div className="flex items-center justify-between border-b border-black/5 pb-3">
                         <div className="flex items-center gap-2">
                             <div className="w-2.5 h-2.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_12px_rgba(var(--accent-primary-rgb), 0.3)]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--accent-primary)]">Driver has Arrived</span>
+                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-[var(--accent-primary)]">Driver has Arrived</span>
                         </div>
                         <div className="px-2.5 py-1 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-main)] flex items-center gap-2">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-primary)]">FREE WAITING</span>
+                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-[var(--text-primary)]">FREE WAITING</span>
                             <span className="text-sm font-black font-mono text-[var(--text-primary)] italic">{formatTime(waitingSeconds)}</span>
                         </div>
                     </div>
@@ -1653,10 +1653,10 @@ const GreenRidePage = () => {
                         <img src={driverInfo.image} alt="Driver" className="w-13 h-13 rounded-xl object-cover border border-[var(--border-main)] shadow-md" />
                         <div className="flex-1">
                             <h3 className="text-xl font-black italic tracking-tighter uppercase text-[var(--text-primary)]">{driverInfo.name}</h3>
-                            <p className="text-[var(--text-secondary)] opacity-60 text-[10px] font-black uppercase tracking-widest">{driverInfo.car} • {driverInfo.plate}</p>
+                            <p className="text-[var(--text-secondary)] opacity-60 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">{driverInfo.car} • {driverInfo.plate}</p>
                             <div className="flex items-center gap-1 mt-2">
                                 <Sparkles size={10} className="text-[var(--accent-primary)]" />
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)]">VEHICLE ID VERIFIED</span>
+                                <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] text-[var(--text-primary)]">VEHICLE ID VERIFIED</span>
                             </div>
                         </div>
                     </div>
@@ -1664,11 +1664,11 @@ const GreenRidePage = () => {
                     <div className="grid grid-cols-2 gap-3">
                         <button
                             onClick={() => setShowChat(true)}
-                            className="h-12 bg-white border border-black/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-black/60 hover:bg-black/5 transition-all flex items-center justify-center gap-2 shadow-sm"
+                            className="h-12 bg-white border border-black/5 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-black/60 hover:bg-black/5 transition-all flex items-center justify-center gap-2 shadow-sm"
                         >
                             <MessageSquare size={16} /> Contact
                         </button>
-                        <div className="h-12 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] italic text-[var(--accent-primary)]/60 flex items-center justify-center bg-[var(--accent-primary)]/5 border border-[var(--accent-primary)]/20">
+                        <div className="h-12 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] italic text-[var(--accent-primary)]/60 flex items-center justify-center bg-[var(--accent-primary)]/5 border border-[var(--accent-primary)]/20">
                             Driver confirming boarding...
                         </div>
                     </div>
@@ -1684,9 +1684,9 @@ const GreenRidePage = () => {
                     <div className="flex items-center justify-between border-b border-[var(--border-main)] pb-3">
                         <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_rgba(var(--accent-primary-rgb), 0.3)]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--accent-primary)]">Driver En Route</span>
+                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-[var(--accent-primary)]">Driver En Route</span>
                         </div>
-                        <span className="text-[var(--text-secondary)] opacity-60 text-[10px] font-mono font-bold">ID: #8291</span>
+                        <span className="text-[var(--text-secondary)] opacity-60 text-[10px] md:text-xs lg:text-sm font-mono font-bold">ID: #8291</span>
                     </div>
 
                     {/* Main Driver & Car Info */}
@@ -1696,7 +1696,7 @@ const GreenRidePage = () => {
                             <div className="w-20 h-20 rounded-2xl p-1 border shadow-2xl bg-[var(--bg-secondary)] border-[var(--border-main)]">
                                 <img src={driverInfo.image} alt="Driver" className="w-full h-full object-cover rounded-xl" />
                             </div>
-                            <div className="absolute -bottom-2 -right-2 text-[var(--bg-primary)] text-[10px] font-black px-2 py-0.5 rounded-lg border border-[var(--border-main)] flex items-center gap-1 shadow-lg bg-[var(--accent-primary)]">
+                            <div className="absolute -bottom-2 -right-2 text-[var(--bg-primary)] text-[10px] md:text-xs lg:text-sm font-black px-2 py-0.5 rounded-lg border border-[var(--border-main)] flex items-center gap-1 shadow-lg bg-[var(--accent-primary)]">
                                 <span>★</span> {driverInfo.rating}
                             </div>
                         </div>
@@ -1707,13 +1707,13 @@ const GreenRidePage = () => {
                                 <h3 className="text-xl font-black italic tracking-tighter uppercase text-[var(--text-primary)]">{driverInfo.name}</h3>
                                 <div className="px-3 py-1 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-main)] shadow-sm">
                                     <span className="text-lg font-black italic text-[var(--accent-primary)]">{driverInfo.eta}</span>
-                                    <span className="text-[8px] font-black uppercase tracking-tighter text-[var(--text-secondary)] opacity-60 ml-1.5">Arrival</span>
+                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-tighter text-[var(--text-secondary)] opacity-60 ml-1.5">Arrival</span>
                                 </div>
                             </div>
-                            <p className="text-[var(--text-secondary)] opacity-80 text-xs font-black italic uppercase tracking-wider mb-2 leading-none">{driverInfo.car}</p>
+                            <p className="text-[var(--text-secondary)] opacity-80 text-xs md:text-sm lg:text-base font-black italic uppercase tracking-wider mb-2 leading-none">{driverInfo.car}</p>
                             <div className="flex items-center gap-2">
-                                <span className="px-2.5 py-1 rounded-lg text-[10px] text-[var(--text-secondary)] opacity-60 uppercase tracking-widest font-black bg-[var(--bg-secondary)] border border-[var(--border-main)]">{driverInfo.color}</span>
-                                <span className="px-2.5 py-1 rounded-lg text-[10px] font-mono text-[var(--text-secondary)] opacity-80 font-black bg-[var(--bg-secondary)] border border-[var(--border-main)]">{driverInfo.plate}</span>
+                                <span className="px-2.5 py-1 rounded-lg text-[10px] md:text-xs lg:text-sm text-[var(--text-secondary)] opacity-60 uppercase tracking-widest font-black bg-[var(--bg-secondary)] border border-[var(--border-main)]">{driverInfo.color}</span>
+                                <span className="px-2.5 py-1 rounded-lg text-[10px] md:text-xs lg:text-sm font-mono text-[var(--text-secondary)] opacity-80 font-black bg-[var(--bg-secondary)] border border-[var(--border-main)]">{driverInfo.plate}</span>
                             </div>
                         </div>
                     </div>
@@ -1726,13 +1726,13 @@ const GreenRidePage = () => {
                                     setRideStatus('idle');
                                     setHasWhistled(false);
                                 }}
-                                className="flex-[1] h-11 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/5 transition-all flex items-center justify-center gap-2 shadow-sm"
+                                className="flex-[1] h-11 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/5 transition-all flex items-center justify-center gap-2 shadow-sm"
                             >
                                 <X size={14} /> Cancel
                             </button>
                             <button
                                 onClick={() => setShowChat(true)}
-                                className="flex-[2] h-11 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-[var(--bg-primary)] bg-[var(--accent-primary)] shadow-[0_10px_25px_rgba(var(--accent-primary-rgb), 0.1)] border border-[var(--border-main)]"
+                                className="flex-[2] h-11 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-[var(--bg-primary)] bg-[var(--accent-primary)] shadow-[0_10px_25px_rgba(var(--accent-primary-rgb), 0.1)] border border-[var(--border-main)]"
                             >
                                 Message Driver
                             </button>
@@ -1743,7 +1743,7 @@ const GreenRidePage = () => {
                                     setIsPoolingEnabled(false);
                                     alert("Sharing stopped. Driver notified to maintain private route.");
                                 }}
-                                className="w-full h-10 rounded-xl text-[9px] font-black uppercase tracking-[0.1em] border border-white/20 bg-[var(--accent-primary)]/5 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10 transition-all"
+                                className="w-full h-10 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.1em] border border-white/20 bg-[var(--accent-primary)]/5 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10 transition-all"
                             >
                                 Exit Pool • Switch to Private
                             </button>
@@ -1826,7 +1826,7 @@ const GreenRidePage = () => {
                             })}
                         >
                             <Tooltip direction="bottom" permanent>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-red-600 bg-white px-2 py-1 rounded shadow-sm border border-red-100">Destination</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-red-600 bg-white px-2 py-1 rounded shadow-sm border border-red-100">Destination</span>
                             </Tooltip>
                         </Marker>
                     )}
@@ -1839,14 +1839,14 @@ const GreenRidePage = () => {
                             icon={L.divIcon({
                                 className: `stop-${idx}-marker`,
                                 html: `<div class="w-8 h-8 rounded-full bg-amber-500 border-4 border-white shadow-lg flex items-center justify-center">
-                                    <span class="text-[10px] font-black text-white">${idx + 1}</span>
+                                    <span class="text-[10px] md:text-xs lg:text-sm font-black text-white">${idx + 1}</span>
                                 </div>`,
                                 iconSize: [32, 32],
                                 iconAnchor: [16, 16]
                             })}
                         >
                             <Tooltip direction="bottom" permanent>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 bg-white px-2 py-1 rounded shadow-sm border border-amber-100">Stop {idx + 1}</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-amber-600 bg-white px-2 py-1 rounded shadow-sm border border-amber-100">Stop {idx + 1}</span>
                             </Tooltip>
                         </Marker>
                     ))}
@@ -1887,7 +1887,7 @@ const GreenRidePage = () => {
                             >
                                 <Tooltip direction="top" offset={[0, isSelected ? -90 : -20]} permanent={isAssigned || isSelected}>
                                     <div className={`px-3 py-1.5 rounded-full shadow-2xl border transition-all ${isSelected ? 'bg-black border-black text-white' : (isAssigned ? 'bg-[var(--accent-primary)] border-white' : 'bg-white border-gray-100')}`}>
-                                        <span className={`text-[10px] font-black uppercase tracking-widest ${isSelected ? 'text-white' : 'text-black'}`}>
+                                        <span className={`text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest ${isSelected ? 'text-white' : 'text-black'}`}>
                                             {isAssigned ? 'Selected Unit' : (isSelected ? 'Confirm Selection' : brand.name)}
                                         </span>
                                     </div>
@@ -1910,7 +1910,7 @@ const GreenRidePage = () => {
                             })}
                         >
                             <Tooltip direction="bottom" permanent>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-white px-2 py-1 rounded shadow-sm border border-blue-100">Pick-up Here</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-blue-600 bg-white px-2 py-1 rounded shadow-sm border border-blue-100">Pick-up Here</span>
                             </Tooltip>
                         </Marker>
                     )}
@@ -1956,7 +1956,7 @@ const GreenRidePage = () => {
                     <ArrowLeft size={20} className="text-[var(--text-primary)]" />
                 </button>
                 <div className="text-right">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] italic" style={{ color: 'var(--text-primary)' }}>{currentCity}</p>
+                    <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.4em] italic" style={{ color: 'var(--text-primary)' }}>{currentCity}</p>
                 </div>
             </header>
 
@@ -1975,8 +1975,8 @@ const GreenRidePage = () => {
                                 <Sparkles size={18} style={{ color: 'var(--accent-primary)' }} className="relative z-10" />
                             </div>
                             <div>
-                                <h3 className="text-black text-xs font-black uppercase tracking-widest">Scanning Grid...</h3>
-                                <p className="text-black/40 text-[10px] uppercase tracking-wider font-bold">Locating nearby premium units</p>
+                                <h3 className="text-black text-xs md:text-sm lg:text-base font-black uppercase tracking-widest">Scanning Grid...</h3>
+                                <p className="text-black/40 text-[10px] md:text-xs lg:text-sm uppercase tracking-wider font-bold">Locating nearby premium units</p>
                             </div>
                         </div>
                     </motion.div>
@@ -1997,7 +1997,7 @@ const GreenRidePage = () => {
                                     <div className="w-12 h-12 rounded-xl overflow-hidden shadow-md" style={{ background: 'white', border: '1.5px solid white' }}>
                                         <img src={driverInfo.image} alt="Driver" className="w-full h-full object-cover" />
                                     </div>
-                                    <div className="absolute -bottom-1 -right-1 text-[var(--bg-primary)] text-[8px] font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm bg-[var(--accent-primary)] border border-[var(--border-main)]">
+                                    <div className="absolute -bottom-1 -right-1 text-[var(--bg-primary)] text-[8px] md:text-[10px] lg:text-xs font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm bg-[var(--accent-primary)] border border-[var(--border-main)]">
                                         <span>★</span> {driverInfo.rating}
                                     </div>
                                 </div>
@@ -2005,13 +2005,13 @@ const GreenRidePage = () => {
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between">
                                         <h3 className="text-[var(--text-primary)] text-sm font-black uppercase tracking-wider">{driverInfo.name}</h3>
-                                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full" style={{ color: 'var(--accent-primary)', background: 'rgba(var(--accent-primary-rgb), 0.1)', border: '1px solid rgba(var(--accent-primary-rgb), 0.2)' }}>Accepted</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-wider px-2 py-0.5 rounded-full" style={{ color: 'var(--accent-primary)', background: 'rgba(var(--accent-primary-rgb), 0.1)', border: '1px solid rgba(var(--accent-primary-rgb), 0.2)' }}>Accepted</span>
                                     </div>
-                                    <p className="text-black/60 text-[10px] font-black uppercase tracking-tight mt-0.5">{driverInfo.car} • {driverInfo.color}</p>
+                                    <p className="text-black/60 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-tight mt-0.5">{driverInfo.car} • {driverInfo.color}</p>
                                     <div className="flex items-center gap-2 mt-1.5">
-                                        <span className="text-[var(--text-secondary)] opacity-60 text-[9px] px-1.5 py-0.5 rounded font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-main)]">{driverInfo.plate}</span>
-                                        <span className="text-black/20 text-[9px]">•</span>
-                                        <span className="text-[9px] font-black" style={{ color: 'var(--text-primary)' }}>{driverInfo.eta} away</span>
+                                        <span className="text-[var(--text-secondary)] opacity-60 text-[9px] md:text-[11px] lg:text-xs px-1.5 py-0.5 rounded font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-main)]">{driverInfo.plate}</span>
+                                        <span className="text-black/20 text-[9px] md:text-[11px] lg:text-xs">•</span>
+                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black" style={{ color: 'var(--text-primary)' }}>{driverInfo.eta} away</span>
                                     </div>
                                 </div>
                             </div>
@@ -2081,10 +2081,10 @@ const GreenRidePage = () => {
                                                 <method.icon size={20} className={method.color} />
                                             </div>
                                             <div className="flex-1 text-left">
-                                                <span className={`block text-xs font-black uppercase tracking-wider ${selectedPayment.id === method.id ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'}`}>
+                                                <span className={`block text-xs md:text-sm lg:text-base font-black uppercase tracking-wider ${selectedPayment.id === method.id ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'}`}>
                                                     {method.name}
                                                 </span>
-                                                <span className="text-[10px] text-[var(--text-secondary)] opacity-60 font-bold uppercase tracking-tight">{method.label}</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm text-[var(--text-secondary)] opacity-60 font-bold uppercase tracking-tight">{method.label}</span>
                                             </div>
                                             {selectedPayment.id === method.id && (
                                                 <div className="w-2.5 h-2.5 rounded-full bg-[var(--accent-primary)]" style={{ boxShadow: '0 0 15px var(--accent-primary-glow)' }} />
@@ -2095,14 +2095,14 @@ const GreenRidePage = () => {
                                     <div className="pt-2 grid grid-cols-2 gap-3">
                                         <button
                                             onClick={() => setPaymentModalMode('card-form')}
-                                            className="h-14 rounded-2xl flex flex-col items-center justify-center gap-1 bg-[var(--bg-secondary)] border border-[var(--border-main)] hover:border-[var(--accent-primary)]/20 transition-all text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)] shadow-sm"
+                                            className="h-14 rounded-2xl flex flex-col items-center justify-center gap-1 bg-[var(--bg-secondary)] border border-[var(--border-main)] hover:border-[var(--accent-primary)]/20 transition-all text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-[var(--text-secondary)] shadow-sm"
                                         >
                                             <CreditCard size={16} className="text-[var(--accent-primary)]" />
                                             Add Card
                                         </button>
                                         <button
                                             onClick={() => setPaymentModalMode('bank-form')}
-                                            className="h-14 rounded-2xl flex flex-col items-center justify-center gap-1 bg-[var(--bg-secondary)] border border-[var(--border-main)] hover:border-blue-400/20 transition-all text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)] shadow-sm"
+                                            className="h-14 rounded-2xl flex flex-col items-center justify-center gap-1 bg-[var(--bg-secondary)] border border-[var(--border-main)] hover:border-blue-400/20 transition-all text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-[var(--text-secondary)] shadow-sm"
                                         >
                                             <Banknote size={16} className="text-blue-500" />
                                             Add Bank
@@ -2119,7 +2119,7 @@ const GreenRidePage = () => {
                                             placeholder="Cardholder Name"
                                             value={cardForm.name}
                                             onChange={(e) => setCardForm({ ...cardForm, name: e.target.value })}
-                                            className="w-full h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-10 text-xs font-black text-[var(--text-primary)] focus:border-[var(--accent-primary)]/40 outline-none transition-all placeholder:text-[var(--text-secondary)]/30"
+                                            className="w-full h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-10 text-xs md:text-sm lg:text-base font-black text-[var(--text-primary)] focus:border-[var(--accent-primary)]/40 outline-none transition-all placeholder:text-[var(--text-secondary)]/30"
                                         />
                                     </div>
                                     <div className="relative">
@@ -2131,7 +2131,7 @@ const GreenRidePage = () => {
                                             value={cardForm.number}
                                             maxLength={16}
                                             onChange={(e) => setCardForm({ ...cardForm, number: e.target.value })}
-                                            className="w-full h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-10 text-xs font-black text-[var(--text-primary)] focus:border-[var(--accent-primary)]/40 outline-none transition-all placeholder:text-[var(--text-secondary)]/30"
+                                            className="w-full h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-10 text-xs md:text-sm lg:text-base font-black text-[var(--text-primary)] focus:border-[var(--accent-primary)]/40 outline-none transition-all placeholder:text-[var(--text-secondary)]/30"
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
@@ -2140,7 +2140,7 @@ const GreenRidePage = () => {
                                             value={cardForm.expiry}
                                             maxLength={5}
                                             onChange={(e) => setCardForm({ ...cardForm, expiry: e.target.value })}
-                                            className="h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-4 text-xs font-black text-[var(--text-primary)] focus:border-[var(--accent-primary)]/40 outline-none transition-all text-center placeholder:text-[var(--text-secondary)]/30"
+                                            className="h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-4 text-xs md:text-sm lg:text-base font-black text-[var(--text-primary)] focus:border-[var(--accent-primary)]/40 outline-none transition-all text-center placeholder:text-[var(--text-secondary)]/30"
                                         />
                                         <input
                                             placeholder="CVV"
@@ -2148,13 +2148,13 @@ const GreenRidePage = () => {
                                             value={cardForm.cvv}
                                             maxLength={3}
                                             onChange={(e) => setCardForm({ ...cardForm, cvv: e.target.value })}
-                                            className="h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-4 text-xs font-black text-[var(--text-primary)] focus:border-[var(--accent-primary)]/40 outline-none transition-all text-center placeholder:text-[var(--text-secondary)]/30"
+                                            className="h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-4 text-xs md:text-sm lg:text-base font-black text-[var(--text-primary)] focus:border-[var(--accent-primary)]/40 outline-none transition-all text-center placeholder:text-[var(--text-secondary)]/30"
                                         />
                                     </div>
                                     <button
                                         onClick={handleAddCard}
                                         disabled={!cardForm.number || !cardForm.name}
-                                        className="w-full h-14 bg-[var(--accent-primary)] text-[var(--bg-primary)] font-black uppercase tracking-[0.3em] text-[10px] rounded-2xl hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                                        className="w-full h-14 bg-[var(--accent-primary)] text-[var(--bg-primary)] font-black uppercase tracking-[0.3em] text-[10px] md:text-xs lg:text-sm rounded-2xl hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
                                         style={{ boxShadow: '0 0 30px var(--accent-primary-glow)' }}
                                     >
                                         Seal Securely
@@ -2166,24 +2166,24 @@ const GreenRidePage = () => {
                                         placeholder="Account Holder"
                                         value={bankForm.name}
                                         onChange={(e) => setBankForm({ ...bankForm, name: e.target.value })}
-                                        className="w-full h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-4 text-xs font-black text-[var(--text-primary)] focus:border-blue-400/40 outline-none transition-all placeholder:text-[var(--text-secondary)]/30"
+                                        className="w-full h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-4 text-xs md:text-sm lg:text-base font-black text-[var(--text-primary)] focus:border-blue-400/40 outline-none transition-all placeholder:text-[var(--text-secondary)]/30"
                                     />
                                     <input
                                         placeholder="IBAN"
                                         value={bankForm.iban}
                                         onChange={(e) => setBankForm({ ...bankForm, iban: e.target.value })}
-                                        className="w-full h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-4 text-xs font-black text-[var(--text-primary)] focus:border-blue-400/40 outline-none transition-all font-mono placeholder:text-[var(--text-secondary)]/30"
+                                        className="w-full h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-4 text-xs md:text-sm lg:text-base font-black text-[var(--text-primary)] focus:border-blue-400/40 outline-none transition-all font-mono placeholder:text-[var(--text-secondary)]/30"
                                     />
                                     <input
                                         placeholder="BIC / SWIFT"
                                         value={bankForm.bic}
                                         onChange={(e) => setBankForm({ ...bankForm, bic: e.target.value })}
-                                        className="w-full h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-4 text-xs font-black text-[var(--text-primary)] focus:border-blue-400/40 outline-none transition-all placeholder:text-[var(--text-secondary)]/30"
+                                        className="w-full h-12 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-xl px-4 text-xs md:text-sm lg:text-base font-black text-[var(--text-primary)] focus:border-blue-400/40 outline-none transition-all placeholder:text-[var(--text-secondary)]/30"
                                     />
                                     <button
                                         onClick={handleAddBank}
                                         disabled={!bankForm.iban || !bankForm.name}
-                                        className="w-full h-14 bg-blue-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                                        className="w-full h-14 bg-blue-500 text-white font-black uppercase tracking-widest text-[10px] md:text-xs lg:text-sm rounded-2xl hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
                                         style={{ boxShadow: '0 0 20px rgba(59,130,246,0.3)' }}
                                     >
                                         Verify Bank Link
@@ -2220,7 +2220,7 @@ const GreenRidePage = () => {
                                     <MessageSquare size={32} className="text-brand" />
                                 </div>
                                 <h3 className="text-black text-xl font-black italic uppercase tracking-widest">Hey Alex,</h3>
-                                <p className="text-black/40 text-[10px] font-bold uppercase tracking-widest mt-1">What's on your mind?</p>
+                                <p className="text-black/40 text-[10px] md:text-xs lg:text-sm font-bold uppercase tracking-widest mt-1">What's on your mind?</p>
                             </div>
 
                             <div className="relative group">
@@ -2228,9 +2228,9 @@ const GreenRidePage = () => {
                                     value={feedbackText}
                                     onChange={(e) => setFeedbackText(e.target.value)}
                                     placeholder="Share anything about the driver, car, or your experience..."
-                                    className="w-full h-32 bg-white/5 border border-white/5 rounded-2xl p-4 text-[11px] text-white placeholder:text-white/20 focus:outline-none focus:border-brand/40 focus:bg-white/10 transition-all resize-none font-medium"
+                                    className="w-full h-32 bg-white/5 border border-white/5 rounded-2xl p-4 text-[11px] md:text-sm lg:text-base text-white placeholder:text-white/20 focus:outline-none focus:border-brand/40 focus:bg-white/10 transition-all resize-none font-medium"
                                 />
-                                <div className="absolute bottom-3 right-3 text-[8px] font-black uppercase text-white/10 group-focus-within:text-brand/40 transition-colors">
+                                <div className="absolute bottom-3 right-3 text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-white/10 group-focus-within:text-brand/40 transition-colors">
                                     Live Channel
                                 </div>
                             </div>
@@ -2238,7 +2238,7 @@ const GreenRidePage = () => {
                             <div className="grid grid-cols-2 gap-3 mt-8">
                                 <button
                                     onClick={() => setShowFeedbackModal(false)}
-                                    className="h-12 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white/40 border border-white/5 hover:bg-white/5 transition-all"
+                                    className="h-12 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-white/40 border border-white/5 hover:bg-white/5 transition-all"
                                 >
                                     Not Now
                                 </button>
@@ -2250,7 +2250,7 @@ const GreenRidePage = () => {
                                             setShowFeedbackModal(false);
                                         }
                                     }}
-                                    className="h-12 rounded-2xl bg-brand text-dark-900 font-black uppercase tracking-widest text-[10px] hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)]"
+                                    className="h-12 rounded-2xl bg-brand text-dark-900 font-black uppercase tracking-widest text-[10px] md:text-xs lg:text-sm hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)]"
                                 >
                                     Send Feedback
                                 </button>
@@ -2281,7 +2281,7 @@ const GreenRidePage = () => {
                             <div className="absolute top-0 left-0 w-full h-1" style={{ background: '#EF4444' }} />
                             
                             <h3 className="text-[var(--text-primary)] text-xl font-black italic uppercase tracking-widest mb-2">End Trip Early?</h3>
-                            <p className="text-[var(--text-secondary)] opacity-60 text-[10px] font-bold uppercase tracking-widest mb-8">Please select a reason for the record</p>
+                            <p className="text-[var(--text-secondary)] opacity-60 text-[10px] md:text-xs lg:text-sm font-bold uppercase tracking-widest mb-8">Please select a reason for the record</p>
 
                             <div className="space-y-3 mb-6">
                                 {[
@@ -2297,7 +2297,7 @@ const GreenRidePage = () => {
                                         style={{ border: '1px solid', borderColor: endTripReason === reason.id ? '#EF4444' : 'var(--border-main)' }}
                                     >
                                         <span className="text-xl">{reason.icon}</span>
-                                        <span className={`flex-1 text-left text-[11px] font-black uppercase tracking-widest ${endTripReason === reason.id ? 'text-red-500' : 'text-[var(--text-secondary)] opacity-80 group-hover:text-[var(--text-primary)]'}`}>{reason.label}</span>
+                                        <span className={`flex-1 text-left text-[11px] md:text-sm lg:text-base font-black uppercase tracking-widest ${endTripReason === reason.id ? 'text-red-500' : 'text-[var(--text-secondary)] opacity-80 group-hover:text-[var(--text-primary)]'}`}>{reason.label}</span>
                                         {endTripReason === reason.id && <div className="w-2 h-2 rounded-full bg-red-500" />}
                                     </button>
                                 ))}
@@ -2310,7 +2310,7 @@ const GreenRidePage = () => {
                                         setShowEndTripReasons(false);
                                         triggerNotification('system', 'Trip Terminated', endTripReason ? `Trip ended early: ${endTripReason}` : 'Trip ended early by user request.');
                                     }}
-                                    className="w-full h-14 rounded-2xl bg-[#EF4444] text-white font-black uppercase tracking-[0.2em] text-[11px] hover:brightness-110 active:scale-95 transition-all shadow-[0_10px_25px_rgba(239,68,68,0.2)]"
+                                    className="w-full h-14 rounded-2xl bg-[#EF4444] text-white font-black uppercase tracking-[0.2em] text-[11px] md:text-sm lg:text-base hover:brightness-110 active:scale-95 transition-all shadow-[0_10px_25px_rgba(239,68,68,0.2)]"
                                 >
                                     Confirm End Trip
                                 </button>
@@ -2320,7 +2320,7 @@ const GreenRidePage = () => {
                                         setShowEndTripReasons(false);
                                         setEndTripReason(null);
                                     }}
-                                    className="w-full h-12 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-60 border border-[var(--border-main)] hover:bg-[var(--text-primary)]/5 transition-all"
+                                    className="w-full h-12 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-60 border border-[var(--border-main)] hover:bg-[var(--text-primary)]/5 transition-all"
                                 >
                                     Cancel & Continue
                                 </button>
@@ -2416,7 +2416,7 @@ const GreenRidePage = () => {
                     {serviceType === 'shared' && rideStatus === 'in_ride' && (
                         <button
                             onClick={() => socket?.emit('simulate-pool-match', { passengerId: user?.email || 'alex-passenger-id' })}
-                            className="absolute bottom-24 left-4 z-[70] bg-[var(--brand)] text-black text-xs font-black px-4 py-2 rounded-xl shadow-lg border border-black"
+                            className="absolute bottom-24 left-4 z-[70] bg-[var(--brand)] text-black text-xs md:text-sm lg:text-base font-black px-4 py-2 rounded-xl shadow-lg border border-black"
                         >
                             Dev: Test Match
                         </button>
@@ -2451,7 +2451,7 @@ const GreenRidePage = () => {
                                     <img src={showPoolRequest.image} alt={showPoolRequest.name} className="w-full h-full object-cover" />
                                 </div>
                                 <div>
-                                    <div className="text-[10px] text-[var(--brand)] font-black uppercase tracking-widest mb-1 animate-pulse">New Request</div>
+                                    <div className="text-[10px] md:text-xs lg:text-sm text-[var(--brand)] font-black uppercase tracking-widest mb-1 animate-pulse">New Request</div>
                                     <h3 className="text-white font-black text-xl italic leading-tight">{showPoolRequest.name}</h3>
                                     <div className="flex items-center gap-1.5 mt-1 opacity-80">
                                         <Star className="w-3.5 h-3.5 text-[var(--brand)] fill-current" />
@@ -2540,7 +2540,7 @@ const GreenRidePage = () => {
                                         }
                                     >
                                         <p className="text-sm leading-relaxed tracking-tight">{msg.text}</p>
-                                        <p className={`text-[9px] mt-1 opacity-50 ${msg.sender === 'user' ? 'text-white/60' : 'text-[var(--text-secondary)]'}`}>
+                                        <p className={`text-[9px] md:text-[11px] lg:text-xs mt-1 opacity-50 ${msg.sender === 'user' ? 'text-white/60' : 'text-[var(--text-secondary)]'}`}>
                                             {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </p>
                                     </div>
@@ -2591,14 +2591,14 @@ const GreenRidePage = () => {
                             </div>
                             <div className="space-y-2">
                                 <h3 className="text-xl font-black italic uppercase text-[var(--text-primary)] tracking-tight">Social Connection</h3>
-                                <p className="text-xs text-[var(--text-secondary)] opacity-80 leading-relaxed px-4">
+                                <p className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] opacity-80 leading-relaxed px-4">
                                     Do you give permission to send a secure friend request to <span className="text-[var(--text-primary)] font-black">{showFriendConfirm.name}</span>?
                                 </p>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <button 
                                     onClick={() => setShowFriendConfirm(null)}
-                                    className="h-14 rounded-2xl border border-[var(--border-main)] text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-60 hover:bg-[var(--text-primary)]/5 transition-colors"
+                                    className="h-14 rounded-2xl border border-[var(--border-main)] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-60 hover:bg-[var(--text-primary)]/5 transition-colors"
                                 >
                                     Decline
                                 </button>
@@ -2608,7 +2608,7 @@ const GreenRidePage = () => {
                                         setShowFriendConfirm(null);
                                         triggerNotification("SOCIAL SIGNAL SENT", "SUCCESS");
                                     }}
-                                    className="h-14 rounded-2xl bg-[var(--text-primary)] text-[var(--bg-primary)] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-black/20 hover:scale-105 active:scale-95 transition-all border border-[var(--border-main)]"
+                                    className="h-14 rounded-2xl bg-[var(--text-primary)] text-[var(--bg-primary)] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-black/20 hover:scale-105 active:scale-95 transition-all border border-[var(--border-main)]"
                                 >
                                     Authorize
                                 </button>
@@ -2648,11 +2648,11 @@ const GreenRidePage = () => {
                                 </div>
                                 
                                 <h2 className="text-2xl font-black italic uppercase tracking-tighter text-[var(--text-primary)]">{showDriverProfile.name}</h2>
-                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-secondary)] opacity-60 mt-1">{showDriverProfile.car} • {showDriverProfile.plate}</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.4em] text-[var(--text-secondary)] opacity-60 mt-1">{showDriverProfile.car} • {showDriverProfile.plate}</p>
                                 
                                 <div className="flex items-center gap-6 mt-8">
                                     <div className="text-center">
-                                        <p className="text-[8px] font-black uppercase text-[var(--text-secondary)] opacity-60 tracking-widest mb-1">Rating</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-[var(--text-secondary)] opacity-60 tracking-widest mb-1">Rating</p>
                                         <div className="flex items-center gap-1">
                                             <Star size={12} className="fill-yellow-400 text-yellow-400" />
                                             <span className="text-sm font-black text-[var(--text-primary)]">{showDriverProfile.rating}</span>
@@ -2660,12 +2660,12 @@ const GreenRidePage = () => {
                                     </div>
                                     <div className="w-px h-8 bg-black/5" />
                                     <div className="text-center">
-                                        <p className="text-[8px] font-black uppercase text-black/40 tracking-widest mb-1">Arrival</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-black/40 tracking-widest mb-1">Arrival</p>
                                         <span className="text-sm font-black text-black">{showDriverProfile.eta}</span>
                                     </div>
                                     <div className="w-px h-8 bg-black/5" />
                                     <div className="text-center">
-                                        <p className="text-[8px] font-black uppercase text-black/40 tracking-widest mb-1">Unit ID</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-black/40 tracking-widest mb-1">Unit ID</p>
                                         <span className="text-sm font-black text-black">#{showDriverProfile.id}</span>
                                     </div>
                                 </div>
@@ -2676,7 +2676,7 @@ const GreenRidePage = () => {
                                             setShowDriverProfile(null);
                                             setSelectedDriverId(null);
                                         }}
-                                        className="h-16 rounded-[2rem] border-2 border-[var(--border-main)] text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-60 hover:bg-[var(--text-primary)]/5 transition-all"
+                                        className="h-16 rounded-[2rem] border-2 border-[var(--border-main)] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-60 hover:bg-[var(--text-primary)]/5 transition-all"
                                     >
                                         Go Back
                                     </button>
@@ -2685,7 +2685,7 @@ const GreenRidePage = () => {
                                             setShowWhistleConfirm(showDriverProfile);
                                             setShowDriverProfile(null);
                                         }}
-                                        className="h-16 rounded-[2rem] bg-[var(--text-primary)] text-[var(--bg-primary)] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-black/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 border border-[var(--border-main)]"
+                                        className="h-16 rounded-[2rem] bg-[var(--text-primary)] text-[var(--bg-primary)] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-black/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 border border-[var(--border-main)]"
                                     >
                                         <Zap size={14} className="fill-[var(--bg-primary)]" /> Whistle Now
                                     </button>
@@ -2717,7 +2717,7 @@ const GreenRidePage = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">Mission Authorization</h3>
-                                    <p className="text-[10px] text-[var(--text-secondary)] opacity-60 font-bold uppercase tracking-widest mt-2 px-6 leading-relaxed">
+                                    <p className="text-[10px] md:text-xs lg:text-sm text-[var(--text-secondary)] opacity-60 font-bold uppercase tracking-widest mt-2 px-6 leading-relaxed">
                                         Do you authorize the system to send a priority whistle request to <span className="text-[var(--text-primary)] font-black">{showWhistleConfirm.name}</span>?
                                     </p>
                                 </div>
@@ -2730,13 +2730,13 @@ const GreenRidePage = () => {
                                         setShowWhistleConfirm(null);
                                         handleExecute();
                                     }}
-                                    className="h-16 rounded-2xl bg-[var(--text-primary)] text-[var(--bg-primary)] text-[11px] font-black uppercase tracking-[0.3em] italic shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 border border-[var(--border-main)]"
+                                    className="h-16 rounded-2xl bg-[var(--text-primary)] text-[var(--bg-primary)] text-[11px] md:text-sm lg:text-base font-black uppercase tracking-[0.3em] italic shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 border border-[var(--border-main)]"
                                 >
                                     <Zap size={18} className="fill-[var(--bg-primary)]" /> Authorize Whistle
                                 </button>
                                 <button 
                                     onClick={() => setShowWhistleConfirm(null)}
-                                    className="h-12 rounded-2xl text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-60 hover:text-[var(--text-primary)] transition-colors"
+                                    className="h-12 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-60 hover:text-[var(--text-primary)] transition-colors"
                                 >
                                     Cancel Mission
                                 </button>
@@ -2766,7 +2766,7 @@ const GreenRidePage = () => {
                             </div>
                             <div>
                                 <h3 className="text-xl font-black italic uppercase text-[var(--text-primary)] mb-2 tracking-wide">No Drivers in 5km</h3>
-                                <p className="text-xs text-[var(--text-secondary)] opacity-80 leading-relaxed">
+                                <p className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] opacity-80 leading-relaxed">
                                     We couldn't find a driver nearby. Would you like to expand the search radius to 10km for a €3.00 surcharge to attract drivers from further away?
                                 </p>
                             </div>
@@ -2776,7 +2776,7 @@ const GreenRidePage = () => {
                                         setShowExpansionPrompt(false);
                                         if (socket) socket.emit('expand-search-radius', { passengerId: user?.email || `guest-${Date.now()}` });
                                     }}
-                                    className="w-full bg-[var(--text-primary)] text-[var(--bg-primary)] font-black uppercase text-xs tracking-widest py-4 rounded-xl hover:opacity-90"
+                                    className="w-full bg-[var(--text-primary)] text-[var(--bg-primary)] font-black uppercase text-xs md:text-sm lg:text-base tracking-widest py-4 rounded-xl hover:opacity-90"
                                 >
                                     Expand to 10km (+€3.00)
                                 </button>
@@ -2785,7 +2785,7 @@ const GreenRidePage = () => {
                                         setShowExpansionPrompt(false);
                                         if (socket) socket.emit('wait-in-radius', { passengerId: user?.email || `guest-${Date.now()}` });
                                     }}
-                                    className="w-full bg-transparent border border-[var(--border-main)] text-[var(--text-primary)] font-bold uppercase text-[10px] tracking-wider py-4 rounded-xl hover:bg-[var(--text-primary)]/5"
+                                    className="w-full bg-transparent border border-[var(--border-main)] text-[var(--text-primary)] font-bold uppercase text-[10px] md:text-xs lg:text-sm tracking-wider py-4 rounded-xl hover:bg-[var(--text-primary)]/5"
                                 >
                                     Keep waiting in 5km
                                 </button>

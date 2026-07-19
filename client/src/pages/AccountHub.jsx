@@ -195,7 +195,7 @@ const AccountHub = () => {
                     <h1 className="text-xl font-black italic tracking-tighter uppercase text-primary">
                         {isChangingPassword ? 'Security Protocol' : 'Account & Security'}
                     </h1>
-                    <p className="text-[8px] font-black uppercase tracking-[0.3em] text-secondary mt-0.5">
+                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] text-secondary mt-0.5">
                         {isChangingPassword ? 'Credential Update' : 'Secure Identity Hub'}
                     </p>
                 </div>
@@ -218,12 +218,12 @@ const AccountHub = () => {
                                         <Lock size={32} />
                                     </div>
                                     <h2 className="text-xl font-black italic uppercase text-primary">New Credential</h2>
-                                    <p className="text-[10px] text-secondary font-bold uppercase tracking-widest">Enter your high-security password</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm text-secondary font-bold uppercase tracking-widest">Enter your high-security password</p>
                                 </div>
 
                                 <div className="space-y-4">
                                     <div className="p-6 bg-dark-950 border border-main rounded-[2rem] text-left">
-                                        <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-2">New Password</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-2">New Password</p>
                                         <input 
                                             type="password"
                                             value={newPassword}
@@ -234,7 +234,7 @@ const AccountHub = () => {
                                     </div>
                                     
                                     <div className="p-6 bg-dark-950 border border-main rounded-[2rem] text-left">
-                                        <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-2">Confirm Password</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-2">Confirm Password</p>
                                         <input 
                                             type="password"
                                             value={confirmPassword}
@@ -263,7 +263,7 @@ const AccountHub = () => {
                                             <button 
                                                 disabled={!isMatching}
                                                 onClick={handlePasswordChange}
-                                                className={`w-full py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl transition-all ${btnClass}`}
+                                                className={`w-full py-6 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] shadow-xl transition-all ${btnClass}`}
                                             >
                                                 {btnText}
                                             </button>
@@ -278,17 +278,17 @@ const AccountHub = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <h2 className="text-2xl font-black italic uppercase text-primary">Verify Dispatch</h2>
-                                    <p className="text-xs text-secondary font-bold uppercase tracking-widest leading-relaxed">
+                                    <p className="text-xs md:text-sm lg:text-base text-secondary font-bold uppercase tracking-widest leading-relaxed">
                                         We've sent a secure confirmation link to <br/>
                                         <span className="text-primary font-black">{profile.email}</span>
                                     </p>
                                 </div>
 
                                 <div className="p-6 bg-dark-950 border border-dashed border-main rounded-[2rem]">
-                                    <p className="text-[9px] text-secondary font-black uppercase tracking-[0.3em] mb-4">Waiting for Protocol Confirmation...</p>
+                                    <p className="text-[9px] md:text-[11px] lg:text-xs text-secondary font-black uppercase tracking-[0.3em] mb-4">Waiting for Protocol Confirmation...</p>
                                     <button 
                                         onClick={handleConfirmReset}
-                                        className="w-full py-5 bg-black text-white border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
+                                        className="w-full py-5 bg-black text-white border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
                                     >
                                         Confirm via Email (Simulated)
                                     </button>
@@ -305,24 +305,24 @@ const AccountHub = () => {
                                     <img src={profilePic} alt="Me" className="w-full h-full rounded-full object-cover" />
                                 </div>
                                 <div className="flex flex-col gap-3 flex-1 text-left">
-                                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-secondary">Update Profile Picture</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-secondary">Update Profile Picture</p>
                                     <div className="flex gap-2">
                                         <button 
                                             onClick={() => triggerInput('gallery-input')}
-                                            className="flex-1 py-3 bg-black border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 text-white hover:bg-brand hover:text-dark-900 transition-all"
+                                            className="flex-1 py-3 bg-black border border-white/10 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 text-white hover:bg-brand hover:text-dark-900 transition-all"
                                         >
                                             <ImageIcon size={14} className="text-white group-hover:text-inherit" /> Gallery
                                         </button>
                                         <button 
                                             onClick={() => triggerInput('selfie-input')}
-                                            className="flex-1 py-3 bg-black border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 text-white hover:bg-brand hover:text-dark-900 transition-all"
+                                            className="flex-1 py-3 bg-black border border-white/10 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 text-white hover:bg-brand hover:text-dark-900 transition-all"
                                         >
                                             <Camera size={14} className="text-white group-hover:text-inherit" /> Selfie
                                         </button>
                                     </div>
                                     <button 
                                         onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-                                        className="w-full py-3 bg-black text-white border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
+                                        className="w-full py-3 bg-black text-white border border-white/10 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
                                     >
                                         {isEditing ? 'Save Changes' : 'Edit Profile'}
                                     </button>
@@ -332,10 +332,10 @@ const AccountHub = () => {
 
                         {/* Personal Records */}
                         <section className="space-y-4">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-secondary px-2 italic text-left">Personal Records</h3>
+                            <h3 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-secondary px-2 italic text-left">Personal Records</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-1 p-8 bg-dark-900 border border-main rounded-[2.5rem] shadow-sm text-left">
-                                    <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-1">First Name</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-1">First Name</p>
                                     {isEditing ? (
                                         <input 
                                             type="text"
@@ -348,7 +348,7 @@ const AccountHub = () => {
                                     )}
                                 </div>
                                 <div className="col-span-1 p-8 bg-dark-900 border border-main rounded-[2.5rem] shadow-sm text-left">
-                                    <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-1">Last Name</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-1">Last Name</p>
                                     {isEditing ? (
                                         <input 
                                             type="text"
@@ -362,7 +362,7 @@ const AccountHub = () => {
                                 </div>
                                 <div className="col-span-2 p-8 bg-dark-900 border border-main rounded-[2.5rem] shadow-sm flex items-center justify-between text-left">
                                     <div className="flex-1">
-                                        <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-1">Address</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-1">Address</p>
                                         {isEditing ? (
                                             <input 
                                                 type="text"
@@ -377,7 +377,7 @@ const AccountHub = () => {
                                     <MapPin size={18} className="text-gray-500 ml-4 shrink-0" />
                                 </div>
                                 <div className="col-span-1 p-8 bg-dark-900 border border-main rounded-[2.5rem] shadow-sm text-left">
-                                    <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-1">Zip Code</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-1">Zip Code</p>
                                     {isEditing ? (
                                         <input 
                                             type="text"
@@ -390,7 +390,7 @@ const AccountHub = () => {
                                     )}
                                 </div>
                                 <div className="col-span-1 p-8 bg-dark-900 border border-main rounded-[2.5rem] shadow-sm text-left">
-                                    <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-1">City</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-1">City</p>
                                     {isEditing ? (
                                         <input 
                                             type="text"
@@ -404,7 +404,7 @@ const AccountHub = () => {
                                 </div>
                                 <div className="col-span-2 p-8 bg-dark-900 border border-main rounded-[2.5rem] shadow-sm flex items-center justify-between text-left">
                                     <div className="flex-1">
-                                        <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-1">Email Address</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-1">Email Address</p>
                                         {isEditing ? (
                                             <input 
                                                 type="email"
@@ -420,7 +420,7 @@ const AccountHub = () => {
                                 </div>
                                 <div className="col-span-2 p-8 bg-dark-900 border border-main rounded-[2.5rem] shadow-sm flex items-center justify-between text-left">
                                     <div className="flex-1">
-                                        <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-1">Phone Number</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-1">Phone Number</p>
                                         {isEditing ? (
                                             <input 
                                                 type="tel"
@@ -436,7 +436,7 @@ const AccountHub = () => {
                                 </div>
                                 <div className="col-span-2 p-8 bg-dark-900 border border-main rounded-[2.5rem] shadow-sm flex items-center justify-between text-left">
                                     <div className="flex-1">
-                                        <p className="text-[8px] font-black text-secondary uppercase tracking-widest mb-1">Age / Alter</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-1">Age / Alter</p>
                                         {isEditing ? (
                                             <input 
                                                 type="number"
@@ -455,11 +455,11 @@ const AccountHub = () => {
 
                         {/* Security Access */}
                         <section className="space-y-4">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-secondary px-2 italic text-left">Security Access</h3>
+                            <h3 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-secondary px-2 italic text-left">Security Access</h3>
                             <div className="p-1 border border-main rounded-[2.5rem] bg-dark-900">
                                 <button 
                                     onClick={() => setIsChangingPassword(true)}
-                                    className="w-full py-6 bg-black text-white border border-white/10 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-black/90 transition-all animate-pulse"
+                                    className="w-full py-6 bg-black text-white border border-white/10 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-black/90 transition-all animate-pulse"
                                 >
                                     <Lock size={16} /> Change Password
                                 </button>
@@ -472,7 +472,7 @@ const AccountHub = () => {
             <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] bg-gradient-to-t from-dark-950 via-dark-950/90 to-transparent">
                 <button 
                     onClick={() => navigate(-1)}
-                    className="w-full py-6 border border-main rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-98 transition-all"
+                    className="w-full py-6 border border-main rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-98 transition-all"
                     style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                 >
                     Confirm & Return

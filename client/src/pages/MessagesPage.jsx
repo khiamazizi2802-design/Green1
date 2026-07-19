@@ -155,7 +155,7 @@ const MessagesPage = () => {
                         initial={{ y: -50, opacity: 0, x: "-50%" }} 
                         animate={{ y: 20, opacity: 1, x: "-50%" }} 
                         exit={{ y: -50, opacity: 0, x: "-50%" }} 
-                        className="fixed top-12 left-1/2 z-[100] px-6 py-3.5 bg-brand text-dark-950 font-black italic uppercase text-[10px] rounded-full shadow-2xl flex items-center gap-3 whitespace-nowrap"
+                        className="fixed top-12 left-1/2 z-[100] px-6 py-3.5 bg-brand text-dark-950 font-black italic uppercase text-[10px] md:text-xs lg:text-sm rounded-full shadow-2xl flex items-center gap-3 whitespace-nowrap"
                     >
                         <Sparkles size={14} className="fill-dark-900 animate-spin" />
                         {toastMessage}
@@ -175,7 +175,7 @@ const MessagesPage = () => {
                         </button>
                         <div className="text-center">
                             <h1 className="text-2xl font-black italic uppercase tracking-tighter text-primary">Green Inbox</h1>
-                            <p className="text-[8px] font-black uppercase text-brand tracking-[0.22em]">Authorized Direct Grid</p>
+                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-brand tracking-[0.22em]">Authorized Direct Grid</p>
                         </div>
                         <div className="w-12 h-12" /> {/* Spacer */}
                     </header>
@@ -192,7 +192,7 @@ const MessagesPage = () => {
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`py-3 rounded-xl text-[8px] font-black uppercase tracking-wider transition-all ${activeTab === tab.id ? 'bg-brand text-dark-950 shadow-md font-black' : 'text-gray-400 hover:text-white'}`}
+                                    className={`py-3 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider transition-all ${activeTab === tab.id ? 'bg-brand text-dark-950 shadow-md font-black' : 'text-gray-400 hover:text-white'}`}
                                 >
                                     {tab.label}
                                 </button>
@@ -205,8 +205,8 @@ const MessagesPage = () => {
                                 <ShieldAlert size={20} />
                             </div>
                             <div className="space-y-0.5">
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-brand">Direct Transmission Protocol</span>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase leading-relaxed">
+                                <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand">Direct Transmission Protocol</span>
+                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 font-bold uppercase leading-relaxed">
                                     To protect passenger privacy, you will only receive direct chat transmissions from verified staff, drivers, managers, and customers who are in your Friends list.
                                 </p>
                             </div>
@@ -234,13 +234,13 @@ const MessagesPage = () => {
                                             
                                             <div className="min-w-0">
                                                 <h4 className="text-sm font-black italic uppercase text-primary truncate leading-none">{friend.name}</h4>
-                                                <span className="text-[9px] font-black uppercase tracking-wider block mt-1.5 text-secondary">{friend.role}</span>
+                                                <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-wider block mt-1.5 text-secondary">{friend.role}</span>
                                             </div>
                                         </div>
 
                                         <button
                                             onClick={() => handleStartChat(friend)}
-                                            className="px-5 py-3.5 bg-brand hover:scale-105 active:scale-95 text-dark-950 text-[10px] font-black uppercase tracking-wider rounded-2xl transition-all shadow-lg flex items-center gap-2"
+                                            className="px-5 py-3.5 bg-brand hover:scale-105 active:scale-95 text-dark-950 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-wider rounded-2xl transition-all shadow-lg flex items-center gap-2"
                                             style={{ backgroundColor: 'var(--brand)' }}
                                         >
                                             Chat Now <MessageCircle size={14} className="fill-dark-950" />
@@ -283,21 +283,21 @@ const MessagesPage = () => {
                                             <div className="flex justify-between items-center gap-2">
                                                 <div className="min-w-0">
                                                     <h4 className="text-sm font-black italic uppercase truncate leading-none text-primary">{item.sender}</h4>
-                                                    <span className="text-[9px] font-black uppercase tracking-wider block mt-1.5 text-secondary">{item.role}</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-wider block mt-1.5 text-secondary">{item.role}</span>
                                                 </div>
-                                                <span className="text-[9px] font-bold uppercase shrink-0 text-secondary">{item.time}</span>
+                                                <span className="text-[9px] md:text-[11px] lg:text-xs font-bold uppercase shrink-0 text-secondary">{item.time}</span>
                                             </div>
 
                                             <div className="space-y-1">
-                                                <p className="text-xs font-black uppercase italic tracking-tight truncate text-brand">{item.subject}</p>
-                                                <p className="text-xs font-medium leading-relaxed truncate text-secondary">{item.preview}</p>
+                                                <p className="text-xs md:text-sm lg:text-base font-black uppercase italic tracking-tight truncate text-brand">{item.subject}</p>
+                                                <p className="text-xs md:text-sm lg:text-base font-medium leading-relaxed truncate text-secondary">{item.preview}</p>
                                             </div>
 
                                             <div className="flex items-center justify-between pt-2.5 border-t border-white/10">
-                                                <span className={`text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg ${item.type === 'offer' ? 'bg-brand/10 text-brand border border-brand/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
+                                                <span className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-lg ${item.type === 'offer' ? 'bg-brand/10 text-brand border border-brand/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
                                                     {item.tag}
                                                 </span>
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-brand flex items-center gap-1.5 italic">
+                                                <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-brand flex items-center gap-1.5 italic">
                                                     {item.type === 'offer' ? 'Claim Offer' : 'Open Chat'} <ArrowRight size={12} />
                                                 </span>
                                             </div>
@@ -308,7 +308,7 @@ const MessagesPage = () => {
                                 {filteredItems.length === 0 && (
                                     <div className="py-20 text-center space-y-4">
                                         <MessageSquare size={36} className="text-gray-600 mx-auto opacity-30" />
-                                        <p className="text-xs font-black uppercase tracking-widest text-gray-600 italic">No items found in this category</p>
+                                        <p className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-gray-600 italic">No items found in this category</p>
                                     </div>
                                 )}
                             </div>
@@ -333,14 +333,14 @@ const MessagesPage = () => {
 
                         <div className="text-left min-w-0">
                             <h3 className="text-base font-black italic uppercase tracking-tight text-primary leading-none truncate">{activeChatThread.name}</h3>
-                            <span className="text-[9px] font-black uppercase text-brand tracking-[0.2em] block mt-1.5 truncate">{activeChatThread.role}</span>
+                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-brand tracking-[0.2em] block mt-1.5 truncate">{activeChatThread.role}</span>
                         </div>
                     </header>
 
                     {/* Scrollable Chat Area */}
                     <div className="flex-1 p-6 space-y-4 overflow-y-auto no-scrollbar pb-36 max-w-lg mx-auto w-full">
                         <div className="py-4 text-center">
-                            <span className="text-[8px] font-black uppercase tracking-[0.3em] bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-gray-500">
+                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-gray-500">
                                 🔒 Secure End-to-End Encryption
                             </span>
                         </div>
@@ -350,10 +350,10 @@ const MessagesPage = () => {
                             return (
                                 <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} w-full`}>
                                     <div className={`max-w-[85%] rounded-[2rem] p-5 shadow-lg border text-left ${isMe ? 'bg-brand text-dark-950 border-brand/20 rounded-tr-none' : 'bg-[#161616] text-white border-white/10 rounded-tl-none'}`}>
-                                        <p className="text-xs font-bold leading-relaxed break-words" style={isMe ? { color: '#090d16' } : { color: '#ffffff' }}>
+                                        <p className="text-xs md:text-sm lg:text-base font-bold leading-relaxed break-words" style={isMe ? { color: '#090d16' } : { color: '#ffffff' }}>
                                             {msg.text}
                                         </p>
-                                        <span className={`text-[8px] font-black block mt-2 text-right uppercase tracking-wider ${isMe ? 'text-dark-950/60' : 'text-gray-500'}`}>
+                                        <span className={`text-[8px] md:text-[10px] lg:text-xs font-black block mt-2 text-right uppercase tracking-wider ${isMe ? 'text-dark-950/60' : 'text-gray-500'}`}>
                                             {msg.time} {isMe && '✓✓'}
                                         </span>
                                     </div>
@@ -371,7 +371,7 @@ const MessagesPage = () => {
                                 placeholder={`Write secure message to ${activeChatThread.name}...`}
                                 value={chatInput}
                                 onChange={(e) => setChatInput(e.target.value)}
-                                className="w-full bg-dark-900 border border-main text-primary rounded-[2rem] p-5 pr-16 text-xs font-bold focus:border-brand/40 outline-none shadow-2xl placeholder:text-gray-500"
+                                className="w-full bg-dark-900 border border-main text-primary rounded-[2rem] p-5 pr-16 text-xs md:text-sm lg:text-base font-bold focus:border-brand/40 outline-none shadow-2xl placeholder:text-gray-500"
                             />
                             <button 
                                 type="submit"
@@ -414,17 +414,17 @@ const MessagesPage = () => {
                                 </div>
                                 <div>
                                     <h4 className="text-xl font-black italic uppercase tracking-tighter leading-none">{selectedItem.sender}</h4>
-                                    <p className="text-[9px] font-black uppercase text-brand tracking-[0.2em] mt-1.5">{selectedItem.role}</p>
+                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-brand tracking-[0.2em] mt-1.5">{selectedItem.role}</p>
                                     <span className="text-[7px] text-gray-500 font-bold uppercase tracking-widest block mt-1">{selectedItem.time}</span>
                                 </div>
                             </div>
 
                             <div className="space-y-4 text-left">
-                                <span className={`inline-block text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${selectedItem.type === 'offer' ? 'bg-brand/10 text-brand border border-brand/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
+                                <span className={`inline-block text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full ${selectedItem.type === 'offer' ? 'bg-brand/10 text-brand border border-brand/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
                                     {selectedItem.tag}
                                 </span>
                                 <h3 className="text-lg font-black italic uppercase tracking-tight leading-snug text-primary">{selectedItem.subject}</h3>
-                                <p className="text-xs font-bold leading-relaxed p-6 rounded-3xl border border-main bg-dark-950 text-primary">
+                                <p className="text-xs md:text-sm lg:text-base font-bold leading-relaxed p-6 rounded-3xl border border-main bg-dark-950 text-primary">
                                     {selectedItem.content}
                                 </p>
                             </div>
@@ -435,7 +435,7 @@ const MessagesPage = () => {
                                     {isClaiming && (
                                         <div className="space-y-3">
                                             <RefreshCw size={24} className="text-brand animate-spin mx-auto" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-brand">Verifying Digital Signature...</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand">Verifying Digital Signature...</p>
                                         </div>
                                     )}
                                     {claimSuccess && (
@@ -443,8 +443,8 @@ const MessagesPage = () => {
                                             <div className="w-10 h-10 rounded-full bg-brand/15 border border-brand/30 text-brand flex items-center justify-center mx-auto">
                                                 <CheckCircle2 size={20} className="text-brand" />
                                             </div>
-                                            <p className="text-xs font-black uppercase italic text-white pt-1">Voucher Securely Dispatched! 📧</p>
-                                            <p className="text-[10px] font-bold leading-relaxed text-secondary">
+                                            <p className="text-xs md:text-sm lg:text-base font-black uppercase italic text-white pt-1">Voucher Securely Dispatched! 📧</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-bold leading-relaxed text-secondary">
                                                 The exclusive access perk has been successfully sent to <span className="text-white font-black inline-block">passenger@green.de</span>. Please check your inbox!
                                             </p>
                                         </div>
@@ -458,7 +458,7 @@ const MessagesPage = () => {
                                     <button 
                                         onClick={() => handleClaimOffer(selectedItem)}
                                         disabled={isClaiming || claimSuccess}
-                                        className={`w-full py-5 font-black uppercase tracking-[0.2em] italic text-xs rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all active:scale-95 ${claimSuccess ? 'bg-white/5 text-gray-500 cursor-not-allowed border border-white/5' : 'bg-brand text-dark-950 hover:scale-[1.02]'}`}
+                                        className={`w-full py-5 font-black uppercase tracking-[0.2em] italic text-xs md:text-sm lg:text-base rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all active:scale-95 ${claimSuccess ? 'bg-white/5 text-gray-500 cursor-not-allowed border border-white/5' : 'bg-brand text-dark-950 hover:scale-[1.02]'}`}
                                         style={claimSuccess ? {} : { backgroundColor: 'var(--brand)' }}
                                     >
                                         {claimSuccess ? 'Offer Claimed ✓' : isClaiming ? 'Claiming perk...' : selectedItem.actionText} <ArrowRight size={14} />
@@ -469,7 +469,7 @@ const MessagesPage = () => {
                                             setSelectedItem(null);
                                             navigate(selectedItem.actionRoute);
                                         }}
-                                        className="w-full py-5 bg-brand text-dark-950 font-black uppercase tracking-[0.2em] italic text-xs rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                        className="w-full py-5 bg-brand text-dark-950 font-black uppercase tracking-[0.2em] italic text-xs md:text-sm lg:text-base rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                                         style={{ backgroundColor: 'var(--brand)' }}
                                     >
                                         {selectedItem.actionText} <ArrowRight size={14} />
@@ -477,7 +477,7 @@ const MessagesPage = () => {
                                 )}
                                 <button 
                                     onClick={() => setSelectedItem(null)}
-                                    className="w-full py-5 bg-white/5 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-white/10 transition-all border border-white/5 active:scale-95"
+                                    className="w-full py-5 bg-white/5 text-white font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm rounded-2xl hover:bg-white/10 transition-all border border-white/5 active:scale-95"
                                 >
                                     Dismiss Details
                                 </button>

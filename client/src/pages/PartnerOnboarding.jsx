@@ -47,8 +47,8 @@ const PartnerOnboarding = () => {
                     <ArrowLeft size={18} />
                 </button>
                 <div className="text-center">
-                    <h1 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand">Partner Onboarding</h1>
-                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">Joining the Green Ecosystem</p>
+                    <h1 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-brand">Partner Onboarding</h1>
+                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest mt-0.5">Joining the Green Ecosystem</p>
                 </div>
                 <div className="w-10 h-10 bg-brand/10 border border-brand/20 rounded-xl flex items-center justify-center text-brand">
                     <Building2 size={18} />
@@ -79,19 +79,19 @@ const PartnerOnboarding = () => {
                     >
                         <div className="text-center space-y-4">
                             <h2 className="text-3xl font-black italic uppercase tracking-tighter leading-none">{steps[step-1].title}</h2>
-                            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest leading-relaxed">{steps[step-1].desc}</p>
+                            <p className="text-xs md:text-sm lg:text-base text-gray-500 font-bold uppercase tracking-widest leading-relaxed">{steps[step-1].desc}</p>
                         </div>
 
                         {step === 1 && (
                             <div className="space-y-4">
                                 <div className="p-6 bg-white/5 rounded-3xl border border-white/10 space-y-4">
-                                    <input placeholder="LEGAL BUSINESS NAME" className="w-full bg-dark-950 border border-white/5 p-4 rounded-xl text-[10px] font-black uppercase outline-none focus:border-brand/50 transition-all" />
-                                    <select className="w-full bg-dark-950 border border-white/5 p-4 rounded-xl text-[10px] font-black uppercase outline-none focus:border-brand/50 transition-all">
+                                    <input placeholder="LEGAL BUSINESS NAME" className="w-full bg-dark-950 border border-white/5 p-4 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase outline-none focus:border-brand/50 transition-all" />
+                                    <select className="w-full bg-dark-950 border border-white/5 p-4 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase outline-none focus:border-brand/50 transition-all">
                                         <option>Business Type: Nightlife / Club</option>
                                         <option>Business Type: Restaurant / Bar</option>
                                         <option>Business Type: Hotel / Resort</option>
                                     </select>
-                                    <input placeholder="COMMERCIAL VAT ID" className="w-full bg-dark-950 border border-white/5 p-4 rounded-xl text-[10px] font-black uppercase outline-none focus:border-brand/50 transition-all" />
+                                    <input placeholder="COMMERCIAL VAT ID" className="w-full bg-dark-950 border border-white/5 p-4 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase outline-none focus:border-brand/50 transition-all" />
                                 </div>
                             </div>
                         )}
@@ -104,9 +104,9 @@ const PartnerOnboarding = () => {
                                     </div>
                                     <div className="space-y-2">
                                         <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">Final Security Layer</h3>
-                                        <p className="text-[9px] font-bold text-brand uppercase tracking-[0.2em]">Securing Financial Payouts & Compliance</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-brand uppercase tracking-[0.2em]">Securing Financial Payouts & Compliance</p>
                                     </div>
-                                    <p className="text-[8px] text-gray-400 font-bold uppercase leading-relaxed">
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 font-bold uppercase leading-relaxed">
                                         By proceeding, you authorize GREEN to act as the primary facilitator for group settlements and automated VAT separation.
                                     </p>
                                 </div>

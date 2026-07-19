@@ -75,7 +75,7 @@ const RideHistoryHub = () => {
                 </button>
                 <div className="text-center">
                     <h1 className="text-xl font-black italic tracking-tighter uppercase text-primary">Ride History</h1>
-                    <p className="text-[8px] font-black uppercase tracking-[0.3em] text-secondary mt-0.5">Fleet Mission Log</p>
+                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] text-secondary mt-0.5">Fleet Mission Log</p>
                 </div>
                 <div className="w-12 h-12 bg-dark-900 border border-main rounded-2xl flex items-center justify-center text-primary">
                     <History size={24} />
@@ -90,9 +90,9 @@ const RideHistoryHub = () => {
                             <TrendingUp size={60} className="text-brand" />
                         </div>
                         <div className="relative z-10 text-center space-y-2">
-                            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-brand">Fleet Stats ⚡</p>
+                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand">Fleet Stats ⚡</p>
                             <h2 className="text-4xl font-black italic tracking-tighter text-primary">{displayHistory.length}</h2>
-                            <p className="text-[8px] font-black uppercase tracking-widest text-secondary">Total Trips</p>
+                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-secondary">Total Trips</p>
                         </div>
                     </div>
                     <div className="p-8 bg-dark-900 border border-main rounded-[2.5rem] relative shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden group text-left">
@@ -100,16 +100,16 @@ const RideHistoryHub = () => {
                             <Trophy size={60} className="text-brand" />
                         </div>
                         <div className="relative z-10 text-center space-y-2">
-                            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-brand">Network Tier 💎</p>
+                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand">Network Tier 💎</p>
                             <h2 className="text-2xl font-black italic tracking-tighter text-primary">{memberSince}</h2>
-                            <p className="text-[8px] font-black uppercase tracking-widest text-secondary">Member Since</p>
+                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-secondary">Member Since</p>
                         </div>
                     </div>
                 </section>
 
                 {/* Past Services List */}
                 <section className="space-y-4">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-secondary px-2 italic text-left">Past Services</h3>
+                    <h3 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-secondary px-2 italic text-left">Past Services</h3>
                     <div className="space-y-4">
                         {displayHistory.map((ride, i) => (
                             <motion.div 
@@ -125,8 +125,8 @@ const RideHistoryHub = () => {
                                             <ride.icon size={24} />
                                         </div>
                                         <div className="text-left">
-                                            <h4 className="text-xs font-black italic tracking-widest text-primary uppercase">{ride.service}</h4>
-                                            <p className="text-[9px] font-black text-secondary uppercase tracking-widest mt-1">{ride.date}</p>
+                                            <h4 className="text-xs md:text-sm lg:text-base font-black italic tracking-widest text-primary uppercase">{ride.service}</h4>
+                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest mt-1">{ride.date}</p>
                                         </div>
                                     </div>
                                     <p className="text-base font-black italic text-primary">{ride.price}</p>
@@ -139,7 +139,7 @@ const RideHistoryHub = () => {
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <User size={14} className="text-gray-500" />
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-secondary">Driver: {ride.driver}</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-secondary">Driver: {ride.driver}</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -151,7 +151,7 @@ const RideHistoryHub = () => {
             <div className="fixed bottom-0 left-0 right-0 px-6 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] bg-gradient-to-t from-dark-950 via-dark-950/90 to-transparent">
                 <button 
                     onClick={() => navigate(-1)}
-                    className="w-full py-6 border border-main rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-95 transition-all"
+                    className="w-full py-6 border border-main rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-95 transition-all"
                     style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                 >
                     Return to Mission Hub

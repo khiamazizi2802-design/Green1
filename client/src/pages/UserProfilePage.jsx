@@ -106,21 +106,21 @@ const UserProfilePage = () => {
                             <h1 className="text-3xl font-black italic tracking-tighter uppercase leading-none text-[var(--text-primary)]">{friend.name}</h1>
                             <Star size={18} className="text-brand fill-brand animate-pulse" />
                         </div>
-                        <p className="text-brand font-black uppercase tracking-[0.2em] text-[10px] italic">{friend.username}</p>
+                        <p className="text-brand font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm italic">{friend.username}</p>
                     </div>
 
                     <div className="flex gap-4 mt-6">
                         <div className="px-6 py-3 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-center shadow-sm">
                             <span className="block text-xl font-black italic text-[var(--text-primary)]">{friend.mutuals}</span>
-                            <span className="text-[8px] font-black uppercase tracking-widest text-gray-900">Mutuals</span>
+                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-900">Mutuals</span>
                         </div>
                         <div className="px-6 py-3 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-center shadow-sm">
                             <span className="block text-xl font-black italic text-[var(--text-primary)]">428</span>
-                            <span className="text-[8px] font-black uppercase tracking-widest text-gray-900">Reputation</span>
+                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-900">Reputation</span>
                         </div>
                         <div className="px-6 py-3 bg-brand/10 border border-brand/20 rounded-2xl text-center">
                             <span className="block text-xl font-black italic text-brand">{friend.rank}</span>
-                            <span className="text-[8px] font-black uppercase tracking-widest text-brand">Status</span>
+                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-brand">Status</span>
                         </div>
                     </div>
 
@@ -152,7 +152,7 @@ const UserProfilePage = () => {
                                         setMutualFriends(prev => prev.filter(m => m.id !== friend.id && m.name !== friend.name));
                                     }
                                 }}
-                                className={`flex-[2] py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] italic transition-all flex items-center justify-center gap-2 shadow-xl ${
+                                className={`flex-[2] py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm italic transition-all flex items-center justify-center gap-2 shadow-xl ${
                                     friendStatus === 'added' ? 'bg-white text-dark-950 shadow-white/20' : 
                                     friendStatus === 'pending' ? 'bg-amber-500 text-white animate-pulse shadow-amber-500/20' :
                                     'bg-[#1A1A1A] text-white shadow-black/20'
@@ -161,11 +161,11 @@ const UserProfilePage = () => {
                                 <UserPlus size={16} />
                                 {friendStatus === 'added' ? 'Friends' : friendStatus === 'pending' ? 'Pending Request' : 'Add Friend'}
                             </button>
-                            <button className="flex-1 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] italic text-[var(--text-primary)] hover:bg-[var(--bg-primary)] transition-all shadow-sm">
+                            <button className="flex-1 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm italic text-[var(--text-primary)] hover:bg-[var(--bg-primary)] transition-all shadow-sm">
                                 Message
                             </button>
                         </div>
-                        <button className="w-full py-5 bg-[#1A1A1A] text-white border border-white/10 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] italic hover:scale-[1.01] active:scale-[0.99] transition-all shadow-xl">
+                        <button className="w-full py-5 bg-[#1A1A1A] text-white border border-white/10 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm italic hover:scale-[1.01] active:scale-[0.99] transition-all shadow-xl">
                             Invite to Social Group
                         </button>
                     </div>
@@ -177,14 +177,14 @@ const UserProfilePage = () => {
                             className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand/10 border border-brand/20 rounded-xl group hover:bg-brand/20 transition-all shadow-sm"
                         >
                             <Flag size={14} className="text-brand group-hover:scale-110 transition-transform" fill="currentColor" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-brand">Green Flag</span>
+                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand">Green Flag</span>
                         </button>
                         <button 
                             onClick={() => setShowRedFlagModal(true)}
                             className="flex-1 flex items-center justify-center gap-2 py-3 bg-red-500/10 border border-red-500/20 rounded-xl group hover:bg-red-500/20 transition-all"
                         >
                             <Flag size={14} className="text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-red-500">Red Flag</span>
+                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] text-red-500">Red Flag</span>
                         </button>
                     </div>
                 </div>
@@ -216,13 +216,13 @@ const UserProfilePage = () => {
                                             ENFORCEMENT PROTOCOL: 3 FLAGS IN 2 MONTHS = 1 YEAR BLOCK. REPEAT VIOLATION = PERMANENT BAN.
                                         </p>
                                     </div>
-                                    <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
+                                    <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
                                         Warning: This report will be audited. Abuse of the flagging system may result in your own account being flagged.
                                     </p>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2 italic">State Violation Reason</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-400 uppercase tracking-widest ml-2 italic">State Violation Reason</p>
                                     <textarea 
                                         value={flagReason}
                                         onChange={(e) => setFlagReason(e.target.value)}
@@ -242,13 +242,13 @@ const UserProfilePage = () => {
                                             setShowRedFlagModal(false);
                                             setFlagReason('');
                                         }}
-                                        className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-black uppercase text-xs shadow-lg shadow-red-500/20"
+                                        className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-black uppercase text-xs md:text-sm lg:text-base shadow-lg shadow-red-500/20"
                                     >
                                         Submit Flag
                                     </button>
                                     <button 
                                         onClick={() => setShowRedFlagModal(false)}
-                                        className="flex-1 py-4 bg-white/5 text-gray-500 rounded-2xl font-black uppercase text-xs hover:bg-white/10 transition-all"
+                                        className="flex-1 py-4 bg-white/5 text-gray-500 rounded-2xl font-black uppercase text-xs md:text-sm lg:text-base hover:bg-white/10 transition-all"
                                     >
                                         Cancel
                                     </button>
@@ -268,7 +268,7 @@ const UserProfilePage = () => {
                         <button 
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-2 pb-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${activeTab === tab.id ? 'text-brand' : 'text-gray-500'}`}
+                            className={`flex items-center gap-2 pb-4 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === tab.id ? 'text-brand' : 'text-gray-500'}`}
                         >
                             <tab.icon size={14} />
                             {tab.label}
@@ -294,8 +294,8 @@ const UserProfilePage = () => {
                                         <img src={friend.avatar} alt="" className="w-full h-full" />
                                     </div>
                                     <div>
-                                        <h4 className="text-[10px] font-black uppercase italic text-white leading-none">{friend.name}</h4>
-                                        <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">{post.time}</span>
+                                        <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase italic text-white leading-none">{friend.name}</h4>
+                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-600 uppercase tracking-widest">{post.time}</span>
                                     </div>
                                 </div>
                                 <button className="text-gray-600 hover:text-white transition-colors">
@@ -311,7 +311,7 @@ const UserProfilePage = () => {
 
                             <div className="p-6 space-y-4">
                                 {post.caption && (
-                                    <p className="text-xs font-medium text-gray-300 leading-relaxed italic">{post.caption}</p>
+                                    <p className="text-xs md:text-sm lg:text-base font-medium text-gray-300 leading-relaxed italic">{post.caption}</p>
                                 )}
                                 {post.content && (
                                     <div className="p-6 bg-brand/5 border border-brand/10 rounded-2xl italic">
@@ -329,7 +329,7 @@ const UserProfilePage = () => {
                                                 size={18} 
                                                 className={`${likedPosts[post.id] ? 'text-brand fill-brand' : 'text-gray-500'} group-hover:text-brand transition-colors`} 
                                             />
-                                            <span className={`text-[10px] font-black ${likedPosts[post.id] ? 'text-white' : 'text-gray-600'} group-hover:text-white`}>
+                                            <span className={`text-[10px] md:text-xs lg:text-sm font-black ${likedPosts[post.id] ? 'text-white' : 'text-gray-600'} group-hover:text-white`}>
                                                 {likedPosts[post.id] ? post.likes + 1 : post.likes}
                                             </span>
                                         </button>
@@ -341,7 +341,7 @@ const UserProfilePage = () => {
                                                 size={18} 
                                                 className={`${showComments[post.id] ? 'text-brand' : 'text-gray-500'} group-hover:text-brand transition-colors`} 
                                             />
-                                            <span className="text-[10px] font-black text-gray-600 group-hover:text-white">
+                                            <span className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 group-hover:text-white">
                                                 {post.comments + (postComments[post.id]?.length || 0)}
                                             </span>
                                         </button>
@@ -409,8 +409,8 @@ const UserProfilePage = () => {
                                             <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
                                                 {postComments[post.id]?.map((comment, idx) => (
                                                     <div key={idx} className="flex gap-2 items-start animate-in slide-in-from-left-2">
-                                                        <span className="text-[9px] font-black text-brand italic shrink-0">@You</span>
-                                                        <p className="text-[10px] text-gray-300 font-medium italic">{comment}</p>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand italic shrink-0">@You</span>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm text-gray-300 font-medium italic">{comment}</p>
                                                     </div>
                                                 ))}
                                                 <div className="relative group">
@@ -427,7 +427,7 @@ const UserProfilePage = () => {
                                                             }
                                                         }}
                                                         placeholder="Write a secure comment..." 
-                                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 text-[10px] font-black italic text-white placeholder:text-gray-700 focus:border-brand/40 outline-none transition-all"
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 text-[10px] md:text-xs lg:text-sm font-black italic text-white placeholder:text-gray-700 focus:border-brand/40 outline-none transition-all"
                                                     />
                                                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                                                         <Zap size={10} className="text-brand opacity-40 group-focus-within:animate-pulse" />

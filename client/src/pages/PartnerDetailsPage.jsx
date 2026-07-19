@@ -163,7 +163,7 @@ const PartnerDetailsPage = () => {
                     <div className="flex items-center gap-2 mb-2">
                         <div className="flex items-center gap-1.5 px-3 py-1 bg-brand/20 border border-brand/30 rounded-full">
                             <ShieldCheck size={12} className="text-brand" />
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-brand">Verified Partner</span>
+                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand">Verified Partner</span>
                         </div>
                     </div>
                     <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">{venue.name}</h1>
@@ -172,18 +172,18 @@ const PartnerDetailsPage = () => {
                         {venue.address ? (
                             <div className="flex items-center gap-1.5">
                                 <MapPin size={12} className="text-brand" />
-                                <span className="text-[9px] font-bold uppercase tracking-widest">{venue.address}</span>
+                                <span className="text-[9px] md:text-[11px] lg:text-xs font-bold uppercase tracking-widest">{venue.address}</span>
                             </div>
                         ) : (
                             <div className="flex items-center gap-1.5">
                                 <MapPin size={12} className="text-brand" />
-                                <span className="text-[9px] font-bold uppercase tracking-widest">Digital Network Partner</span>
+                                <span className="text-[9px] md:text-[11px] lg:text-xs font-bold uppercase tracking-widest">Digital Network Partner</span>
                             </div>
                         )}
                         {venue.workingHours && (
                             <div className="flex items-center gap-1.5">
                                 <Clock size={12} className="text-brand" />
-                                <span className="text-[9px] font-bold uppercase tracking-widest">{venue.workingHours}</span>
+                                <span className="text-[9px] md:text-[11px] lg:text-xs font-bold uppercase tracking-widest">{venue.workingHours}</span>
                             </div>
                         )}
                     </div>
@@ -194,7 +194,7 @@ const PartnerDetailsPage = () => {
                 {/* Reward Banner */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-6 rounded-[2.5rem] bg-brand text-black shadow-2xl shadow-brand/20 flex items-center justify-between">
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Active Membership Reward</p>
+                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest opacity-80">Active Membership Reward</p>
                         <h2 className="text-2xl font-black italic uppercase tracking-tighter">{venue.offer}</h2>
                     </div>
                     <div className="w-12 h-12 bg-black/10 rounded-2xl flex items-center justify-center">
@@ -226,11 +226,11 @@ const PartnerDetailsPage = () => {
                         <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
                             <LayoutGrid size={20} className="text-brand" /> Live Feed
                         </h3>
-                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Updates from Manager</span>
+                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Updates from Manager</span>
                     </div>
 
                     {isLoadingFeed ? (
-                        <div className="py-12 text-center text-xs text-gray-500 font-bold uppercase tracking-widest">
+                        <div className="py-12 text-center text-xs md:text-sm lg:text-base text-gray-500 font-bold uppercase tracking-widest">
                             Syncing Feed...
                         </div>
                     ) : mediaItems.length > 0 && activeMedia ? (
@@ -245,13 +245,13 @@ const PartnerDetailsPage = () => {
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                                 <div className="absolute bottom-0 left-0 w-full p-6">
                                     <h4 className="text-lg font-black italic uppercase text-white leading-tight drop-shadow-md">{activeMedia.title}</h4>
-                                    <p className="text-[9px] font-bold text-gray-200 mt-1 uppercase tracking-wider line-clamp-2 drop-shadow-sm">{activeMedia.description}</p>
+                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-200 mt-1 uppercase tracking-wider line-clamp-2 drop-shadow-sm">{activeMedia.description}</p>
                                 </div>
                             </motion.div>
 
                             <div className="p-6 bg-dark-900 border border-white/5 rounded-[2.5rem] relative">
                                 <div className="absolute -top-3 left-8 px-3 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-widest">Manager's Dispatch 💬</div>
-                                <p className="text-[11px] font-bold italic text-primary leading-relaxed">{activeMedia.managerNote}</p>
+                                <p className="text-[11px] md:text-sm lg:text-base font-bold italic text-primary leading-relaxed">{activeMedia.managerNote}</p>
                             </div>
 
                             <div className="flex gap-4 overflow-x-auto no-scrollbar px-2">
@@ -272,8 +272,8 @@ const PartnerDetailsPage = () => {
                                 <Info size={30} />
                             </div>
                             <div>
-                                <p className="text-xs font-black uppercase tracking-widest text-gray-400">No updates yet</p>
-                                <p className="text-[8px] font-bold uppercase tracking-widest text-gray-600 mt-2 px-8">The manager has not published any live updates or feeds for this location.</p>
+                                <p className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-gray-400">No updates yet</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold uppercase tracking-widest text-gray-600 mt-2 px-8">The manager has not published any live updates or feeds for this location.</p>
                             </div>
                         </div>
                     )}

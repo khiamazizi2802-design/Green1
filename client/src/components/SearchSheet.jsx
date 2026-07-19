@@ -33,11 +33,11 @@ const SearchSheet = () => {
 
             <div className="grid grid-cols-2 gap-4">
                 <button className="p-4 bg-dark-900 border border-white/5 rounded-2xl text-left hover:border-brand/20 transition-all">
-                    <p className="text-[10px] font-black text-gray-600 uppercase mb-1">Recent</p>
+                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase mb-1">Recent</p>
                     <p className="font-bold text-sm">Airport Terminal 2</p>
                 </button>
                 <button className="p-4 bg-dark-900 border border-white/5 rounded-2xl text-left hover:border-brand/20 transition-all">
-                    <p className="text-[10px] font-black text-gray-600 uppercase mb-1">Recent</p>
+                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase mb-1">Recent</p>
                     <p className="font-bold text-sm">Downtown Office</p>
                 </button>
             </div>

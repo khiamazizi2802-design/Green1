@@ -14,7 +14,7 @@ const Impressum = () => {
             <div className="max-w-4xl mx-auto space-y-12 pb-20">
                 <header className="mb-16">
                     <h1 className="text-5xl font-black italic tracking-tighter mb-4 uppercase">Légal<span className="text-brand">Impressum</span></h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-[0.3em] text-xs">Gesetzliche Anbieterkennzeichnung</p>
+                    <p className="text-gray-400 font-bold uppercase tracking-[0.3em] text-xs md:text-sm lg:text-base">Gesetzliche Anbieterkennzeichnung</p>
                 </header>
 
                 <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -25,7 +25,7 @@ const Impressum = () => {
                             Musterstraße 123<br />
                             10115 Berlin, Deutschland
                         </p>
-                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-6">Geschäftsführung</p>
+                        <p className="text-xs md:text-sm lg:text-base text-gray-500 font-bold uppercase tracking-widest mt-6">Geschäftsführung</p>
                         <p className="text-white font-bold">Jordan Personnel</p>
                     </div>
 
@@ -35,7 +35,7 @@ const Impressum = () => {
                             Telefon: <span className="text-white">+49 (0) 30 1234567</span><br />
                             E-Mail: <span className="text-brand border-b border-brand/20">kontakt@green-app.de</span>
                         </p>
-                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-6">Register</p>
+                        <p className="text-xs md:text-sm lg:text-base text-gray-500 font-bold uppercase tracking-widest mt-6">Register</p>
                         <p className="text-white font-bold">HRB 123456, AG Berlin-Charlottenburg</p>
                     </div>
                 </section>

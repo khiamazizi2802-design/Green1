@@ -155,10 +155,10 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
             <div className="max-w-5xl mx-auto pt-24 relative z-10">
                 <div className="flex justify-end mb-8">
                     <div className="text-right">
-                        <p className="text-[10px] font-black text-brand uppercase tracking-[0.4em] italic mb-1">
+                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.4em] italic mb-1">
                             {activeTab === 'privacy' ? 'Neural Privacy Protocol' : 'Neural Terms of Service'}
                         </p>
-                        <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Version 2.5.0 • Live Synchronized</p>
+                        <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest">Version 2.5.0 • Live Synchronized</p>
                     </div>
                 </div>
                 <motion.div 
@@ -173,7 +173,7 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
                             <>Terms of <span className="text-brand">Service</span></>
                         )}
                     </h1>
-                    <p className="text-gray-500 font-bold uppercase tracking-[0.5em] text-xs">
+                    <p className="text-gray-500 font-bold uppercase tracking-[0.5em] text-xs md:text-sm lg:text-base">
                         {activeTab === 'privacy' ? 'Protecting the Pulse of Nightlife & Mobility' : 'Operational Mandate & Legal Terms'}
                     </p>
                 </motion.div>
@@ -182,7 +182,7 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
                 <div className="flex justify-center gap-4 mb-12">
                     <button 
                         onClick={() => setActiveTab('privacy')}
-                        className={`px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all flex items-center gap-2 ${
+                        className={`px-8 py-3.5 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest border transition-all flex items-center gap-2 ${
                             activeTab === 'privacy' 
                                 ? 'bg-brand text-dark-900 border-brand shadow-lg shadow-brand/10' 
                                 : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/20'
@@ -193,7 +193,7 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
                     </button>
                     <button 
                         onClick={() => setActiveTab('terms')}
-                        className={`px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all flex items-center gap-2 ${
+                        className={`px-8 py-3.5 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest border transition-all flex items-center gap-2 ${
                             activeTab === 'terms' 
                                 ? 'bg-brand text-dark-900 border-brand shadow-lg shadow-brand/10' 
                                 : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/20'
@@ -211,7 +211,7 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
                             <div className="flex justify-center mt-12 pt-8 border-t border-white/5">
                                 <button 
                                     onClick={() => setShowFullPolicy(true)}
-                                    className="px-10 py-5 bg-brand text-dark-900 rounded-2xl text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand/10 flex items-center gap-2"
+                                    className="px-10 py-5 bg-brand text-dark-900 rounded-2xl text-xs md:text-sm lg:text-base font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand/10 flex items-center gap-2"
                                 >
                                     <ShieldCheck size={16} />
                                     Read Full Datenschutzerklärung (DSGVO)
@@ -229,18 +229,18 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
                     <div className="flex justify-center gap-10">
                         <div className="flex flex-col items-center gap-2">
                             <Lock className="text-brand" size={32} />
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500">256-bit AES</span>
+                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-gray-500">256-bit AES</span>
                         </div>
                         <div className="flex flex-col items-center gap-2">
                             <Database className="text-brand" size={32} />
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500">GDPR Compliant</span>
+                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-gray-500">GDPR Compliant</span>
                         </div>
                         <div className="flex flex-col items-center gap-2">
                             <Globe className="text-brand" size={32} />
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500">Global Hubs</span>
+                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-gray-500">Global Hubs</span>
                         </div>
                     </div>
-                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">
+                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase tracking-[0.3em]">
                         &copy; 2026 GREEN OPERATIONS GMBH • ALL RIGHTS RESERVED
                     </p>
                 </footer>
@@ -271,7 +271,7 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
                             {/* Header */}
                             <div className="p-8 border-b border-white/5">
                                 <h2 className="text-3xl font-black italic uppercase text-brand tracking-tighter">Datenschutzerklärung (DSGVO)</h2>
-                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">Vollständige juristische Fassung • Version 2.5.0 (Mai 2026)</p>
+                                <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Vollständige juristische Fassung • Version 2.5.0 (Mai 2026)</p>
                             </div>
 
                             {/* Scrollable Content */}
@@ -296,8 +296,8 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
                                 </div>
 
                                 <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl space-y-2">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-red-400">🛑 Wichtiges Mindestalter & Elternschutz-Regeln (Art. 8 DSGVO)</h4>
-                                    <p className="text-xs text-gray-300 leading-normal"><strong>Unter 16 Jahren:</strong> Die Registrierung und Nutzung unserer App ist für Kinder unter 16 Jahren aus Gründen des Jugendschutzes und der gesetzlichen Vorgaben strengstens untersagt.<br/>
+                                    <h4 className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-red-400">🛑 Wichtiges Mindestalter & Elternschutz-Regeln (Art. 8 DSGVO)</h4>
+                                    <p className="text-xs md:text-sm lg:text-base text-gray-300 leading-normal"><strong>Unter 16 Jahren:</strong> Die Registrierung und Nutzung unserer App ist für Kinder unter 16 Jahren aus Gründen des Jugendschutzes und der gesetzlichen Vorgaben strengstens untersagt.<br/>
                                     <strong>Jugendliche (16 und 17 Jahre):</strong> Wenn du 16 oder 17 Jahre alt bist (also noch nicht volljährig), darfst du dich nur dann registrieren, wenn du eine offizielle Einladung von deinen Eltern (durch ein bereits registriertes Elternteil) erhalten hast. Ohne diese elterliche Einladung blockiert unser System deine Anmeldung automatisch.</p>
                                 </div>
 
@@ -386,7 +386,7 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
                             <div className="p-8 border-t border-white/5 flex justify-end">
                                 <button 
                                     onClick={() => setShowFullPolicy(false)}
-                                    className="px-8 py-3.5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md"
+                                    className="px-8 py-3.5 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md"
                                 >
                                     Verstanden & Schließen
                                 </button>

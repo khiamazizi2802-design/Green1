@@ -71,7 +71,7 @@ const LandingPage = () => {
                         </button>
                         <button 
                             onClick={() => navigate('/login')}
-                            className="secondary-button px-12 py-5 rounded-3xl text-xs"
+                            className="secondary-button px-12 py-5 rounded-3xl text-xs md:text-sm lg:text-base"
                         >
                             Login
                         </button>

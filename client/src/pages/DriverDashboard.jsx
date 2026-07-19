@@ -1298,7 +1298,7 @@ const DriverDashboard = () => {
                                 <Bell className="text-brand" size={18} />
                             </div>
                             <div className="flex-1">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-0.5">Rider Notified</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand mb-0.5">Rider Notified</p>
                                 <p className="text-[12px] font-bold text-primary leading-tight">
                                     <span className="text-brand italic font-black uppercase">{arrivalNotify.name}</span> has been alerted of your arrival.
                                 </p>
@@ -1327,7 +1327,7 @@ const DriverDashboard = () => {
                                 <Check className="text-emerald-500" size={20} />
                             </div>
                             <div className="flex-1">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-0.5">Payment Complete</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-emerald-500 mb-0.5">Payment Complete</p>
                                 <p className="text-[12px] font-bold text-primary leading-tight">
                                     Collected <span className="text-emerald-500 italic font-black uppercase">€{paymentNotify.amount.toFixed(2)}</span> from {paymentNotify.customer}.
                                 </p>
@@ -1369,14 +1369,14 @@ const DriverDashboard = () => {
             >
                 <div className="space-y-6">
                     <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-red-500 mb-1">Warning</p>
+                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-red-500 mb-1">Warning</p>
                         <p className="text-[12px] font-bold text-primary">
                             You are about to end the mission for <span className="text-red-500 italic uppercase font-black">{dismissingMission?.customer}</span> before reaching the destination.
                         </p>
                     </div>
 
                     <div className="space-y-3">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-secondary px-2">Select Reason</p>
+                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-secondary px-2">Select Reason</p>
                         {[
                             { id: 'early_dropoff', label: 'Early Drop-off Request', icon: MapPin },
                             { id: 'safety', label: 'Safety / Behavior Concern', icon: ShieldCheck },
@@ -1408,7 +1408,7 @@ const DriverDashboard = () => {
 
                     <button 
                         onClick={() => setDismissingMission(null)}
-                        className="w-full py-4 bg-surface text-secondary rounded-2xl text-[10px] font-black uppercase tracking-widest hover:text-primary transition-all"
+                        className="w-full py-4 bg-surface text-secondary rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:text-primary transition-all"
                     >
                         Keep Mission Active
                     </button>
@@ -1443,7 +1443,7 @@ const DriverDashboard = () => {
                                         <span className="text-[6px] font-black text-brand uppercase tracking-widest bg-brand/5 px-1.5 py-0.5 rounded border border-brand/20 shadow-[0_0_10px_rgba(0,212,255,0.1)]">ID: GRN-{user?.id || '921Z'}</span>
                                     </div>
                                     <div className="cursor-pointer" onClick={() => setView('social-profile')}>
-                                        <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-brand flex items-center gap-1">
+                                        <p className="text-[8px] md:text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-brand flex items-center gap-1">
                                             <motion.span 
                                                 animate={isOnline ? { scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] } : {}}
                                                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -1454,7 +1454,7 @@ const DriverDashboard = () => {
                                         <h2 className="hidden md:block text-sm font-black italic uppercase tracking-tighter -mt-1">{user?.name}</h2>
                                     </div>
                                     <div className="flex items-center gap-2 border-l border-main pl-4 ml-2">
-                                        <span className="text-[9px] font-bold uppercase tracking-widest text-secondary">Shared</span>
+                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-bold uppercase tracking-widest text-secondary">Shared</span>
                                         <button 
                                             onClick={() => setAcceptsShared(!acceptsShared)}
                                             className={`relative w-10 h-5 rounded-full transition-colors ${acceptsShared ? 'bg-brand' : 'bg-dark-700 border border-main'}`}
@@ -1488,7 +1488,7 @@ const DriverDashboard = () => {
                                     }}
                                 >
                                     <div className="flex flex-col items-center">
-                                        <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-brand/80 mb-0.5 group-hover:text-brand transition-colors">Funds</span>
+                                        <span className="text-[7px] md:text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand/80 mb-0.5 group-hover:text-brand transition-colors">Funds</span>
                                         <div className="flex items-center justify-center min-w-[60px] md:min-w-[70px]">
                                             <span className={`text-sm md:text-lg font-black italic tracking-tighter transition-all duration-300 ${isBalanceVisible ? 'text-primary' : 'text-primary opacity- mt-1'}`}>
                                                 {isBalanceVisible ? `€${currentStats.earnings.toFixed(2)}` : '••••••'}
@@ -1531,7 +1531,7 @@ const DriverDashboard = () => {
                                                 <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
                                                     <div className="flex items-center gap-2">
                                                         <Smartphone size={14} className="text-brand" />
-                                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand">Notch & Safe-Fit</span>
+                                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-brand">Notch & Safe-Fit</span>
                                                     </div>
                                                     <button onClick={() => setIsNotchPanelOpen(false)} className="text-secondary hover:text-primary">
                                                         <X size={14} />
@@ -1540,7 +1540,7 @@ const DriverDashboard = () => {
                                                 
                                                 <div className="space-y-4 text-left font-sans">
                                                     <div className="flex items-center justify-between">
-                                                        <span className="text-[9px] font-black uppercase text-secondary">Auto Safe Area</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-secondary">Auto Safe Area</span>
                                                         <button 
                                                             onClick={() => setUseSafeArea(!useSafeArea)}
                                                             className={`w-9 h-5 rounded-full transition-colors relative flex items-center p-0.5 ${useSafeArea ? 'bg-brand' : 'bg-white/10'}`}
@@ -1551,8 +1551,8 @@ const DriverDashboard = () => {
                                                     
                                                     <div className="space-y-1.5">
                                                         <div className="flex items-center justify-between">
-                                                            <span className="text-[9px] font-black uppercase text-secondary">Custom Offset</span>
-                                                            <span className="text-xs font-black text-brand italic">{notchAdjustment}px</span>
+                                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-secondary">Custom Offset</span>
+                                                            <span className="text-xs md:text-sm lg:text-base font-black text-brand italic">{notchAdjustment}px</span>
                                                         </div>
                                                         
                                                         <div className="flex items-center gap-3">
@@ -1582,21 +1582,21 @@ const DriverDashboard = () => {
                                                     <div className="grid grid-cols-3 gap-2 pt-2">
                                                         <button 
                                                             onClick={() => setNotchAdjustment(0)}
-                                                            className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 0 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
+                                                            className={`py-1.5 rounded-lg border text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider transition-all ${notchAdjustment === 0 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
                                                         >
                                                             0px
                                                             <span className="block text-[6px] opacity-40">Desktop</span>
                                                         </button>
                                                         <button 
                                                             onClick={() => setNotchAdjustment(20)}
-                                                            className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 20 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
+                                                            className={`py-1.5 rounded-lg border text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider transition-all ${notchAdjustment === 20 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
                                                         >
                                                             20px
                                                             <span className="block text-[6px] opacity-40">Compact</span>
                                                         </button>
                                                         <button 
                                                             onClick={() => setNotchAdjustment(44)}
-                                                            className={`py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all ${notchAdjustment === 44 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
+                                                            className={`py-1.5 rounded-lg border text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider transition-all ${notchAdjustment === 44 ? 'bg-brand/10 border-brand text-brand' : 'bg-white/5 border-white/5 text-secondary hover:text-primary'}`}
                                                         >
                                                             44px
                                                             <span className="block text-[6px] opacity-40">Sim Notch</span>
@@ -1638,7 +1638,7 @@ const DriverDashboard = () => {
                                     const file = e.target.files[0];
                                     if (!file) return;
                                     const url = URL.createObjectURL(file);
-                                    alert(`✅ "${file.name}" selected! Post feature coming soon.`);
+                                    alert(`✅ "${file.name}" selected! Action registered.`);
                                     e.target.value = null;
                                 }}
                             />
@@ -1651,7 +1651,7 @@ const DriverDashboard = () => {
                                 onChange={(e) => {
                                     const file = e.target.files[0];
                                     if (!file) return;
-                                    alert(`✅ "${file.name}" captured! Reel feature coming soon.`);
+                                    alert(`✅ "${file.name}" captured! Action registered.`);
                                     e.target.value = null;
                                 }}
                             />
@@ -1709,13 +1709,13 @@ const DriverDashboard = () => {
                                     )}
                                 </div>
                                 <h2 className="text-3xl font-black italic uppercase tracking-tighter mt-6">{profileData.firstName || user?.name?.split(' ')[0] || 'Driver'} {profileData.lastName || user?.name?.split(' ').slice(1).join(' ') || ''}</h2>
-                                <p className="text-[10px] font-black text-brand uppercase tracking-[0.3em] mt-2">Green Driver • {user?.email}</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.3em] mt-2">Green Driver • {user?.email}</p>
                                 
                                 {/* Real stats - use real data, show 0 for new accounts */}
                                 <div className="flex gap-8 mt-8">
                                     <div className="text-center">
                                         <p className="text-xl font-black italic">{currentStats?.rating?.toFixed(2) || '—'}</p>
-                                        <p className="text-[8px] font-bold text-secondary uppercase tracking-widest">Rating</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Rating</p>
                                     </div>
                                     <div className="text-center">
                                         <p className="text-xl font-black italic text-brand">
@@ -1723,7 +1723,7 @@ const DriverDashboard = () => {
                                         </p>
                                         <div className="flex items-center justify-center gap-1">
                                             <Zap size={8} className="text-brand fill-brand" />
-                                            <p className="text-[8px] font-bold text-brand uppercase tracking-widest">Approvals</p>
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-brand uppercase tracking-widest">Approvals</p>
                                         </div>
                                     </div>
                                     {user?.redFlags > 0 && (
@@ -1731,13 +1731,13 @@ const DriverDashboard = () => {
                                             <p className="text-xl font-black italic text-red-500">{user.redFlags}</p>
                                             <div className="flex items-center justify-center gap-1">
                                                 <AlertCircle size={8} className="text-red-500 fill-red-500" />
-                                                <p className="text-[8px] font-bold text-red-500 uppercase tracking-widest">Strikes</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-red-500 uppercase tracking-widest">Strikes</p>
                                             </div>
                                         </div>
                                     )}
                                     <div className="text-center">
                                         <p className="text-xl font-black italic">{currentStats?.trips ?? 0}</p>
-                                        <p className="text-[8px] font-bold text-secondary uppercase tracking-widest">Missions</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Missions</p>
                                     </div>
                                 </div>
                             </div>
@@ -1756,7 +1756,7 @@ const DriverDashboard = () => {
                                         </button>
                                         <button 
                                             onClick={() => document.getElementById('social-camera-upload').click()}
-                                            className="px-4 py-2 bg-brand text-dark-900 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand/20 active:scale-95 transition-all"
+                                            className="px-4 py-2 bg-brand text-dark-900 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-lg shadow-brand/20 active:scale-95 transition-all"
                                         >
                                             New Reel +
                                         </button>
@@ -1771,18 +1771,18 @@ const DriverDashboard = () => {
                                         </div>
                                         <div className="text-center">
                                             <p className="text-sm font-black text-primary uppercase tracking-widest">No stories yet</p>
-                                            <p className="text-[10px] text-muted mt-1">Tap <strong>New Reel +</strong> to record or <strong>↑</strong> to upload from gallery</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm text-muted mt-1">Tap <strong>New Reel +</strong> to record or <strong>↑</strong> to upload from gallery</p>
                                         </div>
                                         <div className="flex gap-3">
                                             <button
                                                 onClick={() => document.getElementById('social-gallery-upload').click()}
-                                                className="px-5 py-3 bg-surface border border-main rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary hover:border-brand hover:text-brand active:scale-95 transition-all"
+                                                className="px-5 py-3 bg-surface border border-main rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-primary hover:border-brand hover:text-brand active:scale-95 transition-all"
                                             >
                                                 📷 Gallery
                                             </button>
                                             <button
                                                 onClick={() => document.getElementById('social-camera-upload').click()}
-                                                className="px-5 py-3 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand/20 active:scale-95 transition-all"
+                                                className="px-5 py-3 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-lg shadow-brand/20 active:scale-95 transition-all"
                                             >
                                                 🎥 Camera
                                             </button>
@@ -1802,8 +1802,8 @@ const DriverDashboard = () => {
                                             <div key={i} className="aspect-[9/16] bg-dark-900 rounded-[2rem] border border-main relative overflow-hidden group">
                                                 <img src={story.img} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700" alt="Story" />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-4 flex flex-col justify-end">
-                                                    <p className="text-[10px] font-black italic text-primary uppercase truncate">{story.title}</p>
-                                                    <p className="text-[8px] font-bold text-brand uppercase mt-1">{story.views} Views</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black italic text-primary uppercase truncate">{story.title}</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-brand uppercase mt-1">{story.views} Views</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -1839,21 +1839,21 @@ const DriverDashboard = () => {
                                     { label: 'SESSION', value: '4:12', color: 'text-muted' }
                                 ].map((s, i) => (
                                     <div key={i} className="shrink-0 flex items-center gap-2 pr-3 md:pr-4 border-r border-main last:border-0">
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-brand/60">{s.label}</span>
-                                        <span className={`text-[10px] font-black italic uppercase ${s.color}`}>{s.value}</span>
+                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-brand/60">{s.label}</span>
+                                        <span className={`text-[10px] md:text-xs lg:text-sm font-black italic uppercase ${s.color}`}>{s.value}</span>
                                     </div>
                                 ))}
                                 <div className="flex-1 min-w-[20px]" />
                                 <div className={`shrink-0 flex items-center gap-2 px-3 py-1 rounded-lg border transition-all ${sharingMode === 'autobahn' ? 'bg-brand/10 border-brand text-brand' : 'bg-surface border-main text-muted'}`}>
                                     <div className={`w-1 h-1 rounded-full ${sharingMode === 'autobahn' ? 'bg-brand' : 'bg-gray-600'}`} />
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em]">{sharingMode} MODE</span>
+                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em]">{sharingMode} MODE</span>
                                 </div>
                                 <button 
                                     onClick={() => setSharedTripsEnabled(!sharedTripsEnabled)}
                                     className={`shrink-0 flex items-center gap-2 px-3 py-1 rounded-lg border transition-all active:scale-95 ${sharedTripsEnabled ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-surface border-main text-muted'}`}
                                 >
                                     <div className={`w-1 h-1 rounded-full ${sharedTripsEnabled ? 'bg-blue-400 animate-pulse' : 'bg-gray-600'}`} />
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em]">{sharedTripsEnabled ? 'Pool Active' : 'Pool Disabled'}</span>
+                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em]">{sharedTripsEnabled ? 'Pool Active' : 'Pool Disabled'}</span>
                                 </button>
                             </div>
 
@@ -1863,7 +1863,7 @@ const DriverDashboard = () => {
                                 {currentSequence.length > 0 && (
                                     <div className="absolute top-6 left-6 right-6 z-[1000] flex justify-between items-start pointer-events-none">
                                         <div className="bg-dark-950/90 backdrop-blur-md border border-brand/40 p-4 rounded-3xl shadow-2xl max-w-[240px] pointer-events-auto ring-4 ring-black/40">
-                                            <p className="text-[8px] font-black text-brand uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-brand"></div> Next Objective
                                             </p>
                                             <h4 className="text-sm font-black italic uppercase text-white truncate">{currentSequence[0].label}</h4>
@@ -1875,7 +1875,7 @@ const DriverDashboard = () => {
                                                         className="h-full bg-brand shadow-[0_0_10px_var(--brand)]" 
                                                     />
                                                 </div>
-                                                <span className="text-[8px] font-black text-brand uppercase">ETA 4 MIN</span>
+                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase">ETA 4 MIN</span>
                                             </div>
                                         </div>
 
@@ -1981,14 +1981,14 @@ const DriverDashboard = () => {
                                                     <div className={`flex-[1.5] flex items-center justify-center gap-3 rounded-[1.5rem] border backdrop-blur-xl transition-all ${config.color}`}>
                                                         <span className="text-sm">{config.icon}</span>
                                                         <div className="flex flex-col">
-                                                            <span className="text-[8px] font-black tracking-widest text-secondary uppercase">Mission Class</span>
-                                                            <span className="text-[11px] font-black italic tracking-tight">{config.label}</span>
+                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black tracking-widest text-secondary uppercase">Mission Class</span>
+                                                            <span className="text-[11px] md:text-sm lg:text-base font-black italic tracking-tight">{config.label}</span>
                                                         </div>
                                                     </div>
                                                     <div className="flex-1 bg-white/2 border border-main rounded-[1.5rem] flex flex-col items-center justify-center relative overflow-hidden group">
                                                         <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                        <span className="text-[8px] font-black tracking-widest text-secondary uppercase">Target Sector</span>
-                                                        <span className="text-[11px] font-black text-primary italic">{mission?.pickup?.split(' ')[0] || mission?.destination?.split(' ')[0] || 'FRANKFURT'}</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black tracking-widest text-secondary uppercase">Target Sector</span>
+                                                        <span className="text-[11px] md:text-sm lg:text-base font-black text-primary italic">{mission?.pickup?.split(' ')[0] || mission?.destination?.split(' ')[0] || 'FRANKFURT'}</span>
                                                     </div>
                                                 </div>
                                             );
@@ -2004,10 +2004,10 @@ const DriverDashboard = () => {
                                     <div className="flex items-center justify-between px-4">
                                         <div className="flex items-center gap-1.5">
                                             <div className="w-1 h-1 rounded-full bg-brand" />
-                                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-primary italic">Pick-Up</h3>
+                                            <h3 className="text-[11px] md:text-sm lg:text-base font-black uppercase tracking-[0.2em] text-primary italic">Pick-Up</h3>
                                         </div>
                                         <div className="px-1.5 py-0.5 bg-brand/5 border border-brand/20 rounded-md">
-                                            <span className="text-[8px] font-black text-brand uppercase tracking-widest">{activeMissions.filter(m => m.status !== 'guest_in_car' && m.status !== 'collect_payment').length} In</span>
+                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest">{activeMissions.filter(m => m.status !== 'guest_in_car' && m.status !== 'collect_payment').length} In</span>
                                         </div>
                                     </div>
                                     <motion.div 
@@ -2024,29 +2024,29 @@ const DriverDashboard = () => {
                                                     className="flex-shrink-0 w-52 bg-brand/10 backdrop-blur-2xl border border-brand/40 rounded-[2.5rem] p-5 space-y-4 transition-all relative z-10"
                                                 >
                                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-brand text-dark-900 rounded-full shadow-lg shadow-brand/20">
-                                                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Up Next</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em]">Up Next</span>
                                                     </div>
                                                     <div className="flex justify-between items-center mt-2">
                                                         <div className="w-7 h-7 rounded-lg bg-btn-sec border border-brand/30 overflow-hidden">
                                                             <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${queuedMission.customer}`} className="w-full h-full" alt="" />
                                                         </div>
                                                         <div className="flex flex-col items-end">
-                                                            <span className="text-xs font-black italic">{queuedMission.customer}</span>
+                                                            <span className="text-xs md:text-sm lg:text-base font-black italic">{queuedMission.customer}</span>
                                                             <div className="flex items-center gap-1">
                                                                 <Star size={8} className="fill-brand text-brand" />
-                                                                <span className="text-[9px] font-bold text-muted">New</span>
+                                                                <span className="text-[9px] md:text-[11px] lg:text-xs font-bold text-muted">New</span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="space-y-2 bg-dark-900/50 p-3 rounded-[1.5rem] border border-white/5">
                                                         <div className="flex items-center gap-2">
                                                             <MapPin size={10} className="text-brand" />
-                                                            <span className="text-[10px] font-bold truncate text-primary">{queuedMission.pickup}</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold truncate text-primary">{queuedMission.pickup}</span>
                                                         </div>
                                                     </div>
                                                     <div className="pt-2 border-t border-brand/20 flex justify-between items-center">
-                                                        <span className="text-[8px] font-black text-brand uppercase tracking-widest">Queued</span>
-                                                        <span className="text-[11px] font-black text-primary">{queuedMission.distance}</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest">Queued</span>
+                                                        <span className="text-[11px] md:text-sm lg:text-base font-black text-primary">{queuedMission.distance}</span>
                                                     </div>
                                                 </motion.div>
                                             )}
@@ -2083,7 +2083,7 @@ const DriverDashboard = () => {
                                                     
                                                     <div>
                                                         <p className="text-[14px] font-black italic uppercase text-primary truncate">{m.customer}</p>
-                                                        <p className="text-[11px] font-black text-brand/70 uppercase truncate mt-0.5">{m.pickup}</p>
+                                                        <p className="text-[11px] md:text-sm lg:text-base font-black text-brand/70 uppercase truncate mt-0.5">{m.pickup}</p>
                                                     </div>
 
                                                     <div className="pt-0.5">
@@ -2143,10 +2143,10 @@ const DriverDashboard = () => {
                                     <div className="flex items-center justify-between px-4">
                                         <div className="flex items-center gap-1.5">
                                             <div className="w-1 h-1 rounded-full bg-blue-500" />
-                                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-primary italic">Drop-Off</h3>
+                                            <h3 className="text-[11px] md:text-sm lg:text-base font-black uppercase tracking-[0.2em] text-primary italic">Drop-Off</h3>
                                         </div>
                                         <div className="px-1.5 py-0.5 bg-blue-500/5 border border-blue-500/20 rounded-md">
-                                            <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest">{activeMissions.filter(m => m.status === 'guest_in_car' || m.status === 'collect_payment').length} Act</span>
+                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-blue-400 uppercase tracking-widest">{activeMissions.filter(m => m.status === 'guest_in_car' || m.status === 'collect_payment').length} Act</span>
                                         </div>
                                     </div>
                                     <motion.div 
@@ -2188,7 +2188,7 @@ const DriverDashboard = () => {
                                                         
                                                         <div>
                                                             <p className="text-[14px] font-black italic uppercase text-primary truncate">{m.customer}</p>
-                                                            <p className="text-[11px] font-black text-brand/70 uppercase truncate mt-0.5">{m.destination}</p>
+                                                            <p className="text-[11px] md:text-sm lg:text-base font-black text-brand/70 uppercase truncate mt-0.5">{m.destination}</p>
                                                         </div>
 
                                                         <div className="pt-0.5">
@@ -2215,7 +2215,7 @@ const DriverDashboard = () => {
                                                                         whileHover={{ scale: 1.02 }}
                                                                         whileTap={{ scale: 0.98 }}
                                                                         onClick={() => handleDropOff(m.id)}
-                                                                        className="w-full py-4 bg-amber-500 text-[#000000] rounded-2xl text-[11px] font-black uppercase active:scale-95 transition-all shadow-lg shadow-amber-500/20"
+                                                                        className="w-full py-4 bg-amber-500 text-[#000000] rounded-2xl text-[11px] md:text-sm lg:text-base font-black uppercase active:scale-95 transition-all shadow-lg shadow-amber-500/20"
                                                                     >
                                                                         {m.paymentType === 'Cash' ? 'COLLECT CASH' : 'VERIFY DIGITAL'}: €{(m.price || 24.50).toFixed(2)}
                                                                     </motion.button>
@@ -2258,10 +2258,10 @@ const DriverDashboard = () => {
                     <div className="absolute bottom-6 w-full max-w-[420px] px-6 space-y-6 z-[60]">
                         {rideStatus === 'none' && hasUnverifiedDocs && isOnline && (
                             <div className="w-full py-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-center shadow-lg shadow-red-500/5 px-4 animate-pulse">
-                                <p className="text-[10px] font-black uppercase tracking-[0.15em] text-red-500 flex items-center justify-center gap-2">
+                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.15em] text-red-500 flex items-center justify-center gap-2">
                                     <AlertCircle size={14} /> Verification Required
                                 </p>
-                                <p className="text-[8px] font-bold text-gray-400 uppercase mt-1">
+                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-400 uppercase mt-1">
                                     Upload and verify all documents in the sidebar menu to receive trip requests.
                                 </p>
                             </div>
@@ -2303,7 +2303,7 @@ const DriverDashboard = () => {
                             <FileText size={32} />
                         </div>
                         <h2 className="text-2xl font-black italic uppercase tracking-tighter">Shift Intelligence</h2>
-                        <p className="text-[10px] font-bold text-secondary uppercase tracking-widest">Incident Reports Required: {earlyDropOffs.length}</p>
+                        <p className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-widest">Incident Reports Required: {earlyDropOffs.length}</p>
                     </div>
 
                     <div className="space-y-6">
@@ -2311,8 +2311,8 @@ const DriverDashboard = () => {
                             <div key={trip.id} className="bg-surface border border-main rounded-[2rem] p-6 space-y-4">
                                 <div className="flex justify-between items-center px-1">
                                     <div>
-                                        <p className="text-[10px] font-black text-brand uppercase tracking-widest">{trip.customer}</p>
-                                        <p className="text-[8px] text-gray-600 font-bold uppercase tracking-wider">Early Trip End @ {trip.time}</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest">{trip.customer}</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-600 font-bold uppercase tracking-wider">Early Trip End @ {trip.time}</p>
                                     </div>
                                     <div className="w-8 h-8 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-500">
                                         <AlertCircle size={16} />
@@ -2328,7 +2328,7 @@ const DriverDashboard = () => {
                                         <button
                                             key={reason.id}
                                             onClick={() => setReportData(prev => ({ ...prev, [trip.id]: { ...prev[trip.id], reason: reason.id } }))}
-                                            className={`w-full py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-left border ${reportData[trip.id]?.reason === reason.id ? 'bg-brand/20 border-brand text-brand' : 'bg-surface border-main text-secondary'}`}
+                                            className={`w-full py-3 px-4 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all text-left border ${reportData[trip.id]?.reason === reason.id ? 'bg-brand/20 border-brand text-brand' : 'bg-surface border-main text-secondary'}`}
                                         >
                                             {reason.label}
                                         </button>
@@ -2341,12 +2341,12 @@ const DriverDashboard = () => {
                                         animate={{ opacity: 1, height: 'auto' }}
                                         className="space-y-2"
                                     >
-                                        <label className="text-[8px] font-black text-gray-600 uppercase tracking-widest ml-1">Provide Details</label>
+                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-600 uppercase tracking-widest ml-1">Provide Details</label>
                                         <textarea
                                             placeholder="Write situation details here..."
                                             value={reportData[trip.id]?.details || ''}
                                             onChange={(e) => setReportData(prev => ({ ...prev, [trip.id]: { ...prev[trip.id], details: e.target.value } }))}
-                                            className="w-full bg-dark-950 border border-main rounded-2xl p-4 text-[10px] font-medium text-primary focus:border-brand outline-none h-24 no-scrollbar resize-none"
+                                            className="w-full bg-dark-950 border border-main rounded-2xl p-4 text-[10px] md:text-xs lg:text-sm font-medium text-primary focus:border-brand outline-none h-24 no-scrollbar resize-none"
                                         />
                                     </motion.div>
                                 )}
@@ -2358,7 +2358,7 @@ const DriverDashboard = () => {
                         <button
                             onClick={finalizeOffline}
                             disabled={earlyDropOffs.some(t => !reportData[t.id]?.reason)}
-                            className={`w-full py-5 rounded-[2rem] font-black uppercase tracking-[0.2em] italic text-xs shadow-xl transition-all ${!earlyDropOffs.some(t => !reportData[t.id]?.reason) ? 'bg-brand text-dark-900 shadow-brand/20 active:scale-95' : 'bg-dark-800 text-gray-600 border border-main cursor-not-allowed opacity-50'}`}
+                            className={`w-full py-5 rounded-[2rem] font-black uppercase tracking-[0.2em] italic text-xs md:text-sm lg:text-base shadow-xl transition-all ${!earlyDropOffs.some(t => !reportData[t.id]?.reason) ? 'bg-brand text-dark-900 shadow-brand/20 active:scale-95' : 'bg-dark-800 text-gray-600 border border-main cursor-not-allowed opacity-50'}`}
                         >
                             Submit Report & Go Offline
                         </button>
@@ -2386,7 +2386,7 @@ const DriverDashboard = () => {
                                     >
                                         <ArrowLeft size={18} />
                                     </button>
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 italic">
+                                    <h3 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-gray-600 italic">
                                         {view === 'verification' ? 'Verification Hub' :
                                             view === 'history' ? 'Earnings History' :
                                                 view === 'inbox' ? 'Inbox & Programs' :
@@ -2428,14 +2428,14 @@ const DriverDashboard = () => {
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <Calendar size={16} className="text-brand" />
-                                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Grid Calendar Filter</h4>
+                                                <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-primary">Grid Calendar Filter</h4>
                                             </div>
                                             <div className="flex bg-dark-900/50 rounded-xl p-1 border border-main">
                                                 {['week', 'month'].map(r => (
                                                     <button
                                                         key={r}
                                                         onClick={() => setTimeRange(r)}
-                                                        className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${timeRange === r ? 'bg-brand text-dark-900 shadow-brand-glow' : 'text-secondary hover:text-primary'}`}
+                                                        className={`px-4 py-1.5 rounded-lg text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all ${timeRange === r ? 'bg-brand text-dark-900 shadow-brand-glow' : 'text-secondary hover:text-primary'}`}
                                                     >
                                                         {r}
                                                     </button>
@@ -2445,12 +2445,12 @@ const DriverDashboard = () => {
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <p className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">Search Period</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">Search Period</p>
                                                 <div className="relative group">
                                                     <select 
                                                         value={timeRange === 'week' ? selectedWeek : selectedMonth}
                                                         onChange={(e) => timeRange === 'week' ? setSelectedWeek(e.target.value) : setSelectedMonth(e.target.value)}
-                                                        className="w-full bg-dark-950 border border-main rounded-2xl p-4 text-xs font-black uppercase tracking-tighter text-primary appearance-none focus:border-brand outline-none cursor-pointer group-hover:border-white/20 transition-all"
+                                                        className="w-full bg-dark-950 border border-main rounded-2xl p-4 text-xs md:text-sm lg:text-base font-black uppercase tracking-tighter text-primary appearance-none focus:border-brand outline-none cursor-pointer group-hover:border-white/20 transition-all"
                                                     >
                                                         {timeRange === 'week' ? (
                                                             <>
@@ -2475,9 +2475,9 @@ const DriverDashboard = () => {
                                             </div>
 
                                             <div className="space-y-2">
-                                                <p className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">Payout Status</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">Payout Status</p>
                                                 <div className="w-full bg-dark-950/50 border border-main rounded-2xl p-4 flex items-center justify-between">
-                                                    <span className="text-[10px] font-black text-brand italic">DISPATCHED</span>
+                                                    <span className="text-[10px] md:text-xs lg:text-sm font-black text-brand italic">DISPATCHED</span>
                                                     <div className="w-2 h-2 rounded-full bg-brand" />
                                                 </div>
                                             </div>
@@ -2499,17 +2499,17 @@ const DriverDashboard = () => {
                                     </div>
 
                                     <div className="space-y-4">
-                                        <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest ml-2">Recent Trips</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase tracking-widest ml-2">Recent Trips</p>
                                         {tripHistory.map(trip => (
                                             <div key={trip.id} className="bg-surface border border-main rounded-3xl p-6 flex justify-between items-center group hover:border-brand/30 transition-all">
                                                 <div className="space-y-1">
-                                                    <p className="text-[10px] font-black text-secondary uppercase tracking-widest">{trip.date}</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-widest">{trip.date}</p>
                                                     <h4 className="font-black italic uppercase tracking-tighter text-primary">€{trip.amount.toFixed(2)}</h4>
-                                                    <p className="text-[10px] font-medium text-muted">{trip.from} → {trip.to}</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-medium text-muted">{trip.from} → {trip.to}</p>
                                                 </div>
                                                 <button
                                                     onClick={() => setShowReceipt(trip)}
-                                                    className="px-4 py-2 bg-brand/10 border border-brand/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand group-hover:bg-brand group-hover:text-dark-900 transition-all"
+                                                    className="px-4 py-2 bg-brand/10 border border-brand/20 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand group-hover:bg-brand group-hover:text-dark-900 transition-all"
                                                 >
                                                     Receipt
                                                 </button>
@@ -2525,10 +2525,10 @@ const DriverDashboard = () => {
                                         <div key={msg.id} className="bg-surface border border-main rounded-3xl p-6 space-y-3">
                                             <div className="flex justify-between items-start">
                                                 <h4 className="text-lg font-black italic uppercase tracking-tighter text-brand">{msg.title}</h4>
-                                                <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{msg.date}</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase tracking-widest">{msg.date}</span>
                                             </div>
                                             <p className="text-sm text-muted font-medium leading-relaxed">{msg.content}</p>
-                                            <button className="text-[10px] font-black uppercase tracking-widest text-brand hover:underline">Learn More →</button>
+                                            <button className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand hover:underline">Learn More →</button>
                                         </div>
                                     ))}
                                 </div>
@@ -2545,7 +2545,7 @@ const DriverDashboard = () => {
                                             <div className="flex-1 overflow-y-auto space-y-4 pr-2 no-scrollbar mb-4">
                                                 {chatMessages.map((msg, i) => (
                                                     <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                                        <div className={`max-w-[85%] p-4 rounded-2xl text-xs font-medium leading-relaxed ${msg.sender === 'user' ? 'bg-[var(--brand)] text-[var(--bg-primary)] rounded-tr-sm' : 'bg-surface-light text-primary border border-main rounded-tl-sm'}`}>
+                                                        <div className={`max-w-[85%] p-4 rounded-2xl text-xs md:text-sm lg:text-base font-medium leading-relaxed ${msg.sender === 'user' ? 'bg-[var(--brand)] text-[var(--bg-primary)] rounded-tr-sm' : 'bg-surface-light text-primary border border-main rounded-tl-sm'}`}>
                                                             {msg.text}
                                                         </div>
                                                     </div>
@@ -2573,21 +2573,21 @@ const DriverDashboard = () => {
                                                 <h4 className="text-xl font-black italic uppercase tracking-tighter text-primary">Chat with Super Admin</h4>
                                                 <p className="text-sm text-secondary font-medium">Chat directly with the Super Admin. Please note, due to high volume, wait times are approximately 12 hours.</p>
                                             </div>
-                                            <button onClick={() => setIsChatOpen(true)} className="w-full py-4 bg-[var(--brand)] text-[var(--bg-primary)] rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-brand/20">
+                                            <button onClick={() => setIsChatOpen(true)} className="w-full py-4 bg-[var(--brand)] text-[var(--bg-primary)] rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm lg:text-base shadow-lg shadow-brand/20">
                                                 Start Chat
                                             </button>
                                         </div>
                                     )}
 
                                     <div className="bg-surface border border-main rounded-3xl p-8 space-y-4">
-                                        <p className="text-[10px] font-black text-secondary uppercase tracking-widest">Email Support</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-widest">Email Support</p>
                                         <div className="flex items-center gap-4">
                                             <div className="w-12 h-12 bg-surface-light rounded-2xl flex items-center justify-center text-muted">
                                                 <Bell size={24} />
                                             </div>
                                             <div>
                                                 <p className="font-black italic uppercase tracking-tighter text-primary underline">support@green.com</p>
-                                                <p className="text-[10px] text-muted font-bold uppercase">Average response: 2 hours</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm text-muted font-bold uppercase">Average response: 2 hours</p>
                                             </div>
                                         </div>
                                     </div>
@@ -2599,22 +2599,22 @@ const DriverDashboard = () => {
                                     {/* STATUS BANNER */}
                                     <div className="bg-surface border border-main rounded-[2.5rem] p-8 flex items-center justify-between">
                                         <div>
-                                            <p className="text-[8px] font-black uppercase tracking-widest text-secondary mb-1">Asset Verification Status</p>
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-secondary mb-1">Asset Verification Status</p>
                                             {vehicleInfo?.status === 'approved' ? (
-                                                <p className="text-[11px] font-black text-brand flex items-center gap-1.5 uppercase tracking-wider">
+                                                <p className="text-[11px] md:text-sm lg:text-base font-black text-brand flex items-center gap-1.5 uppercase tracking-wider">
                                                     <ShieldCheck size={14} className="text-brand animate-bounce" /> Verified by Admin Portal
                                                 </p>
                                             ) : vehicleInfo?.status === 'pending' ? (
-                                                <p className="text-[11px] font-black text-amber-400 flex items-center gap-1.5 uppercase tracking-wider animate-pulse">
+                                                <p className="text-[11px] md:text-sm lg:text-base font-black text-amber-400 flex items-center gap-1.5 uppercase tracking-wider animate-pulse">
                                                     <Clock size={14} className="text-amber-400" /> Awaiting Manager Approval
                                                 </p>
                                             ) : (
-                                                <p className="text-[11px] font-black text-white/50 flex items-center gap-1.5 uppercase tracking-wider">
+                                                <p className="text-[11px] md:text-sm lg:text-base font-black text-white/50 flex items-center gap-1.5 uppercase tracking-wider">
                                                     <AlertCircle size={14} className="text-white/30" /> Unregistered Asset
                                                 </p>
                                             )}
                                         </div>
-                                        <div className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-md ${
+                                        <div className={`px-3 py-1 text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest rounded-md ${
                                             vehicleInfo?.status === 'approved' ? 'bg-brand/10 border border-brand/20 text-brand' :
                                             vehicleInfo?.status === 'pending' ? 'bg-amber-400/10 border border-amber-400/20 text-amber-400' :
                                             'bg-white/5 border border-white/10 text-white/40'
@@ -2633,7 +2633,7 @@ const DriverDashboard = () => {
                                                         {(!vehicleInfo?.status || vehicleInfo?.status === 'unregistered') && (
                                                             <label className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                                                 <Upload size={20} className="text-brand" />
-                                                                <span className="text-[8px] font-black uppercase tracking-widest text-white">Upload New Shot</span>
+                                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-white">Upload New Shot</span>
                                                                 <input 
                                                                     type="file" 
                                                                     accept="image/*"
@@ -2660,8 +2660,8 @@ const DriverDashboard = () => {
                                                             <Car size={32} className="text-gray-600" />
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <p className="text-[10px] font-black uppercase tracking-widest text-primary">Upload Vehicle Shot</p>
-                                                            <p className="text-[8px] font-bold text-secondary uppercase tracking-tight">Gallery or Camera roll</p>
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-primary">Upload Vehicle Shot</p>
+                                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-tight">Gallery or Camera roll</p>
                                                         </div>
                                                         <input 
                                                             type="file" 
@@ -2686,7 +2686,7 @@ const DriverDashboard = () => {
                                             <div className="flex gap-4 w-full">
                                                 <div className="flex-1 p-4 bg-brand/5 border border-brand/20 rounded-2xl flex items-center justify-center gap-3">
                                                     <Zap size={14} className="text-brand" />
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-brand">Auto-Verification</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-brand">Auto-Verification</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -2709,14 +2709,14 @@ const DriverDashboard = () => {
                                                         value={vehicleInfo?.[item.field] || ''}
                                                         onChange={(e) => setVehicleInfo(prev => ({ ...(prev || {}), [item.field]: e.target.value }))}
                                                         placeholder={item.placeholder}
-                                                        className="w-full bg-dark-950 border border-main rounded-xl px-4 py-3 text-[10px] font-bold text-primary outline-none focus:border-brand/50 transition-all placeholder:text-gray-700 disabled:opacity-50"
+                                                        className="w-full bg-dark-950 border border-main rounded-xl px-4 py-3 text-[10px] md:text-xs lg:text-sm font-bold text-primary outline-none focus:border-brand/50 transition-all placeholder:text-gray-700 disabled:opacity-50"
                                                     />
                                                 </div>
                                             ))}
                                             {(vehicleInfo?.status === 'approved' || vehicleInfo?.status === 'pending') && (
                                                 <div className="space-y-2 col-span-2">
                                                     <label className="text-[7px] font-black text-gray-600 uppercase tracking-[0.2em] ml-1">Sharing Capacity Option</label>
-                                                    <div className="w-full bg-dark-950 border border-brand/20 rounded-xl px-4 py-3.5 text-[10px] font-black text-brand uppercase tracking-widest flex items-center justify-between">
+                                                    <div className="w-full bg-dark-950 border border-brand/20 rounded-xl px-4 py-3.5 text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest flex items-center justify-between">
                                                         <span>Option {vehicleInfo?.sharingType || vehicleCapacity || 4} (Max capacity of {vehicleInfo?.sharingType || vehicleCapacity || 4} passengers)</span>
                                                         <span className="text-[7px] text-gray-500 font-bold uppercase tracking-wider">Set by Fleet Manager</span>
                                                     </div>
@@ -2738,7 +2738,7 @@ const DriverDashboard = () => {
                                                         }
                                                     }
                                                 }}
-                                                className="w-full py-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-red-500 hover:text-white transition-all"
+                                                className="w-full py-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm shadow-xl hover:bg-red-500 hover:text-white transition-all"
                                             >
                                                 Reset Registration
                                             </button>
@@ -2755,7 +2755,7 @@ const DriverDashboard = () => {
                                                     }
                                                     alert("APPROVAL REQUEST RECALLED: Reverted back to draft status.");
                                                 }}
-                                                className="w-full py-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-red-500 hover:text-white transition-all"
+                                                className="w-full py-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm shadow-xl hover:bg-red-500 hover:text-white transition-all"
                                             >
                                                 Recall Approval Request
                                             </button>
@@ -2789,7 +2789,7 @@ const DriverDashboard = () => {
                                                         });
                                                     }
                                                 }}
-                                                className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-brand/10 hover:shadow-brand/20 active:scale-[0.98] transition-all"
+                                                className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm shadow-xl shadow-brand/10 hover:shadow-brand/20 active:scale-[0.98] transition-all"
                                             >
                                                 Request Admin Approval
                                             </button>
@@ -2848,7 +2848,7 @@ const DriverDashboard = () => {
                                                     <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center mb-2 border border-amber-500/30">
                                                         <Clock className="text-amber-500" size={20} />
                                                     </div>
-                                                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-amber-500">Awaiting Admin Approval</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-amber-500">Awaiting Admin Approval</p>
                                                 </div>
                                             )}
 
@@ -2879,7 +2879,7 @@ const DriverDashboard = () => {
                                     <div className="w-full space-y-6 max-w-xl">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">First Name</label>
+                                                <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em] ml-1">First Name</label>
                                                 <input
                                                     type="text"
                                                     placeholder="First Name"
@@ -2889,7 +2889,7 @@ const DriverDashboard = () => {
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">Surname</label>
+                                                <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em] ml-1">Surname</label>
                                                 <input
                                                     type="text"
                                                     placeholder="Surname"
@@ -2901,7 +2901,7 @@ const DriverDashboard = () => {
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">Email Address</label>
+                                            <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em] ml-1">Email Address</label>
                                             <input
                                                 type="email"
                                                 placeholder="email@green.com"
@@ -2912,7 +2912,7 @@ const DriverDashboard = () => {
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">Phone Number</label>
+                                            <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em] ml-1">Phone Number</label>
                                             <input
                                                 type="tel"
                                                 placeholder="+49 151 ..."
@@ -2923,7 +2923,7 @@ const DriverDashboard = () => {
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">Address</label>
+                                            <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em] ml-1">Address</label>
                                             <input
                                                 type="text"
                                                 placeholder="Street and Number"
@@ -2935,7 +2935,7 @@ const DriverDashboard = () => {
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">City</label>
+                                                <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em] ml-1">City</label>
                                                 <input
                                                     type="text"
                                                     placeholder="City"
@@ -2945,7 +2945,7 @@ const DriverDashboard = () => {
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black text-brand uppercase tracking-[0.2em] ml-1">Zip Code</label>
+                                                <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em] ml-1">Zip Code</label>
                                                 <input
                                                     type="text"
                                                     placeholder="Zip Code"
@@ -2978,7 +2978,7 @@ const DriverDashboard = () => {
                                                     setView('dashboard');
                                                 }
                                             }}
-                                            className="w-full py-5 bg-[var(--brand)] text-[var(--bg-primary)] rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
+                                            className="w-full py-5 bg-[var(--brand)] text-[var(--bg-primary)] rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm lg:text-base shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
                                         >
                                             Save Profile Changes
                                         </button>
@@ -2992,10 +2992,10 @@ const DriverDashboard = () => {
                                         <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
                                             <Shield size={80} className="text-brand" />
                                         </div>
-                                        <p className="text-[10px] font-black text-secondary uppercase tracking-widest">Profile Identity</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-widest">Profile Identity</p>
                                         <div className="space-y-6">
                                             <div className="space-y-1.5 px-2">
-                                                <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-1">Email Address</label>
+                                                <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest ml-1">Email Address</label>
                                                 <input
                                                     type="email"
                                                     value={userEmail}
@@ -3008,9 +3008,9 @@ const DriverDashboard = () => {
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
                                                         <Lock size={14} className="text-brand" />
-                                                        <label className="text-[10px] font-black text-brand uppercase tracking-widest">Security Protocol</label>
+                                                        <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest">Security Protocol</label>
                                                     </div>
-                                                    <span className="text-[8px] font-black uppercase text-gray-600 tracking-widest">Last changed: 3 months ago</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-600 tracking-widest">Last changed: 3 months ago</span>
                                                 </div>
 
                                                 <button
@@ -3018,16 +3018,16 @@ const DriverDashboard = () => {
                                                     className="w-full py-5 bg-surface border-2 border-dashed border-main hover:border-brand/30 hover:bg-brand/5 rounded-2xl flex flex-col items-center justify-center gap-2 group transition-all"
                                                 >
                                                     <Key size={20} className="text-secondary group-hover:text-brand transition-colors" />
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted group-hover:text-primary">Request Security Reset</span>
+                                                    <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-muted group-hover:text-primary">Request Security Reset</span>
                                                 </button>
-                                                <p className="text-[8px] font-bold text-secondary uppercase leading-relaxed text-center px-4">
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase leading-relaxed text-center px-4">
                                                     Password changes require dual-factor verification via email and SMS for your protection.
                                                 </p>
                                             </div>
 
                                             <button
                                                 onClick={() => alert("Identity updated successfully!")}
-                                                className="w-full py-4 bg-[var(--brand)] text-[var(--bg-primary)] rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-brand/20 active:scale-95 transition-all mt-2"
+                                                className="w-full py-4 bg-[var(--brand)] text-[var(--bg-primary)] rounded-2xl font-black uppercase tracking-widest text-[10px] md:text-xs lg:text-sm shadow-lg shadow-brand/20 active:scale-95 transition-all mt-2"
                                             >
                                                 Save Changes
                                             </button>
@@ -3036,7 +3036,7 @@ const DriverDashboard = () => {
 
                                     {/* Appearance Settings */}
                                     <div className="p-6 bg-surface border border-main rounded-[2.5rem] space-y-6">
-                                        <p className="text-[10px] font-black text-secondary uppercase tracking-widest">App Appearance</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-widest">App Appearance</p>
                                         <div className="grid grid-cols-2 gap-4">
                                             <button
                                                 onClick={() => setTheme('dark')}
@@ -3045,7 +3045,7 @@ const DriverDashboard = () => {
                                                 <div className="w-10 h-10 rounded-xl bg-dark-950 border border-main flex items-center justify-center text-primary">
                                                     <Zap size={20} />
                                                 </div>
-                                                <span className="text-[10px] font-black uppercase tracking-widest">Dark Mode</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">Dark Mode</span>
                                             </button>
                                             <button
                                                 onClick={() => setTheme('light')}
@@ -3054,14 +3054,14 @@ const DriverDashboard = () => {
                                                 <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-800 shadow-sm">
                                                     <Zap size={20} fill="currentColor" />
                                                 </div>
-                                                <span className="text-[10px] font-black uppercase tracking-widest">Light Mode</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">Light Mode</span>
                                             </button>
                                         </div>
                                     </div>
 
                                     {/* Map Settings */}
                                     <div className="p-6 bg-surface border border-main rounded-[2.5rem] space-y-4">
-                                        <p className="text-[10px] font-black text-secondary uppercase tracking-widest">Navigation Preference</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-widest">Navigation Preference</p>
                                         <div className="grid grid-cols-1 gap-4">
                                             {[
                                                 { id: 'google', name: 'Google Maps', icon: 'https://upload.wikimedia.org/wikipedia/commons/3/39/Google_Maps_icon_%282015-2020%29.svg' },
@@ -3102,7 +3102,7 @@ const DriverDashboard = () => {
                             <X size={48} strokeWidth={3} />
                         </div>
                         <h2 className="text-4xl font-black italic tracking-tighter uppercase text-primary mb-4">Access Restricted</h2>
-                        <p className="max-w-md text-muted font-bold uppercase tracking-widest text-[10px] leading-relaxed mb-10">
+                        <p className="max-w-md text-muted font-bold uppercase tracking-widest text-[10px] md:text-xs lg:text-sm leading-relaxed mb-10">
                             You have denied the platform terms & conditions. To ensure safety and legal compliance, you cannot use the Green platform without accepting the agreement.
                         </p>
                         <button
@@ -3155,12 +3155,12 @@ const DriverDashboard = () => {
                                                 <Key size={24} />
                                             </div>
                                             <h3 className="text-xl font-black italic uppercase tracking-tighter">Request <span className="text-brand">Reset</span></h3>
-                                            <p className="text-[10px] font-bold text-secondary uppercase tracking-widest leading-relaxed">Confirm your identity to receive a secure recovery link.</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-widest leading-relaxed">Confirm your identity to receive a secure recovery link.</p>
                                         </div>
 
                                         <div className="space-y-4">
                                             <div className="space-y-1.5">
-                                                <label className="text-[9px] font-black text-brand uppercase tracking-widest ml-1">Confirm Email</label>
+                                                <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-widest ml-1">Confirm Email</label>
                                                 <div className="relative">
                                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary" size={14} />
                                                     <input 
@@ -3168,12 +3168,12 @@ const DriverDashboard = () => {
                                                         placeholder="email@example.com"
                                                         value={confirmEmail}
                                                         onChange={(e) => setConfirmEmail(e.target.value)}
-                                                        className="w-full bg-dark-800 border border-main rounded-2xl p-4 pl-10 text-xs font-bold text-primary focus:border-brand outline-none"
+                                                        className="w-full bg-dark-800 border border-main rounded-2xl p-4 pl-10 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none"
                                                     />
                                                 </div>
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[9px] font-black text-brand uppercase tracking-widest ml-1">Confirm Number</label>
+                                                <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-widest ml-1">Confirm Number</label>
                                                 <div className="relative">
                                                     <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary" size={14} />
                                                     <input 
@@ -3181,7 +3181,7 @@ const DriverDashboard = () => {
                                                         placeholder="+49 151 ..."
                                                         value={confirmPhone}
                                                         onChange={(e) => setConfirmPhone(e.target.value)}
-                                                        className="w-full bg-dark-800 border border-main rounded-2xl p-4 pl-10 text-xs font-bold text-primary focus:border-brand outline-none"
+                                                        className="w-full bg-dark-800 border border-main rounded-2xl p-4 pl-10 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none"
                                                     />
                                                 </div>
                                             </div>
@@ -3196,7 +3196,7 @@ const DriverDashboard = () => {
                                                 }, 1500);
                                             }}
                                             disabled={!confirmEmail || !confirmPhone || resetLoading}
-                                            className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2 ${confirmEmail && confirmPhone ? 'bg-brand text-dark-900 shadow-lg shadow-brand/20 active:scale-95' : 'bg-surface text-secondary border border-main'}`}
+                                            className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] md:text-xs lg:text-sm transition-all flex items-center justify-center gap-2 ${confirmEmail && confirmPhone ? 'bg-brand text-dark-900 shadow-lg shadow-brand/20 active:scale-95' : 'bg-surface text-secondary border border-main'}`}
                                         >
                                             {resetLoading ? (
                                                 <div className="w-4 h-4 border-2 border-dark-900 border-t-transparent rounded-full animate-spin" />
@@ -3217,27 +3217,27 @@ const DriverDashboard = () => {
                                         </div>
                                         <div className="space-y-2">
                                             <h3 className="text-xl font-black italic uppercase tracking-tighter">Dispatch <span className="text-brand">Success</span></h3>
-                                            <p className="text-[10px] font-bold text-secondary uppercase tracking-widest leading-relaxed">
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-widest leading-relaxed">
                                                 A secure verification link has been sent to your email and phone number.
                                             </p>
                                             <div className="p-6 bg-brand/5 border border-brand/20 rounded-[2.5rem] relative mt-4 shadow-xl">
                                                 <div className="absolute -top-3 left-8 px-3 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-widest shadow-lg">Network Protocol 🛰️</div>
-                                                <p className="text-[11px] font-black italic text-brand leading-relaxed">Partner Onboarding Active</p>
-                                                <p className="text-[9px] text-[var(--text-muted)] mt-1 font-bold">Full business licensing and venue registration will be finalized in the Partner Dashboard.</p>
+                                                <p className="text-[11px] md:text-sm lg:text-base font-black italic text-brand leading-relaxed">Partner Onboarding Active</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs text-[var(--text-muted)] mt-1 font-bold">Full business licensing and venue registration will be finalized in the Partner Dashboard.</p>
                                             </div>
                                         </div>
                                         <div className="p-4 bg-brand/5 border border-brand/10 rounded-2xl">
-                                            <p className="text-[8px] font-black text-brand uppercase tracking-widest">Development Link:</p>
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest">Development Link:</p>
                                             <a 
                                                 href="/security-recovery" 
-                                                className="text-[10px] font-bold text-primary underline hover:text-brand"
+                                                className="text-[10px] md:text-xs lg:text-sm font-bold text-primary underline hover:text-brand"
                                             >
                                                 Open Security Terminal
                                             </a>
                                         </div>
                                         <button
                                             onClick={() => setShowSecurityReset(false)}
-                                            className="w-full py-4 bg-surface hover:bg-surface-light rounded-2xl font-black uppercase tracking-widest text-[10px] text-muted"
+                                            className="w-full py-4 bg-surface hover:bg-surface-light rounded-2xl font-black uppercase tracking-widest text-[10px] md:text-xs lg:text-sm text-muted"
                                         >
                                             Close Terminal
                                         </button>
@@ -3270,7 +3270,7 @@ const DriverDashboard = () => {
                                         <CheckCircle size={32} />
                                     </div>
                                     <h3 className="text-2xl font-black italic uppercase tracking-tighter text-primary">Mission Complete?</h3>
-                                    <p className="text-[9px] font-bold text-secondary uppercase tracking-[0.2em] leading-relaxed">
+                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-[0.2em] leading-relaxed">
                                         Confirming will finalize the node for <span className="text-primary">{currentSequence[0]?.label.split(': ')[1]}</span>.
                                     </p>
                                 </div>
@@ -3278,13 +3278,13 @@ const DriverDashboard = () => {
                                 <div className="space-y-3 px-2">
                                     <button
                                         onClick={handleCompleteRide}
-                                        className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all"
+                                        className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs md:text-sm lg:text-base shadow-xl active:scale-95 transition-all"
                                     >
                                         Proceed to Settlement
                                     </button>
                                     <button
                                         onClick={() => setMissionSheetOpen(false)}
-                                        className="w-full py-4 bg-surface border border-main rounded-[1.5rem] font-black uppercase tracking-widest text-[9px] text-secondary"
+                                        className="w-full py-4 bg-surface border border-main rounded-[1.5rem] font-black uppercase tracking-widest text-[9px] md:text-[11px] lg:text-xs text-secondary"
                                     >
                                         Mistake - Go Back
                                     </button>
@@ -3300,7 +3300,7 @@ const DriverDashboard = () => {
                             >
                                 <div className="text-center">
                                     <h2 className="text-xl font-black italic uppercase tracking-tighter">Mission Accomplished</h2>
-                                    <p className="text-[8px] font-bold text-brand uppercase tracking-[0.2em]">Data Synchronized</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-brand uppercase tracking-[0.2em]">Data Synchronized</p>
                                 </div>
 
                                 {/* High-Density Metrics */}
@@ -3319,7 +3319,7 @@ const DriverDashboard = () => {
                                 {/* Mandatory Vibe Check - High Density */}
                                 <div className="bg-dark-950/40 border border-main rounded-2xl p-4 space-y-3 mx-2">
                                     <div className="flex justify-between items-center px-1">
-                                        <p className="text-[8px] font-black text-muted uppercase tracking-widest">Rate Vibe</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-muted uppercase tracking-widest">Rate Vibe</p>
                                         <span className="text-[7px] text-gray-600 font-bold uppercase italic">Required</span>
                                     </div>
 
@@ -3349,13 +3349,13 @@ const DriverDashboard = () => {
                                 <div className="space-y-2 px-2">
                                     <button 
                                         onClick={finalizeMission}
-                                        className="w-full py-5 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-[0.15em] italic text-[11px] shadow-lg shadow-brand/20 active:scale-95 transition-all"
+                                        className="w-full py-5 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-[0.15em] italic text-[11px] md:text-sm lg:text-base shadow-lg shadow-brand/20 active:scale-95 transition-all"
                                     >
                                         Complete & Sync: €{(lastCompletedRide?.finalAmount + 72.50).toFixed(2)}
                                     </button>
                                     <button 
                                         onClick={() => setMissionStep('confirm')}
-                                        className="w-full py-2.5 bg-surface rounded-xl font-black uppercase tracking-widest text-[8px] text-secondary hover:text-primary"
+                                        className="w-full py-2.5 bg-surface rounded-xl font-black uppercase tracking-widest text-[8px] md:text-[10px] lg:text-xs text-secondary hover:text-primary"
                                     >
                                         ↩ Resume Trip
                                     </button>
@@ -3405,7 +3405,7 @@ const DriverDashboard = () => {
                                              <Users size={28} />}
                                         </div>
                                         <div>
-                                            <p className={`text-[11px] font-black uppercase tracking-[0.2em] ${
+                                            <p className={`text-[11px] md:text-sm lg:text-base font-black uppercase tracking-[0.2em] ${
                                                 incomingRide.rideType === 'premium' ? 'text-amber-500' : 
                                                 incomingRide.rideType === 'max' ? 'text-white' : 
                                                 incomingRide.rideType === 'green' ? 'text-emerald-500' : 
@@ -3420,21 +3420,21 @@ const DriverDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-secondary mb-1 opacity-80">Base Payout</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-secondary mb-1 opacity-80">Base Payout</p>
                                         <p className="text-3xl font-black text-white tracking-tighter">€{incomingRide.price}</p>
                                     </div>
                                 </div>
 
                                 <div className="relative z-10 grid grid-cols-2 gap-4 mb-8">
                                     <div className="bg-dark-900/50 backdrop-blur-md p-4 rounded-3xl border border-main">
-                                        <p className="text-[9px] font-black text-secondary uppercase tracking-widest mb-2 opacity-80">Max Occupancy</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-2 opacity-80">Max Occupancy</p>
                                         <div className="flex items-center gap-2 text-white">
                                             <User size={16} />
                                             <span className="text-base font-black">{incomingRide.capacity} Seats</span>
                                         </div>
                                     </div>
                                     <div className="bg-dark-900/50 backdrop-blur-md p-4 rounded-3xl border border-main">
-                                        <p className="text-[9px] font-black text-secondary uppercase tracking-widest mb-2 opacity-80">Share Bonus</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-2 opacity-80">Share Bonus</p>
                                         <div className={`flex items-center gap-2 ${
                                             incomingRide.rideType === 'premium' ? 'text-amber-500' : 
                                             incomingRide.rideType === 'max' ? 'text-white' : 
@@ -3453,7 +3453,7 @@ const DriverDashboard = () => {
                                             <Navigation size={18} className="text-brand" />
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-[9px] font-black text-secondary uppercase tracking-widest opacity-80">Pickup Location</p>
+                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-80">Pickup Location</p>
                                             <p className="text-sm font-bold truncate text-white">{incomingRide.pickup}</p>
                                         </div>
                                     </div>
@@ -3462,7 +3462,7 @@ const DriverDashboard = () => {
                                             <MapPin size={18} className="text-orange-500" />
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-[9px] font-black text-secondary uppercase tracking-widest opacity-80">Destination</p>
+                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-80">Destination</p>
                                             <p className="text-sm font-bold truncate text-white">{incomingRide.destination}</p>
                                         </div>
                                     </div>
@@ -3478,7 +3478,7 @@ const DriverDashboard = () => {
                                             }
                                             setIncomingRide(null);
                                         }}
-                                        className="flex-1 py-5 bg-white/5 border border-white/20 rounded-2xl font-black text-xs uppercase tracking-widest transition-all text-white/70 hover:text-white"
+                                        className="flex-1 py-5 bg-white/5 border border-white/20 rounded-2xl font-black text-xs md:text-sm lg:text-base uppercase tracking-widest transition-all text-white/70 hover:text-white"
                                     >
                                         Dismiss
                                     </motion.button>
@@ -3507,7 +3507,7 @@ const DriverDashboard = () => {
                     {/* Header Intro */}
                     <div className="p-4 bg-brand/5 border border-brand/20 rounded-2xl flex items-center justify-between">
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">Telemetry Status</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand mb-1">Telemetry Status</p>
                             <p className="text-[12px] font-bold text-primary">Verify and update your professional identity profile.</p>
                         </div>
                         <div className="w-8 h-8 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center animate-pulse">
@@ -3521,7 +3521,7 @@ const DriverDashboard = () => {
                             <img src={profileData.avatar} alt="Avatar" className="w-full h-full object-cover" />
                             <label htmlFor="avatar-upload" className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                 <Upload size={20} className="text-brand" />
-                                <span className="text-[8px] font-black uppercase tracking-widest text-white">Upload Photo</span>
+                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-white">Upload Photo</span>
                             </label>
                             <input 
                                 type="file" 
@@ -3544,7 +3544,7 @@ const DriverDashboard = () => {
                             <h3 className="text-lg font-black italic tracking-tighter uppercase text-white leading-tight">
                                 {profileData.firstName} {profileData.lastName}
                             </h3>
-                            <p className="text-[9px] font-black text-brand uppercase tracking-widest mt-1">Active Duty Driver</p>
+                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-widest mt-1">Active Duty Driver</p>
                         </div>
                     </div>
 
@@ -3552,7 +3552,7 @@ const DriverDashboard = () => {
                     <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
-                                <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">First Name</label>
+                                <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">First Name</label>
                                 <input 
                                     type="text" 
                                     value={profileData.firstName}
@@ -3561,7 +3561,7 @@ const DriverDashboard = () => {
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">Last Name</label>
+                                <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">Last Name</label>
                                 <input 
                                     type="text" 
                                     value={profileData.lastName}
@@ -3572,7 +3572,7 @@ const DriverDashboard = () => {
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">Email Address</label>
+                            <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">Email Address</label>
                             <input 
                                 type="email" 
                                 value={profileData.email}
@@ -3582,7 +3582,7 @@ const DriverDashboard = () => {
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">Phone Number</label>
+                            <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">Phone Number</label>
                             <input 
                                 type="text" 
                                 value={profileData.phoneNumber}
@@ -3592,7 +3592,7 @@ const DriverDashboard = () => {
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">Street Address</label>
+                            <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">Street Address</label>
                             <input 
                                 type="text" 
                                 value={profileData.address}
@@ -3603,7 +3603,7 @@ const DriverDashboard = () => {
 
                         <div className="grid grid-cols-3 gap-4">
                             <div className="col-span-1 space-y-1">
-                                <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">Zip Code</label>
+                                <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">Zip Code</label>
                                 <input 
                                     type="text" 
                                     value={profileData.zipCode}
@@ -3612,7 +3612,7 @@ const DriverDashboard = () => {
                                 />
                             </div>
                             <div className="col-span-2 space-y-1">
-                                <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">City</label>
+                                <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">City</label>
                                 <input 
                                     type="text" 
                                     value={profileData.city}
@@ -3627,7 +3627,7 @@ const DriverDashboard = () => {
                     <div className="flex gap-4 pt-2">
                         <button 
                             onClick={() => setProfileSheetOpen(false)}
-                            className="flex-1 py-5 bg-white/5 border border-white/10 rounded-2xl font-black text-xs uppercase tracking-widest text-white/60 hover:text-white transition-all"
+                            className="flex-1 py-5 bg-white/5 border border-white/10 rounded-2xl font-black text-xs md:text-sm lg:text-base uppercase tracking-widest text-white/60 hover:text-white transition-all"
                         >
                             Cancel
                         </button>
@@ -3636,7 +3636,7 @@ const DriverDashboard = () => {
                                 setProfileSheetOpen(false);
                                 alert("TELEMETRY SYNCED: Profile successfully saved to GreenRide Mainframe!");
                             }}
-                            className="flex-[2] py-5 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+                            className="flex-[2] py-5 bg-white text-black rounded-2xl font-black text-xs md:text-sm lg:text-base uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                         >
                             Save Profile
                         </button>
@@ -3654,7 +3654,7 @@ const DriverDashboard = () => {
                     {/* Status Banner */}
                     <div className="p-4 rounded-2xl flex items-center justify-between border transition-all duration-300 bg-black/45 border-white/10">
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-secondary mb-1">Asset Verification Status</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-secondary mb-1">Asset Verification Status</p>
                             {vehicleInfo?.status === 'approved' ? (
                                 <p className="text-[12px] font-black text-brand flex items-center gap-1.5 uppercase tracking-wider">
                                     <ShieldCheck size={14} className="text-brand animate-bounce" /> Verified by Khiam Azizi
@@ -3669,7 +3669,7 @@ const DriverDashboard = () => {
                                 </p>
                             )}
                         </div>
-                        <div className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-md ${
+                        <div className={`px-3 py-1 text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest rounded-md ${
                             vehicleInfo?.status === 'approved' ? 'bg-brand/10 border border-brand/20 text-brand' :
                             vehicleInfo?.status === 'pending' ? 'bg-amber-400/10 border border-amber-400/20 text-amber-400' :
                             'bg-white/5 border border-white/10 text-white/40'
@@ -3686,7 +3686,7 @@ const DriverDashboard = () => {
                                 {vehicleInfo?.status === 'unregistered' && (
                                     <label htmlFor="vehicle-photo-upload" className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                         <Upload size={20} className="text-brand" />
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-white">Upload New Shot</span>
+                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-white">Upload New Shot</span>
                                     </label>
                                 )}
                             </>
@@ -3696,8 +3696,8 @@ const DriverDashboard = () => {
                                     <Car size={32} className="text-white/40" />
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">Upload Vehicle Shot</p>
-                                    <p className="text-[8px] font-bold text-secondary uppercase tracking-tight">Camera or gallery image</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-primary">Upload Vehicle Shot</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-tight">Camera or gallery image</p>
                                 </div>
                             </div>
                         )}
@@ -3728,7 +3728,7 @@ const DriverDashboard = () => {
                     {/* Details Input Form */}
                     <div className="space-y-4">
                         <div className="space-y-1">
-                            <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">Manufacturer & Model</label>
+                            <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">Manufacturer & Model</label>
                             <input 
                                 type="text" 
                                 placeholder="e.g. Tesla Model Y"
@@ -3745,7 +3745,7 @@ const DriverDashboard = () => {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
-                                <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">License Plate (Kennzeichen)</label>
+                                <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">License Plate (Kennzeichen)</label>
                                 <input 
                                     type="text" 
                                     placeholder="e.g. F-GR-2026"
@@ -3760,7 +3760,7 @@ const DriverDashboard = () => {
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">Build Year (Baujahr)</label>
+                                <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">Build Year (Baujahr)</label>
                                 <input 
                                     type="text" 
                                     placeholder="e.g. 2025"
@@ -3777,7 +3777,7 @@ const DriverDashboard = () => {
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[9px] font-black text-white/40 uppercase tracking-widest px-2">Vehicle Color</label>
+                            <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white/40 uppercase tracking-widest px-2">Vehicle Color</label>
                             <input 
                                 type="text" 
                                 placeholder="e.g. Midnight Blue"
@@ -3798,8 +3798,8 @@ const DriverDashboard = () => {
                         {vehicleInfo?.status === 'approved' ? (
                             <div className="space-y-3">
                                 <div className="p-4 bg-brand/5 border border-brand/20 rounded-2xl text-center">
-                                    <p className="text-[10px] font-bold text-brand uppercase tracking-wider">⚡ ASSET REGISTERED & TELEMETRY LIVE</p>
-                                    <p className="text-[8px] font-semibold text-white/40 mt-1 uppercase">Ready for premium dispatch operations</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-bold text-brand uppercase tracking-wider">⚡ ASSET REGISTERED & TELEMETRY LIVE</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-semibold text-white/40 mt-1 uppercase">Ready for premium dispatch operations</p>
                                 </div>
                                 <button 
                                     onClick={() => {
@@ -3814,7 +3814,7 @@ const DriverDashboard = () => {
                                             }
                                         }
                                     }}
-                                    className="w-full py-5 bg-white/5 border border-white/10 text-white/60 hover:text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all"
+                                    className="w-full py-5 bg-white/5 border border-white/10 text-white/60 hover:text-white rounded-2xl font-black text-xs md:text-sm lg:text-base uppercase tracking-widest transition-all"
                                 >
                                     Reset Registration
                                 </button>
@@ -3822,8 +3822,8 @@ const DriverDashboard = () => {
                         ) : vehicleInfo?.status === 'pending' ? (
                             <div className="space-y-3">
                                 <div className="p-4 bg-amber-400/5 border border-amber-400/20 rounded-2xl text-center animate-pulse">
-                                    <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">⏳ PENDING VERIFICATION</p>
-                                    <p className="text-[8px] font-semibold text-white/40 mt-1 uppercase">Awaiting manual release inside staff dashboard</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-bold text-amber-400 uppercase tracking-wider">⏳ PENDING VERIFICATION</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-semibold text-white/40 mt-1 uppercase">Awaiting manual release inside staff dashboard</p>
                                 </div>
                                 <button 
                                     onClick={() => {
@@ -3837,7 +3837,7 @@ const DriverDashboard = () => {
                                         }
                                         alert("APPROVAL REQUEST RECALLED: Reverted back to draft status.");
                                     }}
-                                    className="w-full py-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl font-black text-xs uppercase tracking-widest transition-all hover:bg-red-500 hover:text-white"
+                                    className="w-full py-5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl font-black text-xs md:text-sm lg:text-base uppercase tracking-widest transition-all hover:bg-red-500 hover:text-white"
                                 >
                                     Recall Approval Request
                                 </button>
@@ -3846,7 +3846,7 @@ const DriverDashboard = () => {
                             <div className="flex gap-4">
                                 <button 
                                     onClick={() => setVehicleSheetOpen(false)}
-                                    className="flex-1 py-5 bg-white/5 border border-white/10 rounded-2xl font-black text-xs uppercase tracking-widest text-white/60 hover:text-white transition-all"
+                                    className="flex-1 py-5 bg-white/5 border border-white/10 rounded-2xl font-black text-xs md:text-sm lg:text-base uppercase tracking-widest text-white/60 hover:text-white transition-all"
                                 >
                                     Cancel
                                 </button>
@@ -3867,7 +3867,7 @@ const DriverDashboard = () => {
                                         setVehicleSheetOpen(false);
                                         alert("VEHICLE REGISTRATION INITIATED • Secure approval request dispatched to the GreenRide Admin Portal! Awaiting verification by Chief Director Khiam Azizi.");
                                     }}
-                                    className="flex-[2] py-5 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+                                    className="flex-[2] py-5 bg-white text-black rounded-2xl font-black text-xs md:text-sm lg:text-base uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                                 >
                                     Request Admin Approval
                                 </button>
@@ -3887,12 +3887,12 @@ const DriverDashboard = () => {
                     {/* Security Badge */}
                     <div className="p-4 rounded-2xl flex items-center justify-between border transition-all duration-300 bg-black/45 border-white/10">
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-secondary mb-1">Vault Security Level</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-secondary mb-1">Vault Security Level</p>
                             <p className="text-[12px] font-black text-brand flex items-center gap-1.5 uppercase tracking-wider">
                                 <ShieldCheck size={14} className="text-brand" /> AES-256 Military Grade Encryption
                             </p>
                         </div>
-                        <div className="px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-md bg-brand/10 border border-brand/20 text-brand">
+                        <div className="px-3 py-1 text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest rounded-md bg-brand/10 border border-brand/20 text-brand">
                             SECURE
                         </div>
                     </div>
@@ -3905,7 +3905,7 @@ const DriverDashboard = () => {
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
                                             <p className="text-sm font-black italic text-white uppercase tracking-tight">{doc.name}</p>
-                                            <span className={`px-2 py-0.5 text-[8px] font-black rounded uppercase tracking-wider ${
+                                            <span className={`px-2 py-0.5 text-[8px] md:text-[10px] lg:text-xs font-black rounded uppercase tracking-wider ${
                                                 doc.status === 'verified' ? 'bg-brand/15 border border-brand/20 text-brand' :
                                                 doc.status === 'pending' ? 'bg-amber-400/15 border border-amber-400/20 text-amber-400 animate-pulse' :
                                                 'bg-red-500/15 border border-red-500/20 text-red-400'
@@ -3913,7 +3913,7 @@ const DriverDashboard = () => {
                                                 {doc.status}
                                             </span>
                                         </div>
-                                        <p className="text-[10px] font-medium text-white/40 uppercase tracking-widest">{doc.requirement}</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-medium text-white/40 uppercase tracking-widest">{doc.requirement}</p>
                                     </div>
 
                                     {/* Upload/Action Button */}
@@ -3957,7 +3957,7 @@ const DriverDashboard = () => {
                                                     if (doc.status === 'verified') return;
                                                     document.getElementById(`file-input-${doc.id}`).click();
                                                 }}
-                                                className={`px-4 py-2 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all ${
+                                                className={`px-4 py-2 text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest rounded-xl transition-all ${
                                                     doc.status === 'verified'
                                                         ? 'bg-brand/10 text-brand cursor-default'
                                                         : 'bg-white text-black hover:scale-105 active:scale-95'
@@ -3974,7 +3974,7 @@ const DriverDashboard = () => {
                                     <div className="relative w-24 h-16 bg-black/40 rounded-lg overflow-hidden border border-white/10 group">
                                         <img src={doc.file} className="w-full h-full object-cover" alt="Verification preview" />
                                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                            <span className="text-[8px] font-black uppercase tracking-wider text-white">Preview</span>
+                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider text-white">Preview</span>
                                         </div>
                                     </div>
                                 )}
@@ -4002,7 +4002,7 @@ const DriverDashboard = () => {
                                             }}
                                             className="w-4 h-4 mt-0.5 rounded border-white/10 bg-white/5 text-brand focus:ring-0 focus:ring-offset-0"
                                         />
-                                        <label htmlFor="terms-checkbox" className="text-[11px] font-bold text-white/60 leading-normal uppercase cursor-pointer select-none">
+                                        <label htmlFor="terms-checkbox" className="text-[11px] md:text-sm lg:text-base font-bold text-white/60 leading-normal uppercase cursor-pointer select-none">
                                             I accept the GreenRide Partner Terms & Platform Data Usage Agreement.
                                         </label>
                                     </div>
@@ -4015,18 +4015,18 @@ const DriverDashboard = () => {
                     <div className="pt-4 border-t border-white/5 flex flex-col gap-4">
                         {driverDocs.every(d => d.status === 'verified') ? (
                             <div className="p-4 bg-brand/5 border border-brand/20 rounded-2xl text-center">
-                                <p className="text-[10px] font-bold text-brand uppercase tracking-wider">👑 COMPLIANCE ACTIVE • SERVICE PERMITTED</p>
-                                <p className="text-[8px] font-semibold text-white/40 mt-1 uppercase">All strategic documentation is cleared by administration</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-bold text-brand uppercase tracking-wider">👑 COMPLIANCE ACTIVE • SERVICE PERMITTED</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs font-semibold text-white/40 mt-1 uppercase">All strategic documentation is cleared by administration</p>
                             </div>
                         ) : driverDocs.some(d => d.status === 'pending') ? (
                             <div className="p-4 bg-amber-400/5 border border-amber-400/20 rounded-2xl text-center animate-pulse">
-                                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">⏳ MANUAL COMPLIANCE AUDIT ACTIVE</p>
-                                <p className="text-[8px] font-semibold text-white/40 mt-1 uppercase">Director Khiam Azizi is reviewing pending documents</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-bold text-amber-400 uppercase tracking-wider">⏳ MANUAL COMPLIANCE AUDIT ACTIVE</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs font-semibold text-white/40 mt-1 uppercase">Director Khiam Azizi is reviewing pending documents</p>
                             </div>
                         ) : (
                             <div className="p-4 bg-red-500/5 border border-red-500/20 rounded-2xl text-center">
-                                <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider">⚠️ COMPLIANCE DEFICIT DETECTED</p>
-                                <p className="text-[8px] font-semibold text-white/40 mt-1 uppercase">Upload all required credentials to activate dispatch access</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-bold text-red-400 uppercase tracking-wider">⚠️ COMPLIANCE DEFICIT DETECTED</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs font-semibold text-white/40 mt-1 uppercase">Upload all required credentials to activate dispatch access</p>
                             </div>
                         )}
 
@@ -4047,7 +4047,7 @@ const DriverDashboard = () => {
 
                                     alert("SANDBOX BYPASS: All compliance documents & vehicle assets have been instantly APPROVED/VERIFIED!");
                                 }}
-                                className="w-full py-3 bg-[var(--brand)]/10 border border-[var(--brand)]/35 text-[var(--brand)] rounded-2xl font-black text-[10px] uppercase tracking-wider hover:bg-[var(--brand)] hover:text-dark-900 transition-all mb-2"
+                                className="w-full py-3 bg-[var(--brand)]/10 border border-[var(--brand)]/35 text-[var(--brand)] rounded-2xl font-black text-[10px] md:text-xs lg:text-sm uppercase tracking-wider hover:bg-[var(--brand)] hover:text-dark-900 transition-all mb-2"
                             >
                                 Sandbox: Approve All Credentials
                             </button>
@@ -4055,7 +4055,7 @@ const DriverDashboard = () => {
 
                         <button 
                             onClick={() => setDocumentsSheetOpen(false)}
-                            className="w-full py-5 bg-white text-black hover:scale-[1.01] active:scale-[0.99] rounded-2xl font-black text-xs uppercase tracking-widest transition-all"
+                            className="w-full py-5 bg-white text-black hover:scale-[1.01] active:scale-[0.99] rounded-2xl font-black text-xs md:text-sm lg:text-base uppercase tracking-widest transition-all"
                         >
                             Return to Cockpit
                         </button>
@@ -4080,7 +4080,7 @@ const DriverDashboard = () => {
                                     <img src={showPoolRequest.image} alt={showPoolRequest.name} className="w-full h-full object-cover" />
                                 </div>
                                 <div>
-                                    <div className="text-[10px] text-[var(--brand)] font-black uppercase tracking-widest mb-1 animate-pulse">Route Deviation Request</div>
+                                    <div className="text-[10px] md:text-xs lg:text-sm text-[var(--brand)] font-black uppercase tracking-widest mb-1 animate-pulse">Route Deviation Request</div>
                                     <h3 className="text-white font-black text-xl italic leading-tight">{showPoolRequest.name}</h3>
                                     <div className="flex items-center gap-1.5 mt-1 opacity-80">
                                         <Star className="w-3.5 h-3.5 text-[var(--brand)] fill-current" />

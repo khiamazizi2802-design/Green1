@@ -350,7 +350,7 @@ const GreenSPage = () => {
                                 className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/30 text-brand flex items-center justify-center relative transition-all shadow-lg active:scale-90"
                             >
                                 <Ticket size={22} />
-                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-white text-dark-900 text-[9px] font-black rounded-full flex items-center justify-center border-2 border-brand shadow-lg">
+                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-white text-dark-900 text-[9px] md:text-[11px] lg:text-xs font-black rounded-full flex items-center justify-center border-2 border-brand shadow-lg">
                                     {venueTickets.length}
                                 </span>
                             </motion.button>
@@ -374,7 +374,7 @@ const GreenSPage = () => {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
                             
-                            <div className="absolute top-6 left-6 px-4 py-1.5 bg-brand text-black text-[8px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg">
+                            <div className="absolute top-6 left-6 px-4 py-1.5 bg-brand text-black text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] rounded-full shadow-lg">
                                 {promotedEvent.status}
                             </div>
                             
@@ -382,7 +382,7 @@ const GreenSPage = () => {
                                 <h2 className="text-3xl font-black italic tracking-tighter uppercase text-white leading-tight whitespace-pre-line">
                                     {promotedEvent.title}
                                 </h2>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-brand mt-2 flex items-center gap-2">
+                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand mt-2 flex items-center gap-2">
                                     <Trophy size={12} /> {promotedEvent.actionText}
                                 </p>
                             </div>
@@ -399,7 +399,7 @@ const GreenSPage = () => {
                     <div className="flex items-center justify-between mb-8 px-2">
                         <div />
                         <div className="flex items-center gap-3 bg-[var(--bg-secondary)] border border-white/5 p-1.5 rounded-full">
-                            <span className={`text-[8px] font-black uppercase tracking-widest ${shareLocation ? 'text-brand' : 'text-gray-500'}`}>Share Location</span>
+                            <span className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest ${shareLocation ? 'text-brand' : 'text-gray-500'}`}>Share Location</span>
                             <button 
                                 onClick={() => setShareLocation(!shareLocation)}
                                 className={`w-10 h-5 rounded-full relative transition-all duration-300 border ${shareLocation ? 'bg-brand/20 border-brand' : 'bg-[var(--bg-tertiary)] border-white/10'}`}
@@ -424,7 +424,7 @@ const GreenSPage = () => {
                                 </div>
                                 <div className="text-left">
                                     <h3 className="text-xl font-black italic tracking-tighter uppercase text-black leading-tight">Manage Circle</h3>
-                                    <p className="text-xs font-black uppercase tracking-widest text-black mt-1.5">{5 + mutualFriends.length} Active Network Connections</p>
+                                    <p className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-black mt-1.5">{5 + mutualFriends.length} Active Network Connections</p>
                                 </div>
                             </div>
                             <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-gray-600 group-hover:text-brand transition-colors relative z-10">
@@ -439,7 +439,7 @@ const GreenSPage = () => {
                     <section className="mb-10 animate-in fade-in duration-500">
                         <div className="flex items-center justify-between mb-8 px-2">
                             <div />
-                            <span className="text-[10px] font-black text-black uppercase tracking-[0.4em] italic">Hub Select</span>
+                            <span className="text-[10px] md:text-xs lg:text-sm font-black text-black uppercase tracking-[0.4em] italic">Hub Select</span>
                         </div>
                         
                         <div 
@@ -482,7 +482,7 @@ const GreenSPage = () => {
                                             <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                             <entity.icon size={32} strokeWidth={2.5} className={`group-hover:scale-110 group-hover:rotate-6 transition-transform ${entity.color}`} />
                                         </div>
-                                        <span className="text-xs font-black uppercase tracking-widest text-black transition-colors">{entity.label}</span>
+                                        <span className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-black transition-colors">{entity.label}</span>
                                     </button>
                                 ))}
                             </div>
@@ -519,7 +519,7 @@ const GreenSPage = () => {
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-black italic tracking-tighter uppercase text-black">Form Social Group</h3>
-                                        <p className="text-[10px] text-black font-black uppercase tracking-widest mt-2 px-8">Create a group to sync real-time venue splits with your circle.</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm text-black font-black uppercase tracking-widest mt-2 px-8">Create a group to sync real-time venue splits with your circle.</p>
                                     </div>
                                     <button 
                                         onClick={() => {
@@ -527,7 +527,7 @@ const GreenSPage = () => {
                                             setGroupRole('admin');
                                             localStorage.setItem('green_group_role', 'admin');
                                         }}
-                                        className="w-full py-6 rounded-2xl bg-black text-white font-black uppercase tracking-[0.3em] italic text-xs hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]"
+                                        className="w-full py-6 rounded-2xl bg-black text-white font-black uppercase tracking-[0.3em] italic text-xs md:text-sm lg:text-base hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]"
                                     >
                                         Activate Group Network
                                     </button>
@@ -541,10 +541,10 @@ const GreenSPage = () => {
                                     className="space-y-6"
                                 >
                                     <div className="flex items-center justify-between px-2">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Select Friends to Invite</h4>
+                                        <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-gray-500 italic">Select Friends to Invite</h4>
                                         <button 
                                             onClick={() => setGroupState(null)}
-                                            className="text-[8px] font-black uppercase tracking-widest text-brand hover:underline"
+                                            className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-brand hover:underline"
                                         >
                                             Back
                                         </button>
@@ -565,7 +565,7 @@ const GreenSPage = () => {
                                                 <div className={`w-16 h-16 rounded-[1.5rem] overflow-hidden border-2 transition-all shadow-xl ${invitedFriends.some(f => f.id === friend.id) ? 'border-brand' : 'border-white/5 group-hover:border-brand/40'}`}>
                                                     <img src={friend.avatar} alt={friend.name} className="w-full h-full" />
                                                 </div>
-                                                <span className={`text-[8px] font-black uppercase tracking-widest transition-colors ${invitedFriends.some(f => f.id === friend.id) ? 'text-brand' : 'text-gray-500'}`}>
+                                                <span className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest transition-colors ${invitedFriends.some(f => f.id === friend.id) ? 'text-brand' : 'text-gray-500'}`}>
                                                     {friend.name.split(' ')[0]}
                                                 </span>
                                             </button>
@@ -574,7 +574,7 @@ const GreenSPage = () => {
                                     <button 
                                         onClick={() => setGroupState('waiting')}
                                         disabled={invitedFriends.length === 0}
-                                        className="w-full py-5 rounded-2xl bg-[#1A1A1A] text-white font-black uppercase tracking-[0.2em] italic text-[10px] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl disabled:opacity-30"
+                                        className="w-full py-5 rounded-2xl bg-[#1A1A1A] text-white font-black uppercase tracking-[0.2em] italic text-[10px] md:text-xs lg:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl disabled:opacity-30"
                                     >
                                         Send Invitations ({invitedFriends.length})
                                     </button>
@@ -589,9 +589,9 @@ const GreenSPage = () => {
                                     <div className="text-center space-y-3">
                                         <div className="inline-flex items-center gap-2 bg-brand/10 border border-brand/20 px-4 py-2 rounded-full">
                                             <div className="w-2 h-2 rounded-full bg-brand" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-brand">Waiting for acceptance...</span>
+                                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand">Waiting for acceptance...</span>
                                         </div>
-                                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">A joining link has been sent to your circle.</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-bold uppercase tracking-widest">A joining link has been sent to your circle.</p>
                                     </div>
 
                                     <div className="space-y-3">
@@ -599,9 +599,9 @@ const GreenSPage = () => {
                                             <div key={i} className="flex items-center justify-between bg-[var(--bg-tertiary)] p-4 rounded-2xl border border-white/5">
                                                 <div className="flex items-center gap-3">
                                                     <img src={f.avatar} className="w-8 h-8 rounded-lg" alt="" />
-                                                    <span className="text-xs font-black italic uppercase text-white">{f.name}</span>
+                                                    <span className="text-xs md:text-sm lg:text-base font-black italic uppercase text-white">{f.name}</span>
                                                 </div>
-                                                <span className={`text-[8px] font-black uppercase tracking-widest ${f.status === 'Joined' ? 'text-brand' : 'text-amber-400'}`}>
+                                                <span className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest ${f.status === 'Joined' ? 'text-brand' : 'text-amber-400'}`}>
                                                     {f.status}
                                                 </span>
                                             </div>
@@ -618,8 +618,8 @@ const GreenSPage = () => {
                                     {/* EMBEDDED HUB SELECT (When active) */}
                                     <div className="space-y-4 bg-black/5 p-6 rounded-[2.5rem] border border-black/10 relative overflow-hidden">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-black text-black uppercase tracking-[0.3em] italic">Hub Select</span>
-                                            <span className="text-[8px] font-bold text-black/60 uppercase tracking-widest">Active Group Link ⚡</span>
+                                            <span className="text-[10px] md:text-xs lg:text-sm font-black text-black uppercase tracking-[0.3em] italic">Hub Select</span>
+                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-black/60 uppercase tracking-widest">Active Group Link ⚡</span>
                                         </div>
                                         
                                         <div className="overflow-x-auto no-scrollbar scroll-smooth px-1" ref={embeddedContainerRef}>
@@ -636,7 +636,7 @@ const GreenSPage = () => {
                                                                 <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                                                 <entity.icon size={22} strokeWidth={2.5} className={`group-hover:scale-110 group-hover:rotate-6 transition-transform ${isActive ? 'text-brand' : 'text-black'}`} />
                                                             </div>
-                                                            <span className="text-[9px] font-black uppercase tracking-widest text-black/80 group-hover:text-black transition-colors">{entity.label}</span>
+                                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-black/80 group-hover:text-black transition-colors">{entity.label}</span>
                                                         </button>
                                                     );
                                                 })}
@@ -650,7 +650,7 @@ const GreenSPage = () => {
                                             {groupRole === 'admin' ? <ShieldCheck size={18} /> : <UserCheck size={18} />}
                                         </div>
                                         <div>
-                                            <span className="text-[10px] font-black uppercase tracking-wider text-black">
+                                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-wider text-black">
                                                 {groupRole === 'admin' ? 'Group Leader (Admin)' : 'Circle Member'}
                                             </span>
                                             <p className="text-[7px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">
@@ -670,7 +670,7 @@ const GreenSPage = () => {
                                                         <Gem size={20} />
                                                     </div>
                                                     <div>
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-black/40">Persistent Venue Table Link</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-black/40">Persistent Venue Table Link</span>
                                                         <h4 className="text-sm font-black italic uppercase text-black mt-0.5">
                                                             {totalBudget && totalBudget !== '12' ? `Table Seat #${totalBudget}` : 'Table Link Not Locked'}
                                                         </h4>
@@ -678,7 +678,7 @@ const GreenSPage = () => {
                                                 </div>
                                                 <button 
                                                     onClick={() => setIsTableSelectorOpen(true)}
-                                                    className="px-4 py-2.5 bg-black text-white text-[8px] font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                                    className="px-4 py-2.5 bg-black text-white text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
                                                 >
                                                     Establish Link
                                                 </button>
@@ -692,13 +692,13 @@ const GreenSPage = () => {
                                                 
                                                 <div className="flex justify-between items-center pb-4 border-b border-white/5">
                                                     <div>
-                                                        <span className="text-[8px] font-black uppercase tracking-widest text-gray-500">Live Ledger Balance</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Live Ledger Balance</span>
                                                         <h3 className="text-3xl font-black italic uppercase text-brand mt-1">
                                                             € {groupTab.reduce((sum, item) => sum + item.price, 0).toFixed(2)}
                                                         </h3>
                                                     </div>
                                                     <div className="text-right">
-                                                        <span className="text-[8px] font-black uppercase tracking-widest text-gray-500">Equal Share</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Equal Share</span>
                                                         <p className="greens-equal-share text-sm font-black italic text-white mt-1" style={{ color: '#ffffff' }}>
                                                             € {((groupTab.reduce((sum, item) => sum + item.price, 0)) / (invitedFriends.length + 1)).toFixed(2)}
                                                         </p>
@@ -707,12 +707,12 @@ const GreenSPage = () => {
 
                                                 {/* Live Friends Payment Badges */}
                                                 <div className="space-y-3">
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-gray-500 px-1">Circle Network Status</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500 px-1">Circle Network Status</span>
                                                     
                                                     <div className="grid grid-cols-1 gap-2 max-h-[150px] overflow-y-auto pr-1 no-scrollbar">
                                                         {/* YOU */}
                                                         <div className="greens-friend-card flex items-center justify-between bg-[#161616] p-3 rounded-xl border border-white/10" style={{ backgroundColor: '#161616', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-                                                            <span className="greens-friend-name text-[10px] font-black text-white" style={{ color: '#ffffff' }}>YOU (Leader)</span>
+                                                            <span className="greens-friend-name text-[10px] md:text-xs lg:text-sm font-black text-white" style={{ color: '#ffffff' }}>YOU (Leader)</span>
                                                             <span className="text-[7px] font-black uppercase tracking-widest bg-brand/10 border border-brand/20 text-brand px-2.5 py-1 rounded-full">Admin Host</span>
                                                         </div>
 
@@ -722,7 +722,7 @@ const GreenSPage = () => {
                                                             const isCovered = groupTab.some(item => item.member === friend.name && item.payer === 'cover') || splitMode === 'cover_all';
                                                             return (
                                                                 <div key={i} className="greens-friend-card flex items-center justify-between bg-[#161616] p-3 rounded-xl border border-white/10" style={{ backgroundColor: '#161616', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-                                                                    <span className="greens-friend-name text-[10px] font-black text-white" style={{ color: '#ffffff' }}>{friend.name}</span>
+                                                                    <span className="greens-friend-name text-[10px] md:text-xs lg:text-sm font-black text-white" style={{ color: '#ffffff' }}>{friend.name}</span>
                                                                     <div>
                                                                         {isCovered ? (
                                                                             <span className="text-[7px] font-black uppercase tracking-widest bg-brand/10 border border-brand/20 text-brand px-2.5 py-1 rounded-full">
@@ -749,7 +749,7 @@ const GreenSPage = () => {
                                             <div className="flex flex-col gap-3">
                                                 <button
                                                     onClick={() => setIsSplitOptionsOpen(true)}
-                                                    className="w-full py-5 bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] italic shadow-xl active:scale-[0.98] transition-all hover:bg-neutral-900 border border-neutral-800"
+                                                    className="w-full py-5 bg-black text-white rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] italic shadow-xl active:scale-[0.98] transition-all hover:bg-neutral-900 border border-neutral-800"
                                                 >
                                                     Open Settle Dashboard
                                                 </button>
@@ -768,13 +768,13 @@ const GreenSPage = () => {
                                                                 localStorage.removeItem('green_group_role');
                                                             }
                                                         }}
-                                                        className="py-4 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-500 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all"
+                                                        className="py-4 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-500 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all"
                                                     >
                                                         Dissolve Group
                                                     </button>
                                                     <button
                                                         onClick={() => setShowReceipt(true)}
-                                                        className="py-4 bg-white/5 border border-white/10 text-gray-400 hover:text-white rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all"
+                                                        className="py-4 bg-white/5 border border-white/10 text-gray-400 hover:text-white rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all"
                                                     >
                                                         View Receipt
                                                     </button>
@@ -790,8 +790,8 @@ const GreenSPage = () => {
                                                     <Activity size={16} />
                                                 </div>
                                                 <div>
-                                                    <span className="text-[9px] font-black uppercase tracking-wider text-amber-500">Connected to Group Network</span>
-                                                    <p className="text-[8px] text-gray-600 font-bold uppercase tracking-wide mt-1 leading-relaxed">
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-wider text-amber-500">Connected to Group Network</span>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-600 font-bold uppercase tracking-wide mt-1 leading-relaxed">
                                                         You are active on the Host's ledger session. Table seats, venue orders, and offers are synchronized in real-time.
                                                     </p>
                                                 </div>
@@ -813,13 +813,13 @@ const GreenSPage = () => {
 
                                                         <div className="flex justify-between items-center pb-4 border-b border-white/5">
                                                             <div>
-                                                                <span className="text-[8px] font-black uppercase tracking-widest text-gray-500">Your Equal Share</span>
+                                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Your Equal Share</span>
                                                                 <h3 className={`text-3xl font-black italic uppercase mt-1 ${isPaidSelf ? 'text-brand' : 'text-amber-500'}`}>
                                                                     € {myShare.toFixed(2)}
                                                                 </h3>
                                                             </div>
                                                             <div className="text-right">
-                                                                <span className="text-[8px] font-black uppercase tracking-widest text-gray-500">Group Settle Target</span>
+                                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Group Settle Target</span>
                                                                 <p className="greens-equal-share text-sm font-black italic text-white mt-1" style={{ color: '#ffffff' }}>
                                                                     € {grandTotal.toFixed(2)}
                                                                 </p>
@@ -828,27 +828,27 @@ const GreenSPage = () => {
 
                                                         {/* Member Items Detail */}
                                                         <div className="space-y-2">
-                                                            <span className="text-[8px] font-black uppercase tracking-widest text-gray-500">Your Session Items</span>
+                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Your Session Items</span>
                                                             {myItems.length > 0 ? (
                                                                 <div className="space-y-2">
                                                                     {myItems.map((item, idx) => (
-                                                                         <div key={idx} className="greens-friend-card flex justify-between items-center text-[10px] bg-[#161616] p-3 rounded-xl border border-white/10" style={{ backgroundColor: '#161616', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+                                                                         <div key={idx} className="greens-friend-card flex justify-between items-center text-[10px] md:text-xs lg:text-sm bg-[#161616] p-3 rounded-xl border border-white/10" style={{ backgroundColor: '#161616', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
                                                                              <span className="greens-friend-name font-bold text-gray-300" style={{ color: '#d1d5db' }}>{item.item}</span>
                                                                              <span className="greens-friend-name font-black text-white" style={{ color: '#ffffff' }}>€ {item.price.toFixed(2)}</span>
                                                                          </div>
                                                                      ))}
                                                                 </div>
                                                             ) : (
-                                                                <p className="text-[8px] text-gray-500 font-bold uppercase py-2 px-1">No separate items purchased yet</p>
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 font-bold uppercase py-2 px-1">No separate items purchased yet</p>
                                                             )}
                                                         </div>
 
                                                         {/* Real-time Order Feed */}
                                                         <div className="space-y-2 pt-2 border-t border-white/5">
-                                                            <span className="text-[8px] font-black uppercase tracking-widest text-gray-500">Live Circle Ledger</span>
+                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Live Circle Ledger</span>
                                                             <div className="space-y-1.5 max-h-[100px] overflow-y-auto pr-1 no-scrollbar">
                                                                 {groupTab.map((item, idx) => (
-                                                                    <div key={idx} className="flex justify-between items-center text-[9px] text-gray-400">
+                                                                    <div key={idx} className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs text-gray-400">
                                                                         <span>{item.member}: {item.item}</span>
                                                                         <span className="font-black italic">€ {item.price.toFixed(2)}</span>
                                                                     </div>
@@ -864,7 +864,7 @@ const GreenSPage = () => {
                                                                         <Check size={18} strokeWidth={3} />
                                                                     </div>
                                                                     <div className="text-left">
-                                                                        <span className="text-[9px] font-black uppercase tracking-wider text-emerald-400">Share Settle Complete</span>
+                                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-wider text-emerald-400">Share Settle Complete</span>
                                                                         <p className="text-[7px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
                                                                             Paid via {payShareMethod === 'visa' ? 'Visa •••• 4242' : payShareMethod === 'mc' ? 'Mastercard •••• 8881' : 'Apple Pay'}
                                                                         </p>
@@ -873,7 +873,7 @@ const GreenSPage = () => {
                                                             ) : (
                                                                 <button
                                                                     onClick={() => setIsPayShareOpen(true)}
-                                                                    className="w-full py-4.5 bg-amber-500 text-black font-black uppercase tracking-widest rounded-2xl text-[10px] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-amber-500/10 flex items-center justify-center gap-2"
+                                                                    className="w-full py-4.5 bg-amber-500 text-black font-black uppercase tracking-widest rounded-2xl text-[10px] md:text-xs lg:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-amber-500/10 flex items-center justify-center gap-2"
                                                                 >
                                                                     <CreditCard size={14} /> Pay My Share (€ {myShare.toFixed(2)})
                                                                 </button>
@@ -994,13 +994,13 @@ const GreenSPage = () => {
                                                                 ORDER: {currentStatus}
                                                             </span>
                                                         </div>
-                                                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">
+                                                        <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-bold uppercase tracking-widest mt-0.5">
                                                             {ticket.venueName} • {locationLabel} #{ticket.tableId} • {ticket.timestamp}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 <button 
-                                                    className="px-5 py-2.5 bg-black text-white rounded-xl text-[9px] font-black tracking-widest uppercase hover:bg-brand active:scale-95 transition-all pointer-events-none"
+                                                    className="px-5 py-2.5 bg-black text-white rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black tracking-widest uppercase hover:bg-brand active:scale-95 transition-all pointer-events-none"
                                                 >
                                                     Open
                                                 </button>
@@ -1021,12 +1021,12 @@ const GreenSPage = () => {
                                 <Users size={32} />
                             </div>
                             <h3 className="text-3xl font-black italic tracking-tighter uppercase text-white">Settle Group Tab</h3>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Manage payment responsibilities before closing the tab</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-gray-500">Manage payment responsibilities before closing the tab</p>
                         </div>
 
                         {/* Interactive Tab List */}
                         <div className="bg-neutral-900 border border-neutral-800 rounded-[2.5rem] p-6 space-y-4 shadow-inner">
-                            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-neutral-400 pb-2 border-b border-neutral-800">
+                            <div className="flex justify-between items-center text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400 pb-2 border-b border-neutral-800">
                                 <span>Circle Member</span>
                                 <span>Spent Total</span>
                                 <span>Tab Payment Responsibility</span>
@@ -1044,11 +1044,11 @@ const GreenSPage = () => {
                                     return (
                                         <div className="flex justify-between items-center bg-white/5 p-3 rounded-2xl border border-white/5">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-brand/20 flex items-center justify-center text-brand text-[10px] font-black italic animate-pulse">YOU</div>
-                                                <span className="text-[11px] font-black text-white">Project Leader</span>
+                                                <div className="w-8 h-8 rounded-lg bg-brand/20 flex items-center justify-center text-brand text-[10px] md:text-xs lg:text-sm font-black italic animate-pulse">YOU</div>
+                                                <span className="text-[11px] md:text-sm lg:text-base font-black text-white">Project Leader</span>
                                             </div>
-                                            <span className={`text-xs font-black italic ${splitMode === 'split_all' ? 'text-amber-400' : 'text-white'}`}>€ {yourDisplay.toFixed(2)}</span>
-                                            <span className="text-[8px] font-black uppercase tracking-widest bg-brand/10 border border-brand/35 text-brand px-3 py-1.5 rounded-full">Pays Own Tab</span>
+                                            <span className={`text-xs md:text-sm lg:text-base font-black italic ${splitMode === 'split_all' ? 'text-amber-400' : 'text-white'}`}>€ {yourDisplay.toFixed(2)}</span>
+                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest bg-brand/10 border border-brand/35 text-brand px-3 py-1.5 rounded-full">Pays Own Tab</span>
                                         </div>
                                     );
                                 })()}
@@ -1071,7 +1071,7 @@ const GreenSPage = () => {
                                                 <div className="flex items-center gap-3">
                                                     <img src={friend.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.name}`} className="w-8 h-8 rounded-lg" alt="" />
                                                     <div className="flex flex-col">
-                                                        <span className="text-[11px] font-black text-white">{friend.name}</span>
+                                                        <span className="text-[11px] md:text-sm lg:text-base font-black text-white">{friend.name}</span>
                                                         <div className="mt-1">
                                                             {isCovered ? (
                                                                 <span className="inline-flex items-center gap-1 text-[7px] font-black uppercase tracking-wider bg-brand/10 border border-brand/20 text-brand px-2 py-0.5 rounded-full">
@@ -1089,13 +1089,13 @@ const GreenSPage = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <span className={`text-xs font-black italic ${splitMode === 'split_all' ? 'text-amber-400' : splitMode === 'cover_all' ? 'text-gray-600 line-through' : 'text-white/90'}`}>€ {displayAmount.toFixed(2)}</span>
+                                                <span className={`text-xs md:text-sm lg:text-base font-black italic ${splitMode === 'split_all' ? 'text-amber-400' : splitMode === 'cover_all' ? 'text-gray-600 line-through' : 'text-white/90'}`}>€ {displayAmount.toFixed(2)}</span>
                                                 <button
                                                     onClick={() => {
                                                         setSplitMode('individual');
                                                         togglePayer(friend.name);
                                                     }}
-                                                    className={`text-[8px] font-black uppercase tracking-widest px-4 py-2 rounded-full border transition-all active:scale-95 ${
+                                                    className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest px-4 py-2 rounded-full border transition-all active:scale-95 ${
                                                         isCovered 
                                                             ? 'bg-brand border-brand text-black font-black' 
                                                             : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:text-white'
@@ -1132,12 +1132,12 @@ const GreenSPage = () => {
                             return (
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className={`border p-5 rounded-3xl text-center transition-all ${splitMode === 'cover_all' ? 'bg-brand/10 border-brand/40' : 'bg-neutral-900 border-neutral-800'}`}>
-                                        <span className="text-[8px] font-black text-neutral-500 uppercase tracking-widest">Your Settle Total</span>
+                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-neutral-500 uppercase tracking-widest">Your Settle Total</span>
                                         <h4 className="text-2xl font-black italic text-brand mt-1">€ {yourTotal.toFixed(2)}</h4>
                                         {splitMode !== 'individual' && <p className="text-[7px] text-neutral-500 uppercase tracking-widest mt-1">{splitMode === 'cover_all' ? 'Covering Everyone' : 'Equal Share'}</p>}
                                     </div>
                                     <div className={`border p-5 rounded-3xl text-center transition-all ${splitMode === 'split_all' ? 'bg-amber-500/10 border-amber-500/40' : 'bg-neutral-900 border-neutral-800'}`}>
-                                        <span className="text-[8px] font-black text-neutral-500 uppercase tracking-widest">Friends Settle Total</span>
+                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-neutral-500 uppercase tracking-widest">Friends Settle Total</span>
                                         <h4 className={`text-2xl font-black italic mt-1 ${splitMode === 'split_all' ? 'text-amber-400' : 'text-white'}`}>€ {friendsTotal.toFixed(2)}</h4>
                                         {splitMode !== 'individual' && <p className="text-[7px] text-neutral-500 uppercase tracking-widest mt-1">{splitMode === 'cover_all' ? 'Covered by You' : `${friendList.length}× equal share`}</p>}
                                     </div>
@@ -1150,13 +1150,13 @@ const GreenSPage = () => {
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setPayAll(true)}
-                                    className={`flex-1 py-5 border text-[10px] font-black uppercase tracking-widest rounded-2xl active:scale-[0.98] transition-all ${splitMode === 'cover_all' ? 'bg-brand border-brand text-black' : 'bg-neutral-950 border-neutral-800 text-white hover:bg-neutral-900'}`}
+                                    className={`flex-1 py-5 border text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest rounded-2xl active:scale-[0.98] transition-all ${splitMode === 'cover_all' ? 'bg-brand border-brand text-black' : 'bg-neutral-950 border-neutral-800 text-white hover:bg-neutral-900'}`}
                                 >
                                     Cover All
                                 </button>
                                 <button
                                     onClick={() => setPayAll(false)}
-                                    className={`flex-1 py-5 border text-[10px] font-black uppercase tracking-widest rounded-2xl active:scale-[0.98] transition-all ${splitMode === 'split_all' ? 'bg-amber-500 border-amber-500 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:text-white'}`}
+                                    className={`flex-1 py-5 border text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest rounded-2xl active:scale-[0.98] transition-all ${splitMode === 'split_all' ? 'bg-amber-500 border-amber-500 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:text-white'}`}
                                 >
                                     Split All
                                 </button>
@@ -1167,14 +1167,14 @@ const GreenSPage = () => {
                                     setIsSplitOptionsOpen(false);
                                     executePaymentChoice('split');
                                 }}
-                                className="w-full py-6 bg-brand text-dark-900 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all"
+                                className="w-full py-6 bg-brand text-dark-900 rounded-2xl text-[11px] md:text-sm lg:text-base font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all"
                             >
                                 Process Tab Settlement (Total € {groupTab.reduce((sum, item) => sum + item.price, 0).toFixed(2)})
                             </button>
                             
                             <button 
                                 onClick={() => setIsSplitOptionsOpen(false)}
-                                className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all"
+                                className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all"
                             >
                                 Cancel Settlement
                             </button>
@@ -1190,12 +1190,12 @@ const GreenSPage = () => {
                                 <Wallet size={32} />
                             </div>
                             <h3 className="text-3xl font-black italic tracking-tighter uppercase text-white">Pay My Share</h3>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-500">Settle your equal share of the active tab</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-amber-500">Settle your equal share of the active tab</p>
                         </div>
 
                         {/* Cost breakdown */}
                         <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 text-center">
-                            <span className="text-[8px] font-black text-neutral-500 uppercase tracking-widest">Amount to Pay</span>
+                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-neutral-500 uppercase tracking-widest">Amount to Pay</span>
                             <h4 className="text-3xl font-black italic text-amber-400 mt-1">
                                 € {((groupTab.reduce((sum, item) => sum + item.price, 0)) / (invitedFriends.length + 1)).toFixed(2)}
                             </h4>
@@ -1203,7 +1203,7 @@ const GreenSPage = () => {
 
                         {/* Payment methods */}
                         <div className="space-y-3">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-400 px-1">Select Saved Payment Method</span>
+                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-neutral-400 px-1">Select Saved Payment Method</span>
                             <div className="flex flex-col gap-3">
                                 {[
                                     { id: 'visa', label: 'Visa •• 4242', icon: CreditCard },
@@ -1225,7 +1225,7 @@ const GreenSPage = () => {
                                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${payShareMethod === method.id ? 'bg-amber-500/20 text-amber-400' : 'bg-neutral-900 text-neutral-500'}`}>
                                                     <Icon size={16} />
                                                 </div>
-                                                <span className="text-xs font-bold uppercase tracking-wider">{method.label}</span>
+                                                <span className="text-xs md:text-sm lg:text-base font-bold uppercase tracking-wider">{method.label}</span>
                                             </div>
                                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${payShareMethod === method.id ? 'border-amber-500 bg-amber-500' : 'border-neutral-700'}`}>
                                                 {payShareMethod === method.id && <Check size={12} className="text-black font-black" strokeWidth={3} />}
@@ -1240,7 +1240,7 @@ const GreenSPage = () => {
                         <button
                             onClick={handleMemberPayShare}
                             disabled={!payShareMethod || payShareProcessing}
-                            className="w-full py-6 bg-amber-500 text-black font-black uppercase tracking-widest rounded-2xl text-[11px] shadow-xl shadow-amber-500/10 active:scale-[0.98] transition-all disabled:opacity-30 flex items-center justify-center gap-2"
+                            className="w-full py-6 bg-amber-500 text-black font-black uppercase tracking-widest rounded-2xl text-[11px] md:text-sm lg:text-base shadow-xl shadow-amber-500/10 active:scale-[0.98] transition-all disabled:opacity-30 flex items-center justify-center gap-2"
                         >
                             {payShareProcessing ? (
                                 <div className="flex items-center gap-2">
@@ -1262,25 +1262,25 @@ const GreenSPage = () => {
                         </div>
                         <div className="space-y-2">
                             <h3 className="text-3xl font-black italic tracking-tighter uppercase text-white">Tab Settle Required</h3>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500">Unsettled Charges Detected on Circle Ledger</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-red-500">Unsettled Charges Detected on Circle Ledger</p>
                         </div>
                         
                         <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 text-left space-y-4">
-                            <div className="flex justify-between items-center text-xs font-black uppercase text-neutral-400 pb-2 border-b border-neutral-800">
+                            <div className="flex justify-between items-center text-xs md:text-sm lg:text-base font-black uppercase text-neutral-400 pb-2 border-b border-neutral-800">
                                 <span>Pending Tab Items</span>
                                 <span>Cost</span>
                             </div>
                             <div className="space-y-3 max-h-[180px] overflow-y-auto pr-2 no-scrollbar">
                                 {groupTab.filter(item => item.status === 'pending').map((item, idx) => (
-                                    <div key={idx} className="flex justify-between items-center text-xs">
-                                        <span className="font-bold text-white">{item.member} <span className="text-[10px] text-neutral-500 font-normal">({item.item})</span></span>
+                                    <div key={idx} className="flex justify-between items-center text-xs md:text-sm lg:text-base">
+                                        <span className="font-bold text-white">{item.member} <span className="text-[10px] md:text-xs lg:text-sm text-neutral-500 font-normal">({item.item})</span></span>
                                         <span className="font-black text-brand">€ {item.price.toFixed(2)}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-wide leading-relaxed">
+                        <p className="text-[10px] md:text-xs lg:text-sm text-neutral-500 font-bold uppercase tracking-wide leading-relaxed">
                             You cannot dissolve the circle until the tab has been fully settled by the Admin or split among members.
                         </p>
 
@@ -1290,13 +1290,13 @@ const GreenSPage = () => {
                                     setIsDissolveWarningOpen(false);
                                     setIsSplitOptionsOpen(true);
                                 }}
-                                className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all"
+                                className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all"
                             >
                                 Open Settle Dashboard
                             </button>
                             <button 
                                 onClick={() => setIsDissolveWarningOpen(false)}
-                                className="w-full py-5 bg-neutral-900 text-white border border-neutral-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-neutral-800 active:scale-[0.98] transition-all"
+                                className="w-full py-5 bg-neutral-900 text-white border border-neutral-800 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:bg-neutral-800 active:scale-[0.98] transition-all"
                             >
                                 Go Back
                             </button>
@@ -1312,7 +1312,7 @@ const GreenSPage = () => {
                                 <Gem size={32} />
                             </div>
                             <h3 className="text-3xl font-black italic tracking-tighter uppercase text-white">Select Active Table</h3>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand">Establish Persistent Venue Session Link</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-brand">Establish Persistent Venue Session Link</p>
                         </div>
 
                         {/* Manual Table input */}
@@ -1329,13 +1329,13 @@ const GreenSPage = () => {
 
                         {/* Quick Grid Select */}
                         <div className="space-y-3">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Quick Selection</span>
+                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-neutral-400">Quick Selection</span>
                             <div className="grid grid-cols-5 gap-3">
                                 {[1, 3, 5, 8, 12, 15, 18, 22, 27, 30].map((t) => (
                                     <button
                                         key={t}
                                         onClick={() => setTotalBudget(String(t))}
-                                        className={`py-3 rounded-2xl text-xs font-black italic transition-all ${
+                                        className={`py-3 rounded-2xl text-xs md:text-sm lg:text-base font-black italic transition-all ${
                                             String(totalBudget) === String(t)
                                                 ? 'bg-brand text-black scale-105 border-brand'
                                                 : 'bg-neutral-900 text-white border border-neutral-800 hover:border-neutral-700'
@@ -1350,7 +1350,7 @@ const GreenSPage = () => {
                         {/* Confirm Trigger */}
                         <button 
                             onClick={() => setIsTableSelectorOpen(false)}
-                            className="w-full py-6 bg-brand text-dark-900 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all"
+                            className="w-full py-6 bg-brand text-dark-900 rounded-2xl text-[11px] md:text-sm lg:text-base font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all"
                         >
                             Confirm & Lock Table Link
                         </button>
@@ -1365,7 +1365,7 @@ const GreenSPage = () => {
                                 <Check size={32} strokeWidth={3} />
                             </div>
                             <h3 className="text-3xl font-black italic tracking-tighter uppercase">Verified Receipt</h3>
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Fair-Split Pro #88D600</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-gray-500 italic">Fair-Split Pro #88D600</p>
                         </div>
 
                         <div className="bg-neutral-900 border border-neutral-800 rounded-[2.5rem] p-8 space-y-6 shadow-[0_20px_50px_rgba(0,0,0,0.25)] relative overflow-hidden text-white">
@@ -1374,27 +1374,27 @@ const GreenSPage = () => {
                             </div>
                             
                             <div className="flex justify-between items-center border-b border-neutral-800 pb-4">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Venue / Event</span>
-                                <span className="text-xs font-black italic uppercase text-white">Social Night Hub</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-400">Venue / Event</span>
+                                <span className="text-xs md:text-sm lg:text-base font-black italic uppercase text-white">Social Night Hub</span>
                             </div>
 
                             <div className="space-y-4">
-                                <div className="flex justify-between items-center text-xs font-black uppercase italic text-neutral-400">
+                                <div className="flex justify-between items-center text-xs md:text-sm lg:text-base font-black uppercase italic text-neutral-400">
                                     <span>Member Breakdown</span>
                                     <span>Contribution</span>
                                 </div>
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center bg-white/5 border border-white/5 p-4 rounded-2xl">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-brand/20 flex items-center justify-center text-brand text-[10px] font-black italic animate-pulse">YOU</div>
+                                            <div className="w-8 h-8 rounded-lg bg-brand/20 flex items-center justify-center text-brand text-[10px] md:text-xs lg:text-sm font-black italic animate-pulse">YOU</div>
                                             <div>
-                                                <span className="text-[10px] font-black uppercase text-white">Project Leader</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-white">Project Leader</span>
                                                 <p className="text-[7px] text-neutral-400 uppercase tracking-widest mt-0.5">
                                                     Your items + {groupTab.filter(item => item.member !== 'YOU' && item.payer === 'cover').length} covered friends
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className="text-xs font-black italic text-brand">
+                                        <span className="text-xs md:text-sm lg:text-base font-black italic text-brand">
                                             € {groupTab.filter(item => item.member === 'YOU' || item.payer === 'cover').reduce((sum, i) => sum + i.price, 0).toFixed(2)}
                                         </span>
                                     </div>
@@ -1406,13 +1406,13 @@ const GreenSPage = () => {
                                                 <div className="flex items-center gap-3">
                                                     <img src={f.avatar} className="w-8 h-8 rounded-lg" alt="" />
                                                     <div>
-                                                        <span className="text-[10px] font-black uppercase text-white">{f.name}</span>
+                                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-white">{f.name}</span>
                                                         <p className="text-[7px] text-neutral-400 uppercase tracking-widest mt-0.5">
                                                             {isCovered ? 'Covered by Host 🤝' : 'Paid Self'}
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <span className="text-xs font-black italic text-white/90">
+                                                <span className="text-xs md:text-sm lg:text-base font-black italic text-white/90">
                                                     € {isCovered ? '0.00' : friendSpent.toFixed(2)}
                                                 </span>
                                             </div>
@@ -1430,13 +1430,13 @@ const GreenSPage = () => {
                         <div className="flex flex-col gap-3">
                             <button 
                                 onClick={() => alert("Receipt shared with all members!")}
-                                className="w-full py-5 bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded-2xl text-[10px] font-black uppercase tracking-widest text-neutral-800 transition-all shadow-sm active:scale-[0.98]"
+                                className="w-full py-5 bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-neutral-800 transition-all shadow-sm active:scale-[0.98]"
                             >
                                 Send to All Members
                             </button>
                             <button 
                                 onClick={() => setShowReceipt(false)}
-                                className="w-full py-5 bg-black hover:bg-neutral-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-[0.98]"
+                                className="w-full py-5 bg-black hover:bg-neutral-900 text-white rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl active:scale-[0.98]"
                             >
                                 Close Ledger
                             </button>
@@ -1454,7 +1454,7 @@ const GreenSPage = () => {
                             <div className="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand group-hover:scale-110 transition-transform">
                                 <Sparkles size={24} />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-white">Give Feedback</span>
+                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 group-hover:text-white">Give Feedback</span>
                         </button>
                         <button 
                             onClick={() => { setSupportType('complaint'); setIsSupportOpen(true); }}
@@ -1463,7 +1463,7 @@ const GreenSPage = () => {
                             <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
                                 <Zap size={24} />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-white">File Complaint</span>
+                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 group-hover:text-white">File Complaint</span>
                         </button>
                     </div>
                 </section>
@@ -1478,7 +1478,7 @@ const GreenSPage = () => {
                                 <div>
                                     <div className="flex items-center gap-2">
                                         <div className="w-2 h-2 rounded-full bg-brand" />
-                                        <p className="text-[8px] font-black uppercase text-brand tracking-widest">{supportType === 'feedback' ? 'Feedback' : 'Complaint'}</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-brand tracking-widest">{supportType === 'feedback' ? 'Feedback' : 'Complaint'}</p>
                                     </div>
                                 </div>
                             </div>
@@ -1496,14 +1496,14 @@ const GreenSPage = () => {
                                     key={msg.id} 
                                     className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
                                 >
-                                    <div className={`max-w-[80%] p-4 rounded-3xl text-xs font-bold leading-relaxed ${
+                                    <div className={`max-w-[80%] p-4 rounded-3xl text-xs md:text-sm lg:text-base font-bold leading-relaxed ${
                                         msg.sender === 'user' 
                                         ? 'bg-brand text-dark-950 rounded-tr-none' 
                                         : 'bg-[var(--bg-secondary)] border border-white/10 text-[var(--text-primary)] rounded-tl-none'
                                     }`}>
                                         {msg.text}
                                     </div>
-                                    <span className="text-[8px] font-black uppercase text-gray-600 mt-1 px-2">{msg.time}</span>
+                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-600 mt-1 px-2">{msg.time}</span>
                                 </motion.div>
                             ))}
                         </div>
@@ -1517,11 +1517,11 @@ const GreenSPage = () => {
                                     value={chatInput}
                                     onChange={(e) => setChatInput(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                                    className="w-full bg-[var(--bg-primary)] border border-white/10 rounded-2xl py-5 pl-6 pr-16 text-xs font-bold text-white focus:outline-none focus:border-brand/40 transition-all"
+                                    className="w-full bg-[var(--bg-primary)] border border-white/10 rounded-2xl py-5 pl-6 pr-16 text-xs md:text-sm lg:text-base font-bold text-white focus:outline-none focus:border-brand/40 transition-all"
                                 />
                                 <button 
                                     onClick={handleSendMessage}
-                                    className="absolute right-2 top-2 bottom-2 px-4 bg-brand text-dark-950 rounded-xl font-black uppercase text-[10px] tracking-widest active:scale-90 transition-all"
+                                    className="absolute right-2 top-2 bottom-2 px-4 bg-brand text-dark-950 rounded-xl font-black uppercase text-[10px] md:text-xs lg:text-sm tracking-widest active:scale-90 transition-all"
                                 >
                                     Send
                                 </button>
@@ -1543,7 +1543,7 @@ const GreenSPage = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-3xl font-black italic uppercase tracking-tighter">{selectedOffer.label} <span className="text-brand">Exclusive</span></h3>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mt-2">Verified Partner Offer</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-gray-500 mt-2">Verified Partner Offer</p>
                                 </div>
                             </div>
 
@@ -1551,9 +1551,9 @@ const GreenSPage = () => {
                                 <div className="absolute top-0 right-0 p-6 opacity-10 text-brand">
                                     <Sparkles size={80} />
                                 </div>
-                                <p className="text-[10px] font-black uppercase text-brand mb-2">Current Reward</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-brand mb-2">Current Reward</p>
                                 <h4 className="text-4xl font-black italic tracking-tighter uppercase">{selectedOffer.offer}</h4>
-                                <p className="text-[9px] font-bold text-gray-400 mt-6 uppercase tracking-widest leading-relaxed">
+                                <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-400 mt-6 uppercase tracking-widest leading-relaxed">
                                     Redeemable via Radar Ride. Valid for the next 4 hours at participating locations.
                                 </p>
                             </div>
@@ -1562,12 +1562,12 @@ const GreenSPage = () => {
                                 <div className="grid grid-cols-2 gap-4">
                                     <button 
                                         onClick={() => navigate('/discovery', { state: { category: selectedOffer.id } })}
-                                        className="py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-brand/10 transition-all text-brand">
+                                        className="py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:bg-brand/10 transition-all text-brand">
                                         Browse Venues
                                     </button>
                                     <button 
                                         onClick={() => setSharingToFriend(true)}
-                                        className="py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-105 transition-all"
+                                        className="py-5 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-105 transition-all"
                                     >
                                         Share with Friend
                                     </button>
@@ -1575,14 +1575,14 @@ const GreenSPage = () => {
                             ) : (
                                 <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-300">
                                     <div className="space-y-4">
-                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-500 px-2">Select Friend to Invite</h4>
+                                        <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 px-2">Select Friend to Invite</h4>
                                         <div className="grid grid-cols-4 gap-4">
                                             {[1, 2, 3, 4].map(i => (
                                                 <button key={i} className="flex flex-col items-center gap-2 group">
                                                     <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 p-1 group-hover:border-brand/40 group-focus:border-brand transition-all">
                                                         <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 50}`} className="w-full h-full rounded-xl" />
                                                     </div>
-                                                    <span className="text-[8px] font-black uppercase text-gray-500">Friend {i}</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-500">Friend {i}</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -1591,8 +1591,8 @@ const GreenSPage = () => {
                                     <div className="p-6 bg-white/5 border border-white/10 rounded-2xl space-y-4">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-white">Split Hospitality Costs?</p>
-                                                <p className="text-[8px] font-bold text-gray-500 uppercase mt-1">Ride is charged to leader; split only venue items</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-white">Split Hospitality Costs?</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-500 uppercase mt-1">Ride is charged to leader; split only venue items</p>
                                             </div>
                                             <div className="w-12 h-6 bg-brand/20 rounded-full relative cursor-pointer border border-brand/30">
                                                 <div className="absolute right-1 top-1 w-4 h-4 bg-brand rounded-full shadow-lg" />

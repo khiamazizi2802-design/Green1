@@ -29,7 +29,7 @@ const CarSelector = ({ selected, onSelect }) => {
                             <Icon size={24} />
                         </div>
                         <h3 className="text-sm font-medium text-white mb-1">{car.name}</h3>
-                        <p className="text-xs text-gray-400 mb-2">{car.time}</p>
+                        <p className="text-xs md:text-sm lg:text-base text-gray-400 mb-2">{car.time}</p>
                         <span className="text-brand font-bold">{car.price}</span>
                     </button>
                 );

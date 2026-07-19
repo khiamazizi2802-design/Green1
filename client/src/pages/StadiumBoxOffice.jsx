@@ -111,7 +111,7 @@ const StadiumBoxOffice = () => {
                     </button>
                     <div className="text-right">
                         <h1 className="text-2xl font-black italic tracking-tighter uppercase leading-none">Box Office</h1>
-                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-brand mt-1">Official Event Hub</p>
+                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.4em] text-brand mt-1">Official Event Hub</p>
                     </div>
                 </header>
 
@@ -128,7 +128,7 @@ const StadiumBoxOffice = () => {
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={18} />
                                 <input 
                                     placeholder="SEARCH EVENTS..." 
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-6 text-xs font-black uppercase tracking-widest focus:outline-none focus:border-brand/40 transition-all"
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-12 pr-6 text-xs md:text-sm lg:text-base font-black uppercase tracking-widest focus:outline-none focus:border-brand/40 transition-all"
                                 />
                             </div>
 
@@ -146,15 +146,15 @@ const StadiumBoxOffice = () => {
 
                                         <div className="relative z-10 p-8 text-left h-[240px] flex flex-col justify-end">
                                             <div className="flex items-center gap-2 mb-3">
-                                                <div className="px-3 py-1 bg-brand text-black text-[8px] font-black uppercase tracking-widest rounded-full">
+                                                <div className="px-3 py-1 bg-brand text-black text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest rounded-full">
                                                     {event.status}
                                                 </div>
-                                                <div className="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-widest rounded-full flex items-center gap-1">
+                                                <div className="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest rounded-full flex items-center gap-1">
                                                     <Trophy size={10} /> {event.venue}
                                                 </div>
                                             </div>
                                             <h3 className="text-3xl font-black italic uppercase tracking-tighter leading-none mb-2">{event.title}</h3>
-                                            <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-white/60">
+                                            <div className="flex items-center gap-4 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-white/60">
                                                 <span className="flex items-center gap-1.5"><Calendar size={12} className="text-brand" /> {event.date}</span>
                                                 <span className="flex items-center gap-1.5"><Zap size={12} className="text-brand" /> {event.time}</span>
                                             </div>
@@ -183,13 +183,13 @@ const StadiumBoxOffice = () => {
                                 </button>
                                 <div className="absolute bottom-8 left-8 right-8">
                                     <h3 className="text-4xl font-black italic uppercase tracking-tighter mb-2">{selectedEvent.title}</h3>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-brand">{selectedEvent.venue}</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.4em] text-brand">{selectedEvent.venue}</p>
                                 </div>
                             </div>
 
                             {/* Ticket Tier Selection */}
                             <div className="space-y-4">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.5em] text-white/40 mb-6">Select Tier Access</h4>
+                                <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.5em] text-white/40 mb-6">Select Tier Access</h4>
                                 {selectedEvent.tiers.map(tier => (
                                     <button
                                         key={tier.id}
@@ -203,7 +203,7 @@ const StadiumBoxOffice = () => {
                                             </div>
                                             <div>
                                                 <p className="text-lg font-black italic uppercase tracking-tight text-white">{tier.name}</p>
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/40">{tier.ultra ? 'Full Concierge & Transport' : tier.premium ? 'Express Access & Lounge' : 'General Admission'}</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-white/40">{tier.ultra ? 'Full Concierge & Transport' : tier.premium ? 'Express Access & Lounge' : 'General Admission'}</p>
                                             </div>
                                         </div>
                                         <div className="relative z-10 text-right">
@@ -223,7 +223,7 @@ const StadiumBoxOffice = () => {
                                 >
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Quantity</h4>
+                                            <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-white/40">Quantity</h4>
                                             <div className="flex items-center gap-6 mt-3">
                                                 <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-all">-</button>
                                                 <span className="text-2xl font-black italic text-white">{quantity}</span>
@@ -231,7 +231,7 @@ const StadiumBoxOffice = () => {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Total Settlement</h4>
+                                            <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-white/40">Total Settlement</h4>
                                             <p className="text-4xl font-black italic text-white tracking-tighter mt-2">€{selectedTier.price * quantity}</p>
                                         </div>
                                     </div>
@@ -239,7 +239,7 @@ const StadiumBoxOffice = () => {
                                     <div className="pt-6 border-t border-white/5 space-y-4">
                                         <div className="flex items-center gap-3 p-4 rounded-2xl bg-brand/10 border border-brand/20">
                                             <ShieldCheck size={18} className="text-brand" />
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-brand">Secure Checkout Powered by GreenS Payment Hub</p>
+                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-brand">Secure Checkout Powered by GreenS Payment Hub</p>
                                         </div>
 
                                         <button
@@ -279,14 +279,14 @@ const StadiumBoxOffice = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-3xl font-black italic uppercase tracking-tighter text-black">MISSION SECURED</h3>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-black/40 mt-3">Your Digital Ticket Ledger has been updated</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-black/40 mt-3">Your Digital Ticket Ledger has been updated</p>
                                 </div>
                                 <div className="p-6 rounded-[2rem] bg-black/5 border border-black/5 text-left space-y-3">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase">
+                                    <div className="flex justify-between items-center text-[10px] md:text-xs lg:text-sm font-black uppercase">
                                         <span className="text-black/40">Event</span>
                                         <span className="text-black italic">{selectedEvent.title}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase">
+                                    <div className="flex justify-between items-center text-[10px] md:text-xs lg:text-sm font-black uppercase">
                                         <span className="text-black/40">Quantity</span>
                                         <span className="text-black italic">{quantity} Tickets</span>
                                     </div>
@@ -299,7 +299,7 @@ const StadiumBoxOffice = () => {
                                 </button>
                                 <button
                                     onClick={() => setShowSuccess(false)}
-                                    className="text-[10px] font-black uppercase tracking-widest text-black/40 hover:text-black transition-colors"
+                                    className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-black/40 hover:text-black transition-colors"
                                 >
                                     Back to Box Office
                                 </button>

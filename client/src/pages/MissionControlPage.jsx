@@ -68,8 +68,8 @@ const MissionControlPage = () => {
                     <ArrowLeft size={18} />
                 </button>
                 <div className="text-center">
-                    <h1 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand">Mission Control</h1>
-                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">Active Operation Terminal</p>
+                    <h1 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-brand">Mission Control</h1>
+                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest mt-0.5">Active Operation Terminal</p>
                 </div>
                 <div className="w-10 h-10 bg-brand/10 border border-brand/20 rounded-xl flex items-center justify-center text-brand">
                     <Zap size={18} fill="currentColor" />
@@ -93,7 +93,7 @@ const MissionControlPage = () => {
                                 <h2 className="text-xl font-black italic uppercase tracking-tighter">
                                     {isParking ? 'PARKING LOGIC' : 'TAKEAWAY LOGIC'}
                                 </h2>
-                                <p className={`text-[10px] font-black uppercase tracking-widest ${isParking || isReady ? 'text-brand' : 'text-amber-500'}`}>
+                                <p className={`text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest ${isParking || isReady ? 'text-brand' : 'text-amber-500'}`}>
                                     {isParking ? 'Active Access Pass' : (isReady ? 'Ready for Pickup' : 'Preparation in Progress')}
                                 </p>
                             </div>
@@ -105,17 +105,17 @@ const MissionControlPage = () => {
                                     <div className="aspect-square w-48 bg-white p-3 rounded-[2rem] shadow-[0_0_40px_rgba(16,185,129,0.2)] border-2 border-brand/30 relative overflow-hidden">
                                         <img src={qrCodeImage} alt="Entry Pass" className="w-full h-full object-contain" />
                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 flex items-center justify-center transition-all">
-                                            <p className="text-[8px] font-black text-white opacity-0 group-hover:opacity-100 uppercase">Tap to Scan</p>
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-white opacity-0 group-hover:opacity-100 uppercase">Tap to Scan</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 text-center">
                                     <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                                        <p className="text-[8px] font-black text-gray-500 uppercase mb-1">Assigned Spot</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase mb-1">Assigned Spot</p>
                                         <p className="text-xl font-black italic text-[var(--text-primary)]">Level -1, B12</p>
                                     </div>
                                     <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                                        <p className="text-[8px] font-black text-gray-500 uppercase mb-1">Validity</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase mb-1">Validity</p>
                                         <p className="text-xl font-black italic text-[var(--text-primary)]">24 Hours</p>
                                     </div>
                                 </div>
@@ -123,11 +123,11 @@ const MissionControlPage = () => {
                         ) : (
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                                    <p className="text-[8px] font-black text-gray-500 uppercase mb-1">Time Remaining</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase mb-1">Time Remaining</p>
                                     <p className="text-2xl font-black italic text-[var(--text-primary)] leading-none">{isReady ? '00:00' : `${prepTime}m`}</p>
                                 </div>
                                 <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                                    <p className="text-[8px] font-black text-gray-500 uppercase mb-1">Items in Bag</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase mb-1">Items in Bag</p>
                                     <p className="text-2xl font-black italic text-[var(--text-primary)] leading-none">{order?.items?.length || 2}</p>
                                 </div>
                             </div>
@@ -148,7 +148,7 @@ const MissionControlPage = () => {
                                     <h2 className="text-xl font-black italic uppercase tracking-tighter">
                                         {isParking ? 'VALET INTERCEPT' : 'RIDE INTERCEPT'}
                                     </h2>
-                                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-blue-400 uppercase tracking-widest">
                                         {isParking ? 'Agent: Marco S.' : 'Driver: Marcus H.'}
                                     </p>
                                 </div>
@@ -156,11 +156,11 @@ const MissionControlPage = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
-                                <p className="text-[8px] font-black text-gray-500 uppercase mb-1">Arrival ETA</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase mb-1">Arrival ETA</p>
                                 <p className="text-2xl font-black italic text-[var(--text-primary)] leading-none">{driverEta}m</p>
                             </div>
                             <div className="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
-                                <p className="text-[8px] font-black text-gray-500 uppercase mb-1">Distance</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase mb-1">Distance</p>
                                 <p className="text-2xl font-black italic text-[var(--text-primary)] leading-none">{driverDistance}km</p>
                             </div>
                         </div>
@@ -171,8 +171,8 @@ const MissionControlPage = () => {
                 <div className="bg-brand/10 border border-brand/20 p-6 rounded-[2.5rem] flex items-start gap-4">
                     <ShieldCheck size={20} className="text-brand flex-shrink-0 mt-1" />
                     <div className="space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-brand">Operation Protocol</p>
-                        <p className="text-[9px] font-bold text-brand/80 leading-relaxed uppercase">
+                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand">Operation Protocol</p>
+                        <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-brand/80 leading-relaxed uppercase">
                             {isParking 
                                 ? "Scan your QR pass at the entrance gate. If using Valet, pull into the green zone and hand over your keys to Marco S."
                                 : "Collect your takeaway first — the driver will wait 2 minutes. The vehicle trunk is auto-unlocked for your bags."}
@@ -180,7 +180,7 @@ const MissionControlPage = () => {
                     </div>
                 </div>
 
-                <button onClick={() => navigate('/greens')} className="w-full py-6 bg-white/5 border border-white/10 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-white transition-all">Back to Greens Hub</button>
+                <button onClick={() => navigate('/greens')} className="w-full py-6 bg-white/5 border border-white/10 rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-gray-500 hover:text-white transition-all">Back to Greens Hub</button>
             </main>
 
             {/* Full Screen QR */}
@@ -191,7 +191,7 @@ const MissionControlPage = () => {
                         <div className="space-y-12 text-center w-full">
                             <div className="space-y-4">
                                 <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Entry QR Pass</h2>
-                                <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">Brightness Authorized</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em]">Brightness Authorized</p>
                             </div>
                             <div className="aspect-square w-full max-w-[400px] mx-auto bg-white p-8 rounded-[3rem]">
                                 <img src={qrCodeImage} alt="Entry Pass Full" className="w-full h-full object-contain" />

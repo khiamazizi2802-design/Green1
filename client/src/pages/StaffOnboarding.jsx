@@ -104,10 +104,10 @@ const StaffOnboarding = () => {
                                 <div className="w-16 h-16 bg-brand text-dark-950 rounded-2xl flex items-center justify-center shadow-2xl shadow-brand/20"><CheckCircle2 size={32} /></div>
                                 <div className="flex-1">
                                     <h4 className="text-xl font-black italic uppercase text-primary tracking-tight leading-none">Personnel Onboarded</h4>
-                                    <p className="text-[10px] font-bold text-brand uppercase tracking-[0.2em] mt-1.5 opacity-80">Baseline Authorized: Dashboard & Order Command</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-bold text-brand uppercase tracking-[0.2em] mt-1.5 opacity-80">Baseline Authorized: Dashboard & Order Command</p>
                                 </div>
                                 <div className="px-6 py-2 bg-brand/10 border border-brand/20 rounded-full">
-                                    <span className="text-[8px] font-black uppercase text-brand tracking-widest">Protocol Active</span>
+                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-brand tracking-widest">Protocol Active</span>
                                 </div>
                             </motion.div>
                         )}
@@ -123,7 +123,7 @@ const StaffOnboarding = () => {
                                     <div className="w-2 h-2 bg-brand rounded-full animate-pulse" />
                                     <h3 className="text-2xl font-black italic uppercase text-primary tracking-tight leading-none">Locate Personnel</h3>
                                 </div>
-                                <p className="text-[11px] font-bold text-secondary uppercase tracking-widest leading-relaxed max-w-md opacity-70">
+                                <p className="text-[11px] md:text-sm lg:text-base font-bold text-secondary uppercase tracking-widest leading-relaxed max-w-md opacity-70">
                                     Input the Green ID number to add staff to your profile.
                                 </p>
                             </div>
@@ -145,7 +145,7 @@ const StaffOnboarding = () => {
                                     <button 
                                         onClick={handleSearch}
                                         disabled={isSearching}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 px-10 py-5 bg-brand text-dark-950 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:bg-white hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 px-10 py-5 bg-brand text-dark-950 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:bg-white hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
                                     >
                                         {isSearching ? <Loader2 size={18} className="animate-spin" /> : <><Search size={18} /> Search</>}
                                     </button>
@@ -171,7 +171,7 @@ const StaffOnboarding = () => {
                                             <div className="w-40 h-40 rounded-[3rem] bg-btn-sec border-2 border-brand/20 p-1.5 relative z-10 overflow-hidden">
                                                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${foundStaff.avatar}`} alt="Avatar" className="w-full h-full rounded-[2.5rem] shadow-2xl object-cover" />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-dark-950/60 to-transparent opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-end justify-center pb-4">
-                                                    <span className="text-[8px] font-black uppercase text-brand tracking-widest">Profile Hub</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-brand tracking-widest">Profile Hub</span>
                                                 </div>
                                             </div>
                                             <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-brand rounded-2xl flex items-center justify-center text-dark-950 border-4 border-dark-900 shadow-xl z-20">
@@ -196,7 +196,7 @@ const StaffOnboarding = () => {
                                             <div className="space-y-1">
                                                 <div className="flex items-center justify-center md:justify-start gap-4 flex-wrap">
                                                     <h4 className="text-4xl md:text-5xl font-black italic uppercase text-primary tracking-tighter leading-none">{foundStaff.name}</h4>
-                                                    <div className="px-4 py-1.5 bg-brand/10 text-brand rounded-full text-[9px] font-black uppercase tracking-widest border border-brand/20 flex items-center gap-2">
+                                                    <div className="px-4 py-1.5 bg-brand/10 text-brand rounded-full text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest border border-brand/20 flex items-center gap-2">
                                                         <ShieldCheck size={12} /> SECURED NODE
                                                     </div>
                                                 </div>
@@ -205,15 +205,15 @@ const StaffOnboarding = () => {
                                             
                                             <div className="flex items-center justify-center md:justify-start gap-8 pt-2 border-t border-main">
                                                 <div className="text-center md:text-left">
-                                                    <p className="text-[8px] font-black text-secondary uppercase tracking-widest opacity-40">Access Level</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-40">Access Level</p>
                                                     <p className="text-lg font-black italic text-primary uppercase">{foundStaff.level}</p>
                                                 </div>
                                                 <div className="text-center md:text-left">
-                                                    <p className="text-[8px] font-black text-secondary uppercase tracking-widest opacity-40">Clearance</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-40">Clearance</p>
                                                     <p className="text-lg font-black italic text-brand uppercase">{foundStaff.clearance}</p>
                                                 </div>
                                                 <div className="text-center md:text-left">
-                                                    <p className="text-[8px] font-black text-secondary uppercase tracking-widest opacity-40">Status</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-40">Status</p>
                                                     <p className="text-lg font-black italic text-green-500 uppercase tracking-tighter">Active</p>
                                                 </div>
                                             </div>
@@ -231,7 +231,7 @@ const StaffOnboarding = () => {
                         <ShieldCheck size={16} className="text-secondary opacity-30" />
                         <div className="h-px flex-1 bg-gradient-to-l from-transparent to-main" />
                     </div>
-                    <p className="text-[10px] font-black text-secondary uppercase tracking-[0.5em] italic opacity-40">
+                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-[0.5em] italic opacity-40">
                         Personnel must possess an active Green ID for protocol compliance.
                     </p>
                 </div>

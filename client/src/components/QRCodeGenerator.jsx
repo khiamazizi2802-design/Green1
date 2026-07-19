@@ -69,7 +69,7 @@ const QRCodeGenerator = ({ value, size = 200, foreground = '#21FFA5', background
             />
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-12 h-12 bg-dark-950 border border-brand/40 rounded-xl flex items-center justify-center shadow-2xl">
-                    <span className="text-[10px] font-black text-brand italic">RR</span>
+                    <span className="text-[10px] md:text-xs lg:text-sm font-black text-brand italic">RR</span>
                 </div>
             </div>
         </div>

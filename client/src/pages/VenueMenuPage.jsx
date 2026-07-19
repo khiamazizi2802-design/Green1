@@ -1079,8 +1079,8 @@ const VenueMenuPage = () => {
                             <Zap size={20} className="fill-brand" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-1">Operational Protocol</p>
-                            <p className="text-[11px] font-bold text-white uppercase leading-relaxed">{toastMsg}</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-brand mb-1">Operational Protocol</p>
+                            <p className="text-[11px] md:text-sm lg:text-base font-bold text-white uppercase leading-relaxed">{toastMsg}</p>
                         </div>
                         <div className="ml-auto w-1 h-8 bg-white/5 rounded-full relative overflow-hidden">
                             <motion.div 
@@ -1097,7 +1097,7 @@ const VenueMenuPage = () => {
                 <button onClick={() => navigate(-1)} className="w-12 h-12 bg-[var(--bg-secondary)] rounded-2xl flex items-center justify-center text-[var(--text-primary)] border border-[var(--border-main)]"><ArrowLeft size={24} /></button>
                 <div className="text-center">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter text-[var(--text-primary)]">{venueName}</h1>
-                    <p className="text-[8px] font-black uppercase text-brand tracking-[0.2em]">Live Digital Menu</p>
+                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-brand tracking-[0.2em]">Live Digital Menu</p>
                 </div>
                 <div className="flex items-center gap-3 relative">
                     <AnimatePresence>
@@ -1119,7 +1119,7 @@ const VenueMenuPage = () => {
                                     className="absolute inset-0 bg-brand/20 rounded-2xl blur-md"
                                 />
                                 {venueTickets.length > 1 && (
-                                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--text-primary)] text-[var(--bg-primary)] text-[9px] font-black rounded-full flex items-center justify-center shadow-lg">
+                                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--text-primary)] text-[var(--bg-primary)] text-[9px] md:text-[11px] lg:text-xs font-black rounded-full flex items-center justify-center shadow-lg">
                                         {venueTickets.length}
                                     </div>
                                 )}
@@ -1144,7 +1144,7 @@ const VenueMenuPage = () => {
                                     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 }
                             }}
-                            className="px-4 py-2.5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-main)]/30 hover:border-brand/40 text-[10px] font-black uppercase tracking-widest text-white whitespace-nowrap active:scale-95 transition-all shadow-md snap-start"
+                            className="px-4 py-2.5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-main)]/30 hover:border-brand/40 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-white whitespace-nowrap active:scale-95 transition-all shadow-md snap-start"
                         >
                             {cat.name}
                         </button>
@@ -1167,10 +1167,10 @@ const VenueMenuPage = () => {
                                         <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent opacity-60" />
                                     </div>
-                                    <h3 className="text-[11px] font-black italic uppercase text-[var(--text-primary)] mb-1 leading-snug truncate" title={item.name}>{item.name}</h3>
-                                    <p className="text-[9px] text-[var(--text-primary)] opacity-50 font-medium uppercase tracking-tight line-clamp-2 mb-4 h-6 leading-tight">{item.desc}</p>
+                                    <h3 className="text-[11px] md:text-sm lg:text-base font-black italic uppercase text-[var(--text-primary)] mb-1 leading-snug truncate" title={item.name}>{item.name}</h3>
+                                    <p className="text-[9px] md:text-[11px] lg:text-xs text-[var(--text-primary)] opacity-50 font-medium uppercase tracking-tight line-clamp-2 mb-4 h-6 leading-tight">{item.desc}</p>
                                     <div className="flex justify-between items-center mt-auto">
-                                        <span className="text-xs font-black italic text-brand">€{item.price.toFixed(2)}</span>
+                                        <span className="text-xs md:text-sm lg:text-base font-black italic text-brand">€{item.price.toFixed(2)}</span>
                                         <button 
                                             onClick={() => handleOrder(item)} 
                                             className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-all ${
@@ -1192,9 +1192,9 @@ const VenueMenuPage = () => {
             {cart.length > 0 && (
                 <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/90 to-transparent z-50 safe-bottom-padding">
                     <div className="max-w-lg mx-auto flex gap-4">
-                        <button onClick={() => setCart([])} className="px-6 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[2rem] text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all">Cancel</button>
+                        <button onClick={() => setCart([])} className="px-6 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all">Cancel</button>
                         <button onClick={handleCheckout} className="flex-1 py-6 bg-[var(--text-primary)] text-[var(--bg-primary)] border border-[var(--border-main)] rounded-[2rem] flex items-center justify-between px-8 group transition-all shadow-[0_20px_50px_-10px_rgba(0,0,0,0.2)]">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] italic text-[var(--bg-primary)]">
+                            <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] italic text-[var(--bg-primary)]">
                                 {getCheckoutLabel()}
                             </span>
                             <div className="flex items-center gap-3">
@@ -1222,7 +1222,7 @@ const VenueMenuPage = () => {
                                     <motion.div key="table" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
                                         <div className="text-center space-y-2">
                                             <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">Identify Your {isHotel ? 'Room' : 'Table'}</h3>
-                                            <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">Operational Location Required</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em]">Operational Location Required</p>
                                         </div>
                                         <div className="grid grid-cols-4 gap-4">
                                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(num => {
@@ -1250,11 +1250,11 @@ const VenueMenuPage = () => {
                                             <input 
                                                 type="text" 
                                                 placeholder={`Or Type ${isHotel ? 'Room' : 'Table'} Number...`}
-                                                className="w-full py-5 px-8 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400 focus:border-brand/50 outline-none transition-all"
+                                                className="w-full py-5 px-8 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400 focus:border-brand/50 outline-none transition-all"
                                                 value={selectedTable && selectedTable !== 'BAR' && selectedTable !== 'Front Desk' ? selectedTable : ''}
                                                 onChange={(e) => setSelectedTable(e.target.value)}
                                             />
-                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase text-gray-400 tracking-widest italic">Manual Entry</div>
+                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-400 tracking-widest italic">Manual Entry</div>
                                         </div>
                                         <button 
                                             onClick={() => { 
@@ -1268,7 +1268,7 @@ const VenueMenuPage = () => {
                                                     setPaymentStep('method');
                                                 }
                                             }} 
-                                            className={`w-full py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${selectedTable ? 'bg-brand text-white shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]'}`}
+                                            className={`w-full py-6 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] transition-all shadow-xl ${selectedTable ? 'bg-brand text-white shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]'}`}
                                         >
                                             {selectedTable && selectedTable !== 'BAR' && selectedTable !== 'Front Desk' ? `Confirm ${isHotel ? 'Room' : 'Table'} ${isGroupActive ? '→ Group Tab' : ''}` : (isHotel ? 'Contacting Front Desk' : 'Ordering at the Bar')}
                                         </button>
@@ -1290,7 +1290,7 @@ const VenueMenuPage = () => {
                                             <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">
                                                 {(isStadium || isClub) ? 'Ticket Hub' : isBooking ? 'Guest Registration' : 'Guest Verification'}
                                             </h3>
-                                            <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">
+                                            <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em]">
                                                 {isStadium ? 'Stadium Mission Authorization' : isClub ? 'Club Event Admission Protocol' : isBooking ? 'Full Check-in Protocol' : `Room #${selectedTable} Security Check`}
                                             </p>
                                         </div>
@@ -1302,13 +1302,13 @@ const VenueMenuPage = () => {
                                                         <div className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-brand rounded-full transition-all duration-300 ease-out ${guestDetails.bookingType === 'business' ? 'left-[calc(50%+3px)]' : 'left-1.5'}`} />
                                                         <button 
                                                             onClick={() => setGuestDetails({...guestDetails, bookingType: 'private'})}
-                                                            className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest relative z-10 transition-colors ${guestDetails.bookingType === 'private' ? 'text-white' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                                                            className={`flex-1 py-4 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest relative z-10 transition-colors ${guestDetails.bookingType === 'private' ? 'text-white' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                                                         >
                                                             Private Booking
                                                         </button>
                                                         <button 
                                                             onClick={() => setGuestDetails({...guestDetails, bookingType: 'business'})}
-                                                            className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest relative z-10 transition-colors ${guestDetails.bookingType === 'business' ? 'text-white' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                                                            className={`flex-1 py-4 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest relative z-10 transition-colors ${guestDetails.bookingType === 'business' ? 'text-white' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                                                         >
                                                             Business Booking
                                                         </button>
@@ -1316,10 +1316,10 @@ const VenueMenuPage = () => {
 
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Vorname / First Name</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Vorname / First Name</label>
                                                             <input 
                                                                 type="text" placeholder="John"
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                 value={guestDetails.firstName || ''}
                                                                 onChange={(e) => {
                                                                     const val = e.target.value;
@@ -1329,10 +1329,10 @@ const VenueMenuPage = () => {
                                                             />
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Nachname / Surname</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Nachname / Surname</label>
                                                             <input 
                                                                 type="text" placeholder="Doe"
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                 value={guestDetails.lastName || ''}
                                                                 onChange={(e) => {
                                                                     const val = e.target.value;
@@ -1345,19 +1345,19 @@ const VenueMenuPage = () => {
 
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">E-Mail / Email Address</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">E-Mail / Email Address</label>
                                                             <input 
                                                                 type="email" placeholder="john.doe@example.com"
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                 value={guestDetails.email}
                                                                 onChange={(e) => setGuestDetails({...guestDetails, email: e.target.value})}
                                                             />
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Telefon / Phone Number</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Telefon / Phone Number</label>
                                                             <input 
                                                                 type="tel" placeholder="+49 152..."
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                 value={guestDetails.phone}
                                                                 onChange={(e) => setGuestDetails({...guestDetails, phone: e.target.value})}
                                                             />
@@ -1365,10 +1365,10 @@ const VenueMenuPage = () => {
                                                     </div>
 
                                                     <div className="space-y-1">
-                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Straße & Hausnr. / Address</label>
+                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Straße & Hausnr. / Address</label>
                                                         <input 
                                                             type="text" placeholder="Hauptstraße 12"
-                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                             value={guestDetails.address}
                                                             onChange={(e) => setGuestDetails({...guestDetails, address: e.target.value})}
                                                         />
@@ -1376,19 +1376,19 @@ const VenueMenuPage = () => {
 
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">PLZ / Zip Code</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">PLZ / Zip Code</label>
                                                             <input 
                                                                 type="text" placeholder="60311"
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                 value={guestDetails.zip}
                                                                 onChange={(e) => setGuestDetails({...guestDetails, zip: e.target.value})}
                                                             />
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Ort / City</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Ort / City</label>
                                                             <input 
                                                                 type="text" placeholder="Frankfurt"
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                 value={guestDetails.city}
                                                                 onChange={(e) => setGuestDetails({...guestDetails, city: e.target.value})}
                                                             />
@@ -1397,19 +1397,19 @@ const VenueMenuPage = () => {
 
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Ausweisnr. / Passport ID</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Ausweisnr. / Passport ID</label>
                                                             <input 
                                                                 type="text" placeholder="C00000000"
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                 value={guestDetails.idNumber}
                                                                 onChange={(e) => setGuestDetails({...guestDetails, idNumber: e.target.value})}
                                                             />
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Geburtsdatum / DOB</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Geburtsdatum / DOB</label>
                                                             <input 
                                                                 type="text" placeholder="DD.MM.YYYY"
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                 value={guestDetails.dob}
                                                                 onChange={(e) => setGuestDetails({...guestDetails, dob: e.target.value})}
                                                             />
@@ -1418,10 +1418,10 @@ const VenueMenuPage = () => {
 
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-brand">Check-In / Arrival</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-brand">Check-In / Arrival</label>
                                                             <input 
                                                                 type="date"
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-brand/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] focus:border-brand outline-none transition-all"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-brand/50 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] focus:border-brand outline-none transition-all"
                                                                 value={guestDetails.checkIn}
                                                                 onChange={(e) => {
                                                                     const val = e.target.value;
@@ -1435,10 +1435,10 @@ const VenueMenuPage = () => {
                                                             />
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <label className="text-[8px] font-black uppercase tracking-widest text-brand">Check-Out / Departure</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-brand">Check-Out / Departure</label>
                                                             <input 
                                                                 type="date"
-                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-brand/50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] focus:border-brand outline-none transition-all"
+                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-brand/50 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] focus:border-brand outline-none transition-all"
                                                                 value={guestDetails.checkOut}
                                                                 onChange={(e) => {
                                                                     const val = e.target.value;
@@ -1458,23 +1458,23 @@ const VenueMenuPage = () => {
                                                             <div className="mt-6 pt-4 border-t border-white/5 space-y-4">
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="w-1.5 h-1.5 bg-brand rounded-full" />
-                                                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-brand">Company Invoicing Details (Optional)</p>
+                                                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand">Company Invoicing Details (Optional)</p>
                                                                 </div>
                                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                                     <div className="space-y-1">
-                                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Firmenname / Company Name</label>
+                                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Firmenname / Company Name</label>
                                                                         <input 
                                                                             type="text" placeholder="Green Corp Ltd."
-                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                             value={guestDetails.companyName}
                                                                             onChange={(e) => setGuestDetails({...guestDetails, companyName: e.target.value})}
                                                                         />
                                                                     </div>
                                                                     <div className="space-y-1">
-                                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Firmenadresse / Company Address</label>
+                                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Firmenadresse / Company Address</label>
                                                                         <input 
                                                                             type="text" placeholder="Zeil 106, 60313 Frankfurt"
-                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                             value={guestDetails.companyAddress}
                                                                             onChange={(e) => setGuestDetails({...guestDetails, companyAddress: e.target.value})}
                                                                         />
@@ -1485,32 +1485,32 @@ const VenueMenuPage = () => {
                                                             <div className="mt-6 pt-4 border-t border-white/5 space-y-4">
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="w-1.5 h-1.5 bg-brand rounded-full" />
-                                                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-brand">Deposit Information / Kaution</p>
+                                                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand">Deposit Information / Kaution</p>
                                                                 </div>
                                                                 <div className="space-y-1">
-                                                                    <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Kreditkartennummer / Company Card Number</label>
+                                                                    <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Kreditkartennummer / Company Card Number</label>
                                                                     <input 
                                                                         type="text" placeholder="•••• •••• •••• ••••"
-                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                         value={guestDetails.ccNumber || ''}
                                                                         onChange={(e) => setGuestDetails({...guestDetails, ccNumber: e.target.value})}
                                                                     />
                                                                 </div>
                                                                 <div className="grid grid-cols-2 gap-4">
                                                                     <div className="space-y-1">
-                                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Ablaufdatum / Expiry Date</label>
+                                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Ablaufdatum / Expiry Date</label>
                                                                         <input 
                                                                             type="text" placeholder="MM/YY"
-                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                             value={guestDetails.ccExpiry || ''}
                                                                             onChange={(e) => setGuestDetails({...guestDetails, ccExpiry: e.target.value})}
                                                                         />
                                                                     </div>
                                                                     <div className="space-y-1">
-                                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-500">Prüfziffer / CVC</label>
+                                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Prüfziffer / CVC</label>
                                                                         <input 
                                                                             type="text" placeholder="123"
-                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400/40 focus:border-brand/50 outline-none transition-all"
                                                                             value={guestDetails.ccCvv || ''}
                                                                             onChange={(e) => setGuestDetails({...guestDetails, ccCvv: e.target.value})}
                                                                         />
@@ -1523,15 +1523,15 @@ const VenueMenuPage = () => {
                                             ) : (
                                                 <div className="text-left space-y-4">
                                                     <div className="px-2">
-                                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mb-4">
+                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-brand mb-4">
                                                             Lead Ticket Holder
                                                         </p>
                                                         <div>
-                                                            <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Full Name</span>
+                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Full Name</span>
                                                             <input 
                                                                 type="text" 
                                                                 placeholder="Primary Holder..."
-                                                                className="w-full py-5 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500 focus:border-brand/50 outline-none transition-all"
+                                                                className="w-full py-5 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500 focus:border-brand/50 outline-none transition-all"
                                                                 value={guestName}
                                                                 onChange={(e) => setGuestName(e.target.value)}
                                                             />
@@ -1539,39 +1539,39 @@ const VenueMenuPage = () => {
                                                         {(hasTicketsInCart || isStadium || isClub) && (
                                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                                                                 <div>
-                                                                    <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Address</span>
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Address</span>
                                                                     <input 
                                                                         type="text" placeholder="Street & Number..."
-                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
                                                                         value={guestDetails.address}
                                                                         onChange={(e) => setGuestDetails({...guestDetails, address: e.target.value})}
                                                                     />
                                                                 </div>
                                                                 <div className="grid grid-cols-2 gap-4">
                                                                     <div>
-                                                                        <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">ZIP / PLZ</span>
+                                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">ZIP / PLZ</span>
                                                                         <input 
                                                                             type="text" placeholder="12345"
-                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
                                                                             value={guestDetails.zip}
                                                                             onChange={(e) => setGuestDetails({...guestDetails, zip: e.target.value})}
                                                                         />
                                                                     </div>
                                                                     <div>
-                                                                        <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">City</span>
+                                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">City</span>
                                                                         <input 
                                                                             type="text" placeholder="Berlin"
-                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                            className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
                                                                             value={guestDetails.city}
                                                                             onChange={(e) => setGuestDetails({...guestDetails, city: e.target.value})}
                                                                         />
                                                                     </div>
                                                                 </div>
                                                                 <div className="sm:col-span-2">
-                                                                    <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Date of Birth</span>
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Date of Birth</span>
                                                                     <input 
                                                                         type="text" placeholder="DD.MM.YYYY"
-                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
                                                                         value={guestDetails.dob}
                                                                         onChange={(e) => setGuestDetails({...guestDetails, dob: e.target.value})}
                                                                     />
@@ -1582,22 +1582,22 @@ const VenueMenuPage = () => {
 
                                                     {(hasTicketsInCart || isStadium || isClub) && (
                                                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 gap-4 px-2">
-                                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand mt-4">Communication Hub</p>
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-brand mt-4">Communication Hub</p>
                                                             <div>
-                                                                <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Email Address</span>
+                                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Email Address</span>
                                                                 <input 
                                                                     type="email" placeholder="Personal Email..."
-                                                                    className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                    className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
                                                                     value={guestDetails.email}
                                                                     onChange={(e) => setGuestDetails({...guestDetails, email: e.target.value})}
                                                                 />
                                                             </div>
                                                             {!hasTicketsInCart && (
                                                                 <div>
-                                                                    <span className="text-[8px] font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Phone Number</span>
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-wider mb-1 block pl-2 opacity-70">Phone Number</span>
                                                                     <input 
                                                                         type="tel" placeholder="Mobile Number (SMS Delivery)..."
-                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
+                                                                        className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-500"
                                                                         value={guestDetails.phone}
                                                                         onChange={(e) => setGuestDetails({...guestDetails, phone: e.target.value})}
                                                                     />
@@ -1608,13 +1608,13 @@ const VenueMenuPage = () => {
                                                                 <div className="mt-8 space-y-10">
                                                                     <div className="flex items-center gap-4">
                                                                         <div className="flex-1 h-px bg-[var(--border-main)]/5" />
-                                                                        <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[var(--text-secondary)]/30">Additional Members</p>
+                                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.5em] text-[var(--text-secondary)]/30">Additional Members</p>
                                                                         <div className="flex-1 h-px bg-[var(--border-main)]/5" />
                                                                     </div>
                                                                     {attendees.map((attendee, idx) => (
                                                                         <div key={idx} className="space-y-3 p-6 bg-[var(--bg-secondary)]/50 border border-[var(--border-main)] rounded-[2rem]">
                                                                             <div className="flex items-center justify-between mb-2">
-                                                                                <p className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]/60 italic">Member #{idx + 2}</p>
+                                                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-[var(--text-secondary)]/60 italic">Member #{idx + 2}</p>
                                                                                 <div className="flex items-center gap-3">
                                                                                     <button 
                                                                                         onClick={() => setAttendees(attendees.filter((_, i) => i !== idx))}
@@ -1627,7 +1627,7 @@ const VenueMenuPage = () => {
                                                                             </div>
                                                                             <input 
                                                                                 type="text" placeholder="Full Name..."
-                                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
+                                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)]"
                                                                                 value={attendee.name}
                                                                                 onChange={(e) => {
                                                                                     const newAttendees = [...attendees];
@@ -1637,7 +1637,7 @@ const VenueMenuPage = () => {
                                                                             />
                                                                             <input 
                                                                                 type="email" placeholder="Email Address..."
-                                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
+                                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)]"
                                                                                 value={attendee.email}
                                                                                 onChange={(e) => {
                                                                                     const newAttendees = [...attendees];
@@ -1647,7 +1647,7 @@ const VenueMenuPage = () => {
                                                                             />
                                                                             <input 
                                                                                 type="text" placeholder="Geburtsdatum (DD.MM.YYYY)"
-                                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]"
+                                                                                className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)]"
                                                                                 value={attendee.dob || ''}
                                                                                 onChange={(e) => {
                                                                                     const newAttendees = [...attendees];
@@ -1688,7 +1688,7 @@ const VenueMenuPage = () => {
                                                 }
                                             }}
                                             disabled={isBooking ? (!guestDetails.firstName || !guestDetails.lastName || !guestDetails.email || !guestDetails.phone || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.idNumber || !guestDetails.dob || !guestDetails.checkIn || !guestDetails.checkOut || (guestDetails.bookingType === 'business' && (!guestDetails.companyName || !guestDetails.companyAddress || !guestDetails.ccNumber || !guestDetails.ccExpiry || !guestDetails.ccCvv))) : (hasTicketsInCart ? (!guestName || !guestDetails.email || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.dob) : !guestName)}
-                                            className={`w-full py-6 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${(isBooking ? (guestDetails.firstName && guestDetails.lastName && guestDetails.email && guestDetails.phone && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.idNumber && guestDetails.dob && guestDetails.checkIn && guestDetails.checkOut && (guestDetails.bookingType !== 'business' || (guestDetails.companyName && guestDetails.companyAddress && guestDetails.ccNumber && guestDetails.ccExpiry && guestDetails.ccCvv))) : (hasTicketsInCart ? (guestName && guestDetails.email && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.dob) : guestName)) ? 'bg-brand text-white shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]/50'}`}
+                                            className={`w-full py-6 rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] transition-all shadow-xl ${(isBooking ? (guestDetails.firstName && guestDetails.lastName && guestDetails.email && guestDetails.phone && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.idNumber && guestDetails.dob && guestDetails.checkIn && guestDetails.checkOut && (guestDetails.bookingType !== 'business' || (guestDetails.companyName && guestDetails.companyAddress && guestDetails.ccNumber && guestDetails.ccExpiry && guestDetails.ccCvv))) : (hasTicketsInCart ? (guestName && guestDetails.email && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.dob) : guestName)) ? 'bg-brand text-white shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]/50'}`}
                                         >
                                             {isBooking ? 'Complete Registration' : (isStadium || isClub || hasTicketsInCart) ? `Authorize Tickets` : 'Continue to Settlement'}
                                         </button>
@@ -1706,11 +1706,11 @@ const VenueMenuPage = () => {
                                                 <ArrowLeft size={20} />
                                             </button>
                                             <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">Settlement Method</h3>
-                                            <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">{(isStadium || isClub || hasTicketsInCart) ? `E-Ticket Authorization ${guestName ? `• ${guestName}` : ''}` : isBooking ? `New Booking ${guestName ? `• ${guestName}` : ''}` : `${isHotel ? 'Room' : 'Table'} #${selectedTable}${guestName ? ` • ${guestName}` : ''}`} • €{totalCost.toFixed(2)}</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em]">{(isStadium || isClub || hasTicketsInCart) ? `E-Ticket Authorization ${guestName ? `• ${guestName}` : ''}` : isBooking ? `New Booking ${guestName ? `• ${guestName}` : ''}` : `${isHotel ? 'Room' : 'Table'} #${selectedTable}${guestName ? ` • ${guestName}` : ''}`} • €{totalCost.toFixed(2)}</p>
                                         </div>
                                         
                                         <div className="flex items-center justify-between px-2 mb-4">
-                                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Active Channels</h3>
+                                            <h3 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-gray-500 italic">Active Channels</h3>
                                             <button 
                                                 onClick={() => navigate('/payment/methods', {
                                                     state: {
@@ -1728,7 +1728,7 @@ const VenueMenuPage = () => {
                                                         }
                                                     }
                                                 })}
-                                                className="text-[8px] font-black text-brand uppercase tracking-widest border-b border-brand/30 pb-0.5"
+                                                className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest border-b border-brand/30 pb-0.5"
                                             >
                                                 Manage Methods
                                             </button>
@@ -1766,7 +1766,7 @@ const VenueMenuPage = () => {
                                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isSelected ? 'bg-black/10' : 'bg-black/10'}`}>
                                                                     <Icon size={20} />
                                                                 </div>
-                                                                <span className="text-[10px] font-black uppercase tracking-widest">{displayLabel}</span>
+                                                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">{displayLabel}</span>
                                                             </div>
                                                             {isSelected && <Check size={18} />}
                                                         </button>
@@ -1785,7 +1785,7 @@ const VenueMenuPage = () => {
                                             ) : (
                                                 <>
                                                     <ShieldCheck size={20} className="text-brand" />
-                                                    <span className="text-xs font-black uppercase tracking-[0.2em] italic text-[var(--bg-primary)]">
+                                                    <span className="text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.2em] italic text-[var(--bg-primary)]">
                                                         {isHotel && paymentMethod === 'room_charge' ? 'AUTHORIZE ROOM CHARGE' : 'CONFIRM & SEND ORDER'}
                                                     </span>
                                                 </>
@@ -1888,7 +1888,7 @@ const VenueMenuPage = () => {
                                                             ORDER: {currentStatus}
                                                         </span>
                                                     </div>
-                                                    <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">
+                                                    <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-bold uppercase tracking-widest mt-0.5">
                                                         {ticket.venueName} • {locationLabel} #{ticket.tableId} • {ticket.timestamp}
                                                     </p>
                                                 </div>
@@ -1915,7 +1915,7 @@ const VenueMenuPage = () => {
                                                     });
                                                     setShowTicketHub(false);
                                                 }}
-                                                className="px-5 py-2.5 bg-black text-white rounded-xl text-[9px] font-black uppercase tracking-widest active:scale-95 transition-all"
+                                                className="px-5 py-2.5 bg-black text-white rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest active:scale-95 transition-all"
                                             >
                                                 Open
                                             </button>
@@ -1926,13 +1926,13 @@ const VenueMenuPage = () => {
 
                             {venueTickets.length === 0 && (
                                 <div className="py-12 text-center">
-                                    <p className="text-xs font-black uppercase tracking-widest text-gray-600 italic">No Active Tickets Detected</p>
+                                    <p className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-gray-600 italic">No Active Tickets Detected</p>
                                 </div>
                             )}
 
                             <button 
                                 onClick={() => setShowTicketHub(false)}
-                                className="w-full py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
+                                className="w-full py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
                             >
                                 Dismiss Hub
                             </button>
@@ -1968,7 +1968,7 @@ const VenueMenuPage = () => {
                                 <input 
                                     type="text" 
                                     placeholder={`Enter ${isHotel ? 'Room' : 'Table'} Number Manually...`}
-                                    className="w-full py-5 px-8 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400 focus:border-brand/50 outline-none transition-all"
+                                    className="w-full py-5 px-8 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-[var(--text-primary)] placeholder:text-gray-400 focus:border-brand/50 outline-none transition-all"
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             setSelectedTable(e.target.value);
@@ -1976,9 +1976,9 @@ const VenueMenuPage = () => {
                                         }
                                     }}
                                 />
-                                <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase text-gray-600 tracking-widest">Press Enter</div>
+                                <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-600 tracking-widest">Press Enter</div>
                             </div>
-                            <button onClick={() => { setSelectedTable(isHotel ? 'Front Desk' : 'Bar'); setShowTablePicker(false); }} className="w-full py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)]">
+                            <button onClick={() => { setSelectedTable(isHotel ? 'Front Desk' : 'Bar'); setShowTablePicker(false); }} className="w-full py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-secondary)]">
                                 {isHotel ? 'Contacting Front Desk' : 'Ordering at the Bar'}
                             </button>
                         </motion.div>

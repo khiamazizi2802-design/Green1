@@ -2310,7 +2310,7 @@ billing payouts are required.
                     {!isSidebarCollapsed && (
                         <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
                             <h2 className="text-xl font-black italic uppercase tracking-tighter text-white leading-none">Director</h2>
-                            <p className="text-[8px] font-black uppercase tracking-[0.4em] text-brand/60 mt-1">Alpha Command</p>
+                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.4em] text-brand/60 mt-1">Alpha Command</p>
                         </motion.div>
                     )}
                 </div>
@@ -2344,7 +2344,7 @@ billing payouts are required.
                             </div>
                             {!isSidebarCollapsed && (
                                 <div className="flex-1 flex items-center justify-between overflow-hidden">
-                                    <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
+                                    <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
                                     {item.badge && <span className={`text-[7px] font-black px-2 py-0.5 rounded uppercase ${view === item.id ? 'bg-brand text-dark-900' : 'bg-brand/10 text-brand'}`}>{item.badge}</span>}
                                 </div>
                             )}
@@ -2360,7 +2360,7 @@ billing payouts are required.
                         className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-red-500/10 text-gray-500 hover:text-red-500 transition-all group"
                     >
                         <LogOut size={20} />
-                        {!isSidebarCollapsed && <span className="text-[10px] font-black uppercase tracking-widest">Logout System</span>}
+                        {!isSidebarCollapsed && <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">Logout System</span>}
                     </button>
                 </div>
             </motion.aside>
@@ -2376,7 +2376,7 @@ billing payouts are required.
                             <div className="p-6 flex items-center gap-4 border-b border-white/5">
                                 <Search size={24} className="text-brand" />
                                 <input autoFocus placeholder="Neural Search..." className="flex-1 bg-transparent border-none outline-none text-xl font-medium" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-                                <kbd className="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-500 border border-white/10">ESC</kbd>
+                                <kbd className="px-2 py-1 bg-white/5 rounded text-[10px] md:text-xs lg:text-sm text-gray-500 border border-white/10">ESC</kbd>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -2392,7 +2392,7 @@ billing payouts are required.
                             <ShieldCheck size={18} className={`${systemLockdown ? 'text-red-500' : 'text-brand'}`} />
                             <h1 className="text-2xl font-black italic uppercase tracking-tighter">{systemLockdown ? 'EMERGENCY' : 'DIRECTOR'} <span className="text-brand">COMMAND</span></h1>
                         </div>
-                        <span className="text-[8px] font-black text-brand uppercase tracking-widest mt-1">{systemTime} | SEC-LEVEL: ALPHA</span>
+                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest mt-1">{systemTime} | SEC-LEVEL: ALPHA</span>
                     </div>
                 </div>
 
@@ -2407,7 +2407,7 @@ billing payouts are required.
                         <Activity size={16} className={`animate-pulse ${isEarningsIncrementing ? 'scale-125 text-brand animate-bounce' : ''}`} />
                     </div>
                     <div>
-                        <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none">Today's Net Platform Margin</p>
+                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest leading-none">Today's Net Platform Margin</p>
                         <motion.p 
                             animate={{ scale: isEarningsIncrementing ? [1, 1.15, 1] : 1 }}
                             transition={{ duration: 0.3 }}
@@ -2424,13 +2424,13 @@ billing payouts are required.
                 <div className="flex items-center gap-8">
                     <div className="hidden lg:flex items-center gap-4 px-6 py-3 bg-white/5 border border-white/10 rounded-2xl cursor-pointer hover:border-white/30 transition-all" onClick={() => setIsCommandBarOpen(true)}>
                         <Search size={16} className="text-gray-500" />
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Neural Search...</span>
-                        <kbd className="px-2 py-0.5 bg-white/5 rounded text-[8px] text-gray-600 border border-white/10">⌘K</kbd>
+                        <span className="text-xs md:text-sm lg:text-base font-bold text-gray-500 uppercase tracking-widest">Neural Search...</span>
+                        <kbd className="px-2 py-0.5 bg-white/5 rounded text-[8px] md:text-[10px] lg:text-xs text-gray-600 border border-white/10">⌘K</kbd>
                     </div>
                     <div className="flex items-center gap-4 group cursor-pointer" onClick={() => setView('personal-data')}>
                         <div className="text-right">
-                            <p className="text-[10px] font-black italic uppercase text-white group-hover:text-brand transition-colors">{dossierFullName || 'Jordan'}</p>
-                            <p className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">Chief Director</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black italic uppercase text-white group-hover:text-brand transition-colors">{dossierFullName || 'Jordan'}</p>
+                            <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-600 uppercase tracking-widest">Chief Director</p>
                         </div>
                         <div className="w-12 h-12 rounded-2xl bg-brand/20 border border-brand/40 p-1 group-hover:scale-110 transition-transform">
                             <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${dossierFullName || 'Jordan'}`} alt="Director" className="w-full h-full rounded-xl" />
@@ -2450,7 +2450,7 @@ billing payouts are required.
                                     <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand shadow-[0_0_20px_var(--brand-glow)]" />
                                         <div className="space-y-2">
-                                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Total Active Event Tickets</h4>
+                                            <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest">Total Active Event Tickets</h4>
                                             <p className="text-4xl font-black italic text-white">{
                                                 (() => {
                                                     const saved = localStorage.getItem('green_stadium_events');
@@ -2459,13 +2459,13 @@ billing payouts are required.
                                                 })()
                                             }</p>
                                         </div>
-                                        <p className="text-[8px] font-black text-brand uppercase tracking-widest mt-6">Across 4 primary sectors</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest mt-6">Across 4 primary sectors</p>
                                     </div>
                                     
                                     <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand/50" />
                                         <div className="space-y-2">
-                                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Club Event Folders</h4>
+                                            <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest">Club Event Folders</h4>
                                             <p className="text-4xl font-black italic text-white">{
                                                 (() => {
                                                     const saved = localStorage.getItem('green_stadium_events');
@@ -2474,13 +2474,13 @@ billing payouts are required.
                                                 })()
                                             }</p>
                                         </div>
-                                        <p className="text-[8px] font-black text-brand/60 uppercase tracking-widest mt-6">Bar & Concert Tiers</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand/60 uppercase tracking-widest mt-6">Bar & Concert Tiers</p>
                                     </div>
 
                                     <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-amber-500/50" />
                                         <div className="space-y-2">
-                                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Hospitality Partys Events</h4>
+                                            <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest">Hospitality Partys Events</h4>
                                             <p className="text-4xl font-black italic text-white">{
                                                 (() => {
                                                     const saved = localStorage.getItem('green_stadium_events');
@@ -2489,13 +2489,13 @@ billing payouts are required.
                                                 })()
                                             }</p>
                                         </div>
-                                        <p className="text-[8px] font-black text-amber-500/60 uppercase tracking-widest mt-6">VIP Partys & Stay Packages</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-amber-500/60 uppercase tracking-widest mt-6">VIP Partys & Stay Packages</p>
                                     </div>
 
                                     <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-violet-500/50" />
                                         <div className="space-y-2">
-                                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Stadium Main Folders</h4>
+                                            <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest">Stadium Main Folders</h4>
                                             <p className="text-4xl font-black italic text-white">{
                                                 (() => {
                                                     const saved = localStorage.getItem('green_stadium_events');
@@ -2504,7 +2504,7 @@ billing payouts are required.
                                                 })()
                                             }</p>
                                         </div>
-                                        <p className="text-[8px] font-black text-violet-500/60 uppercase tracking-widest mt-6">Arena Match Tiers</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-violet-500/60 uppercase tracking-widest mt-6">Arena Match Tiers</p>
                                     </div>
                                 </div>
 
@@ -2514,14 +2514,14 @@ billing payouts are required.
                                         <div className="flex justify-between items-center bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl/50 border border-white/5 rounded-3xl p-6">
                                             <div>
                                                 <h3 className="text-xl font-black italic uppercase tracking-tighter">Ticket Hub <span className="text-brand">Repositories</span></h3>
-                                                <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mt-1">Select a tactical folder to inspect active files</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest mt-1">Select a tactical folder to inspect active files</p>
                                             </div>
                                             <button 
                                                 onClick={() => {
                                                     // Open modal to add a ticket directly from Admin Dashboard
                                                     setIsAddingTicket(true);
                                                 }}
-                                                className="px-6 py-3.5 bg-brand text-dark-900 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-2 shadow-[0_0_20px_var(--brand-glow)]"
+                                                className="px-6 py-3.5 bg-brand text-dark-900 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-2 shadow-[0_0_20px_var(--brand-glow)]"
                                             >
                                                 <PlusCircle size={14} /> Upload Custom Ticket
                                             </button>
@@ -2543,10 +2543,10 @@ billing payouts are required.
                                                     </div>
                                                     <div>
                                                         <h4 className="text-xl font-black italic uppercase tracking-tighter text-white group-hover:text-brand transition-colors">{folder.name}</h4>
-                                                        <p className="text-xs text-gray-500 font-medium mt-2">{folder.desc}</p>
+                                                        <p className="text-xs md:text-sm lg:text-base text-gray-500 font-medium mt-2">{folder.desc}</p>
                                                     </div>
                                                     <div className="flex justify-between items-center pt-4 border-t border-white/5 mt-4">
-                                                        <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">Active Directory</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-600 uppercase tracking-widest">Active Directory</span>
                                                         <ChevronRight size={16} className="text-gray-500 group-hover:translate-x-1 transition-transform" />
                                                     </div>
                                                 </div>
@@ -2568,7 +2568,7 @@ billing payouts are required.
                                                     <h3 className="text-2xl font-black italic uppercase tracking-tighter">
                                                         📁 / {ticketActiveFolder.toUpperCase()} FILES
                                                     </h3>
-                                                    <p className="text-[8px] font-black text-brand uppercase tracking-widest mt-1">Live active directory list</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest mt-1">Live active directory list</p>
                                                 </div>
                                             </div>
 
@@ -2579,12 +2579,12 @@ billing payouts are required.
                                                         placeholder="Search tickets..." 
                                                         value={ticketSearchQuery}
                                                         onChange={e => setTicketSearchQuery(e.target.value)}
-                                                        className="bg-dark-950 border border-white/10 focus:border-brand/40 rounded-2xl py-3 pl-10 pr-6 text-[10px] font-black uppercase tracking-widest focus:outline-none transition-all w-60"
+                                                        className="bg-dark-950 border border-white/10 focus:border-brand/40 rounded-2xl py-3 pl-10 pr-6 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest focus:outline-none transition-all w-60"
                                                     />
                                                 </div>
                                                 <button 
                                                     onClick={() => setIsAddingTicket(true)}
-                                                    className="px-5 py-3 bg-brand text-dark-900 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-2 shadow-[0_0_20px_var(--brand-glow)]"
+                                                    className="px-5 py-3 bg-brand text-dark-900 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-2 shadow-[0_0_20px_var(--brand-glow)]"
                                                 >
                                                     <PlusCircle size={14} /> Add Ticket
                                                 </button>
@@ -2597,7 +2597,7 @@ billing payouts are required.
                                                 <div className="overflow-x-auto no-scrollbar">
                                                     <table className="w-full text-left border-collapse">
                                                         <thead>
-                                                            <tr className="border-b border-white/5 text-[9px] font-black uppercase text-gray-500 tracking-[0.2em] pb-4">
+                                                            <tr className="border-b border-white/5 text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-gray-500 tracking-[0.2em] pb-4">
                                                                 <th className="pb-6">Event Name</th>
                                                                 <th className="pb-6">Category</th>
                                                                 <th className="pb-6">Date / Time</th>
@@ -2625,7 +2625,7 @@ billing payouts are required.
                                                                 if (filtered.length === 0) {
                                                                     return (
                                                                         <tr>
-                                                                            <td colSpan={7} className="py-12 text-center text-xs text-gray-500 font-medium italic">
+                                                                            <td colSpan={7} className="py-12 text-center text-xs md:text-sm lg:text-base text-gray-500 font-medium italic">
                                                                                 No active tickets found in this folder registry.
                                                                             </td>
                                                                         </tr>
@@ -2644,7 +2644,7 @@ billing payouts are required.
                                                                         <tr 
                                                                             key={`${e.id}-${idx}`} 
                                                                             onClick={() => setExpandedTicketEvent(isExpanded ? null : e)}
-                                                                            className={`group hover:bg-white/5 transition-all text-xs font-bold text-white cursor-pointer ${isExpanded ? 'bg-white/10 border-l-2 border-brand' : ''}`}
+                                                                            className={`group hover:bg-white/5 transition-all text-xs md:text-sm lg:text-base font-bold text-white cursor-pointer ${isExpanded ? 'bg-white/10 border-l-2 border-brand' : ''}`}
                                                                         >
                                                                             <td className="py-6 flex items-center gap-3">
                                                                                 <div className="w-8 h-8 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand">
@@ -2652,15 +2652,15 @@ billing payouts are required.
                                                                                 </div>
                                                                                 <span className="font-black truncate max-w-xs">{e.name}</span>
                                                                             </td>
-                                                                            <td className="py-6 uppercase tracking-wider text-[9px] text-brand/80">{
+                                                                            <td className="py-6 uppercase tracking-wider text-[9px] md:text-[11px] lg:text-xs text-brand/80">{
                                                                                 e.category === 'CM' ? 'Nightlife' : e.category === 'HM' ? 'Partys & Galas' : 'Arena Match'
                                                                             }</td>
-                                                                            <td className="py-6 font-mono text-[10px] text-gray-400">{e.date} • {e.time}</td>
+                                                                            <td className="py-6 font-mono text-[10px] md:text-xs lg:text-sm text-gray-400">{e.date} • {e.time}</td>
                                                                             <td className="py-6 text-right text-brand">€{(avgPrice).toFixed(2)}</td>
                                                                             <td className="py-6 text-right font-mono">{totalSold} / {totalQty}</td>
                                                                             <td className="py-6 text-right font-mono text-emerald-400">€{estComm}</td>
                                                                             <td className="py-6 text-right">
-                                                                                <span className={`px-2.5 py-1 text-[8px] font-black uppercase rounded ${e.published ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
+                                                                                <span className={`px-2.5 py-1 text-[8px] md:text-[10px] lg:text-xs font-black uppercase rounded ${e.published ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
                                                                                     {e.published ? 'Published' : 'Draft'}
                                                                                 </span>
                                                                             </td>
@@ -2704,7 +2704,7 @@ billing payouts are required.
                                                         </div>
 
                                                         {/* Ingested Document Metadata */}
-                                                        <div className="py-4 border-b border-white/5 flex items-center justify-between text-[8px] font-mono text-gray-400">
+                                                        <div className="py-4 border-b border-white/5 flex items-center justify-between text-[8px] md:text-[10px] lg:text-xs font-mono text-gray-400">
                                                             <div className="flex flex-col gap-1">
                                                                 <span className="text-gray-600 font-bold uppercase">FILE ATTACHMENT</span>
                                                                 <span className="text-white font-bold truncate max-w-[150px]">{expandedTicketEvent.name.toLowerCase().replace(/\s+/g, '_')}_manifest.pdf</span>
@@ -2743,7 +2743,7 @@ billing payouts are required.
                                                                         <div key={ticket.id} className="p-4 bg-white/5 border border-white/5 hover:border-white/10 rounded-2xl flex items-center justify-between transition-all">
                                                                             <div className="space-y-1">
                                                                                 <div className="flex items-center gap-2">
-                                                                                    <span className="text-[10px] font-black text-white font-mono">{ticket.id}</span>
+                                                                                    <span className="text-[10px] md:text-xs lg:text-sm font-black text-white font-mono">{ticket.id}</span>
                                                                                     <span className={`px-2 py-0.5 text-[6px] font-black rounded uppercase ${currentStatus === 'Allocated' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
                                                                                         {currentStatus}
                                                                                     </span>
@@ -2770,7 +2770,7 @@ billing payouts are required.
                                                                                             }, 1000);
                                                                                         }}
                                                                                         disabled={isCurrentlySending}
-                                                                                        className="px-3 py-2 bg-brand text-dark-900 text-[8px] font-black uppercase tracking-wider rounded-xl hover:scale-105 active:scale-95 transition-transform flex items-center gap-1 shadow-lg shadow-brand/10"
+                                                                                        className="px-3 py-2 bg-brand text-dark-900 text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider rounded-xl hover:scale-105 active:scale-95 transition-transform flex items-center gap-1 shadow-lg shadow-brand/10"
                                                                                     >
                                                                                         {isCurrentlySending ? (
                                                                                             <div className="w-2.5 h-2.5 border-2 border-dark-900 border-t-transparent rounded-full animate-spin" />
@@ -2811,7 +2811,7 @@ billing payouts are required.
                                         </div>
                                         <div>
                                             <h3 className="text-xl font-black italic uppercase tracking-tighter">Khiam Autonomous <span className="text-brand">Campaign Dispatcher</span></h3>
-                                            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mt-0.5">Real-Time Space Sweep & Outreach Platform</p>
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest mt-0.5">Real-Time Space Sweep & Outreach Platform</p>
                                         </div>
                                         <div className="ml-auto w-2.5 h-2.5 rounded-full bg-brand shadow-[0_0_8px_var(--brand)] animate-pulse" />
                                     </div>
@@ -2821,25 +2821,25 @@ billing payouts are required.
                                         
                                         {/* Left Panel: File Upload & Target Config */}
                                         <div className="space-y-6 text-left">
-                                            <h4 className="text-[10px] font-black text-brand uppercase tracking-[0.2em] mb-4">🛠️ Campaign Parameter Configuration</h4>
+                                            <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em] mb-4">🛠️ Campaign Parameter Configuration</h4>
 
                                             {/* Refactored Custom Partner & QR Code Ingestor */}
                                             <div className="space-y-4 p-5 bg-white/5 border border-white/10 rounded-3xl">
-                                                <label className="text-[10px] font-black text-white uppercase tracking-wider block">1. B2B PARTNER QR CODES / DOCUMENTS</label>
+                                                <label className="text-[10px] md:text-xs lg:text-sm font-black text-white uppercase tracking-wider block">1. B2B PARTNER QR CODES / DOCUMENTS</label>
                                                 
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Partner Category / Shop Type</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-400 uppercase tracking-widest block">Partner Category / Shop Type</label>
                                                     <input
                                                         placeholder="E.g., Restaurant, Hotel VIP, Nightlife, Club"
                                                         value={offerCategory}
                                                         onChange={e => setOfferCategory(e.target.value)}
-                                                        className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl px-4 py-3.5 text-xs font-black uppercase tracking-widest outline-none"
+                                                        className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl px-4 py-3.5 text-xs md:text-sm lg:text-base font-black uppercase tracking-widest outline-none"
                                                         style={{ backgroundColor: '#090d16' }}
                                                     />
                                                 </div>
 
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Upload Document or QR Code</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-400 uppercase tracking-widest block">Upload Document or QR Code</label>
                                                     <div
                                                         onClick={() => document.getElementById('campaign-file-generic')?.click()}
                                                         className="border-2 border-dashed border-white/20 hover:border-brand/60 bg-black/40 px-4 py-4 rounded-2xl flex items-center justify-center gap-3 cursor-pointer transition-all hover:scale-[1.01] group"
@@ -2853,7 +2853,7 @@ billing payouts are required.
                                                             className="hidden"
                                                         />
                                                         <Upload size={16} className="text-gray-400 group-hover:text-brand transition-colors" />
-                                                        <span className="text-[10px] font-black text-gray-300 group-hover:text-white transition-colors">Choose Voucher Files...</span>
+                                                        <span className="text-[10px] md:text-xs lg:text-sm font-black text-gray-300 group-hover:text-white transition-colors">Choose Voucher Files...</span>
                                                     </div>
                                                 </div>
 
@@ -2865,7 +2865,7 @@ billing payouts are required.
                                                                 <div className="flex items-center gap-2 min-w-0">
                                                                     <FileText size={13} className="text-brand shrink-0" />
                                                                     <div className="min-w-0">
-                                                                        <p className="text-[9px] font-black text-white truncate">{file.name}</p>
+                                                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-white truncate">{file.name}</p>
                                                                         <p className="text-[7px] font-bold text-gray-400">{file.size}</p>
                                                                     </div>
                                                                 </div>
@@ -2890,14 +2890,14 @@ billing payouts are required.
                                             {/* Target Area Text Inputs */}
                                             <div className="space-y-4 p-5 bg-white/5 border border-white/10 rounded-3xl">
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black text-white uppercase tracking-wider block">2. TARGET AREA NAME</label>
+                                                    <label className="text-[10px] md:text-xs lg:text-sm font-black text-white uppercase tracking-wider block">2. TARGET AREA NAME</label>
                                                     <div className="flex gap-2">
                                                         <div className="relative flex-1">
                                                             <input
                                                                 placeholder="E.g., Frankfurt Airport or Zeil"
                                                                 value={targetArea}
                                                                 onChange={e => setTargetArea(e.target.value)}
-                                                                className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl px-5 py-4 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-lg"
+                                                                className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl px-5 py-4 text-xs md:text-sm lg:text-base font-black uppercase tracking-widest outline-none transition-all shadow-lg"
                                                                 style={{ backgroundColor: '#090d16' }}
                                                             />
                                                             <MapPin size={14} className="absolute right-5 top-1/2 -translate-y-1/2 text-brand pointer-events-none" />
@@ -2925,11 +2925,11 @@ billing payouts are required.
 
                                                     {targetAreasList.length > 0 && (
                                                         <div className="space-y-2 mt-4 p-4 bg-black/40 border border-white/5 rounded-2xl">
-                                                            <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block mb-2">Saved Target Areas ({targetAreasList.length})</label>
+                                                            <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-400 uppercase tracking-widest block mb-2">Saved Target Areas ({targetAreasList.length})</label>
                                                             <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto no-scrollbar">
                                                                 {targetAreasList.map(area => (
                                                                     <div key={area.id} className="flex items-center gap-1.5 px-3 py-1.5 bg-black/60 border border-white/10 rounded-xl">
-                                                                        <span className="text-[9px] font-black uppercase text-white">{area.name}</span>
+                                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-white">{area.name}</span>
                                                                         <span className="text-[7.5px] font-mono text-gray-400">({area.radius}km)</span>
                                                                         <button
                                                                             type="button"
@@ -2949,40 +2949,40 @@ billing payouts are required.
                                                 
                                                 <div className="grid grid-cols-3 gap-4">
                                                     <div className="space-y-2">
-                                                        <label className="text-[9px] font-black text-white uppercase tracking-widest font-mono block">LATITUDE</label>
+                                                        <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white uppercase tracking-widest font-mono block">LATITUDE</label>
                                                         <input
                                                             type="number"
                                                             step="0.0001"
                                                             placeholder="50.1109"
                                                             value={campaignLat}
                                                             onChange={e => setCampaignLat(parseFloat(e.target.value) || 50.1109)}
-                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs font-black outline-none"
+                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs md:text-sm lg:text-base font-black outline-none"
                                                             style={{ backgroundColor: '#090d16' }}
                                                         />
                                                     </div>
                                                     
                                                     <div className="space-y-2">
-                                                        <label className="text-[9px] font-black text-white uppercase tracking-widest font-mono block">LONGITUDE</label>
+                                                        <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white uppercase tracking-widest font-mono block">LONGITUDE</label>
                                                         <input
                                                             type="number"
                                                             step="0.0001"
                                                             placeholder="8.6821"
                                                             value={campaignLng}
                                                             onChange={e => setCampaignLng(parseFloat(e.target.value) || 8.6821)}
-                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs font-black outline-none"
+                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs md:text-sm lg:text-base font-black outline-none"
                                                             style={{ backgroundColor: '#090d16' }}
                                                         />
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <label className="text-[9px] font-black text-white uppercase tracking-widest font-mono block">RADIUS (KM)</label>
+                                                        <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-white uppercase tracking-widest font-mono block">RADIUS (KM)</label>
                                                         <input
                                                             type="number"
                                                             step="0.1"
                                                             min="0.1"
                                                             value={scanningRadius}
                                                             onChange={e => setScanningRadius(parseFloat(e.target.value) || 2.0)}
-                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs font-black outline-none"
+                                                            className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl p-4 text-xs md:text-sm lg:text-base font-black outline-none"
                                                             style={{ backgroundColor: '#090d16' }}
                                                         />
                                                     </div>
@@ -2991,19 +2991,19 @@ billing payouts are required.
 
                                             {/* Define Offer Description */}
                                             <div className="space-y-2 p-5 bg-white/5 border border-white/10 rounded-3xl">
-                                                <label className="text-[10px] font-black text-white uppercase tracking-wider block">3. CAMPAIGN OFFER VOUCHER TEXT</label>
+                                                <label className="text-[10px] md:text-xs lg:text-sm font-black text-white uppercase tracking-wider block">3. CAMPAIGN OFFER VOUCHER TEXT</label>
                                                 <input 
                                                     placeholder="E.g., 50% OFF ALL ENTRYS OR FREE DRINKS" 
                                                     value={campaignOfferText}
                                                     onChange={e => setCampaignOfferText(e.target.value)}
-                                                    className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl p-5 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-lg"
+                                                    className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white placeholder-gray-500 rounded-2xl p-5 text-xs md:text-sm lg:text-base font-black uppercase tracking-widest outline-none transition-all shadow-lg"
                                                     style={{ backgroundColor: '#090d16' }}
                                                 />
                                             </div>
 
                                             {/* Define Audience Size — Unlimited */}
                                             <div className="space-y-2 p-5 bg-white/5 border border-white/10 rounded-3xl">
-                                                <label className="text-[10px] font-black text-white uppercase tracking-wider block">4. TARGET AUDIENCE SIZE (UNLIMITED)</label>
+                                                <label className="text-[10px] md:text-xs lg:text-sm font-black text-white uppercase tracking-wider block">4. TARGET AUDIENCE SIZE (UNLIMITED)</label>
                                                 <div className="relative">
                                                     <input
                                                         type="number"
@@ -3011,18 +3011,18 @@ billing payouts are required.
                                                         placeholder="e.g. 5000"
                                                         value={targetPeopleCount}
                                                         onChange={e => setTargetPeopleCount(Math.max(1, parseInt(e.target.value) || 1))}
-                                                        className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl pl-5 pr-24 py-4.5 text-xs font-black uppercase tracking-widest outline-none transition-all shadow-lg"
+                                                        className="w-full bg-dark-950 border-2 border-white/10 focus:border-brand/85 text-white rounded-2xl pl-5 pr-24 py-4.5 text-xs md:text-sm lg:text-base font-black uppercase tracking-widest outline-none transition-all shadow-lg"
                                                         style={{ backgroundColor: '#090d16' }}
                                                     />
-                                                    <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[9px] font-black text-brand uppercase tracking-wider pointer-events-none">Passengers</span>
+                                                    <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-wider pointer-events-none">Passengers</span>
                                                 </div>
-                                                <p className="text-[8px] text-gray-400 font-bold uppercase tracking-wider mt-1">No limit — reach as many people as needed</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">No limit — reach as many people as needed</p>
                                             </div>
                                         </div>
 
                                         {/* Right Panel: CSS Radar Scan Simulation & Telemetry Logs */}
                                         <div className="flex flex-col justify-between items-center space-y-6">
-                                            <h4 className="text-[10px] font-black text-brand uppercase tracking-[0.2em] self-start">📡 Live Proximity Surveillance Grid</h4>
+                                            <h4 className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-[0.2em] self-start">📡 Live Proximity Surveillance Grid</h4>
                                             
                                             {/* Interactive Map Component Showing Deployed geofence */}
                                             <div className="relative w-full h-72 rounded-[2.5rem] border-2 border-brand/20 bg-dark-950 overflow-hidden shadow-2xl">
@@ -3041,8 +3041,8 @@ billing payouts are required.
                                                     <Marker position={[campaignLat || 50.1109, campaignLng || 8.6821]}>
                                                         <Popup>
                                                             <div className="text-dark-900 font-bold p-1">
-                                                                <p className="text-xs uppercase font-black">{targetArea || 'Target Area'}</p>
-                                                                <p className="text-[9px] text-gray-500 font-mono mt-0.5">Radius: {scanningRadius || 2.0} km</p>
+                                                                <p className="text-xs md:text-sm lg:text-base uppercase font-black">{targetArea || 'Target Area'}</p>
+                                                                <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-mono mt-0.5">Radius: {scanningRadius || 2.0} km</p>
                                                             </div>
                                                         </Popup>
                                                     </Marker>
@@ -3057,8 +3057,8 @@ billing payouts are required.
                                                             <Marker position={[area.lat, area.lng]}>
                                                                 <Popup>
                                                                     <div className="text-dark-900 font-bold p-1">
-                                                                        <p className="text-xs uppercase font-black">{area.name}</p>
-                                                                        <p className="text-[9px] text-gray-500 font-mono mt-0.5">Radius: {area.radius} km</p>
+                                                                        <p className="text-xs md:text-sm lg:text-base uppercase font-black">{area.name}</p>
+                                                                        <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-mono mt-0.5">Radius: {area.radius} km</p>
                                                                     </div>
                                                                 </Popup>
                                                             </Marker>
@@ -3077,7 +3077,7 @@ billing payouts are required.
                                                     <p className="text-[6px] font-black text-gray-500 uppercase tracking-widest">
                                                         Geofence Status
                                                     </p>
-                                                    <p className="text-xs font-mono font-black text-brand uppercase leading-none mt-1">
+                                                    <p className="text-xs md:text-sm lg:text-base font-mono font-black text-brand uppercase leading-none mt-1">
                                                         {targetArea || 'Zeil'}
                                                     </p>
                                                     <p className="text-[7px] text-white/70 font-mono mt-1">
@@ -3087,7 +3087,7 @@ billing payouts are required.
                                             </div>
 
                                             {/* Telemetry Stream Log Console */}
-                                            <div className="w-full bg-dark-950 border border-white/5 p-4 rounded-2xl h-20 font-mono text-[8px] text-brand/80 overflow-y-auto space-y-1 text-left no-scrollbar">
+                                            <div className="w-full bg-dark-950 border border-white/5 p-4 rounded-2xl h-20 font-mono text-[8px] md:text-[10px] lg:text-xs text-brand/80 overflow-y-auto space-y-1 text-left no-scrollbar">
                                                 {scanLogs.length === 0 ? (
                                                     <p className="text-gray-600 italic font-bold">GRID SCANNER STANDBY. DEFINE PARAMETERS AND EXECUTE OUTREACH SWEEP.</p>
                                                 ) : (
@@ -3103,7 +3103,7 @@ billing payouts are required.
                                             <button 
                                                 onClick={runCentralGridScanner}
                                                 disabled={isScanningGrid}
-                                                className="w-full py-4.5 bg-brand text-dark-900 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_var(--brand-glow)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full py-4.5 bg-brand text-dark-900 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_var(--brand-glow)] disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 {isScanningGrid ? (
                                                     <>
@@ -3122,7 +3122,7 @@ billing payouts are required.
                                 <div className="space-y-6 overflow-y-auto pr-4 custom-scrollbar">
                                     <div className="p-8 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3rem]">
                                         <div className="flex justify-between items-center mb-6">
-                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-500">Active Live Offers</h4>
+                                            <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">Active Live Offers</h4>
                                             <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
                                         </div>
                                         <div className="space-y-4">
@@ -3136,7 +3136,7 @@ billing payouts are required.
                                                 return offers.map(o => (
                                                     <div key={o.id} className="p-4 bg-white/5 border border-white/5 rounded-2xl space-y-2 animate-in slide-in-from-bottom-2">
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[8px] font-black text-brand uppercase tracking-wider">{o.category || 'Campaign'}</span>
+                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-wider">{o.category || 'Campaign'}</span>
                                                             <button 
                                                                 onClick={() => {
                                                                     const updated = offers.filter(item => item.id !== o.id);
@@ -3147,13 +3147,13 @@ billing payouts are required.
                                                                     ]);
                                                                     triggerNotification('error', 'Campaign Scratched 🛑', `${o.shop} deal disabled.`);
                                                                 }}
-                                                                className="text-[8px] font-black uppercase text-red-500/60 hover:text-red-500 transition-colors"
+                                                                className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-red-500/60 hover:text-red-500 transition-colors"
                                                             >
                                                                 Scratch
                                                             </button>
                                                         </div>
-                                                        <h5 className="text-xs font-black italic text-white leading-tight">{o.offer}</h5>
-                                                        <p className="text-[9px] text-gray-500 uppercase font-bold">{o.shop}</p>
+                                                        <h5 className="text-xs md:text-sm lg:text-base font-black italic text-white leading-tight">{o.offer}</h5>
+                                                        <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 uppercase font-bold">{o.shop}</p>
                                                     </div>
                                                 ));
                                             })()}
@@ -3171,10 +3171,10 @@ billing payouts are required.
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
                                         <div className="space-y-2">
                                             <h3 className="text-2xl font-black italic uppercase tracking-tighter">Master <span className="text-brand">Overrides</span></h3>
-                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em]">Global Network Influence</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-[0.4em]">Global Network Influence</p>
                                         </div>
                                         <div className="flex-1 w-full space-y-4">
-                                            <div className="flex justify-between items-center"><span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Surge Multiplier</span><span className="text-lg font-black italic text-brand">{globalSurge.toFixed(1)}x</span></div>
+                                            <div className="flex justify-between items-center"><span className="text-[10px] md:text-xs lg:text-sm font-black text-gray-400 uppercase tracking-widest">Surge Multiplier</span><span className="text-lg font-black italic text-brand">{globalSurge.toFixed(1)}x</span></div>
                                             <input 
                                                 type="range" 
                                                 min="1" 
@@ -3190,13 +3190,13 @@ billing payouts are required.
                                                 className="w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer accent-brand" 
                                             />
                                         </div>
-                                        <button onClick={() => setSystemLockdown(!systemLockdown)} className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all flex items-center gap-3 ${systemLockdown ? 'bg-red-500 text-white' : 'bg-white/5 text-gray-500 hover:text-red-500 hover:border-red-500/30'}`}>
+                                        <button onClick={() => setSystemLockdown(!systemLockdown)} className={`px-8 py-4 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] transition-all flex items-center gap-3 ${systemLockdown ? 'bg-red-500 text-white' : 'bg-white/5 text-gray-500 hover:text-red-500 hover:border-red-500/30'}`}>
                                             <Shield size={14} /> {systemLockdown ? 'SYSTEM LOCKED' : 'SECURE GRID'}
                                         </button>
                                     </div>
                                     <div className="bg-brand/5 border border-brand/20 rounded-[3.5rem] p-10 flex flex-col justify-between relative overflow-hidden">
                                         <div className="absolute -right-8 -bottom-8 opacity-10"><Cpu size={120} className="text-brand" /></div>
-                                        <div><p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">IO Latency</p><p className="text-4xl font-black italic text-white">0.4ms</p></div>
+                                        <div><p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest">IO Latency</p><p className="text-4xl font-black italic text-white">0.4ms</p></div>
                                         <div className="flex items-center justify-between mt-8"><p className="text-xl font-black italic text-white">4.2 TB/s</p><Activity size={24} className="text-brand" /></div>
                                     </div>
                                 </div>
@@ -3209,14 +3209,14 @@ billing payouts are required.
                                             <div className="space-y-6">
                                                 {[{ name: 'Midnight Neon', load: 92 }, { name: 'The Grid Bar', load: 45 }, { name: 'Stadium Zone', load: 12 }].map((v, i) => (
                                                     <div key={i} className="p-6 bg-white/5 rounded-[2rem] border border-white/5">
-                                                        <div className="flex justify-between items-center mb-4"><span className="text-xs font-black italic text-white uppercase">{v.name}</span><span className="text-[10px] font-black text-brand uppercase">{v.load}%</span></div>
+                                                        <div className="flex justify-between items-center mb-4"><span className="text-xs md:text-sm lg:text-base font-black italic text-white uppercase">{v.name}</span><span className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase">{v.load}%</span></div>
                                                         <div className="h-1.5 bg-white/5 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: `${v.load}%` }} className="h-full bg-brand" /></div>
                                                     </div>
                                                 ))}
                                             </div>
                                             <div className="bg-dark-950 rounded-[2.5rem] border border-white/5 p-8 flex flex-col items-center justify-center">
                                                 <Radar drivers={drivers} />
-                                                <p className="mt-6 text-[10px] font-black text-gray-500 uppercase italic">Proximity Surveillance</p>
+                                                <p className="mt-6 text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase italic">Proximity Surveillance</p>
                                             </div>
                                         </div>
                                     </div>
@@ -3227,36 +3227,36 @@ billing payouts are required.
                                             <div className={`w-16 h-16 rounded-[2rem] flex items-center justify-center ${isVaultUnlocked ? 'bg-brand text-dark-900' : 'bg-white/5 text-gray-500'}`}>
                                                 {isVaultUnlocked ? <ShieldCheck size={32} /> : <Lock size={32} />}
                                             </div>
-                                            <div><h3 className="text-2xl font-black italic uppercase text-white">Secure Vault</h3><p className={`text-[9px] font-black uppercase mt-1 ${isVaultUnlocked ? 'text-brand' : 'text-gray-500'}`}>{isVaultUnlocked ? 'DECRYPTED' : 'AUTH REQUIRED'}</p></div>
+                                            <div><h3 className="text-2xl font-black italic uppercase text-white">Secure Vault</h3><p className={`text-[9px] md:text-[11px] lg:text-xs font-black uppercase mt-1 ${isVaultUnlocked ? 'text-brand' : 'text-gray-500'}`}>{isVaultUnlocked ? 'DECRYPTED' : 'AUTH REQUIRED'}</p></div>
                                         </div>
 
                                         <div className="flex-1">
                                             {isVaultUnlocked ? (
                                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                                                    <div className="p-6 bg-brand/10 border border-brand/20 rounded-3xl"><p className="text-xs text-gray-300 italic italic">"All partner PII and clearing settlements are hashed. Last rotation: 12m ago."</p></div>
+                                                    <div className="p-6 bg-brand/10 border border-brand/20 rounded-3xl"><p className="text-xs md:text-sm lg:text-base text-gray-300 italic italic">"All partner PII and clearing settlements are hashed. Last rotation: 12m ago."</p></div>
                                                     <div className="grid grid-cols-2 gap-4">
-                                                        <div className="p-4 bg-white/5 rounded-2xl border border-white/5"><p className="text-[8px] font-black text-gray-500 uppercase">Clearing Pool</p><p className="text-xl font-black italic text-white">€1.42M</p></div>
-                                                        <div className="p-4 bg-white/5 rounded-2xl border border-white/5"><p className="text-[8px] font-black text-gray-500 uppercase">Escrow</p><p className="text-xl font-black italic text-white">€240k</p></div>
+                                                        <div className="p-4 bg-white/5 rounded-2xl border border-white/5"><p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase">Clearing Pool</p><p className="text-xl font-black italic text-white">€1.42M</p></div>
+                                                        <div className="p-4 bg-white/5 rounded-2xl border border-white/5"><p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase">Escrow</p><p className="text-xl font-black italic text-white">€240k</p></div>
                                                     </div>
                                                 </motion.div>
                                             ) : isVerifyingVault ? (
                                                 <div className="space-y-6">
-                                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Security Code sent to Phone/Email</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest text-center">Security Code sent to Phone/Email</p>
                                                     <input type="password" placeholder="ENTER 4-DIGIT CODE" maxLength={4} value={vaultOTP} onChange={e => setVaultOTP(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-center text-2xl font-black tracking-[1em] text-brand focus:border-brand/50 outline-none" />
-                                                    <button onClick={handleVaultAuth} className="w-full py-4 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest">VERIFY CODE</button>
+                                                    <button onClick={handleVaultAuth} className="w-full py-4 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">VERIFY CODE</button>
                                                 </div>
                                             ) : (
                                                 <div className="h-full flex flex-col justify-center items-center text-center p-8 border-2 border-dashed border-white/5 rounded-[2.5rem]">
                                                     <Shield size={48} className="text-gray-800 mb-4" />
-                                                    <p className="text-xs text-gray-600 font-medium italic italic">Multi-Factor Phone/Email authentication required for financial clearance.</p>
+                                                    <p className="text-xs md:text-sm lg:text-base text-gray-600 font-medium italic italic">Multi-Factor Phone/Email authentication required for financial clearance.</p>
                                                 </div>
                                             )}
                                         </div>
                                         {!isVaultUnlocked && !isVerifyingVault && (
-                                            <button onClick={() => setIsVerifyingVault(true)} className="mt-8 w-full py-4 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20">REQUEST ACCESS CODE</button>
+                                            <button onClick={() => setIsVerifyingVault(true)} className="mt-8 w-full py-4 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-brand/20">REQUEST ACCESS CODE</button>
                                         )}
                                         {isVaultUnlocked && (
-                                            <button onClick={() => setIsVaultUnlocked(false)} className="mt-8 w-full py-4 bg-white/5 text-gray-500 rounded-2xl text-[10px] font-black uppercase tracking-widest">SEAL VAULT</button>
+                                            <button onClick={() => setIsVaultUnlocked(false)} className="mt-8 w-full py-4 bg-white/5 text-gray-500 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">SEAL VAULT</button>
                                         )}
                                     </div>
                                 </div>
@@ -3270,7 +3270,7 @@ billing payouts are required.
                                     
                                     {/* AI VOICE VISUALIZER */}
                                     <div className="p-8 bg-brand/5 border border-brand/20 rounded-[2.5rem] flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer" onClick={() => setIsListening(!isListening)}>
-                                        <div className="absolute top-2 right-4 text-[8px] font-black uppercase text-brand/40 italic">Biometric Voice Active</div>
+                                        <div className="absolute top-2 right-4 text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-brand/40 italic">Biometric Voice Active</div>
                                         <div className="flex items-center gap-1 h-8 mb-4">
                                             {[...Array(12)].map((_, i) => (
                                                 <motion.div 
@@ -3281,7 +3281,7 @@ billing payouts are required.
                                                 />
                                             ))}
                                         </div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-brand">{isListening ? 'LISTENING TO DIRECTOR...' : 'WAITING FOR VOICE COMMAND'}</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand">{isListening ? 'LISTENING TO DIRECTOR...' : 'WAITING FOR VOICE COMMAND'}</p>
                                     </div>
 
                                     {[
@@ -3295,7 +3295,7 @@ billing payouts are required.
                                     ].map(agent => (
                                         <button key={agent.id} onClick={() => setActiveAgent(agent.id)} className={`w-full p-6 rounded-[2.5rem] border transition-all flex items-center gap-6 ${activeAgent === agent.id ? 'bg-brand/10 border-brand text-white shadow-xl shadow-brand/10' : 'bg-white/5 border-white/5 text-gray-500 hover:bg-white/10'}`}>
                                             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${activeAgent === agent.id ? 'bg-brand text-dark-900' : 'bg-white/5 text-gray-600'}`}><agent.icon size={28} /></div>
-                                            <div className="text-left"><p className="text-lg font-black italic uppercase tracking-tighter leading-none">{agent.name}</p><p className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-60">{agent.sub}</p></div>
+                                            <div className="text-left"><p className="text-lg font-black italic uppercase tracking-tighter leading-none">{agent.name}</p><p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest mt-1 opacity-60">{agent.sub}</p></div>
                                         </button>
                                     ))}
                                 </div>
@@ -3307,8 +3307,8 @@ billing payouts are required.
                                             <span className="text-sm font-black uppercase tracking-widest text-brand">{activeAgent.toUpperCase()} INTERFACE</span>
                                         </div>
                                         <div className="flex gap-4">
-                                            <button className="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all">Audit Logs</button>
-                                            <button className="px-4 py-2 bg-brand/10 text-brand border border-brand/20 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand hover:text-dark-900 transition-all">Cite German Law</button>
+                                            <button className="px-4 py-2 bg-white/5 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all">Audit Logs</button>
+                                            <button className="px-4 py-2 bg-brand/10 text-brand border border-brand/20 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:bg-brand hover:text-dark-900 transition-all">Cite German Law</button>
                                         </div>
                                     </div>
                                     <div className="flex-1 p-10 overflow-y-auto space-y-8 custom-scrollbar">
@@ -3316,7 +3316,7 @@ billing payouts are required.
                                             <div className="mb-8 p-6 bg-red-500/5 border border-red-500/20 rounded-[2rem] space-y-4">
                                                 <div className="flex justify-between items-center">
                                                     <div>
-                                                        <h5 className="text-[11px] font-black uppercase text-red-400 tracking-wider flex items-center gap-2">
+                                                        <h5 className="text-[11px] md:text-sm lg:text-base font-black uppercase text-red-400 tracking-wider flex items-center gap-2">
                                                             <ShieldAlert size={14} className="animate-pulse" />
                                                             Live Intercept & Scrubbing Logs
                                                         </h5>
@@ -3325,7 +3325,7 @@ billing payouts are required.
                                                     <div className="px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-[7px] font-mono text-red-400 tracking-widest animate-pulse">active protection</div>
                                                 </div>
                                                 <div className="overflow-x-auto">
-                                                     <table className="w-full text-left font-mono text-[8px]">
+                                                     <table className="w-full text-left font-mono text-[8px] md:text-[10px] lg:text-xs">
                                                          <thead>
                                                              <tr className="border-b border-white/5 text-gray-500">
                                                                  <th className="py-2">SOURCE FILE</th>
@@ -3387,7 +3387,7 @@ billing payouts are required.
                                 {/* AUTONOMOUS INSIGHT PANEL */}
                                 <div className="space-y-6 overflow-y-auto pr-4 custom-scrollbar">
                                     <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">Neural <span className="text-brand">Insights</span></h3>
-                                    <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest italic mb-6">AI Chief of Staff Recommendations</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest italic mb-6">AI Chief of Staff Recommendations</p>
                                     
                                     <div className="space-y-4">
                                         {neuralInsights.map((insight) => (
@@ -3412,25 +3412,25 @@ billing payouts are required.
                                                         'bg-brand/10 text-brand'
                                                     }`}>{insight.severity} Priority</span>
                                                 </div>
-                                                <h4 className="text-xs font-black uppercase text-white mb-1">{insight.title}</h4>
-                                                <p className="text-[10px] font-bold text-gray-400 mb-2 italic">Target: <span className="text-white">{insight.target}</span></p>
-                                                <p className="text-[10px] text-gray-500 leading-relaxed mb-4 italic font-medium">"{insight.reason}"</p>
+                                                <h4 className="text-xs md:text-sm lg:text-base font-black uppercase text-white mb-1">{insight.title}</h4>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-400 mb-2 italic">Target: <span className="text-white">{insight.target}</span></p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-500 leading-relaxed mb-4 italic font-medium">"{insight.reason}"</p>
                                                 
                                                 <div className="p-3 bg-dark-800/50 rounded-xl mb-4 border border-white/5">
-                                                    <p className="text-[8px] font-black text-brand/60 uppercase tracking-widest mb-1">Legal Citation</p>
-                                                    <p className="text-[9px] font-black text-white italic">{insight.law}</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand/60 uppercase tracking-widest mb-1">Legal Citation</p>
+                                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-white italic">{insight.law}</p>
                                                 </div>
 
                                                 <div className="flex gap-2">
-                                                    <button onClick={() => handleInsightAction(insight.id, 'approve')} className="flex-1 py-2 bg-brand text-dark-900 rounded-xl text-[8px] font-black uppercase hover:scale-105 transition-all">Approve Recommendation</button>
-                                                    <button onClick={() => handleInsightAction(insight.id, 'reject')} className="px-4 py-2 bg-white/5 text-gray-500 rounded-xl text-[8px] font-black uppercase hover:bg-red-500/10 hover:text-red-500 transition-all">Dismiss</button>
+                                                    <button onClick={() => handleInsightAction(insight.id, 'approve')} className="flex-1 py-2 bg-brand text-dark-900 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase hover:scale-105 transition-all">Approve Recommendation</button>
+                                                    <button onClick={() => handleInsightAction(insight.id, 'reject')} className="px-4 py-2 bg-white/5 text-gray-500 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase hover:bg-red-500/10 hover:text-red-500 transition-all">Dismiss</button>
                                                 </div>
                                             </motion.div>
                                         ))}
                                         {neuralInsights.length === 0 && (
                                             <div className="p-10 border-2 border-dashed border-white/5 rounded-[2.5rem] text-center">
                                                 <CheckCircle2 size={32} className="text-brand mx-auto mb-4 opacity-20" />
-                                                <p className="text-[10px] font-black text-gray-600 uppercase italic">All Incidents Cleared. Network Nominal.</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase italic">All Incidents Cleared. Network Nominal.</p>
                                             </div>
                                         )}
                                     </div>
@@ -3450,7 +3450,7 @@ billing payouts are required.
                                                 { l: 'Tax Reserve', v: `€${(stripeConnectedPartners.reduce((acc, p) => acc + p.totalPaidOut, 0) * 0.1).toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, c: 'text-brand' }
                                             ].map((s, i) => (
                                                 <div key={i} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/5">
-                                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{s.l}</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest mb-2">{s.l}</p>
                                                     <p className={`text-3xl font-black italic tracking-tighter ${s.c}`}>{s.v}</p>
                                                 </div>
                                             ))}
@@ -3459,7 +3459,7 @@ billing payouts are required.
                                             <div className="flex justify-between items-center mb-4">
                                                 <div className="space-y-1">
                                                     <h3 className="text-2xl font-black italic uppercase text-white">Weekly Payout Clearance</h3>
-                                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Awaiting Super Admin Release</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest">Awaiting Super Admin Release</p>
                                                 </div>
                                                 <div className="flex gap-4">
                                                     <button className="p-3 bg-white/5 rounded-xl text-gray-500 hover:text-white"><Filter size={18} /></button>
@@ -3473,17 +3473,17 @@ billing payouts are required.
                                                             <div className="w-14 h-14 rounded-2xl bg-dark-800 flex items-center justify-center text-gray-600 group-hover:text-brand transition-colors"><Database size={28} /></div>
                                                             <div>
                                                                 <p className="text-xl font-black italic uppercase text-white tracking-tighter">{p.name}</p>
-                                                                <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] mt-1 italic">PRIME-ID: {p.id} | Week 18 Settlement</p>
+                                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-[0.2em] mt-1 italic">PRIME-ID: {p.id} | Week 18 Settlement</p>
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-10">
                                                             <div className="text-right">
                                                                 <p className="text-2xl font-black italic text-brand tracking-tighter">€{p.balance.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                                                                <p className="text-[8px] font-black text-amber-500 uppercase tracking-widest">PENDING RELEASE</p>
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-amber-500 uppercase tracking-widest">PENDING RELEASE</p>
                                                             </div>
                                                             <button 
                                                                 onClick={() => triggerPartnerDisbursement(p.id)}
-                                                                className="px-8 py-4 bg-brand text-dark-900 rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-brand/10 hover:scale-105 active:scale-95 transition-all"
+                                                                className="px-8 py-4 bg-brand text-dark-900 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest shadow-lg shadow-brand/10 hover:scale-105 active:scale-95 transition-all"
                                                             >
                                                                 Approve Payout
                                                             </button>
@@ -3504,7 +3504,7 @@ billing payouts are required.
                                                     </div>
                                                     <div>
                                                         <h4 className="text-3xl font-black italic uppercase text-white tracking-tighter">Smart Provision <span className="text-brand">Simulator</span></h4>
-                                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Multi-Step Scenario Modeling & Live Config</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest">Multi-Step Scenario Modeling & Live Config</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -3513,36 +3513,36 @@ billing payouts are required.
                                                 {/* COLUMN 1: LIVE PLATFORM FEES */}
                                                 <div className="space-y-6 bg-white/5 border border-white/5 rounded-[2rem] p-6 relative overflow-hidden">
                                                     <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 blur-[50px] rounded-full pointer-events-none" />
-                                                    <h5 className="text-[10px] font-black uppercase tracking-widest text-brand border-b border-white/10 pb-3 flex items-center gap-2"><ShieldCheck size={12}/> 1. Live Platform Config</h5>
+                                                    <h5 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand border-b border-white/10 pb-3 flex items-center gap-2"><ShieldCheck size={12}/> 1. Live Platform Config</h5>
                                                     
                                                     <div className="space-y-4">
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-gray-300 uppercase">🚗 Trip Base (Fixed)</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-300 uppercase">🚗 Trip Base (Fixed)</span>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-xs font-mono text-gray-500">€</span>
+                                                                <span className="text-xs md:text-sm lg:text-base font-mono text-gray-500">€</span>
                                                                 <input type="number" value={tripBaseProvision} onChange={e => setTripBaseProvision(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/50 transition-all" />
                                                             </div>
                                                         </div>
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-gray-300 uppercase">🚗 Trip Increment</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-300 uppercase">🚗 Trip Increment</span>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-xs font-mono text-gray-500">+ €</span>
+                                                                <span className="text-xs md:text-sm lg:text-base font-mono text-gray-500">+ €</span>
                                                                 <input type="number" value={tripIncrementProvision} onChange={e => setTripIncrementProvision(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/50 transition-all" />
                                                             </div>
                                                         </div>
                                                         <div className="w-full h-[1px] bg-white/5 my-2" />
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-gray-300 uppercase">🏨 Hotel / VIP Rate</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-300 uppercase">🏨 Hotel / VIP Rate</span>
                                                             <div className="flex items-center gap-2">
                                                                 <input type="number" value={hotelProvisionRate} onChange={e => setHotelProvisionRate(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/50 transition-all" />
-                                                                <span className="text-xs font-bold text-gray-500">%</span>
+                                                                <span className="text-xs md:text-sm lg:text-base font-bold text-gray-500">%</span>
                                                             </div>
                                                         </div>
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-gray-300 uppercase">🎟️ Club & Ticket Rate</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-300 uppercase">🎟️ Club & Ticket Rate</span>
                                                             <div className="flex items-center gap-2">
                                                                 <input type="number" value={ticketProvisionRate} onChange={e => setTicketProvisionRate(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/50 transition-all" />
-                                                                <span className="text-xs font-bold text-gray-500">%</span>
+                                                                <span className="text-xs md:text-sm lg:text-base font-bold text-gray-500">%</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -3550,60 +3550,60 @@ billing payouts are required.
 
                                                 {/* COLUMN 2: SCENARIO INPUTS */}
                                                 <div className="space-y-6 bg-white/5 border border-white/5 rounded-[2rem] p-6">
-                                                    <h5 className="text-[10px] font-black uppercase tracking-widest text-brand border-b border-white/10 pb-3 flex items-center gap-2"><Target size={12}/> 2. Scenario Variables</h5>
+                                                    <h5 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand border-b border-white/10 pb-3 flex items-center gap-2"><Target size={12}/> 2. Scenario Variables</h5>
                                                     
                                                     <div className="space-y-4">
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">🎪 Event Type</span>
-                                                            <select value={simulatedEventType} onChange={e => setSimulatedEventType(e.target.value)} className="bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold text-brand outline-none focus:border-brand/50 uppercase">
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-400 uppercase">🎪 Event Type</span>
+                                                            <select value={simulatedEventType} onChange={e => setSimulatedEventType(e.target.value)} className="bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-[10px] md:text-xs lg:text-sm font-bold text-brand outline-none focus:border-brand/50 uppercase">
                                                                 <option value="football">⚽ Football Match</option>
                                                                 <option value="club">🪩 Club Party</option>
                                                                 <option value="concert">🎤 Stadium Concert</option>
                                                             </select>
                                                         </div>
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">👥 Expected Volume (Guests)</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-400 uppercase">👥 Expected Volume (Guests)</span>
                                                             <input type="number" value={simulatedGuestVolume} onChange={e => setSimulatedGuestVolume(parseFloat(e.target.value) || 0)} className="w-20 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-white outline-none focus:border-brand/50 transition-all" />
                                                         </div>
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Avg. Trip Fare / Guest</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-400 uppercase">Avg. Trip Fare / Guest</span>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-xs font-mono text-gray-600">€</span>
+                                                                <span className="text-xs md:text-sm lg:text-base font-mono text-gray-600">€</span>
                                                                 <input type="number" value={simulatedTripFare} onChange={e => setSimulatedTripFare(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-gray-300 outline-none focus:border-brand/50" />
                                                             </div>
                                                         </div>
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Avg. Hotel Spend / Guest</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-400 uppercase">Avg. Hotel Spend / Guest</span>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-xs font-mono text-gray-600">€</span>
+                                                                <span className="text-xs md:text-sm lg:text-base font-mono text-gray-600">€</span>
                                                                 <input type="number" value={simulatedHotelCost} onChange={e => setSimulatedHotelCost(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-gray-300 outline-none focus:border-brand/50" />
                                                             </div>
                                                         </div>
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Avg. Ticket Spend / Guest</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-400 uppercase">Avg. Ticket Spend / Guest</span>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-xs font-mono text-gray-600">€</span>
+                                                                <span className="text-xs md:text-sm lg:text-base font-mono text-gray-600">€</span>
                                                                 <input type="number" value={simulatedFnBCost} onChange={e => setSimulatedFnBCost(parseFloat(e.target.value) || 0)} className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-gray-300 outline-none focus:border-brand/50" />
                                                             </div>
                                                         </div>
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-amber-500/80 uppercase">👑 VIP Table Spend (Total)</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-amber-500/80 uppercase">👑 VIP Table Spend (Total)</span>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-xs font-mono text-amber-600">€</span>
+                                                                <span className="text-xs md:text-sm lg:text-base font-mono text-amber-600">€</span>
                                                                 <input type="number" value={simulatedTableSpend} onChange={e => setSimulatedTableSpend(parseFloat(e.target.value) || 0)} className="w-20 bg-black/40 border border-amber-500/30 rounded-lg px-2 py-1 text-center font-mono text-sm font-bold text-amber-400 outline-none focus:border-amber-500" />
                                                             </div>
                                                         </div>
                                                         <div className="w-full h-[1px] bg-white/5 my-2" />
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Partner Tier</span>
-                                                            <select value={simPartnerTier} onChange={e => setSimPartnerTier(e.target.value)} className="bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold text-gray-300 outline-none focus:border-brand/50 uppercase">
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-400 uppercase">Partner Tier</span>
+                                                            <select value={simPartnerTier} onChange={e => setSimPartnerTier(e.target.value)} className="bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-[10px] md:text-xs lg:text-sm font-bold text-gray-300 outline-none focus:border-brand/50 uppercase">
                                                                 <option value="standard">Standard</option>
                                                                 <option value="gold">Gold (15% Off)</option>
                                                             </select>
                                                         </div>
                                                         <div className="flex gap-2 mt-2">
-                                                            <button onClick={() => setSimWeatherRain(!simWeatherRain)} className={`flex-1 py-1 rounded text-[9px] font-bold uppercase transition-all ${simWeatherRain ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-black/40 text-gray-500 border border-white/5'}`}>🌧️ Rain (+20% Surge)</button>
-                                                            <button onClick={() => setSimNightlifePeak(!simNightlifePeak)} className={`flex-1 py-1 rounded text-[9px] font-bold uppercase transition-all ${simNightlifePeak ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30' : 'bg-black/40 text-gray-500 border border-white/5'}`}>🌙 Peak (+50% Surge)</button>
+                                                            <button onClick={() => setSimWeatherRain(!simWeatherRain)} className={`flex-1 py-1 rounded text-[9px] md:text-[11px] lg:text-xs font-bold uppercase transition-all ${simWeatherRain ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-black/40 text-gray-500 border border-white/5'}`}>🌧️ Rain (+20% Surge)</button>
+                                                            <button onClick={() => setSimNightlifePeak(!simNightlifePeak)} className={`flex-1 py-1 rounded text-[9px] md:text-[11px] lg:text-xs font-bold uppercase transition-all ${simNightlifePeak ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30' : 'bg-black/40 text-gray-500 border border-white/5'}`}>🌙 Peak (+50% Surge)</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -3613,7 +3613,7 @@ billing payouts are required.
                                                     <div className="absolute top-0 right-0 w-32 h-32 bg-brand/20 blur-[60px] rounded-full pointer-events-none" />
                                                     
                                                     <div className="space-y-4 relative z-10">
-                                                        <h5 className="text-[10px] font-black uppercase tracking-widest text-brand border-b border-brand/20 pb-3 flex items-center gap-2"><LineChart size={12}/> 3. Projection & Output</h5>
+                                                        <h5 className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand border-b border-brand/20 pb-3 flex items-center gap-2"><LineChart size={12}/> 3. Projection & Output</h5>
                                                         
                                                         {(() => {
                                                             let actualSurge = globalSurge;
@@ -3641,16 +3641,16 @@ billing payouts are required.
                                                             return (
                                                                 <div className="space-y-6">
                                                                     <div className="flex flex-col items-center justify-center p-4 bg-black/20 rounded-2xl border border-white/5">
-                                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Platform Margin</span>
+                                                                        <span className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Net Platform Margin</span>
                                                                         <span className="text-4xl font-black font-mono text-white tracking-tighter shadow-brand/50 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">
                                                                             €{totalYield.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                                         </span>
-                                                                        {actualSurge > 1 && <span className="text-[9px] font-black text-brand mt-1 uppercase">Surge Active ({actualSurge.toFixed(2)}x)</span>}
-                                                                        {simulatedEventType !== 'football' && <span className="text-[8px] font-black text-red-400 mt-1 uppercase">0% Ticket Provision (Non-Football Event)</span>}
+                                                                        {actualSurge > 1 && <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand mt-1 uppercase">Surge Active ({actualSurge.toFixed(2)}x)</span>}
+                                                                        {simulatedEventType !== 'football' && <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-red-400 mt-1 uppercase">0% Ticket Provision (Non-Football Event)</span>}
                                                                     </div>
                                                                     
                                                                     <div className="space-y-2">
-                                                                        <div className="flex justify-between text-[8px] font-black uppercase text-gray-500">
+                                                                        <div className="flex justify-between text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-500">
                                                                             <span>Fleet: €{tripProv.toFixed(2)}</span>
                                                                             <span>Hotel: €{hotelProv.toFixed(2)}</span>
                                                                             <span>Ticket/VIP: €{clubProv.toFixed(2)}</span>
@@ -3670,7 +3670,7 @@ billing payouts are required.
 
                                                     <button 
                                                         onClick={saveProvisionsConfig}
-                                                        className="w-full py-4 mt-6 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(52,211,153,0.3)] hover:shadow-[0_0_30px_rgba(52,211,153,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all relative z-10 flex items-center justify-center gap-2"
+                                                        className="w-full py-4 mt-6 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-[0_0_20px_rgba(52,211,153,0.3)] hover:shadow-[0_0_30px_rgba(52,211,153,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all relative z-10 flex items-center justify-center gap-2"
                                                     >
                                                         <ShieldCheck size={14} /> SECURE TO LIVE GRID
                                                     </button>
@@ -3708,16 +3708,16 @@ billing payouts are required.
                                             }`}
                                         >
                                             <Shield size={14} className={anonymizedModeActive ? 'animate-pulse' : ''} />
-                                            <span className="text-[9px] font-black uppercase tracking-widest">
+                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest">
                                                 DSGVO Shield: {anonymizedModeActive ? 'SECURED' : 'UNMASKED'}
                                             </span>
                                             <div className={`w-2 h-2 rounded-full ${anonymizedModeActive ? 'bg-emerald-400 shadow-md shadow-emerald-400/50' : 'bg-red-400 shadow-md shadow-red-400/50'}`} />
                                         </button>
 
                                         <div className="flex gap-4 p-4 bg-white/5 border border-white/10 rounded-[2.5rem]">
-                                            <select value={feedbackFilter.category} onChange={e => setFeedbackFilter({...feedbackFilter, category: e.target.value})} className="bg-transparent text-[10px] font-black uppercase tracking-widest text-brand outline-none cursor-pointer"><option value="all">ALL SECTORS</option><option value="fleet">FLEET</option><option value="restaurant">RESTAURANTS</option><option value="hotel">HOTELS</option><option value="stadium">STADIUM</option></select>
+                                            <select value={feedbackFilter.category} onChange={e => setFeedbackFilter({...feedbackFilter, category: e.target.value})} className="bg-transparent text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand outline-none cursor-pointer"><option value="all">ALL SECTORS</option><option value="fleet">FLEET</option><option value="restaurant">RESTAURANTS</option><option value="hotel">HOTELS</option><option value="stadium">STADIUM</option></select>
                                             <div className="w-px h-6 bg-white/10 mx-2" />
-                                            <input type="date" className="bg-transparent text-[10px] font-black uppercase tracking-widest text-gray-500 outline-none" onChange={e => setFeedbackFilter({...feedbackFilter, date: e.target.value})} />
+                                            <input type="date" className="bg-transparent text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 outline-none" onChange={e => setFeedbackFilter({...feedbackFilter, date: e.target.value})} />
                                         </div>
                                     </div>
                                 </div>
@@ -3736,13 +3736,13 @@ billing payouts are required.
                                                         <div>
                                                             <div className="flex items-center gap-3">
                                                                 <span className="text-xl font-black italic uppercase text-white tracking-tighter">{f.id}</span>
-                                                                <span className="px-3 py-1 bg-white/5 rounded text-[8px] font-black text-gray-500 uppercase">{f.type}</span>
+                                                                <span className="px-3 py-1 bg-white/5 rounded text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase">{f.type}</span>
                                                             </div>
                                                             <div className="flex items-center gap-2 mt-1 text-gray-500">
                                                                 <MapPin size={10} />
-                                                                <span className="text-[9px] font-black uppercase tracking-widest">{f.location}</span>
+                                                                <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest">{f.location}</span>
                                                                 <Clock size={10} className="ml-2" />
-                                                                <span className="text-[9px] font-black uppercase tracking-widest">{f.date} {f.time}</span>
+                                                                <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest">{f.date} {f.time}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -3752,10 +3752,10 @@ billing payouts are required.
                                                 </div>
                                                 <p className="text-sm text-gray-400 italic leading-relaxed pl-20">"{f.text}"</p>
                                                 <div className="mt-6 pl-20 flex justify-between items-center">
-                                                    <span className="text-[10px] font-black text-gray-600 uppercase italic">— {f.user}</span>
+                                                    <span className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase italic">— {f.user}</span>
                                                     <div className="flex gap-4">
-                                                        <button className="text-[9px] font-black text-brand uppercase tracking-widest hover:underline">Flag Integrity</button>
-                                                        <button className="text-[9px] font-black text-white bg-white/10 px-4 py-2 rounded-xl uppercase tracking-widest hover:bg-brand hover:text-dark-900 transition-all">Direct Response</button>
+                                                        <button className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-widest hover:underline">Flag Integrity</button>
+                                                        <button className="text-[9px] md:text-[11px] lg:text-xs font-black text-white bg-white/10 px-4 py-2 rounded-xl uppercase tracking-widest hover:bg-brand hover:text-dark-900 transition-all">Direct Response</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -3768,7 +3768,7 @@ billing payouts are required.
                                             <div className="space-y-6">
                                                 {[{ l: 'Fleet Satisfaction', v: 88, c: 'bg-brand' }, { l: 'Venue Vibes', v: 94, c: 'bg-emerald-500' }, { l: 'Stadium Flow', v: 72, c: 'bg-amber-500' }].map((s, i) => (
                                                     <div key={i} className="space-y-2">
-                                                        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest italic text-gray-500"><span>{s.l}</span><span>{s.v}%</span></div>
+                                                        <div className="flex justify-between text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest italic text-gray-500"><span>{s.l}</span><span>{s.v}%</span></div>
                                                         <div className="h-1.5 bg-white/5 rounded-full overflow-hidden"><div className={`h-full ${s.c}`} style={{ width: `${s.v}%` }} /></div>
                                                     </div>
                                                 ))}
@@ -3785,17 +3785,17 @@ billing payouts are required.
                                                         <div className="w-2.5 h-2.5 rounded-full bg-brand relative" />
                                                     </div>
                                                     <div>
-                                                        <h4 className="text-xs font-black italic uppercase text-white tracking-wider">KHIAM AI SCOUT</h4>
+                                                        <h4 className="text-xs md:text-sm lg:text-base font-black italic uppercase text-white tracking-wider">KHIAM AI SCOUT</h4>
                                                         <p className="text-[7px] font-mono text-gray-500 uppercase tracking-widest">Compliance & Sales Intelligence</p>
                                                     </div>
                                                 </div>
-                                                <span className="px-3 py-1 bg-brand/10 border border-brand/30 rounded-xl text-[8px] font-mono text-brand uppercase tracking-widest animate-pulse">
+                                                <span className="px-3 py-1 bg-brand/10 border border-brand/30 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-mono text-brand uppercase tracking-widest animate-pulse">
                                                     GDPR SHIELD: {anonymizedModeActive ? 'ON' : 'OFF'}
                                                 </span>
                                             </div>
 
                                             {/* Scrolling Chat Window */}
-                                            <div className="h-[280px] overflow-y-auto mb-6 p-4 rounded-2xl bg-black/40 border border-white/5 space-y-4 font-mono text-[9px] scrollbar-thin scrollbar-thumb-brand scrollbar-track-transparent">
+                                            <div className="h-[280px] overflow-y-auto mb-6 p-4 rounded-2xl bg-black/40 border border-white/5 space-y-4 font-mono text-[9px] md:text-[11px] lg:text-xs scrollbar-thin scrollbar-thumb-brand scrollbar-track-transparent">
                                                 {scoutMessages.map((msg, index) => (
                                                     <div key={index} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                                         <div className="flex items-center gap-2 mb-1 text-[7px] text-gray-500">
@@ -3811,7 +3811,7 @@ billing payouts are required.
                                                             {msg.text.split('\n').map((line, lIdx) => {
                                                                 let content = line;
                                                                 if (content.startsWith('### ')) {
-                                                                    return <h5 key={lIdx} className="text-[10px] font-black text-white uppercase italic tracking-wider mb-2 mt-1">{content.replace('### ', '')}</h5>;
+                                                                    return <h5 key={lIdx} className="text-[10px] md:text-xs lg:text-sm font-black text-white uppercase italic tracking-wider mb-2 mt-1">{content.replace('### ', '')}</h5>;
                                                                 }
                                                                 if (content.startsWith('**') && content.endsWith('**')) {
                                                                     return <p key={lIdx} className="font-black text-white mt-1">{content.replaceAll('**', '')}</p>;
@@ -3823,7 +3823,7 @@ billing payouts are required.
                                                                     return <div key={lIdx} className="flex gap-2 pl-3 text-brand my-0.5"><span>-</span><span>{content.replace('- ', '')}</span></div>;
                                                                 }
                                                                 if (content.startsWith('> ')) {
-                                                                    return <blockquote key={lIdx} className="border-l border-brand/50 pl-2 italic my-1.5 text-brand/80 text-[8px] bg-brand/5 p-2 rounded-r-xl leading-normal">{content.replace('> ', '')}</blockquote>;
+                                                                    return <blockquote key={lIdx} className="border-l border-brand/50 pl-2 italic my-1.5 text-brand/80 text-[8px] md:text-[10px] lg:text-xs bg-brand/5 p-2 rounded-r-xl leading-normal">{content.replace('> ', '')}</blockquote>;
                                                                 }
                                                                 return <p key={lIdx} className="mb-0.5 text-gray-400">{content}</p>;
                                                             })}
@@ -3841,7 +3841,7 @@ billing payouts are required.
                                                             <div className="w-1.5 h-1.5 bg-brand rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                                                             <div className="w-1.5 h-1.5 bg-brand rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                                                             <div className="w-1.5 h-1.5 bg-brand rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                                                            <span className="text-[8px] text-gray-500 italic ml-2">Parsing real-time dataset...</span>
+                                                            <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 italic ml-2">Parsing real-time dataset...</span>
                                                         </div>
                                                     </div>
                                                 )}
@@ -3885,7 +3885,7 @@ billing payouts are required.
                                                     value={scoutInput}
                                                     onChange={e => setScoutInput(e.target.value)}
                                                     placeholder="Ask compliance scout..."
-                                                    className="flex-1 bg-black/40 border border-white/10 rounded-2xl px-4 py-3 font-mono text-[8px] text-white placeholder-gray-600 focus:outline-none focus:border-brand/50 transition-all"
+                                                    className="flex-1 bg-black/40 border border-white/10 rounded-2xl px-4 py-3 font-mono text-[8px] md:text-[10px] lg:text-xs text-white placeholder-gray-600 focus:outline-none focus:border-brand/50 transition-all"
                                                 />
                                                 <button 
                                                     type="submit"
@@ -3899,7 +3899,7 @@ billing payouts are required.
                                             {/* Download ledger button */}
                                             <button 
                                                 onClick={exportAnonymizedReport}
-                                                className="w-full py-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl text-[8px] font-black uppercase tracking-widest hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-all flex items-center justify-center gap-2 group"
+                                                className="w-full py-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-all flex items-center justify-center gap-2 group"
                                             >
                                                 <Download size={12} className="group-hover:translate-y-0.5 transition-transform" />
                                                 DOWNLOAD SECURITY LEDGER & OUTREACH AUDIT
@@ -3923,7 +3923,7 @@ billing payouts are required.
                                         ][i];
                                         return (
                                             <div key={i} className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5">
-                                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{label}</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest mb-2">{label}</p>
                                                 <p className="text-4xl font-black italic text-white tracking-tighter">{count}</p>
                                             </div>
                                         );
@@ -3943,11 +3943,11 @@ billing payouts are required.
                                         <div key={i} className="p-8 bg-white/5 border border-white/5 rounded-[3rem] flex justify-between items-center group hover:border-white/30 transition-all">
                                             <div className="flex items-center gap-8">
                                                 <div className="w-20 h-20 bg-white/5 rounded-[2rem] flex items-center justify-center text-white group-hover:scale-110 transition-transform"><Building2 size={32} /></div>
-                                                <div><p className="text-2xl font-black italic uppercase text-white tracking-tighter">{hotel}</p><p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">Status: Premium Partner</p></div>
+                                                <div><p className="text-2xl font-black italic uppercase text-white tracking-tighter">{hotel}</p><p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest mt-1">Status: Premium Partner</p></div>
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-3xl font-black italic text-white tracking-tighter">{hotelActiveBookings[hotel] || 0}</p>
-                                                <p className="text-[8px] font-black text-white uppercase tracking-widest">Active Bookings</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-white uppercase tracking-widest">Active Bookings</p>
                                             </div>
                                         </div>
                                     ))}
@@ -3962,7 +3962,7 @@ billing payouts are required.
                                     <div className="lg:col-span-2 bg-dark-950 border border-white/5 rounded-[3.5rem] p-12 h-[600px] flex items-center justify-center relative overflow-hidden">
                                         <Radar drivers={drivers} />
                                         <div className="absolute top-10 left-10 p-6 bg-brand/10 border border-brand/20 rounded-2xl backdrop-blur-md">
-                                            <p className="text-[10px] font-black text-brand uppercase tracking-widest mb-1">Peak Intensity</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest mb-1">Peak Intensity</p>
                                             <p className="text-2xl font-black italic text-white">Zeil District</p>
                                         </div>
                                     </div>
@@ -3971,7 +3971,7 @@ billing payouts are required.
                                             <div key={i} className="p-8 bg-white/5 border border-white/5 rounded-[3rem] space-y-6">
                                                 <div className="flex justify-between items-center"><p className="text-xl font-black italic uppercase text-white">{club}</p><Zap size={18} className="text-brand" /></div>
                                                 <div className="space-y-2">
-                                                    <div className="flex justify-between text-[8px] font-black uppercase text-gray-500"><span>Capacity</span><span>{clubCapacities[club]?.capacity || 0}%</span></div>
+                                                    <div className="flex justify-between text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-500"><span>Capacity</span><span>{clubCapacities[club]?.capacity || 0}%</span></div>
                                                     <div className="h-1.5 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-brand" style={{ width: `${clubCapacities[club]?.fill || 0}%` }} /></div>
                                                 </div>
                                             </div>
@@ -3986,12 +3986,12 @@ billing payouts are required.
                                 <h2 className="text-5xl font-black italic uppercase tracking-tighter">Strategic <span className="text-amber-500">Calendar</span></h2>
                                 <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 overflow-hidden">
                                     <div className="grid grid-cols-7 gap-4 mb-10">
-                                        {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => <div key={d} className="text-center text-[10px] font-black text-gray-600 uppercase tracking-widest">{d}</div>)}
+                                        {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => <div key={d} className="text-center text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase tracking-widest">{d}</div>)}
                                         {[...Array(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate())].map((_, i) => {
                                             const isToday = (i + 1) === new Date().getDate();
                                             return (
                                                 <div key={i} className={`h-24 rounded-2xl border border-white/5 p-4 flex flex-col justify-between hover:bg-brand/5 transition-all group cursor-pointer ${isToday ? 'bg-brand/10 border-brand/20' : 'bg-white/5'}`}>
-                                                    <span className={`text-xs font-black italic ${isToday ? 'text-brand' : 'text-gray-500'} group-hover:text-white transition-colors`}>{i + 1}</span>
+                                                    <span className={`text-xs md:text-sm lg:text-base font-black italic ${isToday ? 'text-brand' : 'text-gray-500'} group-hover:text-white transition-colors`}>{i + 1}</span>
                                                     {isToday && <div className="w-full h-1 bg-brand rounded-full shadow-[0_0_10px_rgba(255,255,255,0.1)]" />}
                                                 </div>
                                             );
@@ -4000,12 +4000,12 @@ billing payouts are required.
                                     {isDemo ? (
                                         <div className="p-8 bg-brand/10 border border-brand/20 rounded-[2.5rem] flex items-center gap-8">
                                             <div className="w-16 h-16 bg-brand rounded-[1.5rem] flex items-center justify-center text-dark-900"><Calendar size={32} /></div>
-                                            <div><p className="text-2xl font-black italic uppercase text-white tracking-tighter">Stadium Main Event</p><p className="text-[10px] font-black text-brand uppercase tracking-widest mt-1">Demo Deployment — Full Fleet Simulation</p></div>
+                                            <div><p className="text-2xl font-black italic uppercase text-white tracking-tighter">Stadium Main Event</p><p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest mt-1">Demo Deployment — Full Fleet Simulation</p></div>
                                         </div>
                                     ) : (
                                         <div className="p-8 bg-white/5 border border-white/5 rounded-[2.5rem] flex items-center gap-8">
                                             <div className="w-16 h-16 bg-white/5 rounded-[1.5rem] flex items-center justify-center text-gray-500"><Calendar size={32} /></div>
-                                            <div><p className="text-xl font-black italic uppercase text-gray-500 tracking-tighter">No Scheduled Events</p><p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mt-1">Events will appear here once created via Ticket Hub.</p></div>
+                                            <div><p className="text-xl font-black italic uppercase text-gray-500 tracking-tighter">No Scheduled Events</p><p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase tracking-widest mt-1">Events will appear here once created via Ticket Hub.</p></div>
                                         </div>
                                     )}
                                 </div>
@@ -4024,8 +4024,8 @@ billing payouts are required.
                                     ].map((door, i) => (
                                         <button key={i} onClick={() => window.open(door.path, '_blank')} className="group p-10 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col items-center text-center space-y-8 hover:border-white/30 transition-all hover:scale-[1.02]">
                                             <div className={`w-24 h-24 ${door.color} rounded-[2.5rem] flex items-center justify-center text-dark-900 shadow-2xl group-hover:scale-110 transition-transform`}><door.icon size={48} /></div>
-                                            <div><p className="text-3xl font-black italic uppercase text-white tracking-tighter">{door.label}</p><p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-2">{door.sub}</p></div>
-                                            <div className="w-full py-4 bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">Enter Door</div>
+                                            <div><p className="text-3xl font-black italic uppercase text-white tracking-tighter">{door.label}</p><p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest mt-2">{door.sub}</p></div>
+                                            <div className="w-full py-4 bg-white/5 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">Enter Door</div>
                                         </button>
                                     ))}
                                 </div>
@@ -4040,12 +4040,12 @@ billing payouts are required.
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/5">
                                         <div>
                                             <h3 className="text-3xl font-black italic uppercase text-white tracking-tight">Smart Intermediary Pricing Engine</h3>
-                                            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">German Passenger Transport Compliance (PBefG)</p>
+                                            <p className="text-xs md:text-sm lg:text-base text-gray-500 font-bold uppercase tracking-widest mt-1">German Passenger Transport Compliance (PBefG)</p>
                                         </div>
                                         <div className="flex items-center gap-4 bg-white/5 border border-white/5 p-4 rounded-3xl">
                                             <div>
-                                                <p className="text-xs font-black uppercase text-white">German Compliance Mode</p>
-                                                <p className="text-[9px] font-bold text-gray-500 uppercase">Enforce PBefG Tariff Caps & Mediation Log</p>
+                                                <p className="text-xs md:text-sm lg:text-base font-black uppercase text-white">German Compliance Mode</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-500 uppercase">Enforce PBefG Tariff Caps & Mediation Log</p>
                                             </div>
                                             <button 
                                                 onClick={() => {
@@ -4079,8 +4079,8 @@ billing payouts are required.
                                             className="p-5 bg-white/5 border border-white/5 rounded-2xl hover:border-brand/40 hover:bg-white/10 transition-all flex items-center justify-between group"
                                         >
                                             <div>
-                                                <p className="text-[10px] font-black uppercase text-brand tracking-widest">PBefG §51 (Taxis)</p>
-                                                <p className="text-[8px] text-gray-500 uppercase font-bold mt-1">Official German Taxi Tariffs</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-brand tracking-widest">PBefG §51 (Taxis)</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 uppercase font-bold mt-1">Official German Taxi Tariffs</p>
                                             </div>
                                             <ExternalLink size={16} className="text-gray-500 group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
                                         </a>
@@ -4091,8 +4091,8 @@ billing payouts are required.
                                             className="p-5 bg-white/5 border border-white/5 rounded-2xl hover:border-brand/40 hover:bg-white/10 transition-all flex items-center justify-between group"
                                         >
                                             <div>
-                                                <p className="text-[10px] font-black uppercase text-brand tracking-widest">PBefG §51a (Mietwagen)</p>
-                                                <p className="text-[8px] text-gray-500 uppercase font-bold mt-1">Minimum Pricing for Fleets</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-brand tracking-widest">PBefG §51a (Mietwagen)</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 uppercase font-bold mt-1">Minimum Pricing for Fleets</p>
                                             </div>
                                             <ExternalLink size={16} className="text-gray-500 group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
                                         </a>
@@ -4103,20 +4103,20 @@ billing payouts are required.
                                             className="p-5 bg-white/5 border border-white/5 rounded-2xl hover:border-brand/40 hover:bg-white/10 transition-all flex items-center justify-between group"
                                         >
                                             <div>
-                                                <p className="text-[10px] font-black uppercase text-brand tracking-widest">Anti-Dumping rulings</p>
-                                                <p className="text-[8px] text-gray-500 uppercase font-bold mt-1">Federal Anti-Trust Judgements</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-brand tracking-widest">Anti-Dumping rulings</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 uppercase font-bold mt-1">Federal Anti-Trust Judgements</p>
                                             </div>
                                             <ExternalLink size={16} className="text-gray-500 group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
                                         </a>
                                         <div className="p-4 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between gap-2">
                                             <div className="flex-1">
-                                                <p className="text-[8px] text-gray-500 uppercase font-bold">Local City Tariff Lookup</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 uppercase font-bold">Local City Tariff Lookup</p>
                                                 <input 
                                                     type="text" 
                                                     placeholder="e.g. Frankfurt" 
                                                     value={searchGermanCity} 
                                                     onChange={(e) => setSearchGermanCity(e.target.value)} 
-                                                    className="bg-black/30 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white placeholder-gray-700 focus:outline-none focus:border-brand/40 mt-1 w-full"
+                                                    className="bg-black/30 border border-white/10 rounded-lg px-2 py-1 text-[10px] md:text-xs lg:text-sm text-white placeholder-gray-700 focus:outline-none focus:border-brand/40 mt-1 w-full"
                                                 />
                                             </div>
                                             <button 
@@ -4171,7 +4171,7 @@ billing payouts are required.
                                                                  {isHighSurge && "⚡ SURGE / PARITY ALERT"}
                                                                  {!isDumping && !isHighSurge && "✅ COMPLIANT TARIFF ZONE"}
                                                              </p>
-                                                             <p className="text-[10px] text-gray-400 font-bold uppercase mt-1 leading-relaxed max-w-2xl">
+                                                             <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 font-bold uppercase mt-1 leading-relaxed max-w-2xl">
                                                                  {isDumping && "Your tariff lies below standard taxi operating margins (Base < €3.00 or Km < €1.40). German Fair Competition Act (§3 UWG) & PBefG §51a prohibit predatory dumping prices."}
                                                                  {isHighSurge && "Pricing exceeds Frankfurt taxi base averages. While valid for private hire surge under PBefG reforms, excessive surges are subject to local mediation caps."}
                                                                  {!isDumping && !isHighSurge && "Healthy operational sweet spot. Parity guidelines met: pricing aligns with local taxis and maintains healthy fleet profit margins."}
@@ -4180,14 +4180,14 @@ billing payouts are required.
                                                      </div>
                                                      
                                                      <div className={`px-5 py-3 border rounded-2xl flex flex-col items-center shrink-0 ${scoreColor}`}>
-                                                         <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">Legal Score</span>
+                                                         <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Legal Score</span>
                                                          <span className="text-2xl font-black italic">{complianceScore}%</span>
                                                      </div>
                                                 </div>
 
                                                 {/* Visual Range Indicator Meter */}
                                                 <div className="space-y-2">
-                                                    <div className="flex justify-between text-[8px] font-black text-gray-500 uppercase tracking-widest px-1">
+                                                    <div className="flex justify-between text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest px-1">
                                                         <span className="text-red-500">Dumping Zone (&lt; €1.40)</span>
                                                         <span className="text-emerald-400">Compliant / Fair (€1.40 - €3.20)</span>
                                                         <span className="text-amber-500">High Surge (&gt; €3.20)</span>
@@ -4204,7 +4204,7 @@ billing payouts are required.
                                                             style={{ left: `${ratePercent}%`, transform: 'translateX(-50%)' }}
                                                         />
                                                     </div>
-                                                    <div className="flex justify-between text-[8px] font-bold text-gray-600 uppercase px-1">
+                                                    <div className="flex justify-between text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-600 uppercase px-1">
                                                         <span>Min: €0.50/km</span>
                                                         <span className="text-white italic">Current Rate: €{kmRateNum.toFixed(2)}/km</span>
                                                         <span>Max: €5.00/km</span>
@@ -4218,7 +4218,7 @@ billing payouts are required.
                                         <div className="space-y-8">
                                             {/* GREEN STANDARD RATE */}
                                             <div className="space-y-6">
-                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs">Green Standard Pricing</h4>
+                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs md:text-sm lg:text-base">Green Standard Pricing</h4>
                                                 <div>
                                                     <div className="flex justify-between items-center mb-4">
                                                     <label className="text-sm font-black uppercase tracking-wider text-gray-400">Base Fare / Anfahrt (€)</label>
@@ -4238,7 +4238,7 @@ billing payouts are required.
                                                     onTouchEnd={() => updatePricingInCloud({ baseFare })}
                                                     className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand shadow-inner"
                                                 />
-                                                <div className="flex justify-between text-[8px] font-bold text-gray-600 uppercase mt-2">
+                                                <div className="flex justify-between text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-600 uppercase mt-2">
                                                     <span>Min: €{isGermanComplianceActive ? "3.00" : "1.00"}</span>
                                                     {isGermanComplianceActive && <span className="text-brand">Legal PBefG Caps Active</span>}
                                                     <span>Max: €{isGermanComplianceActive ? "15.00" : "30.00"}</span>
@@ -4263,7 +4263,7 @@ billing payouts are required.
                                                     onTouchEnd={() => updatePricingInCloud({ perKmRate })}
                                                     className="w-full h-2 bg-white/5 border border-white/5 rounded-lg appearance-none cursor-pointer accent-brand"
                                                 />
-                                                <div className="flex justify-between text-[8px] font-bold text-gray-600 uppercase mt-2">
+                                                <div className="flex justify-between text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-600 uppercase mt-2">
                                                     <span>Min: €{isGermanComplianceActive ? "1.50" : "0.50"}</span>
                                                     {isGermanComplianceActive && <span className="text-brand">Legal PBefG Caps Active</span>}
                                                     <span>Max: €{isGermanComplianceActive ? "4.50" : "10.00"}</span>
@@ -4273,7 +4273,7 @@ billing payouts are required.
 
                                             {/* GREEN MAX RATE */}
                                             <div className="space-y-6 pt-6 border-t border-white/5">
-                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs">Green Max Pricing</h4>
+                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs md:text-sm lg:text-base">Green Max Pricing</h4>
                                                 <div>
                                                     <div className="flex justify-between items-center mb-4">
                                                         <label className="text-sm font-black uppercase tracking-wider text-gray-400">Base Fare (€)</label>
@@ -4312,7 +4312,7 @@ billing payouts are required.
 
                                             {/* GREEN PREMIUM RATE */}
                                             <div className="space-y-6 pt-6 border-t border-white/5">
-                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs">Green Premium Pricing</h4>
+                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs md:text-sm lg:text-base">Green Premium Pricing</h4>
                                                 <div>
                                                     <div className="flex justify-between items-center mb-4">
                                                         <label className="text-sm font-black uppercase tracking-wider text-gray-400">Base Fare (€)</label>
@@ -4351,7 +4351,7 @@ billing payouts are required.
 
                                             {/* GREEN SHARED RATE */}
                                             <div className="space-y-6 pt-6 border-t border-white/5">
-                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs">Green Shared Pricing</h4>
+                                                <h4 className="text-white font-bold uppercase tracking-widest text-xs md:text-sm lg:text-base">Green Shared Pricing</h4>
                                                 <div>
                                                     <div className="flex justify-between items-center mb-4">
                                                         <label className="text-sm font-black uppercase tracking-wider text-gray-400">Base Fare (€)</label>
@@ -4391,7 +4391,7 @@ billing payouts are required.
                                             {/* LIVE DYNAMIC COMPETITOR COMPARISON PANEL */}
                                             <div className="p-6 bg-white/5 border border-white/5 rounded-[2.5rem] space-y-6">
                                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                                    <p className="text-xs font-black uppercase text-white tracking-widest flex items-center gap-2">
+                                                    <p className="text-xs md:text-sm lg:text-base font-black uppercase text-white tracking-widest flex items-center gap-2">
                                                         <Scale size={14} className="text-brand" /> Live Market Pricing Comparison
                                                     </p>
                                                     {/* Distance Presets */}
@@ -4400,7 +4400,7 @@ billing payouts are required.
                                                             <button 
                                                                 key={d} 
                                                                 onClick={() => setComparisonDistance(d)}
-                                                                className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all ${comparisonDistance === d ? 'bg-brand text-dark-900 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                                                                className={`px-3 py-1 text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest rounded-xl transition-all ${comparisonDistance === d ? 'bg-brand text-dark-900 shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                                                             >
                                                                 {d}km
                                                             </button>
@@ -4418,7 +4418,7 @@ billing payouts are required.
                                                             {currentScenario === 'concert-exit' && '🎆'}
                                                         </div>
                                                         <div>
-                                                            <p className="text-[10px] font-black uppercase text-white tracking-wider flex items-center gap-1.5">
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-white tracking-wider flex items-center gap-1.5">
                                                                 <span className="w-2 h-2 rounded-full bg-brand animate-ping" /> Live Market Feed: {
                                                                     currentScenario === 'sunny' ? 'Clear weather' :
                                                                     currentScenario === 'rainy' ? 'Precipitation active' :
@@ -4426,7 +4426,7 @@ billing payouts are required.
                                                                     'Venue event exit surge'
                                                                 }
                                                             </p>
-                                                            <p className="text-[8px] text-gray-500 uppercase font-bold mt-0.5">
+                                                            <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 uppercase font-bold mt-0.5">
                                                                 {currentScenario === 'sunny' && 'Sunny conditions. Standard competitor rates apply (1.0x).'}
                                                                 {currentScenario === 'rainy' && 'Rain active. Competitors raising rates dynamically (+40%).'}
                                                                 {currentScenario === 'rush-hour' && 'Peak hours. Commuter gridlock causing Uber/Bolt surge (+80%).'}
@@ -4435,10 +4435,10 @@ billing payouts are required.
                                                         </div>
                                                     </div>
                                                     <div className="flex flex-col items-end gap-1">
-                                                        <span className="text-[8px] font-black uppercase text-gray-500 tracking-wider">Live Feed</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-500 tracking-wider">Live Feed</span>
                                                         <button 
                                                             onClick={() => setIsLiveSimulationActive(!isLiveSimulationActive)}
-                                                            className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase border transition-all ${isLiveSimulationActive ? 'bg-brand/10 border-brand/30 text-brand' : 'bg-white/5 border-white/10 text-gray-400'}`}
+                                                            className={`px-3 py-1 rounded-lg text-[8px] md:text-[10px] lg:text-xs font-black uppercase border transition-all ${isLiveSimulationActive ? 'bg-brand/10 border-brand/30 text-brand' : 'bg-white/5 border-white/10 text-gray-400'}`}
                                                         >
                                                             {isLiveSimulationActive ? '🟢 Live' : '🔴 Paused'}
                                                         </button>
@@ -4448,13 +4448,13 @@ billing payouts are required.
                                                 {/* Competitor category toggle & Surge simulator */}
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-2 border-b border-white/5">
                                                     <div>
-                                                        <label className="text-[8px] font-bold uppercase text-gray-500 tracking-wider">Fleet / Service Type</label>
+                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-bold uppercase text-gray-500 tracking-wider">Fleet / Service Type</label>
                                                         <div className="flex gap-2 mt-1">
                                                             {['all', 'taxi', 'fleet'].map((t) => (
                                                                 <button
                                                                     key={t}
                                                                     onClick={() => setCompetitorType(t)}
-                                                                    className={`flex-1 py-1.5 rounded-lg border text-[8px] font-black uppercase tracking-widest transition-all ${competitorType === t ? 'border-brand/40 bg-brand/10 text-brand' : 'border-white/5 bg-black/10 text-gray-500 hover:text-white'}`}
+                                                                    className={`flex-1 py-1.5 rounded-lg border text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all ${competitorType === t ? 'border-brand/40 bg-brand/10 text-brand' : 'border-white/5 bg-black/10 text-gray-500 hover:text-white'}`}
                                                                 >
                                                                     {t}
                                                                 </button>
@@ -4462,7 +4462,7 @@ billing payouts are required.
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <div className="flex justify-between items-center text-[8px] font-bold uppercase text-gray-500">
+                                                        <div className="flex justify-between items-center text-[8px] md:text-[10px] lg:text-xs font-bold uppercase text-gray-500">
                                                             <span>Competitor Surge Multiplier</span>
                                                             <span className="text-brand font-black">{competitorSurge.toFixed(1)}x</span>
                                                         </div>
@@ -4512,18 +4512,18 @@ billing payouts are required.
 
                                                             return (
                                                                 <div key={idx} className={`p-4 rounded-2xl border flex flex-col gap-2 ${c.highlight ? 'bg-brand/10 border-brand/30 text-brand' : 'bg-black/20 border-white/5 text-gray-300'}`}>
-                                                                    <div className="flex justify-between items-center text-[10px] font-black uppercase">
+                                                                    <div className="flex justify-between items-center text-[10px] md:text-xs lg:text-sm font-black uppercase">
                                                                         <span className="flex items-center gap-1.5">
                                                                             <span className="text-[12px]">{c.logo}</span>
                                                                             <span>{idx + 1}. {c.name}</span>
                                                                         </span>
                                                                         <div className="flex items-center gap-2">
                                                                             {!c.highlight && (
-                                                                                <span className={`text-[8px] font-black px-2 py-0.5 rounded-lg ${diffPercent >= 0 ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                                                                                <span className={`text-[8px] md:text-[10px] lg:text-xs font-black px-2 py-0.5 rounded-lg ${diffPercent >= 0 ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-400'}`}>
                                                                                     {diffPercent >= 0 ? `+${diffPercent}% vs You` : `${diffPercent}% vs You`}
                                                                                 </span>
                                                                             )}
-                                                                            <span className="text-white text-xs italic">€{c.price.toFixed(2)}</span>
+                                                                            <span className="text-white text-xs md:text-sm lg:text-base italic">€{c.price.toFixed(2)}</span>
                                                                         </div>
                                                                     </div>
                                                                     
@@ -4546,10 +4546,10 @@ billing payouts are required.
                                         <div className="bg-dark-950/40 border border-white/5 p-8 rounded-[2.5rem] flex flex-col justify-between space-y-6">
                                             <div className="flex justify-between items-center">
                                                 <div>
-                                                    <p className="text-xs font-black uppercase tracking-wider text-gray-400">Dynamic Tariff Projection</p>
-                                                    <p className="text-[9px] font-bold text-gray-600 uppercase">Estimated Total Cost relative to Distance</p>
+                                                    <p className="text-xs md:text-sm lg:text-base font-black uppercase tracking-wider text-gray-400">Dynamic Tariff Projection</p>
+                                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-600 uppercase">Estimated Total Cost relative to Distance</p>
                                                 </div>
-                                                <span className="text-[9px] font-black text-brand uppercase tracking-widest bg-brand/10 border border-brand/20 px-3 py-1 rounded-xl">Live Sync</span>
+                                                <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-widest bg-brand/10 border border-brand/20 px-3 py-1 rounded-xl">Live Sync</span>
                                             </div>
 
                                             <div className="relative h-64 w-full bg-dark-950/20 rounded-2xl overflow-hidden border border-white/5 flex items-end">
@@ -4607,7 +4607,7 @@ billing payouts are required.
                                                 <div className="absolute left-2 top-[80%] text-[7px] font-bold text-gray-600 uppercase">€20</div>
                                             </div>
 
-                                            <div className="flex flex-wrap justify-between gap-4 items-center text-[8px] font-bold uppercase tracking-wider text-gray-500">
+                                            <div className="flex flex-wrap justify-between gap-4 items-center text-[8px] md:text-[10px] lg:text-xs font-bold uppercase tracking-wider text-gray-500">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-3 h-1 bg-brand rounded" />
                                                     <span>Estimated Active Tariff</span>
@@ -4631,8 +4631,8 @@ billing payouts are required.
                                             <div className="space-y-6">
                                                 {[{ label: 'System Language', sub: 'Neural Translation (DE/EN/ES)', status: 'ACTIVE' }, { label: 'Auth Protocol', sub: 'Dual-Vector (Email/Phone)', status: 'ENABLED' }, { label: 'Invisible Routing', sub: '180-Day Moratorium active', status: 'LOCKED' }].map((setting, i) => (
                                                     <div key={i} className="flex justify-between items-center pb-6 border-b border-white/5 last:border-0 last:pb-0">
-                                                        <div><p className="text-xl font-black italic uppercase text-white">{setting.label}</p><p className="text-[10px] font-black text-gray-500 uppercase mt-1 italic">{setting.sub}</p></div>
-                                                        <div className="px-4 py-2 bg-brand/10 border border-brand/20 rounded-xl text-[10px] font-black text-brand uppercase">{setting.status}</div>
+                                                        <div><p className="text-xl font-black italic uppercase text-white">{setting.label}</p><p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase mt-1 italic">{setting.sub}</p></div>
+                                                        <div className="px-4 py-2 bg-brand/10 border border-brand/20 rounded-xl text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase">{setting.status}</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -4658,7 +4658,7 @@ billing payouts are required.
                                                     >
                                                         <div className="flex items-center gap-4">
                                                             <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-gray-500 group-hover:text-brand"><policy.icon size={18} /></div>
-                                                            <div><p className="text-base font-black italic uppercase text-white leading-tight">{policy.label}</p><p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mt-0.5">{policy.sub}</p></div>
+                                                            <div><p className="text-base font-black italic uppercase text-white leading-tight">{policy.label}</p><p className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-widest mt-0.5">{policy.sub}</p></div>
                                                         </div>
                                                         <ChevronRight size={18} className="text-gray-700 group-hover:text-brand" />
                                                     </button>
@@ -4666,15 +4666,15 @@ billing payouts are required.
                                             </div>
                                         </div>
                                         <div>
-                                            <button onClick={handleCommitPolicies} className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT POLICIES</button>
+                                            <button onClick={handleCommitPolicies} className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT POLICIES</button>
                                         </div>
                                     </div>
                                     <div className="p-10 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col justify-between min-h-[460px]">
                                         <div className="space-y-8">
                                             <h4 className="text-xl font-black italic uppercase text-white">Security Patch</h4>
-                                            <p className="text-xs text-gray-500 italic leading-relaxed">"Latest firmware v1.2.4-ALPHA deployed. All Director access logs are encrypted and hashed on cold-storage."</p>
+                                            <p className="text-xs md:text-sm lg:text-base text-gray-500 italic leading-relaxed">"Latest firmware v1.2.4-ALPHA deployed. All Director access logs are encrypted and hashed on cold-storage."</p>
                                         </div>
-                                        <button className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all">Audit Security Logs</button>
+                                        <button className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all">Audit Security Logs</button>
                                     </div>
                                 </div>
                             </motion.div>
@@ -4686,7 +4686,7 @@ billing payouts are required.
                                 <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 pb-6 border-b border-white/5">
                                     <div>
                                         <h2 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Stripe <span className="text-brand">Connect Hub</span></h2>
-                                        <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.5em] mt-2">B2B Splits, Partner Payouts & Audits (BaFin / GwG Cleared)</p>
+                                        <p className="text-gray-500 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.5em] mt-2">B2B Splits, Partner Payouts & Audits (BaFin / GwG Cleared)</p>
                                     </div>
                                     
                                     {/* Glassmorphic Sub-Navigation bar */}
@@ -4701,7 +4701,7 @@ billing payouts are required.
                                             <button
                                                 key={tab.id}
                                                 onClick={() => setStripeActiveSubTab(tab.id)}
-                                                className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${stripeActiveSubTab === tab.id ? 'bg-brand text-dark-900 shadow-md shadow-brand/10' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
+                                                className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all ${stripeActiveSubTab === tab.id ? 'bg-brand text-dark-900 shadow-md shadow-brand/10' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
                                             >
                                                 <tab.icon size={12} />
                                                 {tab.label}
@@ -4722,7 +4722,7 @@ billing payouts are required.
                                                 { label: 'Platform Clean Provisions', val: `${stripePlatformProvisions.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €`, desc: 'Net platform margins secured', color: 'text-brand' }
                                             ].map((stat, sIdx) => (
                                                 <div key={sIdx} className="p-6 bg-white/5 rounded-3xl border border-white/5 space-y-1 group hover:border-white/20 hover:bg-white/10 transition-all">
-                                                    <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">{stat.label}</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">{stat.label}</p>
                                                     <p className={`text-2xl font-black italic tracking-tighter ${stat.color}`}>{stat.val}</p>
                                                     <p className="text-[7px] font-mono text-gray-600 uppercase tracking-widest">{stat.desc}</p>
                                                 </div>
@@ -4738,7 +4738,7 @@ billing payouts are required.
                                                     <div className="space-y-6">
                                                         <div>
                                                             <h3 className="text-2xl font-black italic uppercase text-white">Live Split Simulator</h3>
-                                                            <p className="text-xs text-gray-500 italic mt-1">Simulate live transaction clearings to watch Stripe Connect route instant split payout shares.</p>
+                                                            <p className="text-xs md:text-sm lg:text-base text-gray-500 italic mt-1">Simulate live transaction clearings to watch Stripe Connect route instant split payout shares.</p>
                                                         </div>
 
                                                         {isSimulatingPayoutFlow ? (
@@ -4751,7 +4751,7 @@ billing payouts are required.
                                                                     <span className="text-[7px] font-mono text-gray-500 uppercase">Stripe Connect API</span>
                                                                 </div>
                                                                 
-                                                                <div className="space-y-3 font-mono text-[9px]">
+                                                                <div className="space-y-3 font-mono text-[9px] md:text-[11px] lg:text-xs">
                                                                     {[
                                                                         { step: 1, label: 'INGESTING INTENT GATEWAY' },
                                                                         { step: 2, label: 'COMPUTING STEP COMMISSION' },
@@ -4787,7 +4787,7 @@ billing payouts are required.
                                                             <div className="space-y-4">
                                                                 {/* Input: Client Name */}
                                                                 <div className="p-4 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                                                                    <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Customer / Passenger Name</span>
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Customer / Passenger Name</span>
                                                                     <input 
                                                                         value={simulationClientName} 
                                                                         onChange={e => setSimulationClientName(e.target.value)} 
@@ -4797,11 +4797,11 @@ billing payouts are required.
 
                                                                 {/* Input: Connected Partner */}
                                                                 <div className="p-4 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                                                                    <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Target Destination Partner</span>
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Target Destination Partner</span>
                                                                     <select
                                                                         value={simulationPartnerId}
                                                                         onChange={e => setSimulationPartnerId(e.target.value)}
-                                                                        className="bg-dark-950 text-xs font-black text-white outline-none w-full border border-white/10 rounded-xl p-2 cursor-pointer focus:border-brand/40"
+                                                                        className="bg-dark-950 text-xs md:text-sm lg:text-base font-black text-white outline-none w-full border border-white/10 rounded-xl p-2 cursor-pointer focus:border-brand/40"
                                                                     >
                                                                         {stripeConnectedPartners.map(p => (
                                                                             <option key={p.id} value={p.id}>{p.name} ({p.id})</option>
@@ -4811,11 +4811,11 @@ billing payouts are required.
 
                                                                 {/* Input: Category */}
                                                                 <div className="p-4 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                                                                    <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Transaction Category</span>
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Transaction Category</span>
                                                                     <select
                                                                         value={simulationCategory}
                                                                         onChange={e => setSimulationCategory(e.target.value)}
-                                                                        className="bg-dark-950 text-xs font-black text-white outline-none w-full border border-white/10 rounded-xl p-2 cursor-pointer focus:border-brand/40"
+                                                                        className="bg-dark-950 text-xs md:text-sm lg:text-base font-black text-white outline-none w-full border border-white/10 rounded-xl p-2 cursor-pointer focus:border-brand/40"
                                                                     >
                                                                         <option value="transport">🚗 Fleet Ride / Transport (Progressive Steps)</option>
                                                                         <option value="hotels">🏨 Luxury Hospitality Booking (5% Commission)</option>
@@ -4827,8 +4827,8 @@ billing payouts are required.
                                                                 {/* Input: Charge Amount */}
                                                                 <div className="p-4 bg-white/5 rounded-2xl border border-white/5 space-y-2">
                                                                     <div className="flex justify-between items-center">
-                                                                        <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Total Transaction Charge</span>
-                                                                        <span className="text-xs font-mono font-black text-white">{parseFloat(simulationChargeAmount).toFixed(2)} €</span>
+                                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Total Transaction Charge</span>
+                                                                        <span className="text-xs md:text-sm lg:text-base font-mono font-black text-white">{parseFloat(simulationChargeAmount).toFixed(2)} €</span>
                                                                     </div>
                                                                     <input 
                                                                         type="range"
@@ -4847,7 +4847,7 @@ billing payouts are required.
                                                     <button 
                                                         disabled={isSimulatingPayoutFlow}
                                                         onClick={triggerLiveStripeSplitSimulation}
-                                                        className="w-full mt-6 py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                                                        className="w-full mt-6 py-5 bg-brand text-dark-900 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
                                                     >
                                                         {isSimulatingPayoutFlow ? 'PROCESSING TRANSACTION...' : 'EXECUTE LIVE STRIPE SPLIT'}
                                                     </button>
@@ -4869,7 +4869,7 @@ billing payouts are required.
                                                     </div>
 
                                                     {/* Cyber terminal logs scroll viewport */}
-                                                    <div className="flex-1 min-h-[300px] max-h-[360px] bg-black/60 border border-white/5 rounded-3xl p-6 font-mono text-[8px] space-y-3.5 overflow-y-auto no-scrollbar scroll-smooth">
+                                                    <div className="flex-1 min-h-[300px] max-h-[360px] bg-black/60 border border-white/5 rounded-3xl p-6 font-mono text-[8px] md:text-[10px] lg:text-xs space-y-3.5 overflow-y-auto no-scrollbar scroll-smooth">
                                                         {stripeLiveWebhookEvents.map((evt, eIdx) => {
                                                             let levelColor = 'bg-gray-800 text-gray-400 border-gray-700';
                                                             if (evt.level === 'SUCCESS' || evt.level === 'SETTLED') levelColor = 'bg-emerald-950/40 text-emerald-400 border-emerald-500/30';
@@ -4901,9 +4901,9 @@ billing payouts are required.
                                             </h3>
                                             
                                             <div className="overflow-x-auto">
-                                                <table className="w-full text-left font-mono text-[9px]">
+                                                <table className="w-full text-left font-mono text-[9px] md:text-[11px] lg:text-xs">
                                                     <thead>
-                                                        <tr className="border-b border-white/5 text-gray-500 uppercase tracking-widest text-[8px] font-black">
+                                                        <tr className="border-b border-white/5 text-gray-500 uppercase tracking-widest text-[8px] md:text-[10px] lg:text-xs font-black">
                                                             <th className="py-4">TIMESTAMP</th>
                                                             <th className="py-4">TRANSACTION ID</th>
                                                             <th className="py-4">DESTINATION PARTNER</th>
@@ -4990,7 +4990,7 @@ billing payouts are required.
                                         
                                         <div>
                                             <h3 className="text-3xl font-black italic uppercase text-white">Connected Partner Accounts</h3>
-                                            <p className="text-xs text-gray-500 italic mt-1">Review active partner SEPA payout channels, verify balances, and disburse bank payout clearance under BaFin GwG protocols.</p>
+                                            <p className="text-xs md:text-sm lg:text-base text-gray-500 italic mt-1">Review active partner SEPA payout channels, verify balances, and disburse bank payout clearance under BaFin GwG protocols.</p>
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -5013,7 +5013,7 @@ billing payouts are required.
                                                                 </span>
                                                             </div>
 
-                                                            <div className="space-y-2.5 font-mono text-[8px] text-gray-400 border-t border-b border-white/5 py-4">
+                                                            <div className="space-y-2.5 font-mono text-[8px] md:text-[10px] lg:text-xs text-gray-400 border-t border-b border-white/5 py-4">
                                                                 <p className="flex justify-between"><span>MANAGER:</span> <span className="font-bold text-white">{partner.manager}</span></p>
                                                                 <p className="flex justify-between"><span>CONNECT ID:</span> <span className="font-bold text-white font-mono">{partner.id}</span></p>
                                                                 <p className="flex justify-between"><span>SEPA IBAN:</span> <span className="font-bold text-white">{showIban}</span></p>
@@ -5035,7 +5035,7 @@ billing payouts are required.
 
                                                         {isDisbursing ? (
                                                             <div className="p-4 bg-brand/5 border border-brand/20 rounded-2xl space-y-2 animate-pulse">
-                                                                <div className="flex items-center gap-2 text-brand font-mono text-[8px] font-black uppercase tracking-wider">
+                                                                <div className="flex items-center gap-2 text-brand font-mono text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider">
                                                                     <Clock className="animate-spin" size={10} />
                                                                     {disburseStep === 1 ? 'PSD2 Vetting handshakes...' : disburseStep === 2 ? 'BaFin Clearance processing...' : 'Settling SEPA funds...'}
                                                                 </div>
@@ -5051,7 +5051,7 @@ billing payouts are required.
                                                             <button 
                                                                 onClick={() => triggerPartnerDisbursement(partner.id)}
                                                                 disabled={partner.balance <= 0}
-                                                                className="w-full py-4 bg-brand text-dark-900 hover:scale-[1.02] active:scale-[0.98] rounded-2xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-brand/10 transition-all disabled:opacity-30 disabled:pointer-events-none"
+                                                                className="w-full py-4 bg-brand text-dark-900 hover:scale-[1.02] active:scale-[0.98] rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-brand/10 transition-all disabled:opacity-30 disabled:pointer-events-none"
                                                             >
                                                                 <Landmark size={12} /> DISBURSE SEPA PAYOUT
                                                             </button>
@@ -5074,7 +5074,7 @@ billing payouts are required.
                                                 
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                                                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Geschäftsführer / Legal Representative</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Geschäftsführer / Legal Representative</span>
                                                         <input 
                                                             disabled={stripeKycSubmitted} 
                                                             value={stripeKycName} 
@@ -5083,7 +5083,7 @@ billing payouts are required.
                                                         />
                                                     </div>
                                                     <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                                                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Authorized E-Mail Signature</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Authorized E-Mail Signature</span>
                                                         <input 
                                                             disabled={stripeKycSubmitted} 
                                                             type="email" 
@@ -5093,7 +5093,7 @@ billing payouts are required.
                                                         />
                                                     </div>
                                                     <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-1 md:col-span-2">
-                                                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Commercial Address / Geschäftsadresse</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Commercial Address / Geschäftsadresse</span>
                                                         <input 
                                                             disabled={stripeKycSubmitted} 
                                                             value={stripeKycAddress} 
@@ -5102,7 +5102,7 @@ billing payouts are required.
                                                         />
                                                     </div>
                                                     <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-1 md:col-span-2">
-                                                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">German Tax ID / Steuernummer (St.-Nr.)</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">German Tax ID / Steuernummer (St.-Nr.)</span>
                                                         <input 
                                                             disabled={stripeKycSubmitted} 
                                                             value={stripeKycTaxId} 
@@ -5117,11 +5117,11 @@ billing payouts are required.
                                             <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 flex flex-col justify-between relative overflow-hidden shadow-2xl">
                                                 <div className="space-y-6">
                                                     <h3 className="text-2xl font-black italic uppercase text-white">Payout Bank Account</h3>
-                                                    <p className="text-xs text-gray-500 italic">"German commercial payouts must resolve to valid SEPA banking channels under GwG Art. 12."</p>
+                                                    <p className="text-xs md:text-sm lg:text-base text-gray-500 italic">"German commercial payouts must resolve to valid SEPA banking channels under GwG Art. 12."</p>
                                                     
                                                     <div className="space-y-4">
                                                         <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                                                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Stripe Connected Account ID</span>
+                                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Stripe Connected Account ID</span>
                                                             <input 
                                                                 disabled={stripeKycSubmitted} 
                                                                 value={stripeKycAccountId} 
@@ -5131,7 +5131,7 @@ billing payouts are required.
                                                             />
                                                         </div>
                                                         <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                                                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">SEPA IBAN</span>
+                                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">SEPA IBAN</span>
                                                             <input 
                                                                 disabled={stripeKycSubmitted} 
                                                                 value={stripeKycIban} 
@@ -5141,7 +5141,7 @@ billing payouts are required.
                                                             />
                                                         </div>
                                                         <div className="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                                                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">BIC / SWIFT CODE</span>
+                                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">BIC / SWIFT CODE</span>
                                                             <input 
                                                                 disabled={stripeKycSubmitted} 
                                                                 value={stripeKycSwift} 
@@ -5156,18 +5156,18 @@ billing payouts are required.
                                                     {stripeBankVerified ? (
                                                         <div className="p-4 bg-brand/10 border border-brand/20 rounded-2xl flex items-center gap-3 text-brand">
                                                             <ShieldCheck size={20} className="shrink-0" />
-                                                            <div className="text-[9px] font-black uppercase tracking-widest">Bank Gateway: BAFIN CLEARED</div>
+                                                            <div className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest">Bank Gateway: BAFIN CLEARED</div>
                                                         </div>
                                                     ) : isStripeVerifyingBank ? (
                                                         <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3 text-brand animate-pulse">
                                                             <Clock size={20} className="animate-spin shrink-0 text-brand" />
-                                                            <div className="text-[9px] font-black uppercase tracking-widest">PSD2 Handshake Active...</div>
+                                                            <div className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest">PSD2 Handshake Active...</div>
                                                         </div>
                                                     ) : (
                                                         <button 
                                                             onClick={startInstantBankVerify} 
                                                             disabled={stripeKycSubmitted}
-                                                            className="w-full py-4 bg-white/5 border border-white/10 hover:border-brand/40 text-gray-400 hover:text-white rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
+                                                            className="w-full py-4 bg-white/5 border border-white/10 hover:border-brand/40 text-gray-400 hover:text-white rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50"
                                                         >
                                                             PSD2 INSTANT BANK VERIFICATION
                                                         </button>
@@ -5179,7 +5179,7 @@ billing payouts are required.
                                         {/* Mandatory Verification Documents Upload Grid */}
                                         <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 space-y-8 relative overflow-hidden">
                                             <h3 className="text-3xl font-black italic uppercase text-white mb-6">Required KYC Document Audits</h3>
-                                            <p className="text-xs text-gray-500 italic max-w-2xl">
+                                            <p className="text-xs md:text-sm lg:text-base text-gray-500 italic max-w-2xl">
                                                 Germany mandates clear corporate, identity, and transport permitting credentials to decouple payouts. Click any source to upload document.
                                             </p>
 
@@ -5202,29 +5202,29 @@ billing payouts are required.
                                                                 <div>
                                                                     <h4 className="text-sm font-black uppercase text-white">{doc.name}</h4>
                                                                     {isVerified ? (
-                                                                        <p className="text-[8px] text-brand font-black uppercase mt-1">✓ Verified on {doc.date}</p>
+                                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-brand font-black uppercase mt-1">✓ Verified on {doc.date}</p>
                                                                     ) : (
-                                                                        <p className="text-[8px] text-red-400 font-black uppercase mt-1">⚠️ Missing BaFin Verification</p>
+                                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-red-400 font-black uppercase mt-1">⚠️ Missing BaFin Verification</p>
                                                                     )}
                                                                 </div>
 
                                                                 {isVerified ? (
-                                                                    <span className="px-2.5 py-1 bg-brand/25 text-brand rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1">
+                                                                    <span className="px-2.5 py-1 bg-brand/25 text-brand rounded-full text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest flex items-center gap-1">
                                                                         <ShieldCheck size={10} /> BaFin Verified
                                                                     </span>
                                                                 ) : isScanning ? (
-                                                                    <span className="px-2.5 py-1 bg-white/10 text-brand-mid rounded-full text-[8px] font-black uppercase tracking-widest animate-pulse">
+                                                                    <span className="px-2.5 py-1 bg-white/10 text-brand-mid rounded-full text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest animate-pulse">
                                                                         Scanning {simulatedScanningProgress}%
                                                                     </span>
                                                                 ) : (
-                                                                    <span className="px-2.5 py-1 bg-red-500/10 text-red-500 rounded-full text-[8px] font-black uppercase tracking-widest">
+                                                                    <span className="px-2.5 py-1 bg-red-500/10 text-red-500 rounded-full text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest">
                                                                         Required
                                                                     </span>
                                                                 )}
                                                             </div>
 
                                                             {isVerified && (
-                                                                <div className="p-3 bg-brand/5 border border-brand/10 rounded-xl mb-4 text-[9px] font-mono text-gray-400 truncate">
+                                                                <div className="p-3 bg-brand/5 border border-brand/10 rounded-xl mb-4 text-[9px] md:text-[11px] lg:text-xs font-mono text-gray-400 truncate">
                                                                     FILE ID: {doc.name}
                                                                 </div>
                                                             )}
@@ -5234,21 +5234,21 @@ billing payouts are required.
                                                                 <button 
                                                                     disabled={stripeKycSubmitted || isScanning}
                                                                     onClick={() => triggerNativeFileUpload(key)}
-                                                                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[8px] font-black uppercase tracking-widest border border-white/5 hover:border-white/20 transition-all text-center disabled:opacity-50"
+                                                                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest border border-white/5 hover:border-white/20 transition-all text-center disabled:opacity-50"
                                                                 >
                                                                     Dateien
                                                                 </button>
                                                                 <button 
                                                                     disabled={stripeKycSubmitted || isScanning}
                                                                     onClick={() => triggerMediathekUpload(key)}
-                                                                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[8px] font-black uppercase tracking-widest border border-white/5 hover:border-white/20 transition-all text-center disabled:opacity-50"
+                                                                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest border border-white/5 hover:border-white/20 transition-all text-center disabled:opacity-50"
                                                                 >
                                                                     Mediathek
                                                                 </button>
                                                                 <button 
                                                                     disabled={stripeKycSubmitted || isScanning}
                                                                     onClick={() => triggerCameraScan(key)}
-                                                                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[8px] font-black uppercase tracking-widest border border-white/5 hover:border-white/20 transition-all text-center disabled:opacity-50 animate-pulse"
+                                                                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest border border-white/5 hover:border-white/20 transition-all text-center disabled:opacity-50 animate-pulse"
                                                                 >
                                                                     Kamerarolle
                                                                 </button>
@@ -5263,21 +5263,21 @@ billing payouts are required.
                                                 <div className="flex items-center gap-3">
                                                     <Shield size={20} className={stripeKycSubmitted ? 'text-brand' : 'text-gray-600'} />
                                                     <div>
-                                                        <p className="text-[10px] font-black text-white uppercase tracking-widest leading-none">Stripe Connect Dossier Status</p>
-                                                        <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-1">
+                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-white uppercase tracking-widest leading-none">Stripe Connect Dossier Status</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">
                                                             {stripeKycSubmitted ? 'Approved & Decoupled Payouts Active' : 'Formulation under Review'}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 
                                                 {stripeKycSubmitted ? (
-                                                    <div className="px-8 py-5 bg-brand text-dark-900 rounded-3xl text-xs font-black uppercase tracking-widest flex items-center gap-3 shadow-lg shadow-brand/20">
+                                                    <div className="px-8 py-5 bg-brand text-dark-900 rounded-3xl text-xs md:text-sm lg:text-base font-black uppercase tracking-widest flex items-center gap-3 shadow-lg shadow-brand/20">
                                                         <ShieldCheck size={16} /> DOSSIER APPROVED BY BAFIN / STRIPE
                                                     </div>
                                                 ) : (
                                                     <button 
                                                         onClick={submitStripeCompliance}
-                                                        className="px-10 py-5 bg-brand text-dark-900 rounded-3xl text-xs font-black uppercase tracking-[0.15em] hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand/20"
+                                                        className="px-10 py-5 bg-brand text-dark-900 rounded-3xl text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.15em] hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand/20"
                                                     >
                                                         Submit Compliance Dossier to Stripe
                                                     </button>
@@ -5293,7 +5293,7 @@ billing payouts are required.
                                         
                                         <div>
                                             <h3 className="text-3xl font-black italic uppercase text-white font-glow-green">Partner Compliance Vaults</h3>
-                                            <p className="text-xs text-gray-500 italic mt-1">
+                                            <p className="text-xs md:text-sm lg:text-base text-gray-500 italic mt-1">
                                                 Audit and verify corporate credentials uploaded by fleet managers, hospitality partners, and event venues. Approve files to activate their operational dashboards.
                                             </p>
                                         </div>
@@ -5302,7 +5302,7 @@ billing payouts are required.
                                             <div className="p-10 bg-white/5 rounded-2xl text-center border border-white/5 text-gray-400">
                                                 <ShieldCheck size={48} className="mx-auto mb-4 text-gray-600" />
                                                 <p className="font-black italic uppercase text-sm">No Active Compliance Portals Found</p>
-                                                <p className="text-[10px] text-gray-500 mt-2">When partners/managers upload verification documents in their dashboards, they will appear here for audit review.</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-500 mt-2">When partners/managers upload verification documents in their dashboards, they will appear here for audit review.</p>
                                             </div>
                                         ) : (
                                             <div className="space-y-10">
@@ -5319,16 +5319,16 @@ billing payouts are required.
                                                                         {partner.metadata.context === 'FM' ? 'Fleet Operator' : 'Service Venue'} ({partner.metadata.context})
                                                                     </span>
                                                                     <h4 className="text-xl font-black italic uppercase text-white tracking-tighter mt-1">{partner.metadata.businessName}</h4>
-                                                                    <p className="text-[9px] text-gray-500 font-mono mt-1">MANAGER: {partner.metadata.name} ({partner.metadata.email})</p>
+                                                                    <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-mono mt-1">MANAGER: {partner.metadata.name} ({partner.metadata.email})</p>
                                                                 </div>
                                                                 <div className="flex items-center gap-3">
                                                                     <div className="text-right">
-                                                                        <p className="text-[9px] text-gray-400 font-black uppercase">CLEARANCE STATUS</p>
+                                                                        <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-400 font-black uppercase">CLEARANCE STATUS</p>
                                                                         <p className="text-sm font-black italic text-primary leading-none mt-1">
                                                                             {approvedDocs} / {totalDocs} Approved
                                                                         </p>
                                                                     </div>
-                                                                    <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                                                                    <span className={`px-3 py-1 rounded-full text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest ${
                                                                         approvedDocs === totalDocs 
                                                                             ? 'bg-brand/20 text-brand border border-brand/30' 
                                                                             : pendingDocs > 0 
@@ -5355,7 +5355,7 @@ billing payouts are required.
                                                                         } space-y-4`}>
                                                                             <div className="flex justify-between items-start">
                                                                                 <div>
-                                                                                    <h5 className="text-xs font-black uppercase text-white leading-tight">{doc.name}</h5>
+                                                                                    <h5 className="text-xs md:text-sm lg:text-base font-black uppercase text-white leading-tight">{doc.name}</h5>
                                                                                     <span className="text-[7px] text-gray-500 font-mono block mt-1 uppercase">ID: {doc.id}</span>
                                                                                 </div>
                                                                                 <span className={`text-[7px] font-black uppercase px-2 py-0.5 rounded ${
@@ -5369,7 +5369,7 @@ billing payouts are required.
                                                                             </div>
 
                                                                             {doc.name && doc.status !== 'missing' && (
-                                                                                <div className="p-3 bg-white/5 border border-white/5 rounded-xl text-[8px] font-mono text-gray-400 truncate">
+                                                                                <div className="p-3 bg-white/5 border border-white/5 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-mono text-gray-400 truncate">
                                                                                     FILENAME: {doc.name}
                                                                                 </div>
                                                                             )}
@@ -5378,7 +5378,7 @@ billing payouts are required.
                                                                                 <div className="flex gap-2">
                                                                                     <button 
                                                                                         onClick={() => handleViewPartnerDoc(doc, partner.email)}
-                                                                                        className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-[8px] font-black uppercase tracking-widest border border-white/5 hover:border-white/20 transition-all text-center flex items-center justify-center gap-1.5"
+                                                                                        className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest border border-white/5 hover:border-white/20 transition-all text-center flex items-center justify-center gap-1.5"
                                                                                     >
                                                                                         <Eye size={10} /> View Document
                                                                                     </button>
@@ -5400,7 +5400,7 @@ billing payouts are required.
                                                                                     </button>
                                                                                 </div>
                                                                             ) : (
-                                                                                <div className="py-2.5 text-center text-gray-600 italic text-[8px] border border-dashed border-white/5 rounded-xl uppercase">
+                                                                                <div className="py-2.5 text-center text-gray-600 italic text-[8px] md:text-[10px] lg:text-xs border border-dashed border-white/5 rounded-xl uppercase">
                                                                                     No File Uploaded Yet
                                                                                 </div>
                                                                             )}
@@ -5436,7 +5436,7 @@ billing payouts are required.
                                                 {/* Visual Header */}
                                                 <div className="flex justify-between items-start pb-6 border-b border-white/5">
                                                     <div>
-                                                        <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-mono rounded-full uppercase tracking-widest font-black">
+                                                        <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] md:text-[10px] lg:text-xs font-mono rounded-full uppercase tracking-widest font-black">
                                                             Finanzamt Compliant Audit Invoice
                                                         </span>
                                                         <h4 className="text-3xl font-black italic uppercase text-white mt-2">B2B TAX LEDGER</h4>
@@ -5450,7 +5450,7 @@ billing payouts are required.
                                                 </div>
 
                                                 {/* Dynamic Invoice Layout */}
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-[9px] text-gray-400">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-[9px] md:text-[11px] lg:text-xs text-gray-400">
                                                     <div className="space-y-1">
                                                         <p className="font-bold text-gray-500 uppercase tracking-wider">Invoice Reference:</p>
                                                         <p className="text-sm font-black text-white">{selectedInvoiceForModal.inv}</p>
@@ -5477,26 +5477,26 @@ billing payouts are required.
                                                         </div>
                                                     </div>
 
-                                                    <div className="p-6 bg-black/40 rounded-2xl border border-white/5 space-y-4 md:col-span-2 text-[10px]">
-                                                        <h5 className="font-black italic uppercase text-white border-b border-white/5 pb-2 text-[11px] tracking-wider">🧾 Itemized Ledger breakdown</h5>
-                                                        <div className="space-y-2.5 font-mono text-[9px] text-gray-300">
+                                                    <div className="p-6 bg-black/40 rounded-2xl border border-white/5 space-y-4 md:col-span-2 text-[10px] md:text-xs lg:text-sm">
+                                                        <h5 className="font-black italic uppercase text-white border-b border-white/5 pb-2 text-[11px] md:text-sm lg:text-base tracking-wider">🧾 Itemized Ledger breakdown</h5>
+                                                        <div className="space-y-2.5 font-mono text-[9px] md:text-[11px] lg:text-xs text-gray-300">
                                                             <p className="flex justify-between"><span>Transaction Type:</span> <span className="font-bold text-white uppercase">{selectedInvoiceForModal.tag}</span></p>
                                                             <p className="flex justify-between"><span>Stripe Transaction ID:</span> <span className="font-bold text-white font-mono">{selectedInvoiceForModal.tx}</span></p>
                                                             <p className="flex justify-between border-b border-white/5 pb-2"><span>Card Fee treatment:</span> <span className="font-bold text-emerald-400">Option B (Absorbed by Partner)</span></p>
                                                             
-                                                            <p className="flex justify-between text-xs pt-1"><span>Total Charge:</span> <span className="font-black text-white">{selectedInvoiceForModal.total} €</span></p>
-                                                            <p className="flex justify-between text-xs text-brand font-black pt-1"><span>Platform Provision collected:</span> <span className="font-black text-brand">+{selectedInvoiceForModal.prov} €</span></p>
+                                                            <p className="flex justify-between text-xs md:text-sm lg:text-base pt-1"><span>Total Charge:</span> <span className="font-black text-white">{selectedInvoiceForModal.total} €</span></p>
+                                                            <p className="flex justify-between text-xs md:text-sm lg:text-base text-brand font-black pt-1"><span>Platform Provision collected:</span> <span className="font-black text-brand">+{selectedInvoiceForModal.prov} €</span></p>
                                                             
-                                                            <div className="pl-6 border-l-2 border-brand/20 space-y-1.5 text-[8px] text-gray-400">
+                                                            <div className="pl-6 border-l-2 border-brand/20 space-y-1.5 text-[8px] md:text-[10px] lg:text-xs text-gray-400">
                                                                 <p className="flex justify-between"><span>VAT (19% Umsatzsteuer included):</span> <span>{(parseFloat(selectedInvoiceForModal.prov) * 0.19).toFixed(2)} €</span></p>
                                                                 <p className="flex justify-between"><span>Net Platform Value:</span> <span>{(parseFloat(selectedInvoiceForModal.prov) * 0.81).toFixed(2)} €</span></p>
                                                             </div>
                                                             
-                                                            <p className="flex justify-between text-xs border-t border-white/5 pt-2">
+                                                            <p className="flex justify-between text-xs md:text-sm lg:text-base border-t border-white/5 pt-2">
                                                                 <span>Gross Partner Transferred Share:</span> 
                                                                 <span className="font-bold text-white">{(parseFloat(selectedInvoiceForModal.total) - parseFloat(selectedInvoiceForModal.prov)).toFixed(2)} €</span>
                                                             </p>
-                                                            <p className="flex justify-between text-xs text-emerald-400">
+                                                            <p className="flex justify-between text-xs md:text-sm lg:text-base text-emerald-400">
                                                                 <span>Absorbed Processing Card Fee (Deducted):</span> 
                                                                 <span className="font-bold text-emerald-400">-{selectedInvoiceForModal.fee} €</span>
                                                             </p>
@@ -5512,7 +5512,7 @@ billing payouts are required.
                                                 <div className="pt-4 flex flex-col md:flex-row justify-between items-center gap-4">
                                                     <div className="flex items-center gap-2 text-emerald-400">
                                                         <ShieldCheck size={16} />
-                                                        <span className="text-[8px] font-black uppercase tracking-widest font-mono">Disbursed successfully by Stripe Connect</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest font-mono">Disbursed successfully by Stripe Connect</span>
                                                     </div>
                                                     <div className="flex gap-3">
                                                         <button 
@@ -5520,13 +5520,13 @@ billing payouts are required.
                                                                 navigator.clipboard.writeText(JSON.stringify(selectedInvoiceForModal, null, 2));
                                                                 triggerNotification('success', 'Copied to Clipboard', 'Invoice ledger JSON trace copied.');
                                                             }}
-                                                            className="px-6 py-3 bg-white/5 border border-white/10 hover:border-brand/40 text-gray-400 hover:text-white rounded-xl text-[8px] font-black uppercase tracking-widest transition-all"
+                                                            className="px-6 py-3 bg-white/5 border border-white/10 hover:border-brand/40 text-gray-400 hover:text-white rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all"
                                                         >
                                                             Copy trace details
                                                         </button>
                                                         <button 
                                                             onClick={() => downloadB2BInvoice(selectedInvoiceForModal.inv, anonymizedModeActive ? '[GUEST_ANON_MASKED]' : selectedInvoiceForModal.client, selectedInvoiceForModal.partner, selectedInvoiceForModal.total, selectedInvoiceForModal.prov, selectedInvoiceForModal.date)}
-                                                            className="px-6 py-3 bg-brand text-dark-900 rounded-xl text-[8px] font-black uppercase tracking-widest shadow-lg shadow-brand/10 hover:scale-105 transition-all"
+                                                            className="px-6 py-3 bg-brand text-dark-900 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest shadow-lg shadow-brand/10 hover:scale-105 transition-all"
                                                         >
                                                             Download invoice text file
                                                         </button>
@@ -5543,7 +5543,7 @@ billing payouts are required.
                                         <div className="absolute top-0 left-0 w-1 h-full bg-brand/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]" />
                                         <div>
                                             <h3 className="text-3xl font-black italic uppercase text-white">Dynamic Provisions & Fees</h3>
-                                            <p className="text-xs text-gray-500 italic mt-1">Configure the exact platform commission models. Saving these rules will automatically update checkout logic and rewrite the Terms of Service.</p>
+                                            <p className="text-xs md:text-sm lg:text-base text-gray-500 italic mt-1">Configure the exact platform commission models. Saving these rules will automatically update checkout logic and rewrite the Terms of Service.</p>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                             <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
@@ -5551,14 +5551,14 @@ billing payouts are required.
                                                     <Car size={24} className="text-brand" />
                                                     <h4 className="text-lg font-black uppercase text-white">Fleet Partners</h4>
                                                 </div>
-                                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Progressive Step Model</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest">Progressive Step Model</p>
                                                 <div className="space-y-4">
                                                     <div>
-                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-400">Base Fee (€)</label>
+                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-400">Base Fee (€)</label>
                                                         <input type="number" value={fleetBaseFee} onChange={e => setFleetBaseFee(e.target.value)} className="w-full bg-dark-950/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold mt-1 outline-none focus:border-brand/50" step="0.5" />
                                                     </div>
                                                     <div>
-                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-400">Increment per €30 (€)</label>
+                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-400">Increment per €30 (€)</label>
                                                         <input type="number" value={fleetIncrement} onChange={e => setFleetIncrement(e.target.value)} className="w-full bg-dark-950/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold mt-1 outline-none focus:border-brand/50" step="0.5" />
                                                     </div>
                                                 </div>
@@ -5568,10 +5568,10 @@ billing payouts are required.
                                                     <Building2 size={24} className="text-violet-400" />
                                                     <h4 className="text-lg font-black uppercase text-white">Hotels & Stadiums</h4>
                                                 </div>
-                                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Flat Percentage Model</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest">Flat Percentage Model</p>
                                                 <div className="space-y-4">
                                                     <div>
-                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-400">Platform Fee (%)</label>
+                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-400">Platform Fee (%)</label>
                                                         <input type="number" value={hotelStadiumPercent} onChange={e => setHotelStadiumPercent(e.target.value)} className="w-full bg-dark-950/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold mt-1 outline-none focus:border-violet-400/50" step="0.5" />
                                                     </div>
                                                 </div>
@@ -5581,10 +5581,10 @@ billing payouts are required.
                                                     <Droplets size={24} className="text-rose-400" />
                                                     <h4 className="text-lg font-black uppercase text-white">Restaurants & Bars</h4>
                                                 </div>
-                                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Flat Percentage Model</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest">Flat Percentage Model</p>
                                                 <div className="space-y-4">
                                                     <div>
-                                                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-400">Platform Fee (%)</label>
+                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-400">Platform Fee (%)</label>
                                                         <input type="number" value={fnbPercent} onChange={e => setFnbPercent(e.target.value)} className="w-full bg-dark-950/50 border border-white/10 rounded-xl px-4 py-3 text-white font-bold mt-1 outline-none focus:border-rose-400/50" step="0.5" />
                                                     </div>
                                                 </div>
@@ -5611,7 +5611,7 @@ billing payouts are required.
                                             <input placeholder="Search by Name or PRIME-ID (e.g. P-100)..." className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-sm outline-none focus:border-brand/50" />
                                         </div>
                                         <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
-                                            {stripeConnectedPartners.map(p => <span key={p.id} className="px-4 py-2 bg-white/5 rounded-xl text-[8px] font-black text-gray-500 border border-white/5 cursor-pointer hover:text-brand transition-colors whitespace-nowrap">{p.name}</span>)}
+                                            {stripeConnectedPartners.map(p => <span key={p.id} className="px-4 py-2 bg-white/5 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 border border-white/5 cursor-pointer hover:text-brand transition-colors whitespace-nowrap">{p.name}</span>)}
                                         </div>
                                     </div>
                                     <div className="p-8 bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] space-y-6 group hover:border-white/30 transition-all">
@@ -5621,7 +5621,7 @@ billing payouts are required.
                                             <input placeholder="Search by Name or C-ID..." className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-sm outline-none focus:border-white/50" />
                                         </div>
                                         <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
-                                            <span className="px-4 py-2 bg-white/5 rounded-xl text-[8px] font-black text-gray-600 border border-white/5 italic whitespace-nowrap">No recent searches</span>
+                                            <span className="px-4 py-2 bg-white/5 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black text-gray-600 border border-white/5 italic whitespace-nowrap">No recent searches</span>
                                         </div>
                                     </div>
                                 </div>
@@ -5630,7 +5630,7 @@ billing payouts are required.
                                     <div className="w-[450px] bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] flex flex-col overflow-hidden">
                                         <div className="p-8 border-b border-white/5 bg-white/5 flex justify-between items-center">
                                             <h3 className="text-xl font-black italic uppercase text-white">Live Communications</h3>
-                                            <div className="px-3 py-1 bg-brand/20 text-brand text-[8px] font-black rounded-full">ACTIVE SESSION</div>
+                                            <div className="px-3 py-1 bg-brand/20 text-brand text-[8px] md:text-[10px] lg:text-xs font-black rounded-full">ACTIVE SESSION</div>
                                         </div>
                                         <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-4">
                                             {(isDemo ? [
@@ -5642,18 +5642,18 @@ billing payouts are required.
                                                     <div className="flex justify-between items-start mb-2">
                                                         <div>
                                                             <div className="flex items-center gap-2">
-                                                                <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded ${msg.type === 'Partner' ? 'bg-blue-500/20 text-white' : 'bg-emerald-500/20 text-white'}`}>{msg.type}</span>
-                                                                <span className="text-[10px] font-black text-white group-hover:text-brand transition-colors">{msg.user}</span>
+                                                                <span className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase px-2 py-0.5 rounded ${msg.type === 'Partner' ? 'bg-blue-500/20 text-white' : 'bg-emerald-500/20 text-white'}`}>{msg.type}</span>
+                                                                <span className="text-[10px] md:text-xs lg:text-sm font-black text-white group-hover:text-brand transition-colors">{msg.user}</span>
                                                             </div>
-                                                            <p className="text-[8px] font-black text-gray-500 mt-1 uppercase tracking-widest">PRIME-ID: {msg.id}</p>
+                                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 mt-1 uppercase tracking-widest">PRIME-ID: {msg.id}</p>
                                                         </div>
-                                                        <span className="text-[8px] font-bold text-gray-700 uppercase">{msg.time}</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-700 uppercase">{msg.time}</span>
                                                     </div>
-                                                    <p className={`text-xs font-bold mb-4 ${msg.category === 'lost-item' ? 'text-amber-500' : 'text-gray-500'}`}>{msg.subject}</p>
+                                                    <p className={`text-xs md:text-sm lg:text-base font-bold mb-4 ${msg.category === 'lost-item' ? 'text-amber-500' : 'text-gray-500'}`}>{msg.subject}</p>
                                                     <div className="flex justify-between items-center">
                                                         <div className="flex items-center gap-2 text-brand">
                                                             <Clock size={12} />
-                                                            <span className="text-[9px] font-black uppercase">Wait: {msg.wait}</span>
+                                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase">Wait: {msg.wait}</span>
                                                         </div>
                                                         <ChevronRight size={14} className="text-gray-700 group-hover:text-brand" />
                                                     </div>
@@ -5662,7 +5662,7 @@ billing payouts are required.
                                             {!isDemo && (
                                                 <div className="p-10 border-2 border-dashed border-white/5 rounded-[2.5rem] text-center">
                                                     <MessageSquare size={32} className="text-gray-700 mx-auto mb-4" />
-                                                    <p className="text-[10px] font-black text-gray-600 uppercase italic">No Active Support Tickets.</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase italic">No Active Support Tickets.</p>
                                                 </div>
                                             )}
                                         </div>
@@ -5675,14 +5675,14 @@ billing payouts are required.
                                                 </div>
                                                 <div>
                                                     <p className="text-xl font-black italic uppercase text-gray-500 tracking-tighter">Select a Case</p>
-                                                    <p className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mt-1">Choose a ticket from the left panel</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-700 uppercase tracking-[0.4em] mt-1">Choose a ticket from the left panel</p>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="flex-1 p-12 overflow-y-auto space-y-8 no-scrollbar flex items-center justify-center">
                                             <div className="text-center">
                                                 <Shield size={48} className="text-gray-800 mx-auto mb-6" />
-                                                <p className="text-[10px] font-black text-gray-700 uppercase tracking-widest italic">No Case Selected. All Channels Clear.</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-700 uppercase tracking-widest italic">No Case Selected. All Channels Clear.</p>
                                             </div>
                                         </div>
                                         <div className="p-8 border-t border-white/5 flex gap-6 items-center">
@@ -5699,9 +5699,9 @@ billing payouts are required.
                                 <div className="flex justify-between items-end">
                                     <div>
                                         <h2 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Intelligence <span className="text-brand">Staff</span></h2>
-                                        <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.5em] mt-2">Operational Personnel Management</p>
+                                        <p className="text-gray-500 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.5em] mt-2">Operational Personnel Management</p>
                                     </div>
-                                    <button onClick={() => setIsAddStaffModalOpen(true)} className="px-8 py-4 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20">+ ADD NEW STAFF</button>
+                                    <button onClick={() => setIsAddStaffModalOpen(true)} className="px-8 py-4 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-brand/20">+ ADD NEW STAFF</button>
                                 </div>
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                     {staffList.map((s, i) => (
@@ -5713,21 +5713,21 @@ billing payouts are required.
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="text-base font-black italic uppercase text-white tracking-tighter truncate">{s.name}</p>
-                                                    <p className="text-[9px] font-black text-brand uppercase tracking-widest mt-0.5">{s.role}</p>
-                                                    <p className="text-[8px] font-black text-gray-700 uppercase mt-0.5">ID: {s.id}</p>
+                                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-widest mt-0.5">{s.role}</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-700 uppercase mt-0.5">ID: {s.id}</p>
                                                 </div>
                                             </div>
 
                                             {/* Details */}
                                             <div className="space-y-2 pt-4 border-t border-white/5">
-                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600">Email</span><span className="text-white truncate ml-2">{s.email}</span></div>
-                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600">Phone</span><span className="text-white">{s.phone}</span></div>
-                                                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest"><span className="text-gray-600">Bank</span><span className="text-brand text-[8px] truncate ml-2">{s.bank}</span></div>
+                                                <div className="flex justify-between text-[9px] md:text-[11px] lg:text-xs font-bold uppercase tracking-widest"><span className="text-gray-600">Email</span><span className="text-white truncate ml-2">{s.email}</span></div>
+                                                <div className="flex justify-between text-[9px] md:text-[11px] lg:text-xs font-bold uppercase tracking-widest"><span className="text-gray-600">Phone</span><span className="text-white">{s.phone}</span></div>
+                                                <div className="flex justify-between text-[9px] md:text-[11px] lg:text-xs font-bold uppercase tracking-widest"><span className="text-gray-600">Bank</span><span className="text-brand text-[8px] md:text-[10px] lg:text-xs truncate ml-2">{s.bank}</span></div>
                                             </div>
 
                                             {/* Hub Permission Badges */}
                                             <div className="space-y-2.5 pt-4 border-t border-white/5">
-                                                <p className="text-[8px] font-black uppercase tracking-widest text-gray-600">Hub Access</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-600">Hub Access</p>
                                                 <div className="flex flex-wrap gap-1.5">
                                                     {[
                                                         { key: 'fleet',      label: 'Fleet',    color: 'text-sky-400 bg-sky-400/10 border-sky-400/25' },
@@ -5743,7 +5743,7 @@ billing payouts are required.
                                                                 key={hub.key}
                                                                 onClick={() => handleToggleStaffPermission(s.id, hub.key)}
                                                                 title={`Click to ${granted ? 'revoke' : 'grant'} ${hub.label} access`}
-                                                                className={`px-2.5 py-1 rounded-lg border text-[8px] font-black uppercase tracking-wide transition-all ${
+                                                                className={`px-2.5 py-1 rounded-lg border text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wide transition-all ${
                                                                     granted ? hub.color : 'text-gray-700 bg-white/[0.02] border-white/8'
                                                                 }`}
                                                             >
@@ -5766,7 +5766,7 @@ billing payouts are required.
                                                     </span>
                                                     <button
                                                         onClick={() => handleCopyInviteLink(s.inviteLink)}
-                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-brand/10 border border-white/8 hover:border-brand/30 rounded-lg text-[8px] font-black uppercase text-gray-500 hover:text-brand transition-all"
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-brand/10 border border-white/8 hover:border-brand/30 rounded-lg text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-500 hover:text-brand transition-all"
                                                     >
                                                         <ExternalLink size={10} /> Resend Invite
                                                     </button>
@@ -5775,16 +5775,16 @@ billing payouts are required.
 
                                             {/* Actions */}
                                             <div className="flex gap-3 pt-2">
-                                                <button className="flex-1 py-3 bg-white/5 rounded-xl text-[8px] font-black uppercase text-gray-500 hover:text-white transition-all">Edit</button>
-                                                <button onClick={() => setStaffList(staffList.filter((_, idx) => idx !== i))} className="px-5 py-3 bg-red-500/10 text-red-500 rounded-xl text-[8px] font-black uppercase hover:bg-red-500 hover:text-white transition-all">Revoke</button>
+                                                <button className="flex-1 py-3 bg-white/5 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-gray-500 hover:text-white transition-all">Edit</button>
+                                                <button onClick={() => setStaffList(staffList.filter((_, idx) => idx !== i))} className="px-5 py-3 bg-red-500/10 text-red-500 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase hover:bg-red-500 hover:text-white transition-all">Revoke</button>
                                             </div>
                                         </div>
                                     ))}
                                     {staffList.length === 0 && (
                                         <div className="col-span-3 py-24 flex flex-col items-center justify-center gap-4 border border-dashed border-white/8 rounded-[2.5rem]">
                                             <Users size={40} className="text-gray-700" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">No staff onboarded yet</p>
-                                            <button onClick={() => setIsAddStaffModalOpen(true)} className="mt-2 px-8 py-3 bg-brand/10 border border-brand/20 text-brand text-[9px] font-black uppercase rounded-xl hover:bg-brand/20 transition-all">+ Onboard First Staff Member</button>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-600">No staff onboarded yet</p>
+                                            <button onClick={() => setIsAddStaffModalOpen(true)} className="mt-2 px-8 py-3 bg-brand/10 border border-brand/20 text-brand text-[9px] md:text-[11px] lg:text-xs font-black uppercase rounded-xl hover:bg-brand/20 transition-all">+ Onboard First Staff Member</button>
                                         </div>
                                     )}
                                 </div>
@@ -5797,13 +5797,13 @@ billing payouts are required.
                                 <div className="flex justify-between items-end">
                                     <div>
                                         <h2 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Document <span className="text-brand">Hub</span></h2>
-                                        <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.5em] mt-2">Partner KYC & Compliance Files</p>
+                                        <p className="text-gray-500 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.5em] mt-2">Partner KYC & Compliance Files</p>
                                     </div>
                                     <div className="flex gap-3">
                                         {[{ label: 'All', key: 'all' }, { label: 'Pending', key: 'pending' }, { label: 'Approved', key: 'approved' }, { label: 'Missing', key: 'missing' }].map(f => (
                                             <button key={f.key}
                                                 onClick={() => setDocHubFilter(f.key)}
-                                                className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                                                className={`px-5 py-2.5 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all ${
                                                     docHubFilter === f.key ? 'bg-brand text-dark-900 shadow-lg shadow-brand/20' : 'bg-white/5 border border-white/8 text-gray-400 hover:text-white'
                                                 }`}>{f.label}</button>
                                         ))}
@@ -5828,7 +5828,7 @@ billing payouts are required.
                                                 return (
                                                     <div key={s.label} className={`bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border ${s.color} rounded-[2rem] p-7 flex justify-between items-start`}>
                                                         <div>
-                                                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-3">{s.label}</p>
+                                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-gray-500 mb-3">{s.label}</p>
                                                             <p className="text-4xl font-black italic text-white">{s.val}</p>
                                                         </div>
                                                         <SIcon size={28} className={s.iconColor} />
@@ -5871,10 +5871,10 @@ billing payouts are required.
                                                             </div>
                                                             <div>
                                                                 <p className="text-base font-black italic uppercase text-white tracking-tight">{partner.name}</p>
-                                                                <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mt-0.5">{partner.type} · Joined {partner.joinDate}</p>
+                                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-gray-500 mt-0.5">{partner.type} · Joined {partner.joinDate}</p>
                                                             </div>
                                                         </div>
-                                                        <span className={`px-4 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest ${
+                                                        <span className={`px-4 py-1.5 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest ${
                                                             allOk ? 'bg-brand/15 text-brand' : missing > 0 ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400'
                                                         }`}>
                                                             {allOk ? '✓ Approved' : missing > 0 ? `${missing} Missing` : `${pending} Pending`}
@@ -5889,16 +5889,16 @@ billing payouts are required.
                                                                     {doc.status === 'pending'  && <FileClock size={16} className="text-amber-400 shrink-0" />}
                                                                     {doc.status === 'missing'  && <FileX2 size={16} className="text-red-400 shrink-0" />}
                                                                     <div>
-                                                                        <p className="text-xs font-bold text-white">{doc.name}</p>
-                                                                        {doc.uploadedAt && <p className="text-[9px] text-gray-500 mt-0.5">Uploaded {doc.uploadedAt}</p>}
-                                                                        {doc.status === 'missing' && <p className="text-[9px] text-red-400 mt-0.5">Not uploaded yet</p>}
+                                                                        <p className="text-xs md:text-sm lg:text-base font-bold text-white">{doc.name}</p>
+                                                                        {doc.uploadedAt && <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 mt-0.5">Uploaded {doc.uploadedAt}</p>}
+                                                                        {doc.status === 'missing' && <p className="text-[9px] md:text-[11px] lg:text-xs text-red-400 mt-0.5">Not uploaded yet</p>}
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex items-center gap-2">
                                                                     {doc.fileUrl && (
                                                                         <button
                                                                             onClick={() => handleViewPartnerDoc(doc, partner.email)}
-                                                                            className="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-[8px] font-black uppercase rounded-xl transition-all"
+                                                                            className="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-[8px] md:text-[10px] lg:text-xs font-black uppercase rounded-xl transition-all"
                                                                         >View</button>
                                                                     )}
                                                                     {doc.status === 'pending' && (
@@ -5911,7 +5911,7 @@ billing payouts are required.
                                                                                         setDocPartners(prev => prev.map((p, i) => i === pi ? { ...p, docs: p.docs.map((d, j) => j === di ? { ...d, status: 'approved' } : d) } : p));
                                                                                     }
                                                                                 }}
-                                                                                className="px-4 py-2 bg-brand/10 border border-brand/20 text-brand text-[8px] font-black uppercase rounded-xl hover:bg-brand/20 transition-all"
+                                                                                className="px-4 py-2 bg-brand/10 border border-brand/20 text-brand text-[8px] md:text-[10px] lg:text-xs font-black uppercase rounded-xl hover:bg-brand/20 transition-all"
                                                                             >Approve</button>
                                                                             <button
                                                                                 onClick={() => {
@@ -5921,11 +5921,11 @@ billing payouts are required.
                                                                                         setDocPartners(prev => prev.map((p, i) => i === pi ? { ...p, docs: p.docs.map((d, j) => j === di ? { ...d, status: 'missing' } : d) } : p));
                                                                                     }
                                                                                 }}
-                                                                                className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 text-[8px] font-black uppercase rounded-xl hover:bg-red-500/20 transition-all"
+                                                                                className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 text-[8px] md:text-[10px] lg:text-xs font-black uppercase rounded-xl hover:bg-red-500/20 transition-all"
                                                                             >Reject</button>
                                                                         </>
                                                                     )}
-                                                                    <span className={`text-[8px] font-black uppercase px-3 py-1.5 rounded-lg ${
+                                                                    <span className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase px-3 py-1.5 rounded-lg ${
                                                                         doc.status === 'approved' ? 'bg-brand/10 text-brand'
                                                                         : doc.status === 'pending' ? 'bg-amber-500/10 text-amber-400'
                                                                         : 'bg-red-500/10 text-red-400'
@@ -5946,7 +5946,7 @@ billing payouts are required.
                                     }).length === 0 && (
                                         <div className="col-span-2 py-24 flex flex-col items-center justify-center gap-4 border border-dashed border-white/8 rounded-[2.5rem]">
                                             <FolderSearch size={40} className="text-gray-700" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">No partners match this filter</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-600">No partners match this filter</p>
                                         </div>
                                     )}
                                 </div>
@@ -5964,7 +5964,7 @@ billing payouts are required.
                                             </div>
                                         </div>
                                         <div className="px-4 py-1.5 bg-brand/10 border border-brand/20 rounded-xl">
-                                            <p className="text-[10px] font-black text-brand tracking-[0.3em] uppercase">ID: {user?.id || 'D-000-01'}</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand tracking-[0.3em] uppercase">ID: {user?.id || 'D-000-01'}</p>
                                         </div>
                                     </div>
                                     <div><h2 className="text-6xl font-black italic uppercase tracking-tighter leading-none">{dossierFullName || 'Chief Director'}</h2><p className="text-brand text-sm font-bold uppercase tracking-[0.5em] mt-2 italic">Clearance Level: ALPHA PRIME</p></div>
@@ -5981,7 +5981,7 @@ billing payouts are required.
                                                     { label: 'Operational Address', value: dossierAddress, onChange: e => setDossierAddress(e.target.value), icon: MapPin }
                                                 ].map((d, i) => (
                                                     <div key={i} className="p-6 bg-white/5 rounded-[2rem] border border-white/5 space-y-1">
-                                                        <div className="flex items-center gap-2 text-gray-500 mb-2"><d.icon size={12} /><span className="text-[9px] font-black uppercase tracking-widest">{d.label}</span></div>
+                                                        <div className="flex items-center gap-2 text-gray-500 mb-2"><d.icon size={12} /><span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest">{d.label}</span></div>
                                                         <input value={d.value} onChange={d.onChange} placeholder="—" className="bg-transparent text-sm font-black italic text-white outline-none w-full placeholder-gray-700" />
                                                     </div>
                                                 ))}
@@ -5994,20 +5994,20 @@ billing payouts are required.
                                                     { label: 'Emergency Contact', value: dossierEmergency, onChange: e => setDossierEmergency(e.target.value), icon: ShieldCheck }
                                                 ].map((d, i) => (
                                                     <div key={i} className="p-6 bg-white/5 rounded-[2rem] border border-white/5 space-y-1">
-                                                        <div className="flex items-center gap-2 text-gray-500 mb-2"><d.icon size={12} /><span className="text-[9px] font-black uppercase tracking-widest">{d.label}</span></div>
+                                                        <div className="flex items-center gap-2 text-gray-500 mb-2"><d.icon size={12} /><span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest">{d.label}</span></div>
                                                         <input value={d.value} onChange={d.onChange} placeholder="—" className="bg-transparent text-sm font-black italic text-white outline-none w-full placeholder-gray-700" />
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
                                         <div className="pt-6">
-                                            <button onClick={handleCommitDossier} className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT CHANGES TO GRID</button>
+                                            <button onClick={handleCommitDossier} className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-[1.02] transition-all">COMMIT CHANGES TO GRID</button>
                                         </div>
                                     </div>
                                     <div className="bg-brand/5 border border-brand/20 rounded-[3.5rem] p-12 flex flex-col justify-center items-center text-center space-y-8">
                                         <ShieldCheck size={64} className="text-brand" />
                                         <p className="text-xl font-black italic uppercase text-white leading-tight">Identity Session <br/> Verified & Secure</p>
-                                        <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest italic">All changes are encrypted via AES-256 and require a 24h cooldown for PII propagation.</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase tracking-widest italic">All changes are encrypted via AES-256 and require a 24h cooldown for PII propagation.</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -6032,7 +6032,7 @@ billing payouts are required.
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-black italic uppercase text-white">Register <span className="text-brand">Partner</span></h3>
-                                        <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.25em] mt-0.5">KYC Document Folder</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-gray-500 uppercase tracking-[0.25em] mt-0.5">KYC Document Folder</p>
                                     </div>
                                 </div>
                                 <button onClick={() => { setIsAddPartnerModalOpen(false); setNewPartnerForm({ name: '', type: 'restaurant', joinDate: '' }); }}
@@ -6043,7 +6043,7 @@ billing payouts are required.
                             <div className="p-10 space-y-6">
                                 {/* Partner Name */}
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 flex items-center gap-2"><Building2 size={11} /> Partner / Business Name</label>
+                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-gray-400 flex items-center gap-2"><Building2 size={11} /> Partner / Business Name</label>
                                     <input
                                         value={newPartnerForm.name}
                                         onChange={e => setNewPartnerForm(p => ({ ...p, name: e.target.value }))}
@@ -6053,11 +6053,11 @@ billing payouts are required.
                                 </div>
                                 {/* Partner Type */}
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">Business Type</label>
+                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-gray-400">Business Type</label>
                                     <div className="grid grid-cols-4 gap-3">
                                         {['restaurant', 'hotel', 'fleet', 'venue'].map(t => (
                                             <button key={t} onClick={() => setNewPartnerForm(p => ({ ...p, type: t }))}
-                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
+                                                className={`py-3 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest border transition-all ${
                                                     newPartnerForm.type === t ? 'bg-brand text-dark-900 border-brand' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
                                                 }`}>{t}</button>
                                         ))}
@@ -6065,10 +6065,10 @@ billing payouts are required.
                                 </div>
                                 {/* Docs preview */}
                                 <div className="bg-white/[0.03] border border-white/8 rounded-2xl p-5">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-4">Required Documents for <span className="text-brand">{newPartnerForm.type}</span></p>
+                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-gray-500 mb-4">Required Documents for <span className="text-brand">{newPartnerForm.type}</span></p>
                                     <div className="space-y-2">
                                         {REQUIRED_DOCS[newPartnerForm.type].map((doc, i) => (
-                                            <div key={i} className="flex items-center gap-3 text-[10px] text-gray-400">
+                                            <div key={i} className="flex items-center gap-3 text-[10px] md:text-xs lg:text-sm text-gray-400">
                                                 <FileX2 size={12} className="text-red-400 shrink-0" />
                                                 {doc}
                                             </div>
@@ -6090,7 +6090,7 @@ billing payouts are required.
                                         setNewPartnerForm({ name: '', type: 'restaurant', joinDate: '' });
                                         triggerNotification('success', 'Partner Registered', `${partner.name} folder created. ${docs.length} documents pending.`);
                                     }}
-                                    className="w-full py-4 bg-brand text-dark-900 rounded-2xl text-xs font-black uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(52,211,153,0.25)] hover:scale-[1.01] active:scale-[0.99] transition-all"
+                                    className="w-full py-4 bg-brand text-dark-900 rounded-2xl text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(52,211,153,0.25)] hover:scale-[1.01] active:scale-[0.99] transition-all"
                                 >Create KYC Folder</button>
                             </div>
                         </motion.div>
@@ -6117,7 +6117,7 @@ billing payouts are required.
                                     </div>
                                     <div>
                                         <h3 className="text-2xl font-black italic uppercase text-white">Onboard <span className="text-brand">Staff</span></h3>
-                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.25em] mt-0.5">Personnel Clearance Terminal</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-[0.25em] mt-0.5">Personnel Clearance Terminal</p>
                                     </div>
                                 </div>
                                 <button onClick={() => { setIsAddStaffModalOpen(false); setGeneratedInviteLink(null); }} className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">
@@ -6132,17 +6132,17 @@ billing payouts are required.
                                 {generatedInviteLink && (
                                     <div className="mx-10 mt-8 p-6 bg-brand/10 border border-brand/30 rounded-2xl">
                                         <div className="flex items-center justify-between mb-3">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-brand">✅ Staff Invite Link Generated</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand">✅ Staff Invite Link Generated</p>
                                             <button
                                                 onClick={() => setGeneratedInviteLink(null)}
-                                                className="text-gray-500 hover:text-white text-xs"
+                                                className="text-gray-500 hover:text-white text-xs md:text-sm lg:text-base"
                                             >dismiss</button>
                                         </div>
                                         <div className="flex items-center gap-3 bg-black/40 border border-white/10 rounded-xl p-4">
-                                            <p className="flex-1 text-[10px] text-gray-300 font-mono truncate">{generatedInviteLink}</p>
+                                            <p className="flex-1 text-[10px] md:text-xs lg:text-sm text-gray-300 font-mono truncate">{generatedInviteLink}</p>
                                             <button
                                                 onClick={() => handleCopyInviteLink(generatedInviteLink)}
-                                                className={`shrink-0 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                                className={`shrink-0 px-5 py-2 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${
                                                     inviteCopied
                                                         ? 'bg-brand text-dark-900'
                                                         : 'bg-white/10 text-white hover:bg-brand/20 hover:text-brand'
@@ -6151,7 +6151,7 @@ billing payouts are required.
                                                 {inviteCopied ? '✓ Copied' : 'Copy Link'}
                                             </button>
                                         </div>
-                                        <p className="text-[9px] text-gray-500 mt-2">Send this link to your staff member. It grants direct access to the Admin Dashboard with their assigned hub permissions.</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 mt-2">Send this link to your staff member. It grants direct access to the Admin Dashboard with their assigned hub permissions.</p>
                                     </div>
                                 )}
 
@@ -6159,7 +6159,7 @@ billing payouts are required.
 
                                     {/* ── LEFT: PERSONNEL DETAILS ── */}
                                     <div className="p-10 space-y-5">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand/70 mb-6">① Personnel Info</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-brand/70 mb-6">① Personnel Info</p>
                                         {[
                                             { l: 'Full Name', f: 'name', ph: 'e.g. Jordan Weber', i: UserIcon, t: 'text' },
                                             { l: 'Operational Email', f: 'email', ph: 'staff@green.io', i: Mail, t: 'email' },
@@ -6172,7 +6172,7 @@ billing payouts are required.
                                             <div key={inp.f} className="space-y-1.5">
                                                 <div className="flex items-center gap-2">
                                                     <inp.i size={11} className="text-brand/60" />
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-300">{inp.l}</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-gray-300">{inp.l}</span>
                                                 </div>
                                                 <input
                                                     type={inp.t}
@@ -6190,7 +6190,7 @@ billing payouts are required.
 
                                         {/* Hub Permission Toggles */}
                                         <div>
-                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand/70 mb-6">② Hub Access Permissions</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] text-brand/70 mb-6">② Hub Access Permissions</p>
                                             <div className="space-y-2.5">
                                                 {[
                                                     { key: 'fleet',      label: 'Fleet Hub',      icon: Car,         color: 'text-sky-400',    bg: 'bg-sky-400/10',    border: 'border-sky-400/20',    active: 'border-sky-400/50 bg-sky-400/15' },
@@ -6214,7 +6214,7 @@ billing payouts are required.
                                                                 <div className={`w-9 h-9 rounded-lg ${isOn ? hub.bg : 'bg-white/[0.06]'} flex items-center justify-center transition-all`}>
                                                                     <HubIcon size={16} className={isOn ? hub.color : 'text-gray-500'} />
                                                                 </div>
-                                                                <span className={`text-xs font-black uppercase tracking-widest transition-all ${isOn ? 'text-white' : 'text-gray-400'}`}>{hub.label}</span>
+                                                                <span className={`text-xs md:text-sm lg:text-base font-black uppercase tracking-widest transition-all ${isOn ? 'text-white' : 'text-gray-400'}`}>{hub.label}</span>
                                                             </div>
                                                             {/* Toggle pill */}
                                                             <div className={`w-10 h-5 rounded-full border transition-all flex items-center ${
@@ -6234,9 +6234,9 @@ billing payouts are required.
                                         <div className="p-6 bg-brand/5 border border-brand/15 rounded-2xl">
                                             <div className="flex items-center gap-3 mb-3">
                                                 <ExternalLink size={14} className="text-brand" />
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-brand">Invitation Link</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand">Invitation Link</p>
                                             </div>
-                                            <p className="text-[10px] text-gray-400 leading-relaxed">
+                                            <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 leading-relaxed">
                                                 Clicking <strong className="text-white">Grant Staff Clearance</strong> will generate a secure one-time invite link. 
                                                 Share it with your staff member — it gives them direct access to the Admin Dashboard with only the hubs you enabled above.
                                             </p>
@@ -6250,13 +6250,13 @@ billing payouts are required.
                             <div className="px-10 py-7 border-t border-white/5 flex gap-4">
                                 <button
                                     onClick={() => { setIsAddStaffModalOpen(false); setGeneratedInviteLink(null); }}
-                                    className="px-8 py-4 bg-white/5 border border-white/8 text-gray-400 rounded-2xl text-xs font-black uppercase tracking-[0.3em] hover:bg-white/10 transition-all"
+                                    className="px-8 py-4 bg-white/5 border border-white/8 text-gray-400 rounded-2xl text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.3em] hover:bg-white/10 transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleAddStaff}
-                                    className="flex-1 py-4 bg-brand text-dark-900 rounded-2xl text-xs font-black uppercase tracking-[0.4em] shadow-[0_0_40px_rgba(52,211,153,0.25)] hover:scale-[1.01] active:scale-[0.99] transition-all"
+                                    className="flex-1 py-4 bg-brand text-dark-900 rounded-2xl text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.4em] shadow-[0_0_40px_rgba(52,211,153,0.25)] hover:scale-[1.01] active:scale-[0.99] transition-all"
                                 >
                                     Grant Staff Clearance &amp; Generate Invite Link
                                 </button>
@@ -6285,14 +6285,14 @@ billing payouts are required.
                                         <Bot size={16} />
                                     </div>
                                     <div>
-                                        <h4 className="text-[10px] font-black uppercase text-white tracking-wider leading-none">Green Core</h4>
+                                        <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-white tracking-wider leading-none">Green Core</h4>
                                         <p className="text-[6px] font-black text-brand uppercase tracking-widest mt-0.5">tactical sync</p>
                                     </div>
                                 </div>
                                 <select 
                                     value={activeAgent} 
                                     onChange={e => setActiveAgent(e.target.value)}
-                                    className="bg-[#0D1421] border border-white/10 rounded-xl text-[8px] font-black uppercase tracking-widest text-brand px-3 py-2 outline-none cursor-pointer"
+                                    className="bg-[#0D1421] border border-white/10 rounded-xl text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-brand px-3 py-2 outline-none cursor-pointer"
                                 >
                                     <option value="financial">Fiscal Sentinel</option>
                                     <option value="law_sentinel">Legal Counsel</option>
@@ -6309,7 +6309,7 @@ billing payouts are required.
                                 <div className="flex items-center gap-3">
                                     <Phone size={14} className={isListening ? 'text-brand' : 'text-gray-600'} />
                                     <div>
-                                        <p className="text-[9px] font-black text-white uppercase">Background Tactical Comm</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-white uppercase">Background Tactical Comm</p>
                                         <p className="text-[7px] font-bold text-gray-500 uppercase italic">Listen while app is in background</p>
                                     </div>
                                 </div>
@@ -6322,7 +6322,7 @@ billing payouts are required.
                             </div>
 
                             {/* DYNAMIC MESSAGES STREAM */}
-                            <div className="space-y-4 h-[240px] overflow-y-auto mb-6 pr-2 scrollbar-thin scrollbar-thumb-brand scrollbar-track-transparent font-mono text-[9px]">
+                            <div className="space-y-4 h-[240px] overflow-y-auto mb-6 pr-2 scrollbar-thin scrollbar-thumb-brand scrollbar-track-transparent font-mono text-[9px] md:text-[11px] lg:text-xs">
                                 {chatMessages[activeAgent]?.map((m, i) => (
                                     <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
                                         <div className="flex items-center gap-1.5 mb-0.5 text-[6px] text-gray-500">
@@ -6336,7 +6336,7 @@ billing payouts are required.
                                             {m.text.split('\n').map((line, lIdx) => {
                                                 let content = line;
                                                 if (content.startsWith('### ')) {
-                                                    return <h5 key={lIdx} className="text-[9px] font-black text-white uppercase italic tracking-wider mb-1 mt-1">{content.replace('### ', '')}</h5>;
+                                                    return <h5 key={lIdx} className="text-[9px] md:text-[11px] lg:text-xs font-black text-white uppercase italic tracking-wider mb-1 mt-1">{content.replace('### ', '')}</h5>;
                                                 }
                                                 if (content.startsWith('**') && content.endsWith('**')) {
                                                     return <p key={lIdx} className="font-black text-white">{content.replaceAll('**', '')}</p>;
@@ -6366,7 +6366,7 @@ billing payouts are required.
                                     placeholder={`Instruct ${activeAgent}...`} 
                                     value={currentMessage}
                                     onChange={e => setCurrentMessage(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 pr-12 text-[9px] font-mono text-white placeholder-gray-600 focus:border-brand/50 focus:outline-none transition-all"
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 pr-12 text-[9px] md:text-[11px] lg:text-xs font-mono text-white placeholder-gray-600 focus:border-brand/50 focus:outline-none transition-all"
                                 />
                                 <button 
                                     type="submit"
@@ -6388,7 +6388,7 @@ billing payouts are required.
                         {isAssistantExpanded ? <X size={24} /> : <Zap size={24} className="group-hover:animate-pulse" />}
                     </motion.div>
                     {!isAssistantExpanded && neuralInsights.length > 0 && (
-                        <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-[#05080F]">
+                        <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white text-[10px] md:text-xs lg:text-sm font-black rounded-full flex items-center justify-center border-2 border-[#05080F]">
                             {neuralInsights.length}
                         </span>
                     )}
@@ -6426,7 +6426,7 @@ billing payouts are required.
                                     </div>
                                     <div>
                                         <h3 className="text-3xl font-black italic uppercase text-white">Upload <span className="text-brand">Custom Ticket</span></h3>
-                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">Register new custom ticket into directory repositories</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest mt-1">Register new custom ticket into directory repositories</p>
                                     </div>
                                 </div>
                                 <button 
@@ -6494,19 +6494,19 @@ billing payouts are required.
                                 className="flex-1 overflow-y-auto p-12 space-y-8 no-scrollbar"
                             >
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Event Name</label>
+                                    <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-500 tracking-[0.2em]">Event Name</label>
                                     <input 
                                         type="text" 
                                         required 
                                         placeholder="e.g. VIP Champions Afterparty / Grand Hotel Ballroom Gala"
                                         value={newTicketData.name}
                                         onChange={e => setNewTicketData(prev => ({ ...prev, name: e.target.value }))}
-                                        className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs text-white placeholder-gray-600 focus:outline-none transition-all"
+                                        className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs md:text-sm lg:text-base text-white placeholder-gray-600 focus:outline-none transition-all"
                                     />
                                 </div>
 
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Target Repository Folder</label>
+                                    <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-500 tracking-[0.2em]">Target Repository Folder</label>
                                     <div className="grid grid-cols-3 gap-4">
                                         {[
                                             { id: 'CM', label: 'Club Nightlife', desc: 'Club & Concert Tiers' },
@@ -6526,8 +6526,8 @@ billing payouts are required.
                                                             : 'bg-white/5 border-white/5 hover:border-white/20'
                                                     }`}
                                                 >
-                                                    <span className={`text-[10px] font-black uppercase ${isSelected ? 'text-brand' : 'text-gray-400'}`}>{opt.label}</span>
-                                                    <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">{opt.desc}</span>
+                                                    <span className={`text-[10px] md:text-xs lg:text-sm font-black uppercase ${isSelected ? 'text-brand' : 'text-gray-400'}`}>{opt.label}</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest">{opt.desc}</span>
                                                 </button>
                                             );
                                         })}
@@ -6536,41 +6536,41 @@ billing payouts are required.
 
                                 <div className="grid grid-cols-2 gap-8">
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Date</label>
+                                        <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-500 tracking-[0.2em]">Date</label>
                                         <input 
                                             type="date" 
                                             required
                                             value={newTicketData.date}
                                             onChange={e => setNewTicketData(prev => ({ ...prev, date: e.target.value }))}
-                                            className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs text-white placeholder-gray-600 focus:outline-none transition-all"
+                                            className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs md:text-sm lg:text-base text-white placeholder-gray-600 focus:outline-none transition-all"
                                         />
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Time</label>
+                                        <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-500 tracking-[0.2em]">Time</label>
                                         <input 
                                             type="time" 
                                             required
                                             value={newTicketData.time}
                                             onChange={e => setNewTicketData(prev => ({ ...prev, time: e.target.value }))}
-                                            className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs text-white placeholder-gray-600 focus:outline-none transition-all"
+                                            className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs md:text-sm lg:text-base text-white placeholder-gray-600 focus:outline-none transition-all"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-8">
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Ticket Tier Name</label>
+                                        <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-500 tracking-[0.2em]">Ticket Tier Name</label>
                                         <input 
                                             type="text" 
                                             required
                                             placeholder="VIP Golden Pass / Standard Seating"
                                             value={newTicketData.tierName || ''}
                                             onChange={e => setNewTicketData(prev => ({ ...prev, tierName: e.target.value }))}
-                                            className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs text-white placeholder-gray-600 focus:outline-none transition-all"
+                                            className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs md:text-sm lg:text-base text-white placeholder-gray-600 focus:outline-none transition-all"
                                         />
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Base Price (€)</label>
+                                        <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-500 tracking-[0.2em]">Base Price (€)</label>
                                         <input 
                                             type="number" 
                                             required
@@ -6579,13 +6579,13 @@ billing payouts are required.
                                             placeholder="45.00"
                                             value={newTicketData.price}
                                             onChange={e => setNewTicketData(prev => ({ ...prev, price: e.target.value }))}
-                                            className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs text-white placeholder-gray-600 focus:outline-none transition-all"
+                                            className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs md:text-sm lg:text-base text-white placeholder-gray-600 focus:outline-none transition-all"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Total Inventory Capacity</label>
+                                    <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-500 tracking-[0.2em]">Total Inventory Capacity</label>
                                     <input 
                                         type="number" 
                                         required
@@ -6593,7 +6593,7 @@ billing payouts are required.
                                         placeholder="500"
                                         value={newTicketData.quantity}
                                         onChange={e => setNewTicketData(prev => ({ ...prev, quantity: e.target.value }))}
-                                        className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs text-white placeholder-gray-600 focus:outline-none transition-all"
+                                        className="w-full bg-[#05080F]/90 border border-white/10 focus:border-brand/40 rounded-2xl py-4 px-6 text-xs md:text-sm lg:text-base text-white placeholder-gray-600 focus:outline-none transition-all"
                                     />
                                 </div>
 
@@ -6601,13 +6601,13 @@ billing payouts are required.
                                     <button 
                                         type="button"
                                         onClick={() => setIsAddingTicket(false)}
-                                        className="flex-1 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] font-black uppercase text-white/70 tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                        className="flex-1 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase text-white/70 tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
                                     >
                                         Cancel
                                     </button>
                                     <button 
                                         type="submit"
-                                        className="flex-[2] py-4 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-[0_0_30px_var(--brand-glow)] hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                        className="flex-[2] py-4 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-[0_0_30px_var(--brand-glow)] hover:scale-[1.02] active:scale-[0.98] transition-all"
                                     >
                                         Register Custom Ticket
                                     </button>
@@ -6640,7 +6640,7 @@ billing payouts are required.
                                     </div>
                                     <div>
                                         <h3 className="text-3xl font-black italic uppercase text-white">Mediathek <span className="text-brand">Document Vault</span></h3>
-                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">Select pre-verified records for compliance synchronization</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest mt-1">Select pre-verified records for compliance synchronization</p>
                                     </div>
                                 </div>
                                 <button 
@@ -6652,7 +6652,7 @@ billing payouts are required.
                             </div>
                             
                             <div className="flex-1 overflow-y-auto p-12 space-y-8 no-scrollbar">
-                                <div className="p-6 bg-brand/5 border border-brand/20 rounded-3xl text-xs text-gray-400 italic">
+                                <div className="p-6 bg-brand/5 border border-brand/20 rounded-3xl text-xs md:text-sm lg:text-base text-gray-400 italic">
                                     "These documents have been pre-uploaded to your Green operational vault. Select a record to initiate high-speed GwG OCR analysis."
                                 </div>
                                 
@@ -6674,7 +6674,7 @@ billing payouts are required.
                                                 </div>
                                                 <div>
                                                     <p className="text-lg font-black italic text-white uppercase truncate max-w-[280px] group-hover:text-brand transition-colors">{docItem.name}</p>
-                                                    <p className="text-[10px] font-black text-gray-500 uppercase mt-1 tracking-wider">{docItem.type} • {docItem.size}</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase mt-1 tracking-wider">{docItem.type} • {docItem.size}</p>
                                                 </div>
                                             </div>
                                             <ChevronRight size={20} className="text-gray-700 group-hover:text-brand group-hover:translate-x-1 transition-all" />
@@ -6711,7 +6711,7 @@ billing payouts are required.
 
                             <div className="flex flex-col items-center text-center mb-8">
                                 <h3 className="text-3xl font-black italic uppercase text-white tracking-tighter">Biometric <span className="text-brand">Camera Scanner</span></h3>
-                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-2">Position physical compliance document in the viewport guide</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-widest mt-2">Position physical compliance document in the viewport guide</p>
                             </div>
 
                             {/* Viewport Frame */}
@@ -6730,12 +6730,12 @@ billing payouts are required.
                                 />
 
                                 {/* Telemetry Details Overlay */}
-                                <div className="absolute bottom-6 left-8 text-[8px] font-mono text-brand/60 uppercase space-y-1 pointer-events-none z-10">
+                                <div className="absolute bottom-6 left-8 text-[8px] md:text-[10px] lg:text-xs font-mono text-brand/60 uppercase space-y-1 pointer-events-none z-10">
                                     <p>RESOLUTION: 4K UHD</p>
                                     <p>EXPOSURE: EV -0.3</p>
                                     <p>FPS: 60 SECURE_GRID</p>
                                 </div>
-                                <div className="absolute bottom-6 right-8 text-[8px] font-mono text-brand/60 uppercase space-y-1 pointer-events-none text-right z-10">
+                                <div className="absolute bottom-6 right-8 text-[8px] md:text-[10px] lg:text-xs font-mono text-brand/60 uppercase space-y-1 pointer-events-none text-right z-10">
                                     <p>OCR ALIGNMENT: 99.4%</p>
                                     <p>GWG SECURE: ACTIVE</p>
                                     <p>SYS_AUTH: BAFIN PRIME</p>
@@ -6746,13 +6746,13 @@ billing payouts are required.
                                 
                                 <div className="text-center z-20 space-y-4">
                                     <Bot size={48} className="text-brand/40 mx-auto animate-bounce" />
-                                    <p className="text-[10px] font-mono text-brand/60 tracking-[0.2em] uppercase">Ready for Biometric Capture</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-mono text-brand/60 tracking-[0.2em] uppercase">Ready for Biometric Capture</p>
                                 </div>
                             </div>
 
                             <button 
                                 onClick={captureCameraScan}
-                                className="mt-8 w-full py-5 bg-brand text-dark-900 rounded-3xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                className="mt-8 w-full py-5 bg-brand text-dark-900 rounded-3xl text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.2em] shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                             >
                                 CAPTURE & RUN COMPLIANCE ANALYSIS
                             </button>
@@ -6779,7 +6779,7 @@ billing payouts are required.
                                         <h3 className="text-xl font-black italic uppercase text-dark-900">
                                             {editingPolicy === 'privacy' ? 'Edit Privacy Protocol' : 'Edit Terms of Service'}
                                         </h3>
-                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mt-1">
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase tracking-wider mt-1">
                                             Rewriting production legal mandates & GDPR compliance clauses
                                         </p>
                                     </div>
@@ -6791,7 +6791,7 @@ billing payouts are required.
                             
                             <div className="p-10 bg-white flex-1 overflow-y-auto space-y-6">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] font-black uppercase tracking-wider text-gray-500">Policy Content (Markdown Format)</label>
+                                    <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-wider text-gray-500">Policy Content (Markdown Format)</label>
                                     <textarea 
                                         value={tempPolicyText} 
                                         onChange={e => setTempPolicyText(e.target.value)}
@@ -6804,7 +6804,7 @@ billing payouts are required.
                             <div className="px-10 py-6 border-t border-gray-200 bg-gray-50 flex gap-4 justify-end">
                                 <button 
                                     onClick={() => setEditingPolicy(null)} 
-                                    className="px-6 py-4 border border-gray-200 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-black hover:bg-gray-100 transition-all"
+                                    className="px-6 py-4 border border-gray-200 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 hover:text-black hover:bg-gray-100 transition-all"
                                 >
                                     Cancel
                                 </button>
@@ -6818,7 +6818,7 @@ billing payouts are required.
                                         setEditingPolicy(null);
                                         triggerNotification('success', 'CHANGES STAGED', 'Click "Commit Policies" to push changes to production.');
                                     }}
-                                    className="px-8 py-4 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand/10"
+                                    className="px-8 py-4 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand/10"
                                 >
                                     Apply & Stage Changes
                                 </button>

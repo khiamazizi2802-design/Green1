@@ -995,12 +995,12 @@ const ManagerDashboard = () => {
                 const key = keyMatch[2];
                 const rest = line.substring(keyMatch[0].length);
                 return (
-                    <div key={idx} className="font-mono text-xs leading-5">
+                    <div key={idx} className="font-mono text-xs md:text-sm lg:text-base leading-5">
                         {indent}<span className="text-brand">"{key}"</span>:{highlightValues(rest)}
                     </div>
                 );
             }
-            return <div key={idx} className="font-mono text-xs leading-5 text-secondary">{line}</div>;
+            return <div key={idx} className="font-mono text-xs md:text-sm lg:text-base leading-5 text-secondary">{line}</div>;
         });
     };
 
@@ -2242,13 +2242,13 @@ const ManagerDashboard = () => {
             </div>
             <div className="space-y-4 max-w-md">
                 <h2 className="text-4xl font-black italic uppercase tracking-tighter text-white">Access <span className="text-red-500">Denied</span></h2>
-                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
+                <p className="text-xs md:text-sm lg:text-base text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
                     Personnel ID <span className="text-white">{user?.id || 'STAFF-GRID'}</span> is not authorized to access the <span className="text-brand">{feature}</span> module.
                 </p>
             </div>
             <button 
                 onClick={() => setView('overview')}
-                className="px-10 py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-brand hover:text-dark-900 hover:border-brand transition-all shadow-xl"
+                className="px-10 py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:bg-brand hover:text-dark-900 hover:border-brand transition-all shadow-xl"
             >
                 Return to Operational Hub
             </button>
@@ -2323,7 +2323,7 @@ const ManagerDashboard = () => {
                         }`}
                     >
                         <item.icon size={22} className={`${isMobile ? '' : 'mb-1.5'} ${view === item.id ? 'text-brand' : 'text-secondary group-hover:text-brand transition-colors'}`} />
-                        <span className={`font-black uppercase tracking-widest leading-tight ${isMobile ? 'text-[10px] text-left' : 'text-[9px] text-center'}`}>{item.label}</span>
+                        <span className={`font-black uppercase tracking-widest leading-tight ${isMobile ? 'text-[10px] md:text-xs lg:text-sm text-left' : 'text-[9px] md:text-[11px] lg:text-xs text-center'}`}>{item.label}</span>
                         {item.badge && (
                             <span className={`absolute px-1.5 py-0.5 bg-brand text-dark-900 text-[7px] font-black rounded-md ${isMobile ? 'right-4 top-1/2 -translate-y-1/2' : '-top-1 -right-1'}`}>{item.badge}</span>
                         )}
@@ -2336,7 +2336,7 @@ const ManagerDashboard = () => {
                 <div className="space-y-2">
                     {(!isInternalSidebarCollapsed || isMobile) && (
                         <div className="flex items-center justify-between px-2 mb-1">
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-brand/60 italic">Language Hub</span>
+                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand/60 italic">Language Hub</span>
                             <Languages size={12} className="text-brand/40" />
                         </div>
                     )}
@@ -2352,7 +2352,7 @@ const ManagerDashboard = () => {
                                     setIsLangExpanded(true);
                                 }}
                                 onFocus={() => setIsLangExpanded(true)}
-                                className="w-full bg-btn-sec border border-main rounded-2xl p-4 pl-10 text-[9px] font-black uppercase tracking-widest focus:border-brand/40 outline-none text-primary"
+                                className="w-full bg-btn-sec border border-main rounded-2xl p-4 pl-10 text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest focus:border-brand/40 outline-none text-primary"
                             />
                         )}
                         {isInternalSidebarCollapsed && !isMobile && (
@@ -2374,7 +2374,7 @@ const ManagerDashboard = () => {
                                     className={`w-full p-2.5 rounded-xl flex items-center justify-between transition-all ${lang === l.code ? 'bg-brand/10 text-brand border border-brand/20' : 'hover:bg-btn-sec text-secondary'}`}
                                 >
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[9px] font-black uppercase">{l.name}</span>
+                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase">{l.name}</span>
                                         <span className="text-[7px] font-bold opacity-30">{l.native}</span>
                                     </div>
                                     {lang === l.code && <CheckCircle size={10} />}
@@ -2389,7 +2389,7 @@ const ManagerDashboard = () => {
                     className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl bg-btn-sec text-secondary hover:text-brand hover:bg-brand/10 transition-all border border-main cursor-pointer"
                 >
                     {theme === 'light' ? <Moon size={18} className="shrink-0 text-brand" /> : <Sun size={18} className="shrink-0 text-brand" />}
-                    {(!isInternalSidebarCollapsed || isMobile) && <span className="text-[10px] font-black uppercase tracking-widest">Theme: {theme === 'light' ? 'Light' : 'Dark'}</span>}
+                    {(!isInternalSidebarCollapsed || isMobile) && <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">Theme: {theme === 'light' ? 'Light' : 'Dark'}</span>}
                 </button>
 
                 <button 
@@ -2400,7 +2400,7 @@ const ManagerDashboard = () => {
                     className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl bg-btn-sec text-secondary hover:text-red-400 hover:bg-red-500/10 transition-all border border-main"
                 >
                     <X size={18} className="shrink-0" />
-                    {(!isInternalSidebarCollapsed || isMobile) && <span className="text-[10px] font-black uppercase tracking-widest">Exit Portal</span>}
+                    {(!isInternalSidebarCollapsed || isMobile) && <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">Exit Portal</span>}
                 </button>
             </div>
         </>
@@ -2495,7 +2495,7 @@ const ManagerDashboard = () => {
                             )}
                             <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">Good Evening, {simRole === 'staff' ? 'Staff' : 'Manager'} {user?.name || 'Alex'}</h2>
                         </div>
-                        <div className="text-[11px] font-medium text-gray-400 mt-1 flex items-center gap-2">
+                        <div className="text-[11px] md:text-sm lg:text-base font-medium text-gray-400 mt-1 flex items-center gap-2">
                             <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                             <span>|</span>
                             <span>{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
@@ -2512,7 +2512,7 @@ const ManagerDashboard = () => {
                         {/* Notification Bell */}
                         <div className="relative cursor-pointer w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full text-[9px] font-bold flex items-center justify-center text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]">3</span>
+                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full text-[9px] md:text-[11px] lg:text-xs font-bold flex items-center justify-center text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]">3</span>
                         </div>
 
                         {/* Profile */}
@@ -2520,7 +2520,7 @@ const ManagerDashboard = () => {
                             <img src={user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-white/10" />
                             <div className="hidden md:block text-left">
                                 <p className="text-sm font-bold text-white">{user?.name || 'Alex P.'}</p>
-                                <p className="text-[10px] text-gray-400">{simRole === 'staff' ? 'Staff Member' : 'Manager'}</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">{simRole === 'staff' ? 'Staff Member' : 'Manager'}</p>
                             </div>
                         </div>
                     </div>
@@ -2543,7 +2543,7 @@ const ManagerDashboard = () => {
                                     </div>
                                     <div className="space-y-3">
                                         <h2 className="text-3xl font-black italic uppercase tracking-tighter text-red-500 text-glow-red">Operational Suspension</h2>
-                                        <p className="text-xs font-bold text-secondary uppercase tracking-[0.25em]">Access Restricted • PBefG §49 / GwG Art. 12</p>
+                                        <p className="text-xs md:text-sm lg:text-base font-bold text-secondary uppercase tracking-[0.25em]">Access Restricted • PBefG §49 / GwG Art. 12</p>
                                     </div>
                                     <p className="text-sm text-gray-300 max-w-xl leading-relaxed">
                                         Under federal regulatory frameworks, your organization's operational dispatch privileges are currently suspended. 
@@ -2551,8 +2551,8 @@ const ManagerDashboard = () => {
                                     </p>
                                     
                                     {/* Document status summary in the lock screen */}
-                                    <div className="w-full max-w-md bg-black/40 border border-white/5 rounded-2xl p-6 text-left space-y-3 font-mono text-[10px]">
-                                        <div className="flex justify-between border-b border-white/5 pb-2 text-[10px] font-bold text-gray-400">
+                                    <div className="w-full max-w-md bg-black/40 border border-white/5 rounded-2xl p-6 text-left space-y-3 font-mono text-[10px] md:text-xs lg:text-sm">
+                                        <div className="flex justify-between border-b border-white/5 pb-2 text-[10px] md:text-xs lg:text-sm font-bold text-gray-400">
                                             <span>REQUIRED CREDENTIALS</span>
                                             <span>STATUS</span>
                                         </div>
@@ -2589,13 +2589,13 @@ const ManagerDashboard = () => {
                                     <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
                                         <button 
                                             onClick={() => setView('documents')}
-                                            className="flex-1 py-4 bg-brand text-dark-900 font-black uppercase tracking-widest text-[10px] rounded-xl shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                            className="flex-1 py-4 bg-brand text-dark-900 font-black uppercase tracking-widest text-[10px] md:text-xs lg:text-sm rounded-xl shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                                         >
                                             Go to Compliance Vault
                                         </button>
                                         <button 
                                             onClick={handleDevAutoApprove}
-                                            className="flex-1 py-4 bg-white/5 border border-white/10 hover:border-brand/40 text-gray-400 hover:text-white font-black uppercase tracking-widest text-[8px] rounded-xl transition-all"
+                                            className="flex-1 py-4 bg-white/5 border border-white/10 hover:border-brand/40 text-gray-400 hover:text-white font-black uppercase tracking-widest text-[8px] md:text-[10px] lg:text-xs rounded-xl transition-all"
                                         >
                                             [DEV BYPASS] Auto-Approve All
                                         </button>
@@ -2611,13 +2611,13 @@ const ManagerDashboard = () => {
                                         {/* STAT 1 */}
                                         <div className="glass-panel-subtle p-5 rounded-2xl border border-white/5 hover:border-brand/30 transition-all relative flex flex-col justify-between h-[110px]">
                                             <div className="flex justify-between items-start">
-                                                <span className="text-[11px] font-medium text-gray-300">Reservations</span>
-                                                <span className="text-[9px] bg-white/5 text-gray-300 px-1 py-0.5 rounded flex items-center"><ChevronRight size={12} /></span>
+                                                <span className="text-[11px] md:text-sm lg:text-base font-medium text-gray-300">Reservations</span>
+                                                <span className="text-[9px] md:text-[11px] lg:text-xs bg-white/5 text-gray-300 px-1 py-0.5 rounded flex items-center"><ChevronRight size={12} /></span>
                                             </div>
                                             <div className="flex justify-between items-end mt-2">
                                                 <div className="flex items-baseline gap-1.5">
                                                     <span className="text-2xl font-bold text-white">88%</span>
-                                                    <span className="text-[10px] text-gray-400 font-medium">booked</span>
+                                                    <span className="text-[10px] md:text-xs lg:text-sm text-gray-400 font-medium">booked</span>
                                                 </div>
                                                 <div className="w-14 h-8 opacity-70">
                                                     <svg viewBox="0 0 100 30" className="w-full h-full stroke-gray-400" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -2629,8 +2629,8 @@ const ManagerDashboard = () => {
                                         {/* STAT 2 */}
                                         <div className="glass-panel-subtle p-5 rounded-2xl border border-white/5 hover:border-brand/30 transition-all relative flex flex-col justify-between h-[110px]">
                                             <div className="flex justify-between items-start">
-                                                <span className="text-[11px] font-medium text-gray-300">Active Tables</span>
-                                                <span className="text-[9px] bg-brand/10 text-brand px-1 py-0.5 rounded flex items-center border border-brand/20"><Activity size={10} className="mr-0.5"/></span>
+                                                <span className="text-[11px] md:text-sm lg:text-base font-medium text-gray-300">Active Tables</span>
+                                                <span className="text-[9px] md:text-[11px] lg:text-xs bg-brand/10 text-brand px-1 py-0.5 rounded flex items-center border border-brand/20"><Activity size={10} className="mr-0.5"/></span>
                                             </div>
                                             <div className="flex justify-between items-end mt-2">
                                                 <div className="flex items-baseline gap-1.5">
@@ -2646,8 +2646,8 @@ const ManagerDashboard = () => {
                                         {/* STAT 3 */}
                                         <div className="glass-panel-subtle p-5 rounded-2xl border border-white/5 hover:border-brand/30 transition-all relative flex flex-col justify-between h-[110px]">
                                             <div className="flex justify-between items-start">
-                                                <span className="text-[11px] font-medium text-gray-300">Orders in Progress</span>
-                                                <span className="text-[10px] text-gray-500 flex items-center">
+                                                <span className="text-[11px] md:text-sm lg:text-base font-medium text-gray-300">Orders in Progress</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm text-gray-500 flex items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                                 </span>
                                             </div>
@@ -2665,8 +2665,8 @@ const ManagerDashboard = () => {
                                         {/* STAT 4 */}
                                         <div className="glass-panel-subtle p-5 rounded-2xl border border-white/5 hover:border-brand/30 transition-all relative flex flex-col justify-between h-[110px]">
                                             <div className="flex justify-between items-start">
-                                                <span className="text-[11px] font-medium text-gray-300">Revenue Today</span>
-                                                <span className="text-[9px] bg-brand/10 text-brand px-1 py-0.5 rounded flex items-center border border-brand/20"><TrendingUp size={10} className="mr-0.5"/></span>
+                                                <span className="text-[11px] md:text-sm lg:text-base font-medium text-gray-300">Revenue Today</span>
+                                                <span className="text-[9px] md:text-[11px] lg:text-xs bg-brand/10 text-brand px-1 py-0.5 rounded flex items-center border border-brand/20"><TrendingUp size={10} className="mr-0.5"/></span>
                                             </div>
                                             <div className="flex justify-between items-end mt-2">
                                                 <div className="flex items-baseline gap-1.5">
@@ -2690,38 +2690,38 @@ const ManagerDashboard = () => {
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 cursor-pointer"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                             </div>
                                             <div className="flex items-center gap-2 mb-4">
-                                                <span className="text-[10px] text-gray-400">Floor-time</span>
-                                                <span className="text-[10px] text-gray-500">Floor 1 & 2</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm text-gray-400">Floor-time</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm text-gray-500">Floor 1 & 2</span>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3 mb-6">
                                                 <div className="bg-[#0B121E]/50 border border-brand/50 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(52,211,153,0.15)] relative overflow-hidden">
                                                     <div className="absolute top-0 left-0 w-full h-full bg-brand/5"></div>
                                                     <span className="text-xl font-bold text-white relative z-10">101</span>
-                                                    <span className="text-[9px] font-bold text-brand relative z-10">Reserved</span>
-                                                    <span className="text-[8px] text-gray-400 mt-1 relative z-10">8 PM</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-bold text-brand relative z-10">Reserved</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 mt-1 relative z-10">8 PM</span>
                                                 </div>
                                                 <div className="bg-[#0B121E]/50 border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center text-center">
                                                     <span className="text-xl font-bold text-white">102</span>
-                                                    <span className="text-[9px] text-gray-400 mt-1">4 Guest</span>
-                                                    <span className="text-[8px] text-gray-500">Detail</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs text-gray-400 mt-1">4 Guest</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-500">Detail</span>
                                                 </div>
                                                 <div className="bg-[#0B121E]/50 border border-brand/50 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(52,211,153,0.15)] relative overflow-hidden">
                                                     <div className="absolute top-0 left-0 w-full h-full bg-brand/5"></div>
                                                     <span className="text-xl font-bold text-white relative z-10">103</span>
-                                                    <span className="text-[9px] text-gray-400 relative z-10">4 Guest</span>
-                                                    <span className="text-[8px] text-gray-400 mt-1 relative z-10">8 PM</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs text-gray-400 relative z-10">4 Guest</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 mt-1 relative z-10">8 PM</span>
                                                 </div>
                                                 <div className="bg-[#0B121E]/50 border border-purple-500/50 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(168,85,247,0.15)] relative overflow-hidden">
                                                     <div className="absolute top-0 left-0 w-full h-full bg-purple-500/5"></div>
                                                     <span className="text-xl font-bold text-white relative z-10">104</span>
-                                                    <span className="text-[9px] font-bold text-purple-400 relative z-10">Reserved</span>
-                                                    <span className="text-[8px] text-gray-400 mt-1 relative z-10">8:30 PM</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-bold text-purple-400 relative z-10">Reserved</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 mt-1 relative z-10">8:30 PM</span>
                                                 </div>
                                             </div>
                                             <div>
-                                                <h4 className="text-[11px] font-bold text-white mb-2">Upcoming:</h4>
-                                                <p className="text-[10px] text-gray-400 mb-1">8:00 PM - Davis (4)</p>
-                                                <p className="text-[10px] text-gray-400">8:15 PM - Chen (2)</p>
+                                                <h4 className="text-[11px] md:text-sm lg:text-base font-bold text-white mb-2">Upcoming:</h4>
+                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 mb-1">8:00 PM - Davis (4)</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">8:15 PM - Chen (2)</p>
                                             </div>
                                         </div>
 
@@ -2736,20 +2736,20 @@ const ManagerDashboard = () => {
                                                 {/* Ticket 1 */}
                                                 <div className="bg-[#0B121E]/50 border border-purple-500/30 rounded-xl p-4 shadow-[0_0_15px_rgba(168,85,247,0.1)] relative">
                                                     <div className="flex justify-between items-start mb-2">
-                                                        <h4 className="text-[11px] text-white">Ticket #142 <span className="text-gray-400">(Table 103)</span></h4>
+                                                        <h4 className="text-[11px] md:text-sm lg:text-base text-white">Ticket #142 <span className="text-gray-400">(Table 103)</span></h4>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                                     </div>
                                                     <div className="flex justify-between items-start mb-4">
-                                                        <div className="text-[10px] text-gray-400 leading-relaxed">
+                                                        <div className="text-[10px] md:text-xs lg:text-sm text-gray-400 leading-relaxed">
                                                             <p>Steak Frites</p>
                                                             <p>Salmon</p>
                                                         </div>
-                                                        <span className="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30">In Prep</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30">In Prep</span>
                                                     </div>
                                                     <div className="h-1 w-full bg-white/5 rounded-full mb-3 overflow-hidden">
                                                         <div className="h-full w-[60%] bg-purple-500"></div>
                                                     </div>
-                                                    <div className="flex justify-between items-center text-[9px] text-gray-500">
+                                                    <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs text-gray-500">
                                                         <span>Order at 7:45 PM</span>
                                                         <span className="flex items-center gap-1"><Users size={10} /> 2</span>
                                                     </div>
@@ -2758,20 +2758,20 @@ const ManagerDashboard = () => {
                                                 {/* Ticket 2 */}
                                                 <div className="bg-[#0B121E]/50 border border-brand/30 rounded-xl p-4 shadow-[0_0_15px_rgba(52,211,153,0.1)] relative">
                                                     <div className="flex justify-between items-start mb-2">
-                                                        <h4 className="text-[11px] text-white">Ticket #143 <span className="text-gray-400">(Table 105)</span></h4>
+                                                        <h4 className="text-[11px] md:text-sm lg:text-base text-white">Ticket #143 <span className="text-gray-400">(Table 105)</span></h4>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                                     </div>
                                                     <div className="flex justify-between items-start mb-4">
-                                                        <div className="text-[10px] text-gray-400 leading-relaxed">
+                                                        <div className="text-[10px] md:text-xs lg:text-sm text-gray-400 leading-relaxed">
                                                             <p>Lobster Risotto</p>
                                                             <p>Duck Breast</p>
                                                         </div>
-                                                        <span className="text-[9px] bg-brand/20 text-brand px-2 py-0.5 rounded-full border border-brand/30">Pending</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs bg-brand/20 text-brand px-2 py-0.5 rounded-full border border-brand/30">Pending</span>
                                                     </div>
                                                     <div className="h-1 w-full bg-white/5 rounded-full mb-3 overflow-hidden">
                                                         <div className="h-full w-[15%] bg-brand"></div>
                                                     </div>
-                                                    <div className="flex justify-between items-center text-[9px] text-gray-500">
+                                                    <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs text-gray-500">
                                                         <span>Order at 7:35 PM</span>
                                                         <span className="flex items-center gap-1"><Users size={10} /> 3</span>
                                                     </div>
@@ -2795,13 +2795,13 @@ const ManagerDashboard = () => {
                                                     <div className="flex-1">
                                                         <div className="flex justify-between items-start">
                                                             <div>
-                                                                <h4 className="text-[11px] text-white">Wagyu Ribeye</h4>
-                                                                <p className="text-[10px] text-gray-400">($140)</p>
+                                                                <h4 className="text-[11px] md:text-sm lg:text-base text-white">Wagyu Ribeye</h4>
+                                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">($140)</p>
                                                             </div>
                                                         </div>
-                                                        <p className="text-[8px] text-gray-500 mt-1 line-clamp-1">Description with seal and aircon glow.</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 mt-1 line-clamp-1">Description with seal and aircon glow.</p>
                                                         <div className="flex justify-between items-center mt-2">
-                                                            <span className="text-[9px] text-brand">Active</span>
+                                                            <span className="text-[9px] md:text-[11px] lg:text-xs text-brand">Active</span>
                                                             <div className="w-7 h-4 bg-brand rounded-full relative">
                                                                 <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full"></div>
                                                             </div>
@@ -2817,12 +2817,12 @@ const ManagerDashboard = () => {
                                                     <div className="flex-1">
                                                         <div className="flex justify-between items-start">
                                                             <div>
-                                                                <h4 className="text-[11px] text-white">Lobster Bisque</h4>
-                                                                <p className="text-[10px] text-gray-400">($35)</p>
+                                                                <h4 className="text-[11px] md:text-sm lg:text-base text-white">Lobster Bisque</h4>
+                                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">($35)</p>
                                                             </div>
                                                         </div>
                                                         <div className="flex justify-between items-center mt-4">
-                                                            <span className="text-[9px] text-gray-500">Sold Out</span>
+                                                            <span className="text-[9px] md:text-[11px] lg:text-xs text-gray-500">Sold Out</span>
                                                             <div className="w-7 h-4 bg-white/20 rounded-full relative">
                                                                 <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-gray-400 rounded-full"></div>
                                                             </div>
@@ -2838,12 +2838,12 @@ const ManagerDashboard = () => {
                                                     <div className="flex-1">
                                                         <div className="flex justify-between items-start">
                                                             <div>
-                                                                <h4 className="text-[11px] text-white">Truffle Pasta</h4>
-                                                                <p className="text-[10px] text-gray-400">($45)</p>
+                                                                <h4 className="text-[11px] md:text-sm lg:text-base text-white">Truffle Pasta</h4>
+                                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">($45)</p>
                                                             </div>
                                                         </div>
                                                         <div className="flex justify-between items-center mt-4">
-                                                            <span className="text-[9px] text-brand">Active</span>
+                                                            <span className="text-[9px] md:text-[11px] lg:text-xs text-brand">Active</span>
                                                             <div className="w-7 h-4 bg-brand rounded-full relative">
                                                                 <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full"></div>
                                                             </div>
@@ -2875,7 +2875,7 @@ const ManagerDashboard = () => {
                                                     value={orderSearch}
                                                     onChange={(e) => setOrderSearch(e.target.value)}
                                                     placeholder="Search active orders..."
-                                                    className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-[11px] text-white placeholder:text-white/20 focus:outline-none focus:border-brand/40 focus:bg-white/10 transition-all font-medium"
+                                                    className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-[11px] md:text-sm lg:text-base text-white placeholder:text-white/20 focus:outline-none focus:border-brand/40 focus:bg-white/10 transition-all font-medium"
                                                 />
                                             </div>
                                         </div>
@@ -2885,7 +2885,7 @@ const ManagerDashboard = () => {
                                                 <button 
                                                     key={filter} 
                                                     onClick={() => setOrderFilter(filter)}
-                                                    className={`flex-1 md:w-32 px-4 py-3 rounded-2xl text-[9px] font-black uppercase transition-all whitespace-nowrap ${
+                                                    className={`flex-1 md:w-32 px-4 py-3 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase transition-all whitespace-nowrap ${
                                                         orderFilter === filter 
                                                         ? 'bg-brand text-dark-900 shadow-[0_10px_20px_rgba(52,211,153,0.2)]' 
                                                         : 'text-gray-500 hover:text-white'
@@ -2957,7 +2957,7 @@ const ManagerDashboard = () => {
                                                                     <>
                                                                         <span className="text-[7px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">TICKET</span>
                                                                         <span className="text-[6px] font-black text-secondary uppercase tracking-[0.2em] mb-0.5 leading-none">DETAILS</span>
-                                                                        <span className="text-[10px] font-black italic text-brand leading-none truncate w-full text-center px-1">{order.id?.toString()?.replace('#', '')}</span>
+                                                                        <span className="text-[10px] md:text-xs lg:text-sm font-black italic text-brand leading-none truncate w-full text-center px-1">{order.id?.toString()?.replace('#', '')}</span>
                                                                     </>
                                                                 ) : (
                                                                     <>
@@ -2975,7 +2975,7 @@ const ManagerDashboard = () => {
                                                                 
                                                                 {/* ID badge */}
                                                                 <div className="w-fit px-2 py-0.5 bg-brand/10 border border-brand/20 rounded-md">
-                                                                    <span className="text-[8px] font-black text-brand uppercase tracking-widest leading-none">
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest leading-none">
                                                                         {order.type === 'Stay Booking' ? 'BOOKING REF' : 'CHECK ID'}: {order.id}
                                                                     </span>
                                                                 </div>
@@ -2985,7 +2985,7 @@ const ManagerDashboard = () => {
                                                                     <select
                                                                         value={order.status}
                                                                         onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                                                                        className="bg-dark-900 border border-main rounded-md px-1.5 py-0.5 text-[8px] font-black text-brand uppercase outline-none focus:border-brand/40 cursor-pointer h-[21px]"
+                                                                        className="bg-dark-900 border border-main rounded-md px-1.5 py-0.5 text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase outline-none focus:border-brand/40 cursor-pointer h-[21px]"
                                                                     >
                                                                         {order.type === 'Stay Booking' ? (
                                                                             <>
@@ -3034,7 +3034,7 @@ const ManagerDashboard = () => {
                                                                                 idNumber: 'PA-99281-XM'
                                                                             });
                                                                         }}
-                                                                        className="flex items-center gap-1 px-2.5 py-0.5 bg-brand text-dark-900 rounded-md text-[8px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md shrink-0 h-[21px]"
+                                                                        className="flex items-center gap-1 px-2.5 py-0.5 bg-brand text-dark-900 rounded-md text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md shrink-0 h-[21px]"
                                                                     >
                                                                         <User size={8} />
                                                                         Details
@@ -3130,7 +3130,7 @@ const ManagerDashboard = () => {
                                                                             }
                                                                         }}
                                                                         disabled={order.status === 'Served' || order.status === 'Departed'}
-                                                                        className={`h-9 px-4 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-md shrink-0 ${
+                                                                        className={`h-9 px-4 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-md shrink-0 ${
                                                                             (order.status === 'Served' || order.status === 'Departed') 
                                                                             ? 'bg-btn-sec text-secondary border border-main opacity-50 cursor-not-allowed' 
                                                                             : 'bg-brand text-dark-900 hover:scale-105 active:scale-95'
@@ -3153,11 +3153,11 @@ const ManagerDashboard = () => {
                                                             <div className="flex justify-between items-center leading-none">
                                                                 <div className="flex items-center gap-1.5 leading-none">
                                                                     {order.type === 'Stay Booking' ? <BedDouble size={12} className="text-brand" /> : <Utensils size={12} className="text-brand" />}
-                                                                    <span className="text-[8px] font-black text-secondary uppercase tracking-widest opacity-60 leading-none">
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-60 leading-none">
                                                                         {order.type === 'Stay Booking' ? 'Reservation Overview' : 'Production Pipeline'}
                                                                     </span>
                                                                 </div>
-                                                                <span className="text-[8px] font-black text-brand uppercase tracking-widest leading-none bg-brand/5 px-1.5 py-0.5 rounded border border-brand/10">
+                                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest leading-none bg-brand/5 px-1.5 py-0.5 rounded border border-brand/10">
                                                                     STATUS: {order.status}
                                                                 </span>
                                                             </div>
@@ -3168,23 +3168,23 @@ const ManagerDashboard = () => {
                                                                     <div className="grid grid-cols-2 gap-2">
                                                                         <div className="p-2 bg-btn-sec rounded-xl border border-main">
                                                                             <span className="text-[7px] font-black text-secondary uppercase tracking-widest block opacity-60">Check-In</span>
-                                                                            <p className="text-xs font-black italic uppercase text-primary">{order.guestDetails?.checkIn || order.checkIn || 'MAY 19'}</p>
+                                                                            <p className="text-xs md:text-sm lg:text-base font-black italic uppercase text-primary">{order.guestDetails?.checkIn || order.checkIn || 'MAY 19'}</p>
                                                                         </div>
                                                                         <div className="p-2 bg-btn-sec rounded-xl border border-main">
                                                                             <span className="text-[7px] font-black text-secondary uppercase tracking-widest block opacity-60">Check-Out</span>
-                                                                            <p className="text-xs font-black italic uppercase text-primary">{order.guestDetails?.checkOut || order.checkOut || 'MAY 21'}</p>
+                                                                            <p className="text-xs md:text-sm lg:text-base font-black italic uppercase text-primary">{order.guestDetails?.checkOut || order.checkOut || 'MAY 21'}</p>
                                                                         </div>
                                                                     </div>
                                                                     
                                                                     {(order.address || order.email || order.phone || order.guestDetails) && (
-                                                                        <div className="p-3 bg-dark-950/40 rounded-xl border border-main/50 text-[8px] space-y-1.5 w-full">
+                                                                        <div className="p-3 bg-dark-950/40 rounded-xl border border-main/50 text-[8px] md:text-[10px] lg:text-xs space-y-1.5 w-full">
                                                                             {order.guestDetails?.bookingType === 'business' && (
                                                                                 <div className="mb-2 pb-2 border-b border-white/5">
                                                                                     <span className="text-brand font-black uppercase tracking-wider block opacity-90 mb-1">Business Booking</span>
                                                                                     {order.guestDetails?.companyName && (
                                                                                         <div>
                                                                                             <span className="text-secondary font-black uppercase tracking-wider block opacity-60">Company</span>
-                                                                                            <span className="text-primary font-bold text-[9px] truncate block">{order.guestDetails.companyName}</span>
+                                                                                            <span className="text-primary font-bold text-[9px] md:text-[11px] lg:text-xs truncate block">{order.guestDetails.companyName}</span>
                                                                                         </div>
                                                                                     )}
                                                                                 </div>
@@ -3192,38 +3192,38 @@ const ManagerDashboard = () => {
                                                                             {order.email && (
                                                                                 <div>
                                                                                     <span className="text-secondary font-black uppercase tracking-wider block opacity-60">Email</span>
-                                                                                    <span className="text-primary font-bold text-[9px] truncate block">{order.email}</span>
+                                                                                    <span className="text-primary font-bold text-[9px] md:text-[11px] lg:text-xs truncate block">{order.email}</span>
                                                                                 </div>
                                                                             )}
                                                                             {order.phone && (
                                                                                 <div>
                                                                                     <span className="text-secondary font-black uppercase tracking-wider block opacity-60">Phone</span>
-                                                                                    <span className="text-primary font-bold text-[9px]">{order.phone}</span>
+                                                                                    <span className="text-primary font-bold text-[9px] md:text-[11px] lg:text-xs">{order.phone}</span>
                                                                                 </div>
                                                                             )}
                                                                             {order.address && (
                                                                                 <div>
                                                                                     <span className="text-secondary font-black uppercase tracking-wider block opacity-60">Residential Address</span>
-                                                                                    <span className="text-primary font-bold text-[9px]">{order.address}, {order.zip} {order.city}</span>
+                                                                                    <span className="text-primary font-bold text-[9px] md:text-[11px] lg:text-xs">{order.address}, {order.zip} {order.city}</span>
                                                                                 </div>
                                                                             )}
                                                                             {order.idNumber && (
                                                                                 <div className="grid grid-cols-2 gap-2">
                                                                                     <div>
                                                                                         <span className="text-secondary font-black uppercase tracking-wider block opacity-60">Passport / ID</span>
-                                                                                        <span className="text-primary font-bold text-[9px]">{order.idNumber}</span>
+                                                                                        <span className="text-primary font-bold text-[9px] md:text-[11px] lg:text-xs">{order.idNumber}</span>
                                                                                     </div>
                                                                                     <div>
                                                                                         <span className="text-secondary font-black uppercase tracking-wider block opacity-60">DOB</span>
-                                                                                        <span className="text-primary font-bold text-[9px]">{order.dob}</span>
+                                                                                        <span className="text-primary font-bold text-[9px] md:text-[11px] lg:text-xs">{order.dob}</span>
                                                                                     </div>
                                                                                 </div>
                                                                             )}
                                                                             {(order.company || order.companyAddress) && (
                                                                                 <div className="pt-1.5 border-t border-white/5 mt-1">
                                                                                     <span className="text-brand font-black uppercase tracking-[0.2em] block text-[7px] mb-0.5">🏢 Company Invoice Address</span>
-                                                                                    {order.company && <span className="text-primary font-black block text-[8px] uppercase">{order.company}</span>}
-                                                                                    {order.companyAddress && <span className="text-primary font-bold block text-[8px]">{order.companyAddress}</span>}
+                                                                                    {order.company && <span className="text-primary font-black block text-[8px] md:text-[10px] lg:text-xs uppercase">{order.company}</span>}
+                                                                                    {order.companyAddress && <span className="text-primary font-bold block text-[8px] md:text-[10px] lg:text-xs">{order.companyAddress}</span>}
                                                                                 </div>
                                                                             )}
                                                                         </div>
@@ -3264,7 +3264,7 @@ const ManagerDashboard = () => {
                                                                                     />
                                                                                     </div>
                                                                                     {/* Qty Badge */}
-                                                                                    <div className="absolute -top-1.5 -right-1.5 bg-brand text-dark-900 font-extrabold text-[9px] w-5 h-5 rounded-full border border-main shadow-lg flex items-center justify-center">
+                                                                                    <div className="absolute -top-1.5 -right-1.5 bg-brand text-dark-900 font-extrabold text-[9px] md:text-[11px] lg:text-xs w-5 h-5 rounded-full border border-main shadow-lg flex items-center justify-center">
                                                                                         {qty}
                                                                                     </div>
                                                                                     {/* Item Name */}
@@ -3321,11 +3321,11 @@ const ManagerDashboard = () => {
                                             <p className="text-secondary text-xs md:text-sm font-bold uppercase tracking-widest leading-none">Real-time Revenue & Payout Ledger</p>
                                         </div>
                                         {managerContext === 'FM' ? (
-                                            <button onClick={handleDownloadPDFReport} className="w-full md:w-auto px-6 py-3 bg-brand text-dark-900 border border-brand rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(33,255,165,0.3)]">
+                                            <button onClick={handleDownloadPDFReport} className="w-full md:w-auto px-6 py-3 bg-brand text-dark-900 border border-brand rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(33,255,165,0.3)]">
                                                 <FileText size={14} /> Export Monthly PDF Report
                                             </button>
                                         ) : (
-                                            <button onClick={handleExport} className="w-full md:w-auto px-6 py-3 bg-btn-sec border border-main rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/10 transition-all whitespace-nowrap">
+                                            <button onClick={handleExport} className="w-full md:w-auto px-6 py-3 bg-btn-sec border border-main rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/10 transition-all whitespace-nowrap">
                                                 <FileText size={14} /> Export Datev (SKR03)
                                             </button>
                                         )}
@@ -3341,10 +3341,10 @@ const ManagerDashboard = () => {
                                                     </div>
                                                     <div>
                                                         <h3 className="text-2xl font-black italic uppercase tracking-tighter text-primary leading-none">Gross Performance</h3>
-                                                        <p className="text-[9px] font-bold text-secondary uppercase tracking-[0.2em] mt-1">Real-time Revenue Telemetry</p>
+                                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-[0.2em] mt-1">Real-time Revenue Telemetry</p>
                                                     </div>
                                                 </div>
-                                                <select className="bg-btn-sec border border-main rounded-xl px-4 py-2 text-[10px] font-black uppercase outline-none text-primary cursor-pointer hover:border-brand/40 transition-all w-full sm:w-auto">
+                                                <select className="bg-btn-sec border border-main rounded-xl px-4 py-2 text-[10px] md:text-xs lg:text-sm font-black uppercase outline-none text-primary cursor-pointer hover:border-brand/40 transition-all w-full sm:w-auto">
                                                     <option>Last 30 Days</option>
                                                     <option>Last 7 Days</option>
                                                     <option>Year to Date</option>
@@ -3385,7 +3385,7 @@ const ManagerDashboard = () => {
                                                     { h: 55, v: 6600, l: 'Sun' }
                                                 ].map((bar, i) => (
                                                     <div key={i} className="flex flex-col items-center gap-3 w-full h-full justify-end group">
-                                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-primary bg-dark-900 border border-brand/30 px-2 py-1 rounded mb-1 whitespace-nowrap">
+                                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] md:text-xs lg:text-sm font-black text-primary bg-dark-900 border border-brand/30 px-2 py-1 rounded mb-1 whitespace-nowrap">
                                                             €{bar.v.toLocaleString()}
                                                         </div>
                                                         <motion.div 
@@ -3396,23 +3396,23 @@ const ManagerDashboard = () => {
                                                             <div className="absolute bottom-0 w-full bg-brand/40 h-1" />
                                                             <div className="absolute inset-0 bg-gradient-to-t from-brand/20 to-transparent opacity-0 group-hover:opacity-100" />
                                                         </motion.div>
-                                                        <span className="text-[8px] font-black text-secondary uppercase">{bar.l}</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase">{bar.l}</span>
                                                     </div>
                                                 ))}
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 relative z-10 border-t border-white/5">
                                                 <div className="p-6 bg-black/40 rounded-[2rem] border border-main flex flex-col justify-center items-center">
-                                                    <p className="text-[8px] font-black text-secondary uppercase tracking-[0.2em] mb-2">Gross Invoiced</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-[0.2em] mb-2">Gross Invoiced</p>
                                                     <p className="text-2xl font-black italic text-primary">€{commissionData.gross.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                                 </div>
                                                 <div className={`p-6 rounded-[2rem] border flex flex-col justify-center items-center ${commissionData.isFree ? "bg-brand/5 border-brand/20" : "bg-red-500/5 border-red-500/10"}`}>
-                                                    <p className={`text-[8px] font-black uppercase tracking-[0.2em] mb-2 ${commissionData.isFree ? "text-brand" : "text-red-500/70"}`}>{commissionData.rateLabel}</p>
+                                                    <p className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] mb-2 ${commissionData.isFree ? "text-brand" : "text-red-500/70"}`}>{commissionData.rateLabel}</p>
                                                     <p className={`text-2xl font-black italic ${commissionData.isFree ? "text-brand" : "text-red-400"}`}>-€{commissionData.commission.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                                 </div>
                                                 <div className="p-6 bg-brand/10 rounded-[2rem] border border-brand/30 flex flex-col justify-center items-center relative overflow-hidden">
                                                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(33,255,165,0.15)_0%,transparent_70%)]" />
-                                                    <p className="text-[8px] font-black text-brand uppercase tracking-[0.2em] mb-2 relative z-10">Settlement Amount</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-[0.2em] mb-2 relative z-10">Settlement Amount</p>
                                                     <p className="text-2xl font-black italic text-brand relative z-10">€{commissionData.settlement.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                                 </div>
                                             </div>
@@ -3437,70 +3437,70 @@ const ManagerDashboard = () => {
 
                                                      <div className="space-y-4">
                                                          <div className="space-y-1">
-                                                             <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">Legal Entity Name</label>
+                                                             <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">Legal Entity Name</label>
                                                              <input 
                                                                  type="text" 
                                                                  value={businessInfo.legalName} 
                                                                  onChange={(e) => setBusinessInfo({...businessInfo, legalName: e.target.value})}
-                                                                 className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                 className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
                                                              />
                                                          </div>
                                                          <div className="space-y-1">
-                                                             <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">Notification Email (Tickets/Commissions)</label>
+                                                             <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">Notification Email (Tickets/Commissions)</label>
                                                              <input 
                                                                  type="email" 
                                                                  value={businessInfo.ticketEmail || ''} 
                                                                  onChange={(e) => setBusinessInfo({...businessInfo, ticketEmail: e.target.value})}
-                                                                 className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                 className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
                                                                  placeholder="accounting@venue.com"
                                                              />
                                                          </div>
                                                          <div className="space-y-1">
-                                                             <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">HQ Physical Address</label>
+                                                             <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">HQ Physical Address</label>
                                                              <input 
                                                                  type="text" 
                                                                  value={businessInfo.address} 
                                                                  onChange={(e) => setBusinessInfo({...businessInfo, address: e.target.value})}
-                                                                 className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                 className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
                                                              />
                                                          </div>
                                                          <div className="grid grid-cols-2 gap-3">
                                                              <div className="space-y-1">
-                                                                 <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">ZIP Code</label>
+                                                                 <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">ZIP Code</label>
                                                                  <input 
                                                                      type="text" 
                                                                      value={businessInfo.zip || ''} 
                                                                      onChange={(e) => setBusinessInfo({...businessInfo, zip: e.target.value})}
-                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
                                                                  />
                                                              </div>
                                                              <div className="space-y-1">
-                                                                 <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">City</label>
+                                                                 <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">City</label>
                                                                  <input 
                                                                      type="text" 
                                                                      value={businessInfo.city || ''} 
                                                                      onChange={(e) => setBusinessInfo({...businessInfo, city: e.target.value})}
-                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
                                                                  />
                                                              </div>
                                                          </div>
                                                          <div className="grid grid-cols-2 gap-3">
                                                              <div className="space-y-1">
-                                                                 <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">VAT ID (EU/DE)</label>
+                                                                 <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">VAT ID (EU/DE)</label>
                                                                  <input 
                                                                      type="text" 
                                                                      value={businessInfo.vatId}
                                                                      onChange={(e) => setBusinessInfo({...businessInfo, vatId: e.target.value})}
-                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
                                                                  />
                                                              </div>
                                                              <div className="space-y-1">
-                                                                 <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-1">Settlement IBAN</label>
+                                                                 <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">Settlement IBAN</label>
                                                                  <input 
                                                                      type="text" 
                                                                      value={bankingInfo.iban} 
                                                                      onChange={(e) => setBankingInfo({...bankingInfo, iban: e.target.value})}
-                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
+                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
                                                                  />
                                                              </div>
                                                          </div>
@@ -3508,7 +3508,7 @@ const ManagerDashboard = () => {
 
                                                      <button 
                                                          onClick={handleSaveGlobalManifest}
-                                                         className="w-full py-4 mt-2 bg-brand/10 border border-brand/20 rounded-xl text-[9px] font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all flex items-center justify-center gap-1.5 shadow-lg"
+                                                         className="w-full py-4 mt-2 bg-brand/10 border border-brand/20 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all flex items-center justify-center gap-1.5 shadow-lg"
                                                      >
                                                          <CheckCircle2 size={12} /> Save Credentials
                                                      </button>
@@ -3543,22 +3543,22 @@ const ManagerDashboard = () => {
                                             <button className="px-10 py-5 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all relative z-20">
                                                 Activate Camera
                                             </button>
-                                            <p className="text-[10px] font-black text-secondary uppercase tracking-widest italic">Waiting for Crew Handshake...</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-widest italic">Waiting for Crew Handshake...</p>
                                         </div>
 
                                         {/* MANUAL FORM */}
                                         <div className="bg-glass rounded-[3rem] p-10 space-y-8 border border-glass shadow-2xl">
                                             <div className="space-y-1">
                                                 <h3 className="text-xl font-black italic uppercase text-primary">Manual Voucher Entry</h3>
-                                                <p className="text-[9px] text-secondary font-bold uppercase tracking-widest">Fallback authorization ledger</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs text-secondary font-bold uppercase tracking-widest">Fallback authorization ledger</p>
                                             </div>
                                             <div className="space-y-6">
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black text-secondary uppercase tracking-widest ml-1">Voucher ID / Code</label>
+                                                    <label className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-widest ml-1">Voucher ID / Code</label>
                                                     <input type="text" placeholder="GRN-XXXX" className="w-full bg-btn-sec border border-main rounded-2xl p-5 text-sm font-black uppercase tracking-widest text-brand outline-none focus:border-brand/40 transition-all" />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black text-secondary uppercase tracking-widest ml-1">Authorized Value (€)</label>
+                                                    <label className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-widest ml-1">Authorized Value (€)</label>
                                                     <input type="number" placeholder="0.00" className="w-full bg-btn-sec border border-main rounded-2xl p-5 text-3xl font-black text-center text-primary outline-none focus:border-brand/40 transition-all italic" />
                                                 </div>
                                                 <button className="w-full py-6 bg-brand text-dark-900 rounded-[2.5rem] font-black uppercase tracking-[0.2em] shadow-2xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all">
@@ -3581,12 +3581,12 @@ const ManagerDashboard = () => {
                                                         <div className="w-12 h-12 rounded-xl bg-btn-sec flex items-center justify-center text-primary shadow-lg"><ShieldCheck size={24} /></div>
                                                         <div>
                                                             <p className="text-sm font-black italic uppercase text-primary">{h.crew}</p>
-                                                            <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">{h.item} • {h.time}</p>
+                                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest">{h.item} • {h.time}</p>
                                                         </div>
                                                     </div>
                                                     <div className="text-right">
                                                         <p className="text-xl font-black italic text-primary leading-none">{h.amount}</p>
-                                                        <p className="text-[8px] font-black text-primary uppercase mt-1 tracking-widest">{h.status}</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-primary uppercase mt-1 tracking-widest">{h.status}</p>
                                                     </div>
                                                 </div>
                                             ))}
@@ -3603,11 +3603,11 @@ const ManagerDashboard = () => {
                                                 <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center text-brand"><Activity size={24} /></div>
                                                 <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-primary">Marketing <span className="text-brand">Hub</span></h1>
                                             </div>
-                                            <p className="text-secondary text-xs font-bold uppercase tracking-widest leading-none">Broadcast 15s 4K Reels to the Green Network</p>
+                                            <p className="text-secondary text-xs md:text-sm lg:text-base font-bold uppercase tracking-widest leading-none">Broadcast 15s 4K Reels to the Green Network</p>
                                         </div>
                                         <div className="flex gap-4 w-full md:w-auto">
                                             <div className="flex-1 md:flex-initial px-4 md:px-6 py-3 bg-btn-sec border border-main rounded-xl text-right">
-                                                <p className="text-[8px] font-black text-secondary uppercase tracking-widest">Global Reach</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest">Global Reach</p>
                                                 <p className="text-sm md:text-xl font-black italic text-brand leading-none mt-1">{isDemo ? '2.4M Pilots' : '0 Pilots'}</p>
                                             </div>
                                         </div>
@@ -3619,7 +3619,7 @@ const ManagerDashboard = () => {
                                             <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 blur-3xl -mr-10 -mt-10" />
                                             <div className="flex justify-between items-center">
                                                 <h3 className="text-xl font-black italic uppercase text-primary">Media <span className="text-brand">Studio</span></h3>
-                                                <span className="px-2 py-1 bg-brand text-dark-900 text-[8px] font-black rounded uppercase">4K Ready</span>
+                                                <span className="px-2 py-1 bg-brand text-dark-900 text-[8px] md:text-[10px] lg:text-xs font-black rounded uppercase">4K Ready</span>
                                             </div>
                                             
                                             <div 
@@ -3633,8 +3633,8 @@ const ManagerDashboard = () => {
                                                             <div className="w-12 h-12 rounded-full bg-brand/20 border border-brand/40 flex items-center justify-center text-brand mb-4">
                                                                 <CheckCircle2 size={24} />
                                                             </div>
-                                                            <p className="text-[10px] font-black uppercase text-brand">UHD 4K Ready</p>
-                                                            <p className="text-[8px] font-bold text-white mt-1 uppercase">15.0s Clip Verified</p>
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-brand">UHD 4K Ready</p>
+                                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-white mt-1 uppercase">15.0s Clip Verified</p>
                                                         </div>
                                                     </div>
                                                 ) : (
@@ -3642,7 +3642,7 @@ const ManagerDashboard = () => {
                                                         {uploadStatus === 'processing' ? (
                                                             <div className="space-y-4 w-full px-8">
                                                                 <div className="w-16 h-16 rounded-full border-4 border-brand/20 border-t-brand animate-spin mx-auto" />
-                                                                <p className="text-[10px] font-black uppercase text-brand">Processing 4K Engine...</p>
+                                                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-brand">Processing 4K Engine...</p>
                                                                 <div className="h-1 bg-white/5 rounded-full overflow-hidden">
                                                                     <motion.div 
                                                                         initial={{ width: 0 }}
@@ -3656,7 +3656,7 @@ const ManagerDashboard = () => {
                                                                 <div className="w-16 h-16 rounded-full bg-btn-sec border border-main flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                                                     <Upload size={32} />
                                                                 </div>
-                                                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Upload 15s Reel</p>
+                                                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-primary">Upload 15s Reel</p>
                                                                 <p className="text-[7px] font-bold text-secondary mt-2 uppercase">Videos exceeding 15s will be auto-clipped</p>
                                                             </>
                                                         )}
@@ -3690,7 +3690,7 @@ const ManagerDashboard = () => {
 
                                             <div className="space-y-4">
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black text-secondary uppercase tracking-widest ml-1">Caption & Vibes</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">Caption & Vibes</label>
                                                     <textarea 
                                                         value={broadcastCaption}
                                                         onChange={(e) => setBroadcastCaption(e.target.value)}
@@ -3725,7 +3725,7 @@ const ManagerDashboard = () => {
                                                         setUploadStatus(null);
                                                         setBroadcastCaption('');
                                                     }}
-                                                    className="w-full py-5 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all"
+                                                    className="w-full py-5 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] md:text-xs lg:text-sm shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all"
                                                 >
                                                     {managerContext === 'FM' ? "Upload to 4K Live Feed" : "Blast to 4K Live Feed"}
                                                 </button>
@@ -3739,7 +3739,7 @@ const ManagerDashboard = () => {
                                                     <h3 className="text-xl font-black italic uppercase text-primary">Social <span className="text-brand">Interaction Monitor</span></h3>
                                                     <div className="flex gap-2">
                                                         <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
-                                                        <span className="text-[8px] font-black text-primary uppercase tracking-widest">Live Data Sync</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-primary uppercase tracking-widest">Live Data Sync</span>
                                                     </div>
                                                 </div>
                                                 
@@ -3751,9 +3751,9 @@ const ManagerDashboard = () => {
                                                     ].map((stat, i) => (
                                                         <div key={i} className="p-6 md:p-8 bg-btn-sec rounded-[2.5rem] border border-main group hover:border-brand/20 transition-all text-left">
                                                             <stat.icon size={20} className={`${stat.color} mb-3`} />
-                                                            <p className="text-[9px] font-black text-secondary uppercase tracking-widest">{stat.label}</p>
+                                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest">{stat.label}</p>
                                                             <p className="text-2xl font-black italic text-primary mt-1">{stat.value}</p>
-                                                            <p className="text-[8px] font-black text-primary uppercase mt-2">{stat.surge}</p>
+                                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-primary uppercase mt-2">{stat.surge}</p>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -3764,7 +3764,7 @@ const ManagerDashboard = () => {
                                                     <h3 className="text-lg font-black italic uppercase text-primary">Live <span className="text-brand">15s Feed Preview</span></h3>
                                                     <button 
                                                         onClick={() => setIsFeedOpen(true)}
-                                                        className="px-6 py-2.5 bg-brand text-dark-900 rounded-2xl text-[9px] font-black uppercase tracking-wider shadow-lg shadow-brand/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                        className="px-6 py-2.5 bg-brand text-dark-900 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-wider shadow-lg shadow-brand/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                                                     >
                                                         <Activity size={12} /> View Live Feed
                                                     </button>
@@ -3780,12 +3780,12 @@ const ManagerDashboard = () => {
                                                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-6 flex flex-col justify-end text-left">
                                                                     <div className="flex items-center gap-2 mb-1">
                                                                         <Play size={12} className="text-brand" fill="currentColor" />
-                                                                        <p className="text-[10px] font-black italic text-primary">{post.title}</p>
+                                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black italic text-primary">{post.title}</p>
                                                                     </div>
                                                                     <div className="flex items-center justify-between mt-2">
                                                                         <div className="flex gap-3">
-                                                                            <span className="text-[8px] font-black text-brand uppercase">{post.views} Views</span>
-                                                                            <span className="text-[8px] font-black text-gray-400 uppercase">15.0s</span>
+                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase">{post.views} Views</span>
+                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-400 uppercase">15.0s</span>
                                                                         </div>
                                                                         <button className="p-2 bg-white/10 rounded-lg text-primary hover:bg-brand hover:text-dark-900 transition-all"><Settings size={12} /></button>
                                                                     </div>
@@ -3803,12 +3803,12 @@ const ManagerDashboard = () => {
                                                                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black to-transparent p-6 flex flex-col justify-end text-left pointer-events-none">
                                                                     <div className="flex items-center gap-2 mb-1">
                                                                         <Play size={12} className="text-brand" fill="currentColor" />
-                                                                        <p className="text-[10px] font-black italic text-primary">{post.caption || 'Partner Broadcast'}</p>
+                                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black italic text-primary">{post.caption || 'Partner Broadcast'}</p>
                                                                     </div>
                                                                     <div className="flex items-center justify-between mt-2">
                                                                         <div className="flex gap-3">
-                                                                            <span className="text-[8px] font-black text-brand uppercase">0 Views</span>
-                                                                            <span className="text-[8px] font-black text-gray-400 uppercase">15.0s</span>
+                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase">0 Views</span>
+                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-400 uppercase">15.0s</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -3818,7 +3818,7 @@ const ManagerDashboard = () => {
                                                         <div className="col-span-2 bg-btn-sec border border-main rounded-[2.5rem] p-10 text-center flex flex-col items-center justify-center min-h-[200px] w-full">
                                                             <Video size={32} className="text-secondary/30 mb-4" />
                                                             <p className="text-sm font-black italic uppercase text-primary">No Broadcasted Reels</p>
-                                                            <p className="text-[9px] font-bold text-secondary uppercase tracking-widest mt-1">Upload your first 4K Reel using the media studio on the left.</p>
+                                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest mt-1">Upload your first 4K Reel using the media studio on the left.</p>
                                                         </div>
                                                     )}
                                                 </div>
@@ -3838,7 +3838,7 @@ const ManagerDashboard = () => {
                                             </div>
                                             <p className="text-secondary text-xs md:text-sm font-bold uppercase tracking-widest leading-none">AI-Powered City Momentum & Demand Forecast</p>
                                         </div>
-                                        <div className="w-full md:w-auto px-6 py-3 bg-btn-sec border border-main rounded-xl text-[10px] font-black uppercase tracking-widest text-brand text-center whitespace-nowrap">Live Neural Data Sync</div>
+                                        <div className="w-full md:w-auto px-6 py-3 bg-btn-sec border border-main rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand text-center whitespace-nowrap">Live Neural Data Sync</div>
                                     </div>
 
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -3857,7 +3857,7 @@ const ManagerDashboard = () => {
                                                                 <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-btn-sec flex items-center justify-center shrink-0 ${event.color}`}><event.icon size={24} /></div>
                                                                 <div className="min-w-0">
                                                                     <h4 className="text-lg md:text-xl font-black italic uppercase text-primary tracking-tighter leading-tight truncate">{event.title}</h4>
-                                                                    <p className="text-[10px] font-bold text-secondary uppercase tracking-widest mt-1 truncate">{event.category} | {event.date}</p>
+                                                                    <p className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-widest mt-1 truncate">{event.category} | {event.date}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="text-left sm:text-right relative z-10 shrink-0">
@@ -3865,7 +3865,7 @@ const ManagerDashboard = () => {
                                                                     <TrendingUp size={14} className={event.color} />
                                                                     <span className={`text-2xl font-black italic ${event.color}`}>{event.impact}</span>
                                                                 </div>
-                                                                <p className="text-[8px] font-black uppercase tracking-widest text-secondary">{event.surge}</p>
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-secondary">{event.surge}</p>
                                                             </div>
                                                         </div>
                                                     ))
@@ -3873,7 +3873,7 @@ const ManagerDashboard = () => {
                                                     <div className="bg-btn-sec border border-main rounded-[2.5rem] p-10 text-center">
                                                         <Sparkles size={32} className="text-secondary/30 mx-auto mb-4" />
                                                         <p className="text-sm font-black italic uppercase text-primary">No Upcoming Events Forecast</p>
-                                                        <p className="text-[9px] font-bold text-secondary uppercase tracking-widest mt-1">AI predictive model will populate events as data syncs.</p>
+                                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest mt-1">AI predictive model will populate events as data syncs.</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -3887,15 +3887,15 @@ const ManagerDashboard = () => {
                                                     {isDemo ? (
                                                         <>
                                                             <div className="p-5 bg-btn-sec rounded-2xl border border-main">
-                                                                <p className="text-[10px] font-black text-brand uppercase mb-3 flex items-center gap-2"><Sparkles size={12} /> Strategic Advice</p>
-                                                                <p className="text-xs font-bold text-gray-300 leading-relaxed italic">
+                                                                <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase mb-3 flex items-center gap-2"><Sparkles size={12} /> Strategic Advice</p>
+                                                                <p className="text-xs md:text-sm lg:text-base font-bold text-gray-300 leading-relaxed italic">
                                                                     "The upcoming Champions League match will cause massive gridlock around Eco-Park Central. I recommend increasing valet staff by 20% and ensuring all EV chargers are pre-cleared by 15:00."
                                                                 </p>
                                                             </div>
 
                                                             <div className="p-5 bg-btn-sec rounded-2xl border border-main">
-                                                                <p className="text-[10px] font-black text-primary uppercase mb-3">Resource Forecast</p>
-                                                                <p className="text-xs font-bold text-gray-300 leading-relaxed italic">
+                                                                <p className="text-[10px] md:text-xs lg:text-sm font-black text-primary uppercase mb-3">Resource Forecast</p>
+                                                                <p className="text-xs md:text-sm lg:text-base font-bold text-gray-300 leading-relaxed italic">
                                                                     "Based on Messe attendance, your QR Paper stock will deplete in 4 days. Order placed for overnight delivery to avoid downtime."
                                                                 </p>
                                                             </div>
@@ -3903,14 +3903,14 @@ const ManagerDashboard = () => {
                                                     ) : (
                                                         <div className="p-5 bg-btn-sec rounded-2xl border border-main text-center py-10">
                                                             <Sparkles size={24} className="text-brand/20 mx-auto mb-3" />
-                                                            <p className="text-[10px] font-black text-brand uppercase">No Active Insights</p>
-                                                            <p className="text-[9px] font-bold text-secondary leading-relaxed uppercase tracking-wider mt-2">
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase">No Active Insights</p>
+                                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary leading-relaxed uppercase tracking-wider mt-2">
                                                                 Insights will generate dynamically as operational logs accumulate.
                                                             </p>
                                                         </div>
                                                     )}
 
-                                                    <button className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-105 transition-all">Optimize My Operations 🚀</button>
+                                                    <button className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-105 transition-all">Optimize My Operations 🚀</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -3963,24 +3963,24 @@ const ManagerDashboard = () => {
                                                         return (
                                                             <div key={doc.id} className="p-5 bg-btn-sec rounded-2xl border border-main flex flex-col gap-4 hover:bg-white/10 transition-all border-l-4 border-l-transparent hover:border-l-brand">
                                                                 <div className="flex justify-between items-center">
-                                                                    <span className="text-xs font-black italic uppercase text-primary">{doc.name}</span>
+                                                                    <span className="text-xs md:text-sm lg:text-base font-black italic uppercase text-primary">{doc.name}</span>
                                                                     <div>
                                                                         {docState.status === 'missing' && (
-                                                                            <span className="text-[8px] font-black text-secondary uppercase px-2 py-1 bg-white/5 rounded">Missing</span>
+                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase px-2 py-1 bg-white/5 rounded">Missing</span>
                                                                         )}
                                                                         {docState.status === 'pending' && (
-                                                                            <span className="text-[8px] font-black text-amber-500 uppercase px-2 py-1 bg-amber-500/10 rounded">Awaiting Admin</span>
+                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-amber-500 uppercase px-2 py-1 bg-amber-500/10 rounded">Awaiting Admin</span>
                                                                         )}
                                                                         {docState.status === 'approved' && (
-                                                                            <span className="text-[8px] font-black text-brand uppercase px-2 py-1 bg-brand/10 rounded">Approved ✓</span>
+                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase px-2 py-1 bg-brand/10 rounded">Approved ✓</span>
                                                                         )}
                                                                         {docState.status === 'rejected' && (
-                                                                            <span className="text-[8px] font-black text-red-500 uppercase px-2 py-1 bg-red-500/10 rounded">Rejected ✗</span>
+                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-red-500 uppercase px-2 py-1 bg-red-500/10 rounded">Rejected ✗</span>
                                                                         )}
                                                                     </div>
                                                                 </div>
                                                                 {docState.name && (
-                                                                    <div className="text-[8px] font-mono text-gray-500 truncate max-w-full">
+                                                                    <div className="text-[8px] md:text-[10px] lg:text-xs font-mono text-gray-500 truncate max-w-full">
                                                                         📄 {docState.name} ({docState.size})
                                                                     </div>
                                                                 )}
@@ -3994,7 +3994,7 @@ const ManagerDashboard = () => {
                                                                         />
                                                                         <div className="w-full py-3 bg-btn-sec border border-main rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all">
                                                                             <Upload size={14} className="text-brand" />
-                                                                            <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">
+                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-400">
                                                                                 {docState.status === 'missing' ? 'Upload (PDF/IMG)' : 'Re-Upload'}
                                                                             </span>
                                                                         </div>
@@ -4023,7 +4023,7 @@ const ManagerDashboard = () => {
                                 <motion.div key="fleet-control" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
                                     <div className="flex flex-col gap-2">
                                         <h1 className="text-4xl font-black italic uppercase tracking-tighter text-brand">Fleet Control <span className="text-primary">Hub</span></h1>
-                                        <p className="text-[10px] font-bold text-secondary uppercase tracking-[0.4em]">Asset Verification & Identity Resolution</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-[0.4em]">Asset Verification & Identity Resolution</p>
                                     </div>
 
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -4032,9 +4032,9 @@ const ManagerDashboard = () => {
                                             <div className="flex items-center justify-between">
                                                 <div className="space-y-1">
                                                     <h3 className="text-xl font-black italic uppercase tracking-tighter">Verification Queue</h3>
-                                                    <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Global Asset Governance</p>
+                                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Global Asset Governance</p>
                                                 </div>
-                                                <span className="px-3 py-1 bg-brand/10 text-brand rounded-lg text-[9px] font-black uppercase">Admin Auth Required</span>
+                                                <span className="px-3 py-1 bg-brand/10 text-brand rounded-lg text-[9px] md:text-[11px] lg:text-xs font-black uppercase">Admin Auth Required</span>
                                             </div>
 
                                             <div className="space-y-4">
@@ -4048,14 +4048,14 @@ const ManagerDashboard = () => {
                                                                     </div>
                                                                     <div>
                                                                         <p className="text-sm font-black italic uppercase text-primary">{v.driver}</p>
-                                                                        <p className="text-[9px] font-bold text-secondary uppercase">{v.model} • {v.plate}</p>
+                                                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase">{v.model} • {v.plate}</p>
                                                                     </div>
                                                                 </div>
                                                                 <div className="text-right">
                                                                     {v.status === 'awaiting_upload' ? (
-                                                                        <span className="text-[8px] font-black text-primary bg-amber-500/10 px-2 py-1 rounded uppercase">Missing V5C</span>
+                                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-primary bg-amber-500/10 px-2 py-1 rounded uppercase">Missing V5C</span>
                                                                     ) : (
-                                                                        <span className="text-[8px] font-black text-primary bg-blue-400/10 px-2 py-1 rounded uppercase">Awaiting Verification</span>
+                                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-primary bg-blue-400/10 px-2 py-1 rounded uppercase">Awaiting Verification</span>
                                                                     )}
                                                                 </div>
                                                             </div>
@@ -4064,12 +4064,12 @@ const ManagerDashboard = () => {
                                                                 {v.status === 'awaiting_upload' ? (
                                                                     <button 
                                                                         onClick={() => alert(`Opening Secure Upload for ${v.plate}...`)}
-                                                                        className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] font-black uppercase text-gray-400 hover:text-primary hover:bg-brand/20 hover:border-brand/30 transition-all flex items-center justify-center gap-2"
+                                                                        className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-gray-400 hover:text-primary hover:bg-brand/20 hover:border-brand/30 transition-all flex items-center justify-center gap-2"
                                                                     >
                                                                         <Upload size={14} className="text-brand" /> Upload V5C Registration
                                                                     </button>
                                                                 ) : (
-                                                                    <button className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] font-black uppercase text-secondary cursor-not-allowed flex items-center justify-center gap-2 opacity-50">
+                                                                    <button className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-secondary cursor-not-allowed flex items-center justify-center gap-2 opacity-50">
                                                                         <FileText size={14} /> Document Uploaded
                                                                     </button>
                                                                 )}
@@ -4110,7 +4110,7 @@ const ManagerDashboard = () => {
                                                     <div className="bg-btn-sec border border-main rounded-[2.5rem] p-10 text-center py-12">
                                                         <ShieldCheck size={32} className="text-brand/30 mx-auto mb-4 animate-pulse" />
                                                         <p className="text-sm font-black italic uppercase text-primary">All Assets Verified</p>
-                                                        <p className="text-[9px] font-bold text-secondary uppercase tracking-widest mt-1">No pending V5C uploads or verifications in queue.</p>
+                                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest mt-1">No pending V5C uploads or verifications in queue.</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -4122,7 +4122,7 @@ const ManagerDashboard = () => {
                                                 <h3 className="text-xl font-black italic uppercase tracking-tighter text-red-500">Security Red Flags</h3>
                                                 <div className={`flex items-center gap-2 px-3 py-1 rounded-lg ${isDemo ? 'bg-red-500/10 text-red-500' : 'bg-brand/10 text-brand'}`}>
                                                     <ShieldAlert size={14} className={isDemo ? 'text-red-500' : 'text-brand'} />
-                                                    <span className="text-[9px] font-black uppercase">{isDemo ? '1 Active Collision' : '0 Active Flags'}</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase">{isDemo ? '1 Active Collision' : '0 Active Flags'}</span>
                                                 </div>
                                             </div>
 
@@ -4135,7 +4135,7 @@ const ManagerDashboard = () => {
                                                         </div>
                                                         <div className="flex-1">
                                                             <p className="text-sm font-black italic uppercase text-primary">Identity Collision Detected</p>
-                                                            <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Driver: Thomas M. (ID: GRN-284M)</p>
+                                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Driver: Thomas M. (ID: GRN-284M)</p>
                                                         </div>
                                                     </div>
                                                     
@@ -4151,22 +4151,22 @@ const ManagerDashboard = () => {
                                                             <div className="aspect-square bg-dark-950 rounded-2xl border border-red-500/30 overflow-hidden relative shadow-inner">
                                                                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Stranger" className="w-full h-full grayscale" alt="Stranger" />
                                                                 <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center">
-                                                                    <span className="text-[8px] font-black bg-red-500 text-primary px-2 py-1 rounded italic uppercase shadow-lg">NO MATCH</span>
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black bg-red-500 text-primary px-2 py-1 rounded italic uppercase shadow-lg">NO MATCH</span>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div className="flex gap-3 pt-4">
-                                                        <button className="flex-1 py-4 bg-btn-sec border border-main rounded-2xl text-[9px] font-black uppercase text-gray-400 hover:text-primary transition-all">Reject Dispute</button>
-                                                        <button className="flex-1 py-4 bg-red-500 text-primary rounded-2xl text-[9px] font-black uppercase shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all">Permaban Account</button>
+                                                        <button className="flex-1 py-4 bg-btn-sec border border-main rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-gray-400 hover:text-primary transition-all">Reject Dispute</button>
+                                                        <button className="flex-1 py-4 bg-red-500 text-primary rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all">Permaban Account</button>
                                                     </div>
                                                 </div>
                                             ) : (
                                                 <div className="bg-btn-sec border border-main rounded-[2.5rem] p-10 text-center py-12">
                                                     <ShieldCheck size={32} className="text-brand/30 mx-auto mb-4" />
                                                     <p className="text-sm font-black italic uppercase text-primary">System Secure</p>
-                                                    <p className="text-[9px] font-bold text-secondary uppercase tracking-widest mt-1">No identity collisions or security red flags detected.</p>
+                                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest mt-1">No identity collisions or security red flags detected.</p>
                                                 </div>
                                             )}
                                         </div>
@@ -4177,14 +4177,14 @@ const ManagerDashboard = () => {
                                             <div className="flex items-center justify-between relative z-10">
                                                 <div className="space-y-1">
                                                     <h3 className="text-xl font-black italic uppercase tracking-tighter">Active Deployment & Asset Assignment</h3>
-                                                    <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Remotely manage driver vehicle pairings</p>
+                                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Remotely manage driver vehicle pairings</p>
                                                 </div>
                                                 <button 
                                                     onClick={() => {
                                                         setNewVehicleData({ model: '', year: '', plate: '', color: '', concession: '', assignedDriver: 'None', photo: null });
                                                         setIsAddingVehicle(true);
                                                     }}
-                                                    className="px-6 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand flex items-center gap-2 hover:bg-brand hover:text-dark-900 transition-all"
+                                                    className="px-6 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand flex items-center gap-2 hover:bg-brand hover:text-dark-900 transition-all"
                                                 >
                                                     <PlusCircle size={14} /> Add New Asset to Pool
                                                 </button>
@@ -4199,7 +4199,7 @@ const ManagerDashboard = () => {
                                                             </div>
                                                             <div>
                                                                 <p className="text-sm font-black italic uppercase text-primary leading-none">{driver.name}</p>
-                                                                <p className={`text-[8px] font-black uppercase tracking-widest mt-1 ${driver.isLocked ? 'text-red-500' : 'text-brand'}`}>{driver.status}</p>
+                                                                <p className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest mt-1 ${driver.isLocked ? 'text-red-500' : 'text-brand'}`}>{driver.status}</p>
                                                             </div>
                                                         </div>
 
@@ -4217,14 +4217,14 @@ const ManagerDashboard = () => {
                                                                 >
                                                                     <div className="flex items-center gap-3">
                                                                         <Car size={16} className={driver.isLocked ? 'text-secondary' : 'text-brand'} />
-                                                                        <span className="text-[10px] font-black uppercase text-primary italic">{driver.current}</span>
+                                                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-primary italic">{driver.current}</span>
                                                                     </div>
                                                                     {!driver.isLocked && <ChevronRight size={14} className="text-secondary group-hover:text-brand transition-colors" />}
                                                                 </div>
                                                             </div>
 
                                                             <div className="flex gap-2">
-                                                                <button disabled={driver.isLocked} className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] font-black uppercase tracking-widest text-gray-400 hover:text-primary hover:bg-white/10 transition-all">History</button>
+                                                                <button disabled={driver.isLocked} className="flex-1 py-3 bg-btn-sec border border-main rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-gray-400 hover:text-primary hover:bg-white/10 transition-all">History</button>
                                                                 <button 
                                                                     disabled={driver.isLocked}
                                                                     onClick={() => !driver.isLocked && setEditingDriver({ 
@@ -4233,7 +4233,7 @@ const ManagerDashboard = () => {
                                                                         currentPlate: driver.vehicleInfo?.plate || null,
                                                                         selectedVehicle: driver.vehicleInfo || null
                                                                     })}
-                                                                    className="flex-1 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[9px] font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all"
+                                                                    className="flex-1 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all"
                                                                 >
                                                                     Switch Asset
                                                                 </button>
@@ -4257,11 +4257,11 @@ const ManagerDashboard = () => {
                                                     </span>
                                                     <h2 className="text-xl font-black italic uppercase tracking-wider text-white">Registered Fleet Assets</h2>
                                                 </div>
-                                                <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest">
                                                     Active database records of vehicles registered in your business pool
                                                 </p>
                                             </div>
-                                            <div className="px-4 py-2 rounded-full bg-brand/10 border border-brand/20 text-brand text-[9px] font-black uppercase tracking-widest">
+                                            <div className="px-4 py-2 rounded-full bg-brand/10 border border-brand/20 text-brand text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest">
                                                 {registeredVehicles.length} Vehicles Total
                                             </div>
                                         </div>
@@ -4273,7 +4273,7 @@ const ManagerDashboard = () => {
                                                 </div>
                                                 <div className="space-y-1">
                                                     <p className="text-sm font-bold text-white uppercase tracking-wider">No Fleet Assets Registered</p>
-                                                    <p className="text-[10px] text-secondary max-w-sm">
+                                                    <p className="text-[10px] md:text-xs lg:text-sm text-secondary max-w-sm">
                                                         Use the registration portal below to register vehicles. Once added, they will appear in this directory and become assignable to drivers.
                                                     </p>
                                                 </div>
@@ -4296,10 +4296,10 @@ const ManagerDashboard = () => {
                                                             ) : (
                                                                 <div className="flex flex-col items-center gap-2 text-secondary/40">
                                                                     <Car size={32} />
-                                                                    <span className="text-[8px] font-bold uppercase tracking-widest">No Image Available</span>
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-bold uppercase tracking-widest">No Image Available</span>
                                                                 </div>
                                                             )}
-                                                            <div className="absolute bottom-3 left-3 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-white text-[8px] font-bold uppercase tracking-widest">
+                                                            <div className="absolute bottom-3 left-3 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-white text-[8px] md:text-[10px] lg:text-xs font-bold uppercase tracking-widest">
                                                                 {vehicle.year || 'N/A'}
                                                             </div>
                                                         </div>
@@ -4310,7 +4310,7 @@ const ManagerDashboard = () => {
                                                                 <h3 className="text-md font-extrabold text-white tracking-tight leading-tight uppercase">
                                                                     {vehicle.model}
                                                                 </h3>
-                                                                <div className="flex items-center gap-2 text-[10px] text-secondary">
+                                                                <div className="flex items-center gap-2 text-[10px] md:text-xs lg:text-sm text-secondary">
                                                                     <span className="w-2 h-2 rounded-full" style={{ backgroundColor: vehicle.color || '#fff', border: '1px solid rgba(255,255,255,0.2)' }} />
                                                                     <span className="capitalize font-medium">{vehicle.color || 'Unknown Color'}</span>
                                                                 </div>
@@ -4319,8 +4319,8 @@ const ManagerDashboard = () => {
                                                             {/* Sharing Capacity Selector */}
                                                             <div className="space-y-2">
                                                                 <div className="flex justify-between items-center px-1">
-                                                                    <span className="text-[8px] font-black text-secondary uppercase tracking-widest">Sharing Option Capacity</span>
-                                                                    <span className="text-[9px] font-black text-brand uppercase tracking-wider">Option {vehicle.sharingType || 4}</span>
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest">Sharing Option Capacity</span>
+                                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-wider">Option {vehicle.sharingType || 4}</span>
                                                                 </div>
                                                                 <div className="flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5">
                                                                     {[1, 2, 3, 4, 5, 6, 7].map((num) => {
@@ -4344,7 +4344,7 @@ const ManagerDashboard = () => {
                                                                                         console.error("Failed to update sharing type:", err);
                                                                                     }
                                                                                 }}
-                                                                                className={`flex-1 aspect-square rounded-xl text-[9px] font-black transition-all flex items-center justify-center ${
+                                                                                className={`flex-1 aspect-square rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black transition-all flex items-center justify-center ${
                                                                                     isSelected 
                                                                                         ? 'bg-white text-black scale-105 shadow-md' 
                                                                                         : 'text-secondary hover:text-white hover:bg-white/5'
@@ -4359,8 +4359,8 @@ const ManagerDashboard = () => {
 
                                                             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
                                                                 <div className="space-y-0.5">
-                                                                    <span className="text-[8px] font-bold text-secondary uppercase tracking-wider block">License Plate</span>
-                                                                    <span className="text-xs font-black tracking-widest text-brand uppercase">{vehicle.plate || vehicle.id}</span>
+                                                                    <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-wider block">License Plate</span>
+                                                                    <span className="text-xs md:text-sm lg:text-base font-black tracking-widest text-brand uppercase">{vehicle.plate || vehicle.id}</span>
                                                                 </div>
                                                                 <button 
                                                                     onClick={async () => {
@@ -4412,7 +4412,7 @@ const ManagerDashboard = () => {
                                                 <div className="flex items-center justify-between">
                                                     <div className="space-y-1">
                                                         <h3 className="text-xl font-black italic uppercase tracking-tighter text-primary">Manage Driver Asset</h3>
-                                                        <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Driver: {editingDriver.name}</p>
+                                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Driver: {editingDriver.name}</p>
                                                     </div>
                                                     <button onClick={() => setEditingDriver(null)} className="p-3 bg-btn-sec rounded-xl text-gray-400 hover:text-primary transition-all"><X size={20} /></button>
                                                 </div>
@@ -4425,19 +4425,19 @@ const ManagerDashboard = () => {
                                                                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${editingDriver.avatar}`} className="w-full h-full rounded-lg" alt="Driver" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-xs font-black uppercase text-primary">{editingDriver.name}</p>
-                                                                <p className="text-[8px] font-black text-brand uppercase tracking-widest">{editingDriver.status}</p>
+                                                                <p className="text-xs md:text-sm lg:text-base font-black uppercase text-primary">{editingDriver.name}</p>
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest">{editingDriver.status}</p>
                                                             </div>
                                                         </div>
                                                         <div className="text-right">
-                                                            <p className="text-[8px] font-black text-secondary uppercase">Rating</p>
-                                                            <p className="text-xs font-bold text-primary">★ {editingDriver.rating}</p>
+                                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase">Rating</p>
+                                                            <p className="text-xs md:text-sm lg:text-base font-bold text-primary">★ {editingDriver.rating}</p>
                                                         </div>
                                                     </div>
 
                                                     {/* DRIVER DETAILS EDIT FIELDS */}
                                                     <div className="space-y-4 p-4 bg-dark-950 border border-main rounded-2xl">
-                                                        <p className="text-[8px] font-black text-brand uppercase tracking-widest">Edit Driver Profile</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest">Edit Driver Profile</p>
                                                         
                                                         <div className="grid grid-cols-2 gap-3">
                                                             {/* DRIVER NAME */}
@@ -4447,7 +4447,7 @@ const ManagerDashboard = () => {
                                                                     type="text"
                                                                     value={editingDriver.name}
                                                                     onChange={(e) => setEditingDriver(prev => ({ ...prev, name: e.target.value, avatar: e.target.value }))}
-                                                                    className="w-full bg-btn-sec border border-main rounded-xl px-3 py-2 text-[10px] font-bold text-primary outline-none focus:border-brand/50 transition-all placeholder:text-gray-800"
+                                                                    className="w-full bg-btn-sec border border-main rounded-xl px-3 py-2 text-[10px] md:text-xs lg:text-sm font-bold text-primary outline-none focus:border-brand/50 transition-all placeholder:text-gray-800"
                                                                 />
                                                             </div>
 
@@ -4457,7 +4457,7 @@ const ManagerDashboard = () => {
                                                                 <select 
                                                                     value={editingDriver.status}
                                                                     onChange={(e) => setEditingDriver(prev => ({ ...prev, status: e.target.value }))}
-                                                                    className="w-full bg-btn-sec border border-main rounded-xl px-3 py-2 text-[10px] font-bold text-primary outline-none focus:border-brand/50 transition-all cursor-pointer"
+                                                                    className="w-full bg-btn-sec border border-main rounded-xl px-3 py-2 text-[10px] md:text-xs lg:text-sm font-bold text-primary outline-none focus:border-brand/50 transition-all cursor-pointer"
                                                                 >
                                                                     <option value="In Service" className="bg-dark-900 text-primary">In Service</option>
                                                                     <option value="Standby" className="bg-dark-900 text-primary">Standby</option>
@@ -4476,7 +4476,7 @@ const ManagerDashboard = () => {
                                                                     max="5"
                                                                     value={editingDriver.rating}
                                                                     onChange={(e) => setEditingDriver(prev => ({ ...prev, rating: parseFloat(e.target.value) || 0 }))}
-                                                                    className="w-full bg-btn-sec border border-main rounded-xl px-3 py-2 text-[10px] font-bold text-primary outline-none focus:border-brand/50 transition-all"
+                                                                    className="w-full bg-btn-sec border border-main rounded-xl px-3 py-2 text-[10px] md:text-xs lg:text-sm font-bold text-primary outline-none focus:border-brand/50 transition-all"
                                                                 />
                                                             </div>
                                                         </div>
@@ -4484,7 +4484,7 @@ const ManagerDashboard = () => {
 
                                                     {/* VEHICLE PICKER */}
                                                     <div className="space-y-3">
-                                                        <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Swap / Assign Vehicle</label>
+                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-2">Swap / Assign Vehicle</label>
                                                         <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto no-scrollbar pr-1">
                                                             {registeredVehicles.map((veh) => {
                                                                 const isSelected = editingDriver.selectedVehicle?.plate === veh.plate;
@@ -4506,7 +4506,7 @@ const ManagerDashboard = () => {
                                                                             <Car size={16} className={isSelected ? 'text-brand' : 'text-secondary'} />
                                                                             <span className="text-[7px] font-mono font-black uppercase opacity-65">{veh.plate}</span>
                                                                         </div>
-                                                                        <span className="text-[9px] font-black uppercase italic tracking-wider mt-3 truncate">{veh.model}</span>
+                                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase italic tracking-wider mt-3 truncate">{veh.model}</span>
                                                                     </button>
                                                                 );
                                                             })}
@@ -4524,7 +4524,7 @@ const ManagerDashboard = () => {
                                                                 }`}
                                                             >
                                                                 <X size={16} className={editingDriver.current === 'None' || !editingDriver.selectedVehicle ? 'text-brand' : 'text-secondary'} />
-                                                                <span className="text-[9px] font-black uppercase italic tracking-wider mt-3 truncate">None</span>
+                                                                <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase italic tracking-wider mt-3 truncate">None</span>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -4552,7 +4552,7 @@ const ManagerDashboard = () => {
                                                             
                                                             setEditingDriver(null);
                                                         }}
-                                                        className="flex-1 py-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-primary transition-all"
+                                                        className="flex-1 py-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest hover:bg-red-500 hover:text-primary transition-all"
                                                     >
                                                         Unassign Vehicle
                                                     </button>
@@ -4595,7 +4595,7 @@ const ManagerDashboard = () => {
                                                             
                                                             setEditingDriver(null);
                                                         }}
-                                                        className="flex-1 py-4 bg-brand text-dark-900 rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-95 transition-all"
+                                                        className="flex-1 py-4 bg-brand text-dark-900 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-95 transition-all"
                                                     >
                                                         Save Changes
                                                     </button>
@@ -4628,7 +4628,7 @@ const ManagerDashboard = () => {
                                                 <div className="flex items-center justify-between">
                                                     <div className="space-y-1">
                                                         <h3 className="text-xl font-black italic uppercase tracking-tighter text-primary">Add New Fleet Asset</h3>
-                                                        <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Manual Vehicle Integration</p>
+                                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Manual Vehicle Integration</p>
                                                     </div>
                                                     <button onClick={() => setIsAddingVehicle(false)} className="p-3 bg-btn-sec rounded-xl text-gray-400 hover:text-primary transition-all"><X size={20} /></button>
                                                 </div>
@@ -4636,13 +4636,13 @@ const ManagerDashboard = () => {
                                                 <div className="space-y-6">
                                                     <div className="w-full aspect-video bg-dark-950 border-2 border-dashed border-main rounded-3xl flex flex-col items-center justify-center relative overflow-hidden group">
                                                         {newVehicleData.photo === 'uploading...' ? (
-                                                            <div className="flex items-center justify-center h-full w-full bg-dark-900 text-brand text-[10px] font-bold uppercase tracking-widest animate-pulse">Uploading...</div>
+                                                            <div className="flex items-center justify-center h-full w-full bg-dark-900 text-brand text-[10px] md:text-xs lg:text-sm font-bold uppercase tracking-widest animate-pulse">Uploading...</div>
                                                         ) : newVehicleData.photo ? (
                                                             <img src={newVehicleData.photo} className="w-full h-full object-cover" alt="Preview" />
                                                         ) : (
                                                             <div className="flex flex-col items-center gap-3">
                                                                 <div className="w-12 h-12 rounded-full bg-btn-sec flex items-center justify-center text-secondary"><Car size={24} /></div>
-                                                                <p className="text-[8px] font-black uppercase text-secondary tracking-widest">Upload Vehicle Profile</p>
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase text-secondary tracking-widest">Upload Vehicle Profile</p>
                                                             </div>
                                                         )}
                                                         <input 
@@ -4681,7 +4681,7 @@ const ManagerDashboard = () => {
                                                                     value={newVehicleData[f.field]}
                                                                     onChange={(e) => setNewVehicleData(prev => ({ ...prev, [f.field]: e.target.value }))}
                                                                     placeholder={f.placeholder}
-                                                                    className="w-full bg-dark-950 border border-main rounded-xl px-4 py-3 text-[10px] font-bold text-primary outline-none focus:border-brand/50 transition-all placeholder:text-gray-800"
+                                                                    className="w-full bg-dark-950 border border-main rounded-xl px-4 py-3 text-[10px] md:text-xs lg:text-sm font-bold text-primary outline-none focus:border-brand/50 transition-all placeholder:text-gray-800"
                                                                 />
                                                             </div>
                                                         ))}
@@ -4690,7 +4690,7 @@ const ManagerDashboard = () => {
                                                             <select 
                                                                 value={newVehicleData.assignedDriver || 'None'}
                                                                 onChange={(e) => setNewVehicleData(prev => ({ ...prev, assignedDriver: e.target.value }))}
-                                                                className="w-full bg-dark-950 border border-main rounded-xl px-4 py-3 text-[10px] font-bold text-primary outline-none focus:border-brand/50 transition-all"
+                                                                className="w-full bg-dark-950 border border-main rounded-xl px-4 py-3 text-[10px] md:text-xs lg:text-sm font-bold text-primary outline-none focus:border-brand/50 transition-all"
                                                             >
                                                                 <option value="None" className="bg-dark-950 text-secondary">None</option>
                                                                 {driverDeployments.map(driver => (
@@ -4747,7 +4747,7 @@ const ManagerDashboard = () => {
                                                         }
                                                         setIsAddingVehicle(false);
                                                     }}
-                                                    className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-brand/20 active:scale-95 transition-all"
+                                                    className="w-full py-5 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm shadow-xl shadow-brand/20 active:scale-95 transition-all"
                                                 >
                                                     Register Asset to Pool
                                                 </button>
@@ -4766,7 +4766,7 @@ const ManagerDashboard = () => {
                                         </div>
                                         <button 
                                             onClick={handleSaveGlobalManifest}
-                                            className="px-12 py-5 bg-brand text-dark-900 rounded-[2.5rem] text-xs font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all"
+                                            className="px-12 py-5 bg-brand text-dark-900 rounded-[2.5rem] text-xs md:text-sm lg:text-base font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all"
                                         >
                                             Save Global Manifest
                                         </button>
@@ -4786,7 +4786,7 @@ const ManagerDashboard = () => {
                                                     <div className="w-24 h-24 rounded-3xl p-1 bg-gradient-to-tr from-brand to-violet-500 shadow-[0_0_20px_rgba(52,211,153,0.15)] overflow-hidden">
                                                         {personalInfo.profilePicture === 'uploading...' ? (
                                                             <div className="w-full h-full rounded-[1.3rem] bg-dark-900 flex items-center justify-center">
-                                                                <span className="text-[8px] text-brand font-black animate-pulse">UP...</span>
+                                                                <span className="text-[8px] md:text-[10px] lg:text-xs text-brand font-black animate-pulse">UP...</span>
                                                             </div>
                                                         ) : (
                                                             <img 
@@ -4823,13 +4823,13 @@ const ManagerDashboard = () => {
                                                 </div>
                                                 <div className="space-y-1 text-center sm:text-left">
                                                     <h4 className="text-sm font-black italic uppercase text-primary">Manager Avatar</h4>
-                                                    <p className="text-[10px] text-secondary font-bold uppercase tracking-widest leading-relaxed">
+                                                    <p className="text-[10px] md:text-xs lg:text-sm text-secondary font-bold uppercase tracking-widest leading-relaxed">
                                                         Upload a custom profile photo or use auto-generated vector seed.
                                                     </p>
                                                     {personalInfo.profilePicture && (
                                                         <button 
                                                             onClick={() => setPersonalInfo(prev => ({ ...prev, profilePicture: '' }))}
-                                                            className="text-[9px] font-black uppercase text-red-500 tracking-widest hover:text-red-400 mt-1 block"
+                                                            className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-red-500 tracking-widest hover:text-red-400 mt-1 block"
                                                         >
                                                             Reset to Default Seed
                                                         </button>
@@ -4839,7 +4839,7 @@ const ManagerDashboard = () => {
 
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="col-span-2 space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Full Legal Name</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase ml-1">Full Legal Name</label>
                                                     <input 
                                                         type="text" 
                                                         value={personalInfo.name} 
@@ -4848,7 +4848,7 @@ const ManagerDashboard = () => {
                                                     />
                                                 </div>
                                                 <div className="col-span-2 md:col-span-1 space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Direct Email</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase ml-1">Direct Email</label>
                                                     <input 
                                                         type="email" 
                                                         value={personalInfo.email} 
@@ -4857,7 +4857,7 @@ const ManagerDashboard = () => {
                                                     />
                                                 </div>
                                                 <div className="col-span-2 md:col-span-1 space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Mobile Line</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase ml-1">Mobile Line</label>
                                                     <input 
                                                         type="text" 
                                                         value={personalInfo.phone} 
@@ -4866,7 +4866,7 @@ const ManagerDashboard = () => {
                                                     />
                                                 </div>
                                                 <div className="col-span-2 md:col-span-1 space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Personal Address</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase ml-1">Personal Address</label>
                                                     <input 
                                                         type="text" 
                                                         value={personalInfo.address} 
@@ -4875,7 +4875,7 @@ const ManagerDashboard = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">ZIP Code</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase ml-1">ZIP Code</label>
                                                     <input 
                                                         type="text" 
                                                         value={personalInfo.zip} 
@@ -4884,7 +4884,7 @@ const ManagerDashboard = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">City</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase ml-1">City</label>
                                                     <input 
                                                         type="text" 
                                                         value={personalInfo.city} 
@@ -4904,7 +4904,7 @@ const ManagerDashboard = () => {
                                             
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                 <div className="space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Current Password</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase ml-1">Current Password</label>
                                                     <input 
                                                         type="password" 
                                                         placeholder="••••"
@@ -4914,7 +4914,7 @@ const ManagerDashboard = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">New Password</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase ml-1">New Password</label>
                                                     <input 
                                                         type="password" 
                                                         placeholder="••••"
@@ -4924,7 +4924,7 @@ const ManagerDashboard = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-[9px] font-black text-secondary uppercase ml-1">Confirm New Password</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase ml-1">Confirm New Password</label>
                                                     <input 
                                                         type="password" 
                                                         placeholder="••••"
@@ -4952,7 +4952,7 @@ const ManagerDashboard = () => {
                                                     setConfirmPasswordInput('');
                                                     alert("PASSWORD CHANGED SUCCESSFULLY: Console security credentials updated.");
                                                 }}
-                                                className="px-6 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all"
+                                                className="px-6 py-3 bg-brand/10 border border-brand/20 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-dark-900 transition-all"
                                             >
                                                 Update Security Password
                                             </button>
@@ -4973,13 +4973,13 @@ const ManagerDashboard = () => {
                                                         <div className="flex items-center justify-between p-8 bg-black/40 rounded-3xl border border-main">
                                                             <div>
                                                                 <p className="text-sm font-black italic uppercase text-primary">Proximity Enforcement</p>
-                                                                <p className="text-[10px] font-bold text-secondary uppercase mt-1">Require physical presence for digital ordering</p>
+                                                                <p className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase mt-1">Require physical presence for digital ordering</p>
                                                             </div>
                                                             <div className="w-12 h-6 bg-brand rounded-full relative"><div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-xl" /></div>
                                                         </div>
                                                     </div>
                                                     <div className="w-full md:w-64 space-y-4 px-2">
-                                                        <label className="text-[10px] font-black uppercase tracking-widest text-secondary ml-1">Lockdown Radius</label>
+                                                        <label className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-secondary ml-1">Lockdown Radius</label>
                                                         <div className="flex items-center gap-6">
                                                             <input type="range" min="10" max="500" defaultValue="50" className="flex-1 accent-brand h-2 bg-black/40 rounded-full appearance-none" />
                                                             <span className="text-xl font-black italic text-brand">50m</span>
@@ -5001,7 +5001,7 @@ const ManagerDashboard = () => {
                                         </div>
                                         <button 
                                             onClick={() => setView('onboarding')}
-                                            className="w-full md:w-auto px-8 py-4 bg-brand text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 text-center flex items-center justify-center gap-2"
+                                            className="w-full md:w-auto px-8 py-4 bg-brand text-dark-900 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-brand/20 text-center flex items-center justify-center gap-2"
                                         >
                                             <PlusCircle size={16} /> Onboard via Green ID
                                         </button>
@@ -5023,13 +5023,13 @@ const ManagerDashboard = () => {
                                                                 ))}
                                                             </div>
                                                         </div>
-                                                        <p className="text-[10px] font-bold text-brand uppercase tracking-widest mt-1.5 italic">ID: {member.id || `ST-10${i+24}`}</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm font-bold text-brand uppercase tracking-widest mt-1.5 italic">ID: {member.id || `ST-10${i+24}`}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-3 md:gap-6 shrink-0">
                                                     <div className="text-right hidden md:block">
-                                                        <p className="text-[9px] font-black text-secondary uppercase tracking-widest">{member.role}</p>
-                                                        <p className={`text-[8px] font-black uppercase mt-0.5 ${member.status === 'On Shift' ? 'text-primary' : 'text-secondary'}`}>{member.status}</p>
+                                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest">{member.role}</p>
+                                                        <p className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase mt-0.5 ${member.status === 'On Shift' ? 'text-primary' : 'text-secondary'}`}>{member.status}</p>
                                                     </div>
                                                     <button 
                                                         onClick={() => navigate(`/manager/staff-permissions/${member.id || `ST-10${i+24}`}`)}
@@ -5051,7 +5051,7 @@ const ManagerDashboard = () => {
                                             <PlusCircle size={40} />
                                         </div>
                                         <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Staff <span className="text-primary">Onboarding</span></h1>
-                                        <p className="text-secondary text-xs font-bold uppercase tracking-[0.3em] leading-none">Search Personnel by Green ID</p>
+                                        <p className="text-secondary text-xs md:text-sm lg:text-base font-bold uppercase tracking-[0.3em] leading-none">Search Personnel by Green ID</p>
                                     </div>
 
                                     {/* --- BULK INVITE LINK --- */}
@@ -5063,12 +5063,12 @@ const ManagerDashboard = () => {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-black italic uppercase text-primary">Bulk Invite Link</p>
-                                                <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Copy and share this link to onboard drivers and staff automatically</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Copy and share this link to onboard drivers and staff automatically</p>
                                             </div>
                                         </div>
 
                                         <div className="flex gap-3 bg-btn-sec border border-main p-3 rounded-2xl items-center justify-between">
-                                            <span className="text-[10px] font-mono text-secondary truncate flex-1 px-2 select-all">
+                                            <span className="text-[10px] md:text-xs lg:text-sm font-mono text-secondary truncate flex-1 px-2 select-all">
                                                 {`${window.location.origin}/signup?mode=partner&invite=${encodeURIComponent(user?.email || 'manager@green.de')}`}
                                             </span>
                                             <button 
@@ -5077,7 +5077,7 @@ const ManagerDashboard = () => {
                                                     navigator.clipboard.writeText(link);
                                                     alert("📋 Invite Link Copied to Clipboard!\n\nShare this link with your drivers and staff so they can register and link to your fleet automatically.");
                                                 }}
-                                                className="px-5 py-3 bg-brand text-dark-900 rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shrink-0"
+                                                className="px-5 py-3 bg-brand text-dark-900 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shrink-0"
                                             >
                                                 Copy Link
                                             </button>
@@ -5092,7 +5092,7 @@ const ManagerDashboard = () => {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-black italic uppercase text-primary">Onboard via Green ID</p>
-                                                <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">Enter the Green ID of the registered staff or driver</p>
+                                                <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Enter the Green ID of the registered staff or driver</p>
                                             </div>
                                         </div>
 
@@ -5108,7 +5108,7 @@ const ManagerDashboard = () => {
                                             />
                                             <button 
                                                 onClick={handleSearchByGreenId}
-                                                className="absolute right-4 top-1/2 -translate-y-1/2 px-6 py-3 bg-brand text-dark-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all"
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 px-6 py-3 bg-brand text-dark-900 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:scale-105 transition-all"
                                             >
                                                 {isSearchingStaff ? 'Searching...' : 'Search'}
                                             </button>
@@ -5121,8 +5121,8 @@ const ManagerDashboard = () => {
                                                     <X size={14} className="text-red-400" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] font-black text-red-400 uppercase tracking-widest">Green ID Not Found</p>
-                                                    <p className="text-[9px] text-secondary font-bold mt-0.5">No registered staff or driver matches this ID. Ask them to check their Green ID on the pending page.</p>
+                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-red-400 uppercase tracking-widest">Green ID Not Found</p>
+                                                    <p className="text-[9px] md:text-[11px] lg:text-xs text-secondary font-bold mt-0.5">No registered staff or driver matches this ID. Ask them to check their Green ID on the pending page.</p>
                                                 </div>
                                             </motion.div>
                                         )}
@@ -5138,17 +5138,17 @@ const ManagerDashboard = () => {
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-lg font-black italic uppercase text-primary truncate">{foundStaff.name}</p>
-                                                            <p className="text-[10px] font-bold text-secondary uppercase tracking-widest">{foundStaff.role}</p>
-                                                            {foundStaff.email && <p className="text-[9px] text-secondary font-bold mt-0.5 truncate">{foundStaff.email}</p>}
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-widest">{foundStaff.role}</p>
+                                                            {foundStaff.email && <p className="text-[9px] md:text-[11px] lg:text-xs text-secondary font-bold mt-0.5 truncate">{foundStaff.email}</p>}
                                                         </div>
                                                         <div className="shrink-0 text-right">
                                                             <p className="text-[7px] font-black text-brand/60 uppercase tracking-widest mb-1">Green ID</p>
-                                                            <span className="px-3 py-1.5 bg-brand/10 text-brand rounded-xl text-[9px] font-black font-mono tracking-widest border border-brand/20">{foundStaff.greenId}</span>
+                                                            <span className="px-3 py-1.5 bg-brand/10 text-brand rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black font-mono tracking-widest border border-brand/20">{foundStaff.greenId}</span>
                                                         </div>
                                                     </div>
 
                                                     <div className="space-y-4">
-                                                        <p className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] ml-2">Quick Templates</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-[0.2em] ml-2">Quick Templates</p>
                                                         <div className="grid grid-cols-3 gap-3">
                                                             {[
                                                                 { id: 'pilot', label: managerContext === 'FM' ? 'Standard Driver' : 'Standard Pilot', icon: Zap },
@@ -5161,14 +5161,14 @@ const ManagerDashboard = () => {
                                                                     className={`p-4 rounded-2xl border transition-all flex items-center gap-3 ${activeTemplate === t.id ? 'bg-brand text-dark-900 border-brand shadow-lg shadow-brand/20' : 'bg-btn-sec border-main text-secondary'}`}
                                                                 >
                                                                     <t.icon size={16} />
-                                                                    <span className="text-[10px] font-black uppercase tracking-tighter">{t.label}</span>
+                                                                    <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-tighter">{t.label}</span>
                                                                 </button>
                                                             ))}
                                                         </div>
                                                     </div>
 
                                                     <div className="space-y-4">
-                                                        <p className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] ml-2">Operational Permissions</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-[0.2em] ml-2">Operational Permissions</p>
                                                         <div className="grid grid-cols-2 gap-4">
                                                             <button 
                                                                 onClick={() => setStaffPermissions(prev => ({ ...prev, orders: !prev.orders }))}
@@ -5178,7 +5178,7 @@ const ManagerDashboard = () => {
                                                                 <p className={`text-sm font-black italic uppercase ${staffPermissions.orders ? 'text-primary' : 'text-secondary'}`}>
                                                                     {managerContext === 'FM' ? 'Rides & Dispatches' : 'Orders & Queue'}
                                                                 </p>
-                                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase mt-1">
                                                                     {managerContext === 'FM' ? 'Process live ride dispatches' : 'Process live service requests'}
                                                                 </p>
                                                             </button>
@@ -5190,7 +5190,7 @@ const ManagerDashboard = () => {
                                                                 <p className={`text-sm font-black italic uppercase ${staffPermissions.terminal ? 'text-primary' : 'text-secondary'}`}>
                                                                     {managerContext === 'FM' ? 'Driver Compliance' : 'Scan Terminal'}
                                                                 </p>
-                                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase mt-1">
                                                                     {managerContext === 'FM' ? 'Verify driver permits & logs' : 'Verify tickets & vouchers'}
                                                                 </p>
                                                             </button>
@@ -5202,7 +5202,7 @@ const ManagerDashboard = () => {
                                                                 <p className={`text-sm font-black italic uppercase ${staffPermissions.finance ? 'text-primary' : 'text-secondary'}`}>
                                                                     {managerContext === 'FM' ? 'Fleet Billing' : 'Financial Intel'}
                                                                 </p>
-                                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase mt-1">
                                                                     {managerContext === 'FM' ? 'View fleet revenue & exports' : 'View revenue & exports'}
                                                                 </p>
                                                             </button>
@@ -5214,7 +5214,7 @@ const ManagerDashboard = () => {
                                                                 <p className={`text-sm font-black italic uppercase ${staffPermissions.compliance ? 'text-primary' : 'text-secondary'}`}>
                                                                     {managerContext === 'FM' ? 'Vehicle & Driver Vault' : 'Compliance'}
                                                                 </p>
-                                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">
+                                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase mt-1">
                                                                     {managerContext === 'FM' ? 'Access vehicle & driver docs' : 'Access vault & legal docs'}
                                                                 </p>
                                                             </button>
@@ -5249,14 +5249,14 @@ const ManagerDashboard = () => {
                                         </div>
                                         <div className="flex gap-4 w-full md:w-auto">
                                             <div className="flex-1 md:flex-initial px-4 md:px-6 py-3 bg-btn-sec border border-main rounded-xl text-right">
-                                                <p className="text-[8px] font-black text-secondary uppercase tracking-widest">Global Availability</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest">Global Availability</p>
                                                 <p className="text-sm md:text-xl font-black italic text-brand leading-none mt-1">
                                                     {(managerContext === 'CM' || managerContext === 'VM') ? '4,820 Tickets' : '4,820 Seats'}
                                                 </p>
                                             </div>
                                             <button 
                                                 onClick={() => setIsAddingEvent(true)}
-                                                className="flex-1 md:flex-initial px-4 md:px-8 py-4 bg-brand text-dark-900 rounded-[2rem] text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all text-center whitespace-nowrap"
+                                                className="flex-1 md:flex-initial px-4 md:px-8 py-4 bg-brand text-dark-900 rounded-[2rem] text-[9px] md:text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all text-center whitespace-nowrap"
                                             >
                                                 Upload Tickets
                                             </button>
@@ -5292,7 +5292,7 @@ const ManagerDashboard = () => {
                                                 <div className="w-12 h-12 rounded-2xl bg-brand/10 text-brand flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Trophy size={22} /></div>
                                                 <div>
                                                     <p className="text-sm font-black italic uppercase text-primary">Sporting Match</p>
-                                                    <p className="text-[8px] font-bold text-secondary uppercase mt-1">Football Game / Arena Ticket</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase mt-1">Football Game / Arena Ticket</p>
                                                 </div>
                                             </button>
                                         )}
@@ -5320,7 +5320,7 @@ const ManagerDashboard = () => {
                                                 <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Zap size={22} /></div>
                                                 <div>
                                                     <p className="text-sm font-black italic uppercase text-primary">Club Party</p>
-                                                    <p className="text-[8px] font-bold text-secondary uppercase mt-1">Midnight Lounge / DJ Event</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase mt-1">Midnight Lounge / DJ Event</p>
                                                 </div>
                                             </button>
                                         )}
@@ -5348,7 +5348,7 @@ const ManagerDashboard = () => {
                                                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Activity size={22} /></div>
                                                 <div>
                                                     <p className="text-sm font-black italic uppercase text-primary">Concert / Fest</p>
-                                                    <p className="text-[8px] font-bold text-secondary uppercase mt-1">Live Show & Stage Ticket</p>
+                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase mt-1">Live Show & Stage Ticket</p>
                                                 </div>
                                             </button>
                                         )}
@@ -5371,7 +5371,7 @@ const ManagerDashboard = () => {
                                             <div className="w-12 h-12 rounded-2xl bg-brand/10 text-brand flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><PlusCircle size={22} /></div>
                                             <div>
                                                 <p className="text-sm font-black italic uppercase text-primary">Custom Category</p>
-                                                <p className="text-[8px] font-bold text-secondary uppercase mt-1">Configure Custom Event</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase mt-1">Configure Custom Event</p>
                                             </div>
                                         </button>
                                     </div>
@@ -5395,24 +5395,24 @@ const ManagerDashboard = () => {
                                                         <div className="space-y-1">
                                                             <div className="flex items-center gap-3">
                                                                  <h3 className="text-2xl font-black italic uppercase text-primary">{event.name}</h3>
-                                                                 <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase ${event.published ? 'bg-brand text-dark-900' : 'bg-btn-sec text-secondary border border-main'}`}>
+                                                                 <span className={`px-2 py-0.5 rounded text-[8px] md:text-[10px] lg:text-xs font-black uppercase ${event.published ? 'bg-brand text-dark-900' : 'bg-btn-sec text-secondary border border-main'}`}>
                                                                      {event.published ? 'LIVE ON APP' : 'DRAFT'}
                                                                  </span>
                                                             </div>
-                                                            <p className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em]">
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-[0.2em]">
                                                                 {event.date} • {event.time} • {getBusinessName(managerContext)}
                                                             </p>
                                                         </div>
                                                         <div className="flex gap-3">
                                                             <button 
                                                                 onClick={() => handleDeleteEvent(event.id)}
-                                                                className="px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white"
+                                                                className="px-4 py-2 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase transition-all bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white"
                                                             >
                                                                 Delete
                                                             </button>
                                                             <button 
                                                                 onClick={() => togglePublishEvent(event.id)}
-                                                                className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all ${event.published ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-brand/10 text-brand border border-brand/20'}`}
+                                                                className={`px-4 py-2 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase transition-all ${event.published ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-brand/10 text-brand border border-brand/20'}`}
                                                             >
                                                                 {event.published ? 'Unpublish' : 'Publish to App'}
                                                             </button>
@@ -5423,11 +5423,11 @@ const ManagerDashboard = () => {
                                                         {event.tiers.map((tier, idx) => (
                                                             <div key={idx} className="p-6 bg-btn-sec rounded-[2rem] border border-main space-y-4 hover:border-brand/30 transition-all">
                                                                 <div className="flex justify-between items-center">
-                                                                    <p className="text-[9px] font-black text-secondary uppercase">{tier.name}</p>
-                                                                    <p className="text-xs font-black italic text-brand">€{tier.price}</p>
+                                                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase">{tier.name}</p>
+                                                                    <p className="text-xs md:text-sm lg:text-base font-black italic text-brand">€{tier.price}</p>
                                                                 </div>
                                                                 <div className="space-y-2">
-                                                                    <div className="flex justify-between items-end text-[8px] font-black uppercase tracking-widest">
+                                                                    <div className="flex justify-between items-end text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest">
                                                                         <span className="text-secondary">Sales Progress</span>
                                                                         <span className="text-primary">{tier.sold} / {tier.quantity}</span>
                                                                     </div>
@@ -5440,8 +5440,8 @@ const ManagerDashboard = () => {
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex justify-between items-center pt-2 border-t border-white/5">
-                                                                    <p className="text-[8px] font-bold text-secondary uppercase">Revenue</p>
-                                                                    <p className="text-[10px] font-black text-primary">€{(tier.sold * tier.price).toLocaleString()}</p>
+                                                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase">Revenue</p>
+                                                                    <p className="text-[10px] md:text-xs lg:text-sm font-black text-primary">€{(tier.sold * tier.price).toLocaleString()}</p>
                                                                 </div>
                                                                 <div className="flex justify-between items-center text-[7px] font-bold text-brand uppercase tracking-widest bg-brand/5 border border-brand/10 px-2.5 py-1.5 rounded-lg leading-none mt-1">
                                                                     <span>Remaining</span>
@@ -5463,33 +5463,33 @@ const ManagerDashboard = () => {
                                                     </div>
                                                     <div>
                                                         <h3 className="text-xl font-black italic uppercase tracking-tighter">Market Pulse</h3>
-                                                        <p className="text-[9px] font-bold text-secondary uppercase tracking-widest mt-1">Real-time Demand Index</p>
+                                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-widest mt-1">Real-time Demand Index</p>
                                                     </div>
                                                 </div>
 
                                                 <div className="space-y-6">
                                                     <div className="p-6 bg-btn-sec rounded-2xl border border-main">
-                                                        <p className="text-[8px] font-black text-secondary uppercase mb-2 tracking-widest">Total Sales Velocity</p>
-                                                        <p className="text-3xl font-black italic text-brand">+14.2% <span className="text-[10px] text-secondary not-italic uppercase">vs Last Event</span></p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase mb-2 tracking-widest">Total Sales Velocity</p>
+                                                        <p className="text-3xl font-black italic text-brand">+14.2% <span className="text-[10px] md:text-xs lg:text-sm text-secondary not-italic uppercase">vs Last Event</span></p>
                                                     </div>
 
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="p-4 bg-btn-sec rounded-2xl border border-main">
                                                             <p className="text-[7px] font-black text-secondary uppercase mb-1">Queue Traffic</p>
-                                                            <p className="text-xs font-black uppercase text-primary italic">Minimal</p>
+                                                            <p className="text-xs md:text-sm lg:text-base font-black uppercase text-primary italic">Minimal</p>
                                                         </div>
                                                         <div className="p-4 bg-btn-sec rounded-2xl border border-main">
                                                             <p className="text-[7px] font-black text-secondary uppercase mb-1">Server Load</p>
-                                                            <p className="text-xs font-black uppercase text-brand italic">Optimal</p>
+                                                            <p className="text-xs md:text-sm lg:text-base font-black uppercase text-brand italic">Optimal</p>
                                                         </div>
                                                     </div>
 
                                                     <div className="space-y-4 pt-6">
-                                                        <h4 className="text-[9px] font-black text-secondary uppercase tracking-widest ml-1">Quick Actions</h4>
-                                                        <button className="w-full py-5 bg-btn-sec border border-main rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-3">
+                                                        <h4 className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">Quick Actions</h4>
+                                                        <button className="w-full py-5 bg-btn-sec border border-main rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-3">
                                                             <Zap size={14} className="text-brand" /> Instant Flash Sale
                                                         </button>
-                                                        <button className="w-full py-5 bg-btn-sec border border-main rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">
+                                                        <button className="w-full py-5 bg-btn-sec border border-main rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all">
                                                             Export Sales Ledger
                                                         </button>
                                                     </div>
@@ -5513,12 +5513,12 @@ const ManagerDashboard = () => {
                                                     <div className="text-center space-y-4">
                                                         <div className="w-20 h-20 bg-brand/10 rounded-[2rem] flex items-center justify-center text-brand mx-auto"><Upload size={40} /></div>
                                                         <h2 className="text-4xl font-black italic uppercase tracking-tighter">Upload <span className="text-brand">Tickets</span></h2>
-                                                        <p className="text-[10px] font-black text-secondary uppercase tracking-[0.4em]">Import and verify ticket manifest</p>
+                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-[0.4em]">Import and verify ticket manifest</p>
                                                     </div>
 
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
                                                         <div className="col-span-1 sm:col-span-2 space-y-2">
-                                                            <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-4">Event Identity</label>
+                                                            <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest ml-4">Event Identity</label>
                                                             <input 
                                                                 type="text" 
                                                                 placeholder="e.g. World Tour: Neon Nights" 
@@ -5528,7 +5528,7 @@ const ManagerDashboard = () => {
                                                             />
                                                         </div>
                                                         <div className="space-y-2 col-span-1">
-                                                            <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-4">Deployment Date</label>
+                                                            <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest ml-4">Deployment Date</label>
                                                             <input 
                                                                 type="date" 
                                                                 value={newEventData.date}
@@ -5537,7 +5537,7 @@ const ManagerDashboard = () => {
                                                             />
                                                         </div>
                                                         <div className="space-y-2 col-span-1">
-                                                            <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-4">Start Time</label>
+                                                            <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest ml-4">Start Time</label>
                                                             <input 
                                                                 type="time" 
                                                                 value={newEventData.time}
@@ -5546,7 +5546,7 @@ const ManagerDashboard = () => {
                                                             />
                                                         </div>
                                                         <div className="space-y-2 col-span-1">
-                                                            <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-4">End Time</label>
+                                                            <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest ml-4">End Time</label>
                                                             <input 
                                                                 type="time" 
                                                                 value={newEventData.endTime}
@@ -5555,7 +5555,7 @@ const ManagerDashboard = () => {
                                                             />
                                                         </div>
                                                         <div className="col-span-1 sm:col-span-2 space-y-2">
-                                                            <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-4">Event Address</label>
+                                                            <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest ml-4">Event Address</label>
                                                             <input 
                                                                 type="text" 
                                                                 placeholder="e.g. Zeil 106, 60313 Frankfurt" 
@@ -5567,10 +5567,10 @@ const ManagerDashboard = () => {
 
                                                         <div className="col-span-1 sm:col-span-2 pt-6 space-y-6 border-t border-white/5">
                                                             <div className="flex items-center justify-between">
-                                                                <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-4">Configure Ticket Categories & Allocations</label>
+                                                                <label className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest ml-4">Configure Ticket Categories & Allocations</label>
                                                                 <button 
                                                                     onClick={handleAddTier}
-                                                                    className="px-4 py-2 bg-brand/10 border border-brand/20 text-brand hover:bg-brand/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                                                                    className="px-4 py-2 bg-brand/10 border border-brand/20 text-brand hover:bg-brand/20 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all"
                                                                 >
                                                                     + Add Category
                                                                 </button>
@@ -5595,43 +5595,43 @@ const ManagerDashboard = () => {
                                                                         <div className="grid grid-cols-12 gap-4 items-center">
                                                                             {/* Category Name */}
                                                                             <div className="col-span-12 md:col-span-6 space-y-1.5 text-left">
-                                                                                <span className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Category Name</span>
+                                                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-2">Category Name</span>
                                                                                 <input 
                                                                                     type="text"
                                                                                     placeholder="e.g. VIP Club Pass"
                                                                                     value={tier.name}
                                                                                     onChange={e => handleUpdateTier(idx, 'name', e.target.value)}
-                                                                                    className="w-full bg-dark-900 border border-main rounded-xl px-4 py-3 text-xs font-bold text-primary focus:border-brand outline-none transition-all"
+                                                                                    className="w-full bg-dark-900 border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none transition-all"
                                                                                 />
                                                                             </div>
 
                                                                             {/* Price */}
                                                                             <div className="col-span-12 md:col-span-3 space-y-1.5 text-left">
-                                                                                <span className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Price (€)</span>
+                                                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-2">Price (€)</span>
                                                                                 <div className="relative">
                                                                                     <input 
                                                                                         type="number"
                                                                                         placeholder="35"
                                                                                         value={tier.price || ''}
                                                                                         onChange={e => handleUpdateTier(idx, 'price', e.target.value)}
-                                                                                        className="w-full bg-dark-900 border border-main rounded-xl pl-8 pr-3 py-3 text-xs font-black italic text-brand focus:border-brand outline-none transition-all"
+                                                                                        className="w-full bg-dark-900 border border-main rounded-xl pl-8 pr-3 py-3 text-xs md:text-sm lg:text-base font-black italic text-brand focus:border-brand outline-none transition-all"
                                                                                     />
-                                                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-black italic text-brand/40">€</span>
+                                                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs md:text-sm lg:text-base font-black italic text-brand/40">€</span>
                                                                                 </div>
                                                                             </div>
 
                                                                             {/* Quantity */}
                                                                             <div className="col-span-12 md:col-span-3 space-y-1.5 text-left">
-                                                                                <span className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Allocation</span>
+                                                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-2">Allocation</span>
                                                                                 <div className="relative">
                                                                                     <input 
                                                                                         type="number"
                                                                                         placeholder="500"
                                                                                         value={tier.quantity || ''}
                                                                                         onChange={e => handleUpdateTier(idx, 'quantity', e.target.value)}
-                                                                                        className="w-full bg-dark-900 border border-main rounded-xl pl-8 pr-3 py-3 text-xs font-black italic text-brand focus:border-brand outline-none transition-all"
+                                                                                        className="w-full bg-dark-900 border border-main rounded-xl pl-8 pr-3 py-3 text-xs md:text-sm lg:text-base font-black italic text-brand focus:border-brand outline-none transition-all"
                                                                                     />
-                                                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-black italic text-brand/40">#</span>
+                                                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs md:text-sm lg:text-base font-black italic text-brand/40">#</span>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -5639,7 +5639,7 @@ const ManagerDashboard = () => {
                                                                         {/* PER-CATEGORY MANIFEST UPLOADER */}
                                                                         {/* PER-CATEGORY MANIFEST UPLOADER */}
                                                                         <div className="pt-4 border-t border-white/5 text-left space-y-3">
-                                                                            <span className="text-[8px] font-black text-brand uppercase tracking-widest ml-2">
+                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest ml-2">
                                                                                 {managerContext === 'CM' ? 'Manifest Documents / Pictures' : 'Manifest Document'} ({tier.name || 'Category'})
                                                                             </span>
                                                                             
@@ -5664,12 +5664,12 @@ const ManagerDashboard = () => {
                                                                                                         {tier.file.url ? (
                                                                                                             <img src={tier.file.url} className="w-10 h-10 rounded-lg object-cover border border-brand/20 shrink-0" alt="Preview" />
                                                                                                         ) : (
-                                                                                                            <div className="w-10 h-10 rounded-lg bg-brand/10 flex items-center justify-center text-brand text-xs font-bold border border-brand/20 shrink-0">
+                                                                                                            <div className="w-10 h-10 rounded-lg bg-brand/10 flex items-center justify-center text-brand text-xs md:text-sm lg:text-base font-bold border border-brand/20 shrink-0">
                                                                                                                 <FileText size={16} className={tier.file.name.endsWith('.pdf') ? 'text-red-400' : ''} />
                                                                                                             </div>
                                                                                                         )}
                                                                                                         <div className="min-w-0">
-                                                                                                            <p className="text-[10px] font-black uppercase text-primary truncate max-w-[140px]">{tier.file.name}</p>
+                                                                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-primary truncate max-w-[140px]">{tier.file.name}</p>
                                                                                                             <p className="text-[7.5px] font-black text-brand uppercase tracking-widest">{tier.file.size} • Legacy</p>
                                                                                                         </div>
                                                                                                     </div>
@@ -5689,12 +5689,12 @@ const ManagerDashboard = () => {
                                                                                                         {file.url ? (
                                                                                                             <img src={file.url} className="w-10 h-10 rounded-lg object-cover border border-brand/20 shrink-0" alt="Preview" />
                                                                                                         ) : (
-                                                                                                            <div className="w-10 h-10 rounded-lg bg-brand/10 flex items-center justify-center text-brand text-xs font-bold border border-brand/20 shrink-0">
+                                                                                                            <div className="w-10 h-10 rounded-lg bg-brand/10 flex items-center justify-center text-brand text-xs md:text-sm lg:text-base font-bold border border-brand/20 shrink-0">
                                                                                                                 <FileText size={16} className={file.name.endsWith('.pdf') ? 'text-red-400' : ''} />
                                                                                                             </div>
                                                                                                         )}
                                                                                                         <div className="min-w-0">
-                                                                                                            <p className="text-[10px] font-black uppercase text-primary truncate max-w-[140px]">{file.name}</p>
+                                                                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-primary truncate max-w-[140px]">{file.name}</p>
                                                                                                             <p className="text-[7.5px] font-black text-brand uppercase tracking-widest">{file.size}</p>
                                                                                                         </div>
                                                                                                     </div>
@@ -5718,7 +5718,7 @@ const ManagerDashboard = () => {
                                                                                             className="flex-1 py-3 border-2 border-dashed border-main hover:border-brand/40 hover:bg-brand/5 rounded-xl text-center transition-all flex items-center justify-center gap-2 group/upload w-full"
                                                                                         >
                                                                                             <Upload size={12} className="text-secondary group-hover/upload:text-brand" />
-                                                                                            <span className="text-[9px] font-black uppercase tracking-widest text-secondary group-hover/upload:text-brand">
+                                                                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-secondary group-hover/upload:text-brand">
                                                                                                 {((tier.files && tier.files.length > 0) || tier.file) ? 'Add More Pictures / Files' : `Upload ${tier.name || 'Category'} Manifest`}
                                                                                             </span>
                                                                                         </button>
@@ -5728,7 +5728,7 @@ const ManagerDashboard = () => {
                                                                                                 type="button"
                                                                                                 onClick={() => handleSimulateTierUpload(idx)}
                                                                                                 disabled={tier.isSimulating}
-                                                                                                className={`w-full sm:w-auto px-5 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                                                                                                className={`w-full sm:w-auto px-5 py-3 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest transition-all ${
                                                                                                     tier.verified 
                                                                                                         ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                                                                                                         : 'bg-brand/15 hover:bg-brand/25 text-brand border border-brand/20'
@@ -5745,7 +5745,7 @@ const ManagerDashboard = () => {
                                                                                     {tier.file ? (
                                                                                         <div className="flex-1 p-3.5 bg-brand/5 border border-brand/20 rounded-xl flex items-center justify-between animate-fadeIn relative z-10 w-full">
                                                                                             <div className="flex items-center gap-3">
-                                                                                                <div className="w-9 h-9 rounded-lg bg-brand/10 flex items-center justify-center text-brand text-xs font-bold border border-brand/20">
+                                                                                                <div className="w-9 h-9 rounded-lg bg-brand/10 flex items-center justify-center text-brand text-xs md:text-sm lg:text-base font-bold border border-brand/20">
                                                                                                     {tier.file.name.endsWith('.pdf') ? <FileText size={16} className="text-red-400" /> : <FileText size={16} />}
                                                                                                 </div>
                                                                                                 <div>
@@ -5758,14 +5758,14 @@ const ManagerDashboard = () => {
                                                                                                     type="button"
                                                                                                     onClick={() => handleSimulateTierUpload(idx)}
                                                                                                     disabled={tier.isSimulating}
-                                                                                                    className={`px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${tier.verified ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-brand/15 hover:bg-brand/25 text-brand border border-brand/20'}`}
+                                                                                                    className={`px-3 py-1.5 rounded-lg text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all ${tier.verified ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-brand/15 hover:bg-brand/25 text-brand border border-brand/20'}`}
                                                                                                 >
                                                                                                     {tier.isSimulating ? 'Processing...' : tier.verified ? 'Re-Verify' : 'Verify'}
                                                                                                 </button>
                                                                                                 <button 
                                                                                                     type="button"
                                                                                                     onClick={() => handleRemoveTierFile(idx, 0)}
-                                                                                                    className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
+                                                                                                    className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
                                                                                                 >
                                                                                                     Remove
                                                                                                 </button>
@@ -5778,7 +5778,7 @@ const ManagerDashboard = () => {
                                                                                             className="w-full py-4 border-2 border-dashed border-main hover:border-brand/40 hover:bg-brand/5 rounded-xl text-center transition-all flex items-center justify-center gap-2 group/upload"
                                                                                         >
                                                                                             <Upload size={12} className="text-secondary group-hover/upload:text-brand" />
-                                                                                            <span className="text-[9px] font-black uppercase tracking-widest text-secondary group-hover/upload:text-brand">Upload {tier.name || 'Category'} Manifest Document (PDF, Photo, Spreadsheet)</span>
+                                                                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-secondary group-hover/upload:text-brand">Upload {tier.name || 'Category'} Manifest Document (PDF, Photo, Spreadsheet)</span>
                                                                                         </button>
                                                                                     )}
                                                                                 </div>
@@ -5793,13 +5793,13 @@ const ManagerDashboard = () => {
                                                     <div className="flex gap-4 pt-6">
                                                         <button 
                                                             onClick={handleAddEvent}
-                                                            className="flex-1 py-4 md:py-6 bg-brand text-dark-900 rounded-[2.5rem] text-xs font-black uppercase tracking-[0.2em] md:tracking-[0.3em] shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all text-center"
+                                                            className="flex-1 py-4 md:py-6 bg-brand text-dark-900 rounded-[2.5rem] text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.2em] md:tracking-[0.3em] shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all text-center"
                                                         >
                                                             Commit Batch
                                                         </button>
                                                         <button 
                                                             onClick={() => setIsAddingEvent(false)}
-                                                            className="flex-1 md:flex-initial px-4 md:px-10 py-4 md:py-6 bg-btn-sec border border-main rounded-[2.5rem] text-xs font-black uppercase tracking-widest text-secondary hover:text-primary transition-all text-center"
+                                                            className="flex-1 md:flex-initial px-4 md:px-10 py-4 md:py-6 bg-btn-sec border border-main rounded-[2.5rem] text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-secondary hover:text-primary transition-all text-center"
                                                         >
                                                             Abort
                                                         </button>
@@ -5824,7 +5824,7 @@ const ManagerDashboard = () => {
                                         </div>
                                         <div className="flex gap-4 w-full md:w-auto">
                                             <div className="flex-1 md:flex-initial px-4 md:px-6 py-3 bg-btn-sec border border-main rounded-xl text-right">
-                                                <p className="text-[8px] font-black text-secondary uppercase tracking-widest">Available Rooms</p>
+                                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest">Available Rooms</p>
                                                 <p className="text-sm md:text-xl font-black italic text-brand leading-none mt-1">
                                                     {roomsData.filter(r => r.status === 'available').length} / {roomsData.length}
                                                 </p>
@@ -5840,7 +5840,7 @@ const ManagerDashboard = () => {
                                                 
                                                 <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
                                                     <h3 className="text-lg font-black italic uppercase text-primary tracking-tight">Room Inventory Visualizer</h3>
-                                                    <div className="flex gap-4 text-[9px] font-black uppercase">
+                                                    <div className="flex gap-4 text-[9px] md:text-[11px] lg:text-xs font-black uppercase">
                                                         <span className="flex items-center gap-1.5 text-brand"><div className="w-2.5 h-2.5 rounded-full bg-brand shadow-[0_0_8px_var(--brand)]" /> Available</span>
                                                         <span className="flex items-center gap-1.5 text-violet-400"><div className="w-2.5 h-2.5 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.4)]" /> Occupied</span>
                                                         <span className="flex items-center gap-1.5 text-amber-500"><div className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" /> Cleaning</span>
@@ -5874,13 +5874,13 @@ const ManagerDashboard = () => {
                                                             >
                                                                 <div className="flex justify-between items-start mb-4">
                                                                     <div>
-                                                                        <span className="text-[10px] font-black text-secondary tracking-widest uppercase">Room</span>
+                                                                        <span className="text-[10px] md:text-xs lg:text-sm font-black text-secondary tracking-widest uppercase">Room</span>
                                                                         <p className="text-2xl font-black italic text-primary leading-none mt-1">#{room.id}</p>
                                                                     </div>
                                                                     <div className="flex items-center gap-2">
                                                                         <span 
                                                                             onClick={() => handleToggleRoomStatus(room.id)}
-                                                                            className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider cursor-pointer select-none hover:scale-105 active:scale-95 transition-all ${badgeColor}`}
+                                                                            className={`px-3 py-1 rounded-full text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider cursor-pointer select-none hover:scale-105 active:scale-95 transition-all ${badgeColor}`}
                                                                             title="Click to toggle status"
                                                                         >
                                                                             {room.status}
@@ -5894,7 +5894,7 @@ const ManagerDashboard = () => {
                                                                                         saveRooms(updated);
                                                                                     }
                                                                                 }}
-                                                                                className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-[10px] transition-all flex items-center justify-center shrink-0 w-6 h-6 border border-red-500/20"
+                                                                                className="p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-[10px] md:text-xs lg:text-sm transition-all flex items-center justify-center shrink-0 w-6 h-6 border border-red-500/20"
                                                                                 title="Delete Room"
                                                                             >
                                                                                 <X size={12} />
@@ -5906,22 +5906,22 @@ const ManagerDashboard = () => {
                                                                 <div className="space-y-4 pt-4 border-t border-white/5">
                                                                     <div className="flex justify-between items-end">
                                                                         <div>
-                                                                            <p className="text-[8px] font-bold text-secondary uppercase">Room Category</p>
-                                                                            <p className="text-xs font-black uppercase italic text-primary mt-0.5">{room.name}</p>
+                                                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase">Room Category</p>
+                                                                            <p className="text-xs md:text-sm lg:text-base font-black uppercase italic text-primary mt-0.5">{room.name}</p>
                                                                             {room.bedLayout && (
-                                                                                <span className="text-[8px] font-black uppercase tracking-wider text-brand bg-brand/5 border border-brand/15 px-2 py-0.5 rounded-md mt-1.5 inline-block">
+                                                                                <span className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider text-brand bg-brand/5 border border-brand/15 px-2 py-0.5 rounded-md mt-1.5 inline-block">
                                                                                     {room.bedLayout} Bed
                                                                                 </span>
                                                                             )}
                                                                         </div>
-                                                                        <p className="text-xs font-black text-brand italic">€{room.price}<span className="text-[8px] text-secondary font-bold">/n</span></p>
+                                                                        <p className="text-xs md:text-sm lg:text-base font-black text-brand italic">€{room.price}<span className="text-[8px] md:text-[10px] lg:text-xs text-secondary font-bold">/n</span></p>
                                                                     </div>
 
                                                                     <div className="flex items-center gap-3 pt-2 bg-black/20 rounded-xl p-3 border border-white/5">
                                                                         <div className={`w-2 h-2 rounded-full ${isAvail ? 'bg-brand' : isOcc ? 'bg-violet-500' : 'bg-amber-500'}`} />
                                                                         <div className="flex-1 min-w-0">
-                                                                            <p className="text-[8px] font-bold text-secondary uppercase">Live Occupant</p>
-                                                                            <p className="text-[10px] font-black text-primary truncate uppercase italic">
+                                                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase">Live Occupant</p>
+                                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-primary truncate uppercase italic">
                                                                                 {room.guest || 'Ready for Check-In'}
                                                                             </p>
                                                                         </div>
@@ -5945,7 +5945,7 @@ const ManagerDashboard = () => {
                                                         <h4 className="text-sm font-black italic uppercase text-primary">PMS Integration Bridge</h4>
                                                         <div className="flex items-center gap-2 mt-1">
                                                             <div className={`w-2 h-2 rounded-full ${pmsApiKey ? 'bg-brand animate-ping' : 'bg-amber-500'}`} />
-                                                            <p className={`text-[8px] font-black uppercase tracking-widest ${pmsApiKey ? 'text-brand' : 'text-amber-500'}`}>
+                                                            <p className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest ${pmsApiKey ? 'text-brand' : 'text-amber-500'}`}>
                                                                 {pmsApiKey ? 'ACTIVE & SYNCHRONIZED' : 'OFFLINE / DIRECT MANUAL MODE'}
                                                             </p>
                                                         </div>
@@ -5954,51 +5954,51 @@ const ManagerDashboard = () => {
 
                                                 <div className="space-y-6">
                                                     <div className="space-y-2">
-                                                        <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Integration Provider</label>
-                                                        <div className="px-6 py-4 bg-btn-sec border border-main rounded-2xl text-xs font-black uppercase text-primary">
+                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-2">Integration Provider</label>
+                                                        <div className="px-6 py-4 bg-btn-sec border border-main rounded-2xl text-xs md:text-sm lg:text-base font-black uppercase text-primary">
                                                             {pmsApiKey ? 'Mews Property Management (API v3)' : 'LOCAL MANUAL INVENTORY'}
                                                         </div>
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Mews API Auth Key</label>
+                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-2">Mews API Auth Key</label>
                                                         <input 
                                                             type="text" 
                                                             value={pmsApiKey} 
                                                             onChange={(e) => setPmsApiKey(e.target.value)}
                                                             placeholder="Clear key to add rooms manually"
-                                                            className="w-full bg-btn-sec border border-main rounded-2xl p-4 text-[9px] font-mono text-brand focus:border-brand outline-none transition-all placeholder:text-gray-600"
+                                                            className="w-full bg-btn-sec border border-main rounded-2xl p-4 text-[9px] md:text-[11px] lg:text-xs font-mono text-brand focus:border-brand outline-none transition-all placeholder:text-gray-600"
                                                         />
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <label className="text-[8px] font-black text-secondary uppercase tracking-widest ml-2">Reservation Notification Email</label>
+                                                        <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-2">Reservation Notification Email</label>
                                                         <input 
                                                             type="email" 
                                                             value={reservationEmail} 
                                                             onChange={(e) => setReservationEmail(e.target.value)}
                                                             placeholder="hotel@business.com (For manual bookings)"
-                                                            className="w-full bg-btn-sec border border-main rounded-2xl p-4 text-[9px] font-mono text-primary focus:border-brand outline-none transition-all placeholder:text-gray-600"
+                                                            className="w-full bg-btn-sec border border-main rounded-2xl p-4 text-[9px] md:text-[11px] lg:text-xs font-mono text-primary focus:border-brand outline-none transition-all placeholder:text-gray-600"
                                                         />
                                                     </div>
 
                                                     {!pmsApiKey ? (
                                                         <div className="space-y-3 pt-3 border-t border-white/5 animate-in fade-in duration-300">
-                                                            <p className="text-[9px] font-black text-brand uppercase tracking-widest">Manual Room Dispatch</p>
+                                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-widest">Manual Room Dispatch</p>
                                                             <div className="grid grid-cols-2 gap-2">
                                                                 <input 
                                                                     type="text" 
                                                                     placeholder="Room #" 
                                                                     value={newRoomNumber} 
                                                                     onChange={(e) => setNewRoomNumber(e.target.value)} 
-                                                                    className="bg-btn-sec border border-main rounded-xl p-3 text-xs text-primary focus:border-brand outline-none" 
+                                                                    className="bg-btn-sec border border-main rounded-xl p-3 text-xs md:text-sm lg:text-base text-primary focus:border-brand outline-none" 
                                                                 />
                                                                 <input 
                                                                     type="number" 
                                                                     placeholder="Price (€)" 
                                                                     value={newRoomPrice} 
                                                                     onChange={(e) => setNewRoomPrice(e.target.value)} 
-                                                                    className="bg-btn-sec border border-main rounded-xl p-3 text-xs text-primary focus:border-brand outline-none" 
+                                                                    className="bg-btn-sec border border-main rounded-xl p-3 text-xs md:text-sm lg:text-base text-primary focus:border-brand outline-none" 
                                                                 />
                                                             </div>
                                                             <input 
@@ -6006,12 +6006,12 @@ const ManagerDashboard = () => {
                                                                 placeholder="Category (e.g. Deluxe Room)" 
                                                                 value={newRoomCategory} 
                                                                 onChange={(e) => setNewRoomCategory(e.target.value)} 
-                                                                className="w-full bg-btn-sec border border-main rounded-xl p-3 text-xs text-primary focus:border-brand outline-none" 
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-3 text-xs md:text-sm lg:text-base text-primary focus:border-brand outline-none" 
                                                             />
                                                             <select 
                                                                 value={newRoomBedLayout}
                                                                 onChange={(e) => setNewRoomBedLayout(e.target.value)}
-                                                                className="w-full bg-btn-sec border border-main rounded-xl p-3 text-xs text-primary focus:border-brand outline-none appearance-none cursor-pointer"
+                                                                className="w-full bg-btn-sec border border-main rounded-xl p-3 text-xs md:text-sm lg:text-base text-primary focus:border-brand outline-none appearance-none cursor-pointer"
                                                             >
                                                                 <option value="Single" className="bg-dark-900 text-primary">Single Bed (Einzelbett)</option>
                                                                 <option value="Double" className="bg-dark-900 text-primary">Double Bed (Doppelbett)</option>
@@ -6019,15 +6019,15 @@ const ManagerDashboard = () => {
                                                             </select>
                                                             <button 
                                                                 onClick={handleCreateManualRoom} 
-                                                                className="w-full py-3 bg-brand text-dark-900 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 shadow-md shadow-brand/10 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                                                className="w-full py-3 bg-brand text-dark-900 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-1.5 shadow-md shadow-brand/10 hover:scale-[1.02] active:scale-[0.98] transition-all"
                                                             >
                                                                 <PlusCircle size={10} /> Add Room
                                                             </button>
                                                         </div>
                                                     ) : (
                                                         <div className="pt-3 border-t border-white/5 space-y-1">
-                                                            <p className="text-[8px] font-black text-brand uppercase tracking-widest leading-none">Security Telemetry</p>
-                                                            <p className="text-[10px] font-black italic text-primary mt-1">SSL & Webhook Shield Active</p>
+                                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest leading-none">Security Telemetry</p>
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black italic text-primary mt-1">SSL & Webhook Shield Active</p>
                                                         </div>
                                                     )}
                                                 </div>
@@ -6035,8 +6035,8 @@ const ManagerDashboard = () => {
 
                                                 {/* WEBHOOK TERMINAL LOGS */}
                                                 <div className="space-y-4 pt-4 border-t border-white/5">
-                                                    <h5 className="text-[9px] font-black italic uppercase text-secondary tracking-widest">Real-time Webhook Console</h5>
-                                                    <div className="h-48 bg-black/60 border border-main rounded-2xl p-4 overflow-y-auto font-mono text-[8px] text-green-400 space-y-3 scrollbar-thin">
+                                                    <h5 className="text-[9px] md:text-[11px] lg:text-xs font-black italic uppercase text-secondary tracking-widest">Real-time Webhook Console</h5>
+                                                    <div className="h-48 bg-black/60 border border-main rounded-2xl p-4 overflow-y-auto font-mono text-[8px] md:text-[10px] lg:text-xs text-green-400 space-y-3 scrollbar-thin">
                                                         {pmsLog.map((log, idx) => (
                                                             <div key={idx} className="border-b border-white/5 pb-2">
                                                                 <span className="text-secondary">[{log.time}]</span>{' '}
@@ -6062,12 +6062,12 @@ const ManagerDashboard = () => {
                                 <h2 className="text-4xl font-black italic tracking-tighter uppercase text-primary mb-2">
                                     {(managerContext === 'PM' || managerContext === 'WM') ? 'Security Gate' : 'Vault Locked'}
                                 </h2>
-                                <p className="max-w-sm text-secondary font-bold uppercase tracking-widest text-[10px] mb-10">Manager Identity Verification Required</p>
+                                <p className="max-w-sm text-secondary font-bold uppercase tracking-widest text-[10px] md:text-xs lg:text-sm mb-10">Manager Identity Verification Required</p>
                                 <div className="w-full max-w-xs space-y-4">
                                     <input type="password" value={passInput} onChange={e => setPassInput(e.target.value)} className="w-full bg-btn-sec border border-main rounded-2xl p-6 text-center text-2xl font-black tracking-[0.5em] text-brand outline-none focus:border-brand transition-all" placeholder="••••" />
                                     <div className="flex gap-4">
-                                        <button onClick={() => { if(passInput === securityPassword) { setIsUnlocked(true); setShowSecurityGate(false); } }} className="flex-1 py-5 bg-brand text-dark-900 rounded-2xl font-black uppercase text-xs shadow-2xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all">Unlock</button>
-                                        <button onClick={() => setShowSecurityGate(false)} className="flex-1 py-5 bg-btn-sec text-secondary rounded-2xl font-black uppercase text-xs hover:bg-white/10 transition-all">Cancel</button>
+                                        <button onClick={() => { if(passInput === securityPassword) { setIsUnlocked(true); setShowSecurityGate(false); } }} className="flex-1 py-5 bg-brand text-dark-900 rounded-2xl font-black uppercase text-xs md:text-sm lg:text-base shadow-2xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all">Unlock</button>
+                                        <button onClick={() => setShowSecurityGate(false)} className="flex-1 py-5 bg-btn-sec text-secondary rounded-2xl font-black uppercase text-xs md:text-sm lg:text-base hover:bg-white/10 transition-all">Cancel</button>
                                     </div>
                                 </div>
                             </motion.div>
@@ -6121,11 +6121,11 @@ const ManagerDashboard = () => {
                                         <div>
                                             <div className="flex flex-wrap items-center gap-3 mb-2">
                                                 <h2 className="text-4xl font-black italic uppercase text-primary tracking-tighter">{selectedGuest.guest}</h2>
-                                                <span className="px-3 py-1 bg-brand/10 border border-brand/20 rounded-full text-[8px] font-black text-brand uppercase tracking-widest">
+                                                <span className="px-3 py-1 bg-brand/10 border border-brand/20 rounded-full text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-widest">
                                                     {managerContext === 'HM' ? 'Hotel Guest' : 'Venue Guest'}
                                                 </span>
                                             </div>
-                                            <p className="text-xs font-bold text-secondary uppercase tracking-widest opacity-60">Verified Green Network Member</p>
+                                            <p className="text-xs md:text-sm lg:text-base font-bold text-secondary uppercase tracking-widest opacity-60">Verified Green Network Member</p>
                                         </div>
                                     </div>
 
@@ -6134,14 +6134,14 @@ const ManagerDashboard = () => {
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div className="p-6 bg-white/5 border border-white/10 rounded-3xl space-y-2">
                                                     <div className="flex justify-between items-center">
-                                                        <span className="text-[9px] font-black text-secondary uppercase tracking-widest">Total Visits</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest">Total Visits</span>
                                                         <Activity size={14} className="text-brand" />
                                                     </div>
                                                     <p className="text-2xl font-black italic text-primary">{selectedGuest.visits || '12'}</p>
                                                 </div>
                                                 <div className="p-6 bg-white/5 border border-white/10 rounded-3xl space-y-2">
                                                     <div className="flex justify-between items-center">
-                                                        <span className="text-[9px] font-black text-secondary uppercase tracking-widest">Last Stay</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest">Last Stay</span>
                                                         <Calendar size={14} className="text-brand" />
                                                     </div>
                                                     <p className="text-2xl font-black italic text-primary">{selectedGuest.lastStay || 'April 2026'}</p>
@@ -6151,23 +6151,23 @@ const ManagerDashboard = () => {
                                             <div className="space-y-6">
                                                 <div className="flex items-center gap-3">
                                                     <Shield size={14} className="text-brand" />
-                                                    <span className="text-[9px] font-black text-secondary uppercase tracking-widest opacity-60">Identity & Location</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-60">Identity & Location</span>
                                                 </div>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                                     <div className="flex flex-col gap-1 p-5 bg-dark-900 rounded-2xl border border-main">
-                                                        <span className="text-[8px] font-bold text-secondary uppercase tracking-widest">Full Address</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Full Address</span>
                                                         <span className="text-sm font-black text-primary">{selectedGuest.address || 'Königsallee 12, 40212 Düsseldorf'}</span>
                                                     </div>
                                                     <div className="flex flex-col gap-1 p-5 bg-dark-900 rounded-2xl border border-main">
-                                                        <span className="text-[8px] font-bold text-secondary uppercase tracking-widest">ID / Passport Number</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-widest">ID / Passport Number</span>
                                                         <span className="text-sm font-black text-brand tracking-widest">{selectedGuest.idNumber || 'PA-99281-XM'}</span>
                                                     </div>
                                                     <div className="flex flex-col gap-1 p-5 bg-dark-900 rounded-2xl border border-main">
-                                                        <span className="text-[8px] font-bold text-secondary uppercase tracking-widest">Date of Birth</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Date of Birth</span>
                                                         <span className="text-sm font-black text-primary">{selectedGuest.dob || 'May 12, 1992'}</span>
                                                     </div>
                                                     <div className="flex flex-col gap-1 p-5 bg-dark-900 rounded-2xl border border-main">
-                                                        <span className="text-[8px] font-bold text-secondary uppercase tracking-widest">Security Status</span>
+                                                        <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-secondary uppercase tracking-widest">Security Status</span>
                                                         <span className="text-sm font-black text-brand uppercase tracking-tighter italic">Verified Member</span>
                                                     </div>
                                                 </div>
@@ -6176,15 +6176,15 @@ const ManagerDashboard = () => {
                                             <div className="space-y-6">
                                                 <div className="flex items-center gap-3">
                                                     <Smartphone size={14} className="text-brand" />
-                                                    <span className="text-[9px] font-black text-secondary uppercase tracking-widest opacity-60">Contact Information</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-60">Contact Information</span>
                                                 </div>
                                                 <div className="space-y-3">
                                                     <div className="flex justify-between items-center p-5 bg-dark-900 rounded-2xl border border-main">
-                                                        <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Phone</span>
+                                                        <span className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-widest">Phone</span>
                                                         <span className="text-sm font-black text-primary">{selectedGuest.phone || '+49 176 4421 8892'}</span>
                                                     </div>
                                                     <div className="flex justify-between items-center p-5 bg-dark-900 rounded-2xl border border-main">
-                                                        <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Email</span>
+                                                        <span className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-widest">Email</span>
                                                         <span className="text-sm font-black text-primary">{selectedGuest.email || 'guest@green-social.com'}</span>
                                                     </div>
                                                 </div>
@@ -6196,14 +6196,14 @@ const ManagerDashboard = () => {
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div className="p-6 bg-white/5 border border-white/10 rounded-3xl space-y-2">
                                                     <div className="flex justify-between items-center">
-                                                        <span className="text-[9px] font-black text-secondary uppercase tracking-widest">{selectedGuest.type === 'Stay Booking' || selectedGuest.type === 'Room Service' ? 'Room' : selectedGuest.type === 'Stadium E-Ticket' || selectedGuest.type === 'Club Event Ticket' ? 'Ticket Details' : 'Table / Unit'}</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest">{selectedGuest.type === 'Stay Booking' || selectedGuest.type === 'Room Service' ? 'Room' : selectedGuest.type === 'Stadium E-Ticket' || selectedGuest.type === 'Club Event Ticket' ? 'Ticket Details' : 'Table / Unit'}</span>
                                                         <ShoppingBag size={14} className="text-brand" />
                                                     </div>
                                                     <p className="text-2xl font-black italic text-brand">{selectedGuest.type === 'Stay Booking' || selectedGuest.type === 'Room Service' ? `Room ${selectedGuest.room}` : selectedGuest.type === 'Stadium E-Ticket' || selectedGuest.type === 'Club Event Ticket' ? `ID ${selectedGuest.id?.toString()?.replace('#', '')}` : `Table ${selectedGuest.table || 'N/A'}`}</p>
                                                 </div>
                                                 <div className="p-6 bg-white/5 border border-white/10 rounded-3xl space-y-2">
                                                     <div className="flex justify-between items-center">
-                                                        <span className="text-[9px] font-black text-secondary uppercase tracking-widest">Order ID</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest">Order ID</span>
                                                         <Timer size={14} className="text-brand" />
                                                     </div>
                                                     <p className="text-2xl font-black italic text-primary">{selectedGuest.id}</p>
@@ -6213,12 +6213,12 @@ const ManagerDashboard = () => {
                                             <div className="space-y-6">
                                                 <div className="flex items-center gap-3">
                                                     <ShoppingBag size={14} className="text-brand" />
-                                                    <span className="text-[9px] font-black text-secondary uppercase tracking-widest opacity-60">Ordered Items</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-60">Ordered Items</span>
                                                 </div>
                                                 <div className="space-y-3">
                                                     {selectedGuest.items && selectedGuest.items.map((item, idx) => (
                                                         <div key={idx} className="flex justify-between items-center p-5 bg-dark-900 rounded-2xl border border-main">
-                                                            <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">{item.name || `Item ${idx + 1}`}</span>
+                                                            <span className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-widest">{item.name || `Item ${idx + 1}`}</span>
                                                             <span className="text-sm font-black text-brand italic">{typeof item === 'object' ? `€${(item.price || 0).toFixed(2)}` : item}</span>
                                                         </div>
                                                     ))}
@@ -6226,7 +6226,7 @@ const ManagerDashboard = () => {
                                             </div>
 
                                             <div className="pt-8 border-t border-main flex gap-4">
-                                                <button onClick={() => setSelectedGuest(null)} className="flex-1 h-14 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand/20 flex items-center justify-center gap-3">
+                                                <button onClick={() => setSelectedGuest(null)} className="flex-1 h-14 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand/20 flex items-center justify-center gap-3">
                                                     <Check size={16} />
                                                     Close Details
                                                 </button>
@@ -6273,18 +6273,18 @@ const ManagerDashboard = () => {
                                             <h2 className="text-3xl font-black italic uppercase text-primary tracking-tighter leading-none">
                                                 Connect Stripe
                                             </h2>
-                                            <p className="text-[9px] font-bold text-secondary uppercase tracking-[0.2em] mt-1.5 leading-none">Stripe Connect & Bank Settlements</p>
+                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-secondary uppercase tracking-[0.2em] mt-1.5 leading-none">Stripe Connect & Bank Settlements</p>
                                         </div>
                                     </div>
 
                                     {/* CONNECT EXISTING PROFILE FLOW */}
                                     <div className="space-y-6">
-                                        <p className="text-[10px] text-secondary font-bold uppercase tracking-wide leading-relaxed opacity-75">
+                                        <p className="text-[10px] md:text-xs lg:text-sm text-secondary font-bold uppercase tracking-wide leading-relaxed opacity-75">
                                             Input your existing Stripe Connected Account ID to link payments directly from your venue sessions.
                                         </p>
                                         
                                         <div className="space-y-2">
-                                            <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Stripe Account ID</label>
+                                            <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest block ml-1">Stripe Account ID</label>
                                             <input 
                                                 type="text"
                                                 value={stripeInputId}
@@ -6295,37 +6295,37 @@ const ManagerDashboard = () => {
                                         </div>
 
                                         <div className="space-y-4 pt-4 border-t border-main">
-                                            <p className="text-[9px] font-black text-secondary uppercase tracking-widest ml-1">Configure Payout Bank Details</p>
+                                            <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">Configure Payout Bank Details</p>
                                             
                                             <div className="grid grid-cols-1 gap-4">
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Bank Name</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest block ml-1">Bank Name</label>
                                                     <input 
                                                         type="text"
                                                         value={stripeFormBankName}
                                                         onChange={(e) => setStripeFormBankName(e.target.value)}
                                                         placeholder="e.g. Deutsche Bank"
-                                                        className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
+                                                        className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs md:text-sm lg:text-base font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">IBAN / Account Number</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest block ml-1">IBAN / Account Number</label>
                                                     <input 
                                                         type="text"
                                                         value={stripeFormIban}
                                                         onChange={(e) => setStripeFormIban(e.target.value)}
                                                         placeholder="DE89 3704 0044..."
-                                                        className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
+                                                        className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs md:text-sm lg:text-base font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black text-secondary uppercase tracking-widest block ml-1">Routing Code / BIC</label>
+                                                    <label className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest block ml-1">Routing Code / BIC</label>
                                                     <input 
                                                         type="text"
                                                         value={stripeFormRouting}
                                                         onChange={(e) => setStripeFormRouting(e.target.value)}
                                                         placeholder="DEUTDEDBXXX"
-                                                        className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
+                                                        className="w-full bg-btn-sec border border-main rounded-2xl py-3 px-5 text-xs md:text-sm lg:text-base font-bold text-primary placeholder:text-gray-400/70 focus:outline-none focus:border-brand/40"
                                                     />
                                                 </div>
                                             </div>
@@ -6357,7 +6357,7 @@ const ManagerDashboard = () => {
                                                 }, 1800);
                                             }}
                                             disabled={stripeLoading}
-                                            className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                            className="w-full py-5 bg-brand text-dark-900 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl shadow-brand/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                         >
                                             {stripeLoading ? (
                                                 <div className="w-5 h-5 border-2 border-dark-900 border-t-transparent rounded-full animate-spin" />
@@ -6404,13 +6404,13 @@ const ManagerDashboard = () => {
                                             <MessageCircle size={32} />
                                         </div>
                                         <div>
-                                            <span className="text-[9px] font-black text-brand uppercase tracking-widest bg-brand/10 px-3 py-1 rounded-full">
+                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black text-brand uppercase tracking-widest bg-brand/10 px-3 py-1 rounded-full">
                                                 Direct Dispatcher
                                             </span>
                                             <h2 className="text-3xl font-black italic uppercase text-primary tracking-tighter mt-1">
                                                 Message to {messageOrder.guest}
                                             </h2>
-                                            <p className="text-[10px] font-bold text-secondary uppercase tracking-widest mt-1 opacity-60">
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase tracking-widest mt-1 opacity-60">
                                                 {messageOrder.type === 'Stay Booking' || messageOrder.type === 'Room Service' ? 'Room ' : messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket' ? 'Ticket Details: ' : 'Table '}
                                                 {messageOrder.type === 'Stadium E-Ticket' || messageOrder.type === 'Club Event Ticket' ? (messageOrder.items ? messageOrder.items.map(i => typeof i === 'string' ? i : (i.name || '')).join(', ') : '') : (messageOrder.table || messageOrder.room || '')} • {messageOrder.id}
                                             </p>
@@ -6419,7 +6419,7 @@ const ManagerDashboard = () => {
 
                                     {/* Fast Templates Selection */}
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-secondary uppercase tracking-widest opacity-60 flex items-center gap-2">
+                                        <label className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-widest opacity-60 flex items-center gap-2">
                                             <Star size={12} className="text-brand" />
                                             Quick Templates
                                         </label>
@@ -6448,7 +6448,7 @@ const ManagerDashboard = () => {
                                                 <button
                                                     key={idx}
                                                     onClick={() => setCustomMessage(template)}
-                                                    className="w-full text-left p-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-semibold text-primary hover:border-brand/40 hover:bg-white/10 transition-all text-ellipsis overflow-hidden whitespace-nowrap active:scale-98"
+                                                    className="w-full text-left p-4 bg-white/5 border border-white/10 rounded-2xl text-xs md:text-sm lg:text-base font-semibold text-primary hover:border-brand/40 hover:bg-white/10 transition-all text-ellipsis overflow-hidden whitespace-nowrap active:scale-98"
                                                 >
                                                     {template}
                                                 </button>
@@ -6458,7 +6458,7 @@ const ManagerDashboard = () => {
 
                                     {/* Custom Message Field */}
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-secondary uppercase tracking-widest opacity-60 flex items-center gap-2">
+                                        <label className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-widest opacity-60 flex items-center gap-2">
                                             <User size={12} className="text-brand" />
                                             Custom Message Text
                                         </label>
@@ -6474,7 +6474,7 @@ const ManagerDashboard = () => {
                                     <div className="pt-6 border-t border-main flex gap-4">
                                         <button 
                                             onClick={() => setMessageOrder(null)} 
-                                            className="flex-1 h-14 bg-white/5 border-2 border-main rounded-2xl text-[10px] font-black uppercase tracking-widest text-secondary hover:text-primary hover:border-white/20 transition-all flex items-center justify-center gap-3"
+                                            className="flex-1 h-14 bg-white/5 border-2 border-main rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-secondary hover:text-primary hover:border-white/20 transition-all flex items-center justify-center gap-3"
                                         >
                                             Cancel
                                         </button>
@@ -6495,7 +6495,7 @@ const ManagerDashboard = () => {
                                                 setMessageOrder(null);
                                             }}
                                             disabled={!customMessage.trim()}
-                                            className={`flex-1 h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
+                                            className={`flex-1 h-14 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${
                                                 customMessage.trim() 
                                                 ? 'bg-brand text-dark-900 hover:scale-105 active:scale-95 shadow-xl shadow-brand/20' 
                                                 : 'bg-btn-sec text-secondary border border-main opacity-50 cursor-not-allowed'
@@ -6529,7 +6529,7 @@ const ManagerDashboard = () => {
                                 <div className="w-12 h-12 bg-brand/10 rounded-2xl flex items-center justify-center text-brand"><Banknote size={24} /></div>
                                 <div>
                                     <h4 className="text-sm font-black uppercase tracking-tighter">Table {alert.tableId} Cash</h4>
-                                    <p className="text-[10px] font-bold text-secondary uppercase">Collect €{parseFloat(alert.amount).toFixed(2)}</p>
+                                    <p className="text-[10px] md:text-xs lg:text-sm font-bold text-secondary uppercase">Collect €{parseFloat(alert.amount).toFixed(2)}</p>
                                 </div>
                             </div>
                             <button 

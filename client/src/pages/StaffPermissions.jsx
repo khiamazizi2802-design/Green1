@@ -157,13 +157,13 @@ const StaffPermissions = () => {
                         </button>
                         <div className="hidden md:block">
                             <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Access <span className="text-brand">Matrix</span></h1>
-                            <p className="text-[10px] font-black text-secondary uppercase tracking-[0.3em] mt-2 opacity-50">Granular Portal Control Protocol</p>
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-secondary uppercase tracking-[0.3em] mt-2 opacity-50">Granular Portal Control Protocol</p>
                         </div>
                     </div>
                     
                     <button 
                         onClick={() => navigate('/manager')}
-                        className="px-10 py-5 bg-brand text-dark-950 rounded-[2rem] text-xs font-black uppercase tracking-[0.3em] shadow-2xl shadow-brand/20 hover:bg-white hover:scale-105 active:scale-95 transition-all flex items-center gap-4 group"
+                        className="px-10 py-5 bg-brand text-dark-950 rounded-[2rem] text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.3em] shadow-2xl shadow-brand/20 hover:bg-white hover:scale-105 active:scale-95 transition-all flex items-center gap-4 group"
                     >
                         <Save size={18} className="group-hover:rotate-12 transition-transform" /> Save Manifest
                     </button>
@@ -188,7 +188,7 @@ const StaffPermissions = () => {
                             <div className="space-y-1">
                                 <div className="flex items-center justify-center md:justify-start gap-4 flex-wrap">
                                     <h2 className="text-4xl md:text-5xl font-black italic uppercase text-primary tracking-tighter leading-none">{staff.name}</h2>
-                                    <span className="px-5 py-1.5 bg-violet-500/10 text-violet-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-violet-500/20 flex items-center gap-2">
+                                    <span className="px-5 py-1.5 bg-violet-500/10 text-violet-400 rounded-full text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest border border-violet-500/20 flex items-center gap-2">
                                         <Key size={12} /> {staff.id}
                                     </span>
                                 </div>
@@ -197,11 +197,11 @@ const StaffPermissions = () => {
                             
                             <div className="flex items-center justify-center md:justify-start gap-10 pt-4 border-t border-main">
                                 <div>
-                                    <p className="text-[8px] font-black text-secondary uppercase tracking-widest opacity-40">Classification</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-40">Classification</p>
                                     <p className="text-lg font-black italic text-primary uppercase">{staff.clearance}</p>
                                 </div>
                                 <div>
-                                    <p className="text-[8px] font-black text-secondary uppercase tracking-widest opacity-40">Heartbeat</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest opacity-40">Heartbeat</p>
                                     <div className="flex items-center gap-2">
                                         <div className="w-2 h-2 bg-brand rounded-full animate-pulse shadow-[0_0_10px_var(--brand)]" />
                                         <p className="text-lg font-black italic text-brand uppercase tracking-tighter">Synchronized</p>
@@ -237,7 +237,7 @@ const StaffPermissions = () => {
                                                     <p className="text-xl font-black italic uppercase text-primary tracking-tight leading-none">{item.label}</p>
                                                     <div className="flex items-center gap-2 mt-2">
                                                         {permissions[item.id] ? <Unlock size={10} className="text-brand" /> : <Lock size={10} className="text-secondary opacity-40" />}
-                                                        <p className={`text-[9px] font-black uppercase tracking-[0.2em] ${permissions[item.id] ? 'text-brand' : 'text-secondary opacity-40'}`}>
+                                                        <p className={`text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] ${permissions[item.id] ? 'text-brand' : 'text-secondary opacity-40'}`}>
                                                             {permissions[item.id] ? 'Access Authorized' : 'Access Revoked'}
                                                         </p>
                                                     </div>

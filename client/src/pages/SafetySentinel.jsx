@@ -34,7 +34,7 @@ const SafetySentinel = () => {
 
                 <div className="space-y-4">
                     <h1 className="text-4xl font-black italic uppercase tracking-tighter text-red-500 leading-none">System Restriction</h1>
-                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
+                    <p className="text-xs md:text-sm lg:text-base text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
                         Your GREEN profile has been flagged for <span className="text-white">Behavioral Inconsistency</span>. Tactical access is currently restricted.
                     </p>
                 </div>
@@ -51,8 +51,8 @@ const SafetySentinel = () => {
                                 <item.icon size={20} />
                             </div>
                             <div>
-                                <h4 className="text-[10px] font-black uppercase text-white tracking-widest mb-1">{item.title}</h4>
-                                <p className="text-[9px] text-gray-500 font-bold leading-relaxed uppercase">{item.desc}</p>
+                                <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-white tracking-widest mb-1">{item.title}</h4>
+                                <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-500 font-bold leading-relaxed uppercase">{item.desc}</p>
                             </div>
                         </div>
                     ))}
@@ -62,20 +62,20 @@ const SafetySentinel = () => {
                 <div className="space-y-4 pt-6">
                     <button 
                         onClick={() => navigate('/greens')}
-                        className="w-full py-5 bg-white text-dark-900 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3"
+                        className="w-full py-5 bg-white text-dark-900 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3"
                     >
                         Review Protocol
                         <Info size={14} />
                     </button>
                     <button 
                         onClick={() => navigate(-1)}
-                        className="w-full py-4 bg-white/5 border border-white/10 rounded-[2rem] text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all"
+                        className="w-full py-4 bg-white/5 border border-white/10 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all"
                     >
                         Exit Terminal
                     </button>
                 </div>
 
-                <div className="flex items-center justify-center gap-2 text-[8px] font-black text-gray-600 uppercase tracking-widest pt-8">
+                <div className="flex items-center justify-center gap-2 text-[8px] md:text-[10px] lg:text-xs font-black text-gray-600 uppercase tracking-widest pt-8">
                     <HelpCircle size={12} />
                     Contacting Sentinel Support...
                 </div>

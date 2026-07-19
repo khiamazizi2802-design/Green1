@@ -367,7 +367,7 @@ const MenuManagement = () => {
                                 </div>
                                 <button 
                                     onClick={addNewRow}
-                                    className="px-4 py-2 bg-[#00e5ff1a] border border-[#00e5ff33] hover:border-[#00e5ff80] rounded-xl text-[9px] font-black uppercase text-[#00e5ff] tracking-widest flex items-center gap-2 hover:scale-[1.03] transition-all"
+                                    className="px-4 py-2 bg-[#00e5ff1a] border border-[#00e5ff33] hover:border-[#00e5ff80] rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-[#00e5ff] tracking-widest flex items-center gap-2 hover:scale-[1.03] transition-all"
                                 >
                                     <Plus size={12} /> Add New Row
                                 </button>
@@ -376,7 +376,7 @@ const MenuManagement = () => {
                             <div className="overflow-x-auto no-scrollbar rounded-2xl border border-[#ffffff1a]">
                                 <table className="w-full text-left border-collapse min-w-[850px]">
                                     <thead>
-                                        <tr className="border-b border-[#ffffff1a] bg-[#ffffff05] text-[8px] font-black text-[#9ca3af] uppercase tracking-[0.2em]">
+                                        <tr className="border-b border-[#ffffff1a] bg-[#ffffff05] text-[8px] md:text-[10px] lg:text-xs font-black text-[#9ca3af] uppercase tracking-[0.2em]">
                                             <th className="p-3 pl-4 w-[25%]">Product Nomenclature</th>
                                             <th className="p-3 w-[20%]">Catalog Category</th>
                                             <th className="p-3 w-[12%] text-center">Price (€)</th>
@@ -393,7 +393,7 @@ const MenuManagement = () => {
                                                         <input 
                                                             type="text" 
                                                             placeholder="e.g. Premium Lager"
-                                                            className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[10px] font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
+                                                            className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[10px] md:text-xs lg:text-sm font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
                                                             value={item.name}
                                                             onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
                                                         />
@@ -401,7 +401,7 @@ const MenuManagement = () => {
                                                 {/* Category */}
                                                 <td className="p-2.5">
                                                     <select 
-                                                        className="w-full bg-[#ffffff0d] border border-[#ffffff1a] rounded-xl p-2.5 text-xs font-black uppercase italic text-[#00e5ff] focus:border-[#00e5ff66] outline-none transition-all appearance-none"
+                                                        className="w-full bg-[#ffffff0d] border border-[#ffffff1a] rounded-xl p-2.5 text-xs md:text-sm lg:text-base font-black uppercase italic text-[#00e5ff] focus:border-[#00e5ff66] outline-none transition-all appearance-none"
                                                         value={item.category}
                                                         onChange={(e) => handleFieldChange(index, 'category', e.target.value)}
                                                         style={{
@@ -422,7 +422,7 @@ const MenuManagement = () => {
                                                     <input 
                                                         type="text" 
                                                         placeholder="0.00"
-                                                        className="w-full bg-btn-sec/50 border border-main rounded-xl p-2.5 text-xs font-black text-brand focus:border-brand/40 outline-none transition-all placeholder:opacity-20 text-center"
+                                                        className="w-full bg-btn-sec/50 border border-main rounded-xl p-2.5 text-xs md:text-sm lg:text-base font-black text-brand focus:border-brand/40 outline-none transition-all placeholder:opacity-20 text-center"
                                                         value={item.price}
                                                         onChange={(e) => handleFieldChange(index, 'price', e.target.value)}
                                                     />
@@ -432,7 +432,7 @@ const MenuManagement = () => {
                                                         <input 
                                                             type="text" 
                                                             placeholder="Internal notes..."
-                                                            className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[9px] font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
+                                                            className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[9px] md:text-[11px] lg:text-xs font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
                                                             value={item.description || ''}
                                                             onChange={(e) => handleFieldChange(index, 'description', e.target.value)}
                                                         />
@@ -446,7 +446,7 @@ const MenuManagement = () => {
                                                                 <button 
                                                                     type="button"
                                                                     onClick={() => handleFieldChange(index, 'image', '')}
-                                                                    className="absolute inset-0 bg-black/80 opacity-0 group-hover/rowthumb:opacity-100 flex items-center justify-center text-red-500 text-[8px] font-black uppercase transition-opacity"
+                                                                    className="absolute inset-0 bg-black/80 opacity-0 group-hover/rowthumb:opacity-100 flex items-center justify-center text-red-500 text-[8px] md:text-[10px] lg:text-xs font-black uppercase transition-opacity"
                                                                 >
                                                                     Clear
                                                                 </button>
@@ -467,7 +467,7 @@ const MenuManagement = () => {
                                                                 <input 
                                                                     type="text" 
                                                                     placeholder="Or URL"
-                                                                    className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[9px] font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
+                                                                    className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[9px] md:text-[11px] lg:text-xs font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
                                                                     value={item.image || ''}
                                                                     onChange={(e) => handleFieldChange(index, 'image', e.target.value)}
                                                                 />
@@ -497,7 +497,7 @@ const MenuManagement = () => {
                         <button 
                             onClick={publishManualMenu}
                             disabled={isPublishing}
-                            className="w-full py-5 bg-[#000000] text-[#ffffff] border border-[#00e5ff] rounded-[1.5rem] text-xs font-black uppercase tracking-[0.3em] shadow-lg hover:bg-[#00e5ff1a] hover:text-[#00e5ff] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                            className="w-full py-5 bg-[#000000] text-[#ffffff] border border-[#00e5ff] rounded-[1.5rem] text-xs md:text-sm lg:text-base font-black uppercase tracking-[0.3em] shadow-lg hover:bg-[#00e5ff1a] hover:text-[#00e5ff] active:scale-[0.99] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                         >
                             {isPublishing ? (
                                 <>

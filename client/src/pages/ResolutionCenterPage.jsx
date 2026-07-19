@@ -55,7 +55,7 @@ const ResolutionCenterPage = () => {
                         
                         <div className="space-y-8">
                             <div className="space-y-2">
-                                <span className="text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-500/10 px-3 py-1 rounded">Dispute Incident</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black text-red-500 uppercase tracking-widest bg-red-500/10 px-3 py-1 rounded">Dispute Incident</span>
                                 <h1 className="text-4xl font-black italic uppercase tracking-tighter">Resolution <span className="text-brand">Center</span></h1>
                             </div>
 
@@ -63,30 +63,30 @@ const ResolutionCenterPage = () => {
                                 <div className="flex items-center gap-4">
                                     <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-gray-500"><ShieldAlert size={28} /></div>
                                     <div>
-                                        <p className="text-xs font-black uppercase text-gray-500">Incident ID</p>
+                                        <p className="text-xs md:text-sm lg:text-base font-black uppercase text-gray-500">Incident ID</p>
                                         <p className="text-lg font-black italic text-white uppercase">{incidentData.id}</p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-4 pt-4 border-t border-white/5">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-[10px] font-black text-gray-500 uppercase">Customer</span>
-                                        <span className="text-[10px] font-black text-white uppercase">{incidentData.customer}</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase">Customer</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black text-white uppercase">{incidentData.customer}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-[10px] font-black text-gray-500 uppercase">Category</span>
-                                        <span className="text-[10px] font-black text-red-400 uppercase">{incidentData.reason}</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase">Category</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black text-red-400 uppercase">{incidentData.reason}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-[10px] font-black text-gray-500 uppercase">Incident Date</span>
-                                        <span className="text-[10px] font-black text-white uppercase">{incidentData.date}</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase">Incident Date</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black text-white uppercase">{incidentData.date}</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="flex items-start gap-4 p-6 bg-brand/5 border border-brand/20 rounded-2xl">
                                 <Info size={20} className="text-brand shrink-0 mt-1" />
-                                <p className="text-[10px] font-bold text-gray-400 leading-relaxed uppercase">
+                                <p className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-400 leading-relaxed uppercase">
                                     You are reaching out to resolve a red flag. If the customer accepts your offer and pardon, the flag will be revoked instantly.
                                 </p>
                             </div>
@@ -116,8 +116,8 @@ const ResolutionCenterPage = () => {
                                                     <div className="flex items-center gap-4">
                                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedOffer === offer.id ? 'text-brand' : 'text-gray-500'}`}><offer.icon size={24} /></div>
                                                         <div>
-                                                            <p className="text-[10px] font-black uppercase text-white tracking-widest">{offer.label}</p>
-                                                            <p className="text-[8px] font-bold text-gray-500 uppercase mt-1 leading-tight">{offer.desc}</p>
+                                                            <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-white tracking-widest">{offer.label}</p>
+                                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-500 uppercase mt-1 leading-tight">{offer.desc}</p>
                                                         </div>
                                                     </div>
                                                 </button>
@@ -135,7 +135,7 @@ const ResolutionCenterPage = () => {
                                                 className="w-full h-full bg-[var(--bg-tertiary)] border border-white/10 rounded-[2rem] p-8 text-sm font-bold text-[var(--text-primary)] focus:border-brand/40 outline-none transition-all resize-none"
                                             />
                                             <div className="absolute bottom-6 right-6 flex gap-2">
-                                                <div className="px-3 py-1 bg-dark-900/80 rounded-lg text-[8px] font-black text-gray-500 uppercase tracking-widest border border-white/5">Tone: Professional</div>
+                                                <div className="px-3 py-1 bg-dark-900/80 rounded-lg text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest border border-white/5">Tone: Professional</div>
                                             </div>
                                         </div>
                                     </div>
@@ -143,7 +143,7 @@ const ResolutionCenterPage = () => {
                                     <button 
                                         onClick={handleSend}
                                         disabled={!message || !selectedOffer}
-                                        className="w-full py-6 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[10px] shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-20 disabled:grayscale disabled:hover:scale-100 flex items-center justify-center gap-4"
+                                        className="w-full py-6 bg-brand text-dark-900 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[10px] md:text-xs lg:text-sm shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-20 disabled:grayscale disabled:hover:scale-100 flex items-center justify-center gap-4"
                                     >
                                         <Send size={18} /> Send Resolution Proposal
                                     </button>
@@ -160,7 +160,7 @@ const ResolutionCenterPage = () => {
                                     </div>
                                     <div className="space-y-2">
                                         <h2 className="text-3xl font-black italic uppercase tracking-tighter">Proposal <span className="text-brand">Transmitted</span></h2>
-                                        <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Awaiting customer review and pardon status.</p>
+                                        <p className="text-gray-500 text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">Awaiting customer review and pardon status.</p>
                                     </div>
                                 </motion.div>
                             )}

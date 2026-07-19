@@ -142,7 +142,7 @@ const AdvancedRadar = ({ selectedFilter }) => {
                             {/* Tooltip */}
                             <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none"
                                 style={{ background: 'rgba(11,14,17,0.95)', border: '1px solid rgba(5,150,105,0.3)' }}>
-                                <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: '#059669' }}>
+                                <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest" style={{ color: '#059669' }}>
                                     {marker.brand}
                                 </span>
                             </div>

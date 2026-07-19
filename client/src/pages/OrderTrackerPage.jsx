@@ -457,7 +457,7 @@ const OrderTrackerPage = () => {
         <div className="min-h-screen bg-dark-950 text-primary font-sans relative pb-48">
             <AnimatePresence>
                 {showToast && (
-                    <motion.div initial={{ y: -50, opacity: 0, x: "-50%" }} animate={{ y: 20, opacity: 1, x: "-50%" }} exit={{ y: -50, opacity: 0, x: "-50%" }} className="fixed top-12 left-1/2 z-[100] px-6 py-3 bg-brand text-dark-950 font-black italic uppercase text-[10px] rounded-full shadow-[0_0_30px_rgba(255,255,255,0.1)] flex items-center gap-3 whitespace-nowrap">
+                    <motion.div initial={{ y: -50, opacity: 0, x: "-50%" }} animate={{ y: 20, opacity: 1, x: "-50%" }} exit={{ y: -50, opacity: 0, x: "-50%" }} className="fixed top-12 left-1/2 z-[100] px-6 py-3 bg-brand text-dark-950 font-black italic uppercase text-[10px] md:text-xs lg:text-sm rounded-full shadow-[0_0_30px_rgba(255,255,255,0.1)] flex items-center gap-3 whitespace-nowrap">
                         <Zap size={14} className="fill-dark-900" />
                         {toastMessage}
                     </motion.div>
@@ -476,11 +476,11 @@ const OrderTrackerPage = () => {
                         </div>
                         <div className="flex-1 space-y-1 text-left">
                             <div className="flex justify-between items-center">
-                                <h4 className="text-[9px] font-black uppercase text-brand tracking-widest">System Processing</h4>
+                                <h4 className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-brand tracking-widest">System Processing</h4>
                                 <span className="text-[7px] text-gray-500 font-bold uppercase tracking-widest">Jetzt</span>
                             </div>
-                            <p className="text-xs font-black uppercase italic text-white leading-none pt-0.5">Ticket wird generiert...</p>
-                            <p className="text-[9px] text-gray-400 font-medium leading-relaxed pt-1">
+                            <p className="text-xs md:text-sm lg:text-base font-black uppercase italic text-white leading-none pt-0.5">Ticket wird generiert...</p>
+                            <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-400 font-medium leading-relaxed pt-1">
                                 Dein Kauf war erfolgreich. Dein sicheres PDF-Ticket wird erstellt.
                             </p>
                         </div>
@@ -500,21 +500,21 @@ const OrderTrackerPage = () => {
                         </div>
                         <div className="flex-1 space-y-1 text-left">
                             <div className="flex justify-between items-center">
-                                <h4 className="text-[9px] font-black uppercase text-amber-500 tracking-widest">Posteingang • Ticket Services</h4>
+                                <h4 className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-amber-500 tracking-widest">Posteingang • Ticket Services</h4>
                                 <span className="text-[7px] text-gray-500 font-bold uppercase tracking-widest">Jetzt</span>
                             </div>
-                            <p className="text-xs font-black uppercase italic text-white leading-none pt-0.5">Bitte verifizieren Sie Ihren Ticketkauf</p>
-                            <p className="text-[9px] text-gray-400 font-medium leading-relaxed pt-1">
+                            <p className="text-xs md:text-sm lg:text-base font-black uppercase italic text-white leading-none pt-0.5">Bitte verifizieren Sie Ihren Ticketkauf</p>
+                            <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-400 font-medium leading-relaxed pt-1">
                                 Bestätigungslink gesendet an <strong className="text-gray-200">{guestEmail}</strong>. Verifizieren Sie Ihre E-Mail, um Ihre Eintrittskarten freizuschalten.
                             </p>
                             <div className="pt-2.5 flex items-center justify-between gap-2">
                                 <button 
                                     onClick={handleVerifyEmail}
-                                    className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black text-[8px] font-black uppercase tracking-widest rounded-xl transition-all shadow-md shadow-amber-500/15"
+                                    className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-md shadow-amber-500/15"
                                 >
                                     Jetzt verifizieren 📧
                                 </button>
-                                <span className="text-[8px] text-gray-500 font-black uppercase tracking-wider">
+                                <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 font-black uppercase tracking-wider">
                                     Auto-Verify in {secondsLeft}s
                                 </span>
                             </div>
@@ -534,11 +534,11 @@ const OrderTrackerPage = () => {
                         </div>
                         <div className="flex-1 space-y-1 text-left">
                             <div className="flex justify-between items-center">
-                                <h4 className="text-[9px] font-black uppercase text-green-500 tracking-widest">Neue SMS • KhiamGreen</h4>
+                                <h4 className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-green-500 tracking-widest">Neue SMS • KhiamGreen</h4>
                                 <span className="text-[7px] text-gray-500 font-bold uppercase tracking-widest">Jetzt</span>
                             </div>
-                            <p className="text-xs font-black uppercase italic text-white leading-none pt-0.5">Tickets per E-Mail gesendet! 📧</p>
-                            <p className="text-[9px] text-gray-400 font-medium leading-relaxed pt-1">
+                            <p className="text-xs md:text-sm lg:text-base font-black uppercase italic text-white leading-none pt-0.5">Tickets per E-Mail gesendet! 📧</p>
+                            <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-400 font-medium leading-relaxed pt-1">
                                 Benachrichtigung an <strong className="text-gray-200">{guestPhone}</strong>. Die Tickets für <span className="text-green-400 font-black italic">{venueName}</span> wurden erfolgreich an Ihre E-Mail <strong className="text-white">{guestEmail}</strong> gesendet.
                             </p>
                         </div>
@@ -555,7 +555,7 @@ const OrderTrackerPage = () => {
                     </button>
                     <button 
                         onClick={handleSettleTab} 
-                        className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl transition-all ${
+                        className={`px-6 py-3 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest shadow-xl transition-all ${
                             orderStatus === 'GROUP ORDER'
                                 ? 'bg-brand text-dark-900 shadow-brand/20'
                                 : paymentStatus === 'PAID' || paymentStatus === 'BILLED TO ROOM' 
@@ -570,7 +570,7 @@ const OrderTrackerPage = () => {
                 </div>
                 <div className="absolute bottom-8 left-0 w-full px-8 z-10 text-center">
                     <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white drop-shadow-xl">{venueName}</h1>
-                    <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em] mt-2 drop-shadow-xl">
+                    <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em] mt-2 drop-shadow-xl">
                         {tableId === 'Check-in Assigned' ? 'Room Booking' : (isHotel ? 'Room' : 'Table')} {tableId === 'Check-in Assigned' ? '' : tableId} {guestName && `• ${guestName}`}
                     </p>
                 </div>
@@ -588,23 +588,23 @@ const OrderTrackerPage = () => {
                             <div className="flex items-start gap-5">
                                 <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center text-brand border border-brand/20 shadow-lg shadow-brand/10"><MapPin size={24} /></div>
                                 <div>
-                                    <h4 className="text-[10px] font-black uppercase text-brand tracking-[0.2em] mb-1.5">Operational Station</h4>
+                                    <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-brand tracking-[0.2em] mb-1.5">Operational Station</h4>
                                     <p className="text-base font-black text-white uppercase italic tracking-tight">Industrial District 42, 10117 Berlin</p>
-                                    <p className="text-[9px] font-bold text-gray-400 mt-1.5 uppercase tracking-widest flex items-center gap-2">
+                                    <p className="text-[9px] md:text-[11px] lg:text-xs font-bold text-gray-400 mt-1.5 uppercase tracking-widest flex items-center gap-2">
                                         <Clock size={10} /> Open until 04:00 AM • Valet Available
                                     </p>
                                 </div>
                             </div>
                             <div className="pt-6 border-t border-white/10">
-                                <div className="flex items-center gap-2 mb-5"><Zap size={14} className="text-brand" /><h4 className="text-[11px] font-black uppercase text-white tracking-[0.2em]">Active Member Privileges</h4></div>
+                                <div className="flex items-center gap-2 mb-5"><Zap size={14} className="text-brand" /><h4 className="text-[11px] md:text-sm lg:text-base font-black uppercase text-white tracking-[0.2em]">Active Member Privileges</h4></div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-white/[0.03] p-4 rounded-2xl border border-white/10 hover:border-brand/30 transition-all">
-                                        <p className="text-[8px] font-black text-brand uppercase mb-1.5 tracking-widest">VIP Perk</p>
-                                        <p className="text-[10px] font-extrabold text-white uppercase leading-tight">Free Espresso Lounge Access</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase mb-1.5 tracking-widest">VIP Perk</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-extrabold text-white uppercase leading-tight">Free Espresso Lounge Access</p>
                                     </div>
                                     <div className="bg-white/[0.03] p-4 rounded-2xl border border-white/10 hover:border-brand/30 transition-all">
-                                        <p className="text-[8px] font-black text-brand uppercase mb-1.5 tracking-widest">Returning</p>
-                                        <p className="text-[10px] font-extrabold text-white uppercase leading-tight">20% Off Next Detailing</p>
+                                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase mb-1.5 tracking-widest">Returning</p>
+                                        <p className="text-[10px] md:text-xs lg:text-sm font-extrabold text-white uppercase leading-tight">20% Off Next Detailing</p>
                                     </div>
                                 </div>
                             </div>
@@ -637,7 +637,7 @@ const OrderTrackerPage = () => {
                     </div>
                     <div className="bg-dark-900 border border-main rounded-3xl p-6 space-y-4 shadow-lg">
                         {cart.length === 0 ? (
-                            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest text-center py-4">No items ordered.</p>
+                            <p className="text-xs md:text-sm lg:text-base text-gray-500 font-bold uppercase tracking-widest text-center py-4">No items ordered.</p>
                         ) : isWashHub ? (
                             cart.map((item, index) => (
                                 <div key={index} className="flex justify-between items-center group">
@@ -646,8 +646,8 @@ const OrderTrackerPage = () => {
                                             {item.tags?.includes('Drinks') ? <Utensils size={18} /> : <Sparkles size={18} />}
                                         </div>
                                         <div>
-                                            <p className="text-xs font-black italic uppercase text-white">{item.name}</p>
-                                            <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">{item.tags?.[0] || 'Wash Service'}</p>
+                                            <p className="text-xs md:text-sm lg:text-base font-black italic uppercase text-white">{item.name}</p>
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-500 uppercase tracking-widest">{item.tags?.[0] || 'Wash Service'}</p>
                                         </div>
                                     </div>
                                     <p className="text-sm font-black italic text-brand">€{item.price.toFixed(2)}</p>
@@ -666,7 +666,7 @@ const OrderTrackerPage = () => {
                                                     {isItemConfirmed ? <CheckCircle size={18} /> : <Loader2 size={18} className="animate-spin" />}
                                                 </div>
                                                 <div>
-                                                    <p className={`text-xs font-black italic uppercase transition-colors ${isItemConfirmed ? 'text-primary' : 'text-gray-500'}`}>{item.name}</p>
+                                                    <p className={`text-xs md:text-sm lg:text-base font-black italic uppercase transition-colors ${isItemConfirmed ? 'text-primary' : 'text-gray-500'}`}>{item.name}</p>
                                                     <div className="flex items-center gap-2 mt-0.5">
                                                         <span className={`text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${isItemConfirmed || ['served'].includes(item.status) ? 'bg-brand/10 text-brand' : 'bg-white/5 text-gray-600'}`}>
                                                             {isConfirmedContext && !['received', 'sent', 'served'].includes(item.status) ? 'Confirmed' : item.status === 'received' ? 'Received' : item.status === 'sent' ? 'Sent' : item.status === 'served' ? 'Served' : 'Pending'}
@@ -684,36 +684,36 @@ const OrderTrackerPage = () => {
                         {hasTickets && orderStatus === 'PENDING_EMAIL_VERIFICATION' && (
                             <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-5 mt-2 space-y-4 text-left">
                                 <div className="text-center space-y-1">
-                                    <p className="text-[8px] font-black text-amber-500 uppercase tracking-[0.2em]">Sicherheitsüberprüfung</p>
-                                    <p className="text-[11px] font-extrabold text-white uppercase italic tracking-tight">Warte auf E-Mail-Bestätigung...</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-amber-500 uppercase tracking-[0.2em]">Sicherheitsüberprüfung</p>
+                                    <p className="text-[11px] md:text-sm lg:text-base font-extrabold text-white uppercase italic tracking-tight">Warte auf E-Mail-Bestätigung...</p>
                                 </div>
                                 <p className="text-[9.5px] text-gray-400 font-medium leading-relaxed text-center px-2">
                                     Bitte verifizieren Sie den Kauf über den Bestätigungslink, den wir an Ihre verifizierte E-Mail-Adresse gesendet haben.
                                 </p>
                                 
                                 <div className="space-y-2 pt-2.5 border-t border-white/5">
-                                    <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Empfänger-E-Mail-Adresse</p>
+                                    <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Empfänger-E-Mail-Adresse</p>
                                     {isEditingEmail ? (
                                         <div className="flex gap-2">
                                             <input 
                                                 type="email"
                                                 value={tempEmail}
                                                 onChange={(e) => setTempEmail(e.target.value)}
-                                                className="flex-1 bg-black border border-amber-500/40 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-amber-500"
+                                                className="flex-1 bg-black border border-amber-500/40 rounded-xl px-3 py-2 text-xs md:text-sm lg:text-base font-bold text-white focus:outline-none focus:border-amber-500"
                                             />
                                             <button 
                                                 onClick={handleResendEmail}
-                                                className="px-4 py-2 bg-amber-500 text-black text-[9px] font-black uppercase tracking-widest rounded-xl transition-all"
+                                                className="px-4 py-2 bg-amber-500 text-black text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest rounded-xl transition-all"
                                             >
                                                 Senden
                                             </button>
                                         </div>
                                     ) : (
                                         <div className="flex items-center justify-between bg-black/40 rounded-xl p-3 border border-white/5">
-                                            <span className="text-xs font-bold text-amber-500">{guestEmail}</span>
+                                            <span className="text-xs md:text-sm lg:text-base font-bold text-amber-500">{guestEmail}</span>
                                             <button 
                                                 onClick={() => setIsEditingEmail(true)}
-                                                className="text-[8px] font-black text-gray-400 hover:text-white uppercase tracking-widest border-b border-gray-600/30 pb-0.5"
+                                                className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-400 hover:text-white uppercase tracking-widest border-b border-gray-600/30 pb-0.5"
                                             >
                                                 Ändern & Neu senden
                                             </button>
@@ -724,7 +724,7 @@ const OrderTrackerPage = () => {
                                 <div className="pt-2">
                                     <button 
                                         onClick={handleVerifyEmail}
-                                        className="w-full py-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] text-amber-500 transition-all shadow-md shadow-amber-500/5"
+                                        className="w-full py-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] text-amber-500 transition-all shadow-md shadow-amber-500/5"
                                     >
                                         E-Mail verifizieren (Simulation) 📧
                                     </button>
@@ -740,8 +740,8 @@ const OrderTrackerPage = () => {
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-2xl bg-brand/10 text-brand flex items-center justify-center border border-brand/20"><Ticket size={20} /></div>
                                         <div>
-                                            <p className="text-[8px] font-black text-brand uppercase tracking-[0.25em]">E-MAIL-EINGANG 2</p>
-                                            <p className="text-xs font-black italic uppercase text-primary tracking-tight">Ihre Eintrittskarten sind da! 🎟️</p>
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase tracking-[0.25em]">E-MAIL-EINGANG 2</p>
+                                            <p className="text-xs md:text-sm lg:text-base font-black italic uppercase text-primary tracking-tight">Ihre Eintrittskarten sind da! 🎟️</p>
                                         </div>
                                     </div>
                                     <span className={`px-2.5 py-1 rounded text-[7px] font-black uppercase tracking-widest ${orderStatus === 'RECEIVED' ? 'bg-brand text-dark-900 shadow-[0_0_15px_var(--brand)]' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse'}`}>
@@ -750,24 +750,24 @@ const OrderTrackerPage = () => {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <p className="text-[10px] text-gray-400 font-medium leading-relaxed">
+                                    <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 font-medium leading-relaxed">
                                         {orderStatus === 'RECEIVED' 
                                             ? "Vielen Dank! Sie haben den Erhalt der Eintrittskarten erfolgreich bestätigt. Die Tickets sind in Ihrer Wallet aktiv und bereit für den Einlass."
                                             : "Die originalen Tickets wurden von unserem System generiert. Bitte bestätigen Sie den Empfang der E-Mail unten, um die Eintrittskarten für den Einlass freizuschalten."}
                                     </p>
 
                                     <div className="bg-black/40 rounded-xl p-4 border border-white/5 space-y-2.5">
-                                        <div className="flex justify-between items-center text-[9px]"><span className="text-gray-500 font-bold uppercase tracking-wider">Veranstaltung:</span><span className="text-white font-black uppercase italic">{venueName}</span></div>
-                                        <div className="flex justify-between items-center text-[9px]"><span className="text-gray-500 font-bold uppercase tracking-wider">Empfänger:</span><span className="text-green-400 font-black">{guestEmail}</span></div>
-                                        <div className="flex justify-between items-center text-[9px]"><span className="text-gray-500 font-bold uppercase tracking-wider">Ticket Typ:</span><span className="text-brand font-black uppercase italic">Mobile E-Ticket</span></div>
-                                        <div className="flex justify-between items-center text-[9px]"><span className="text-gray-500 font-bold uppercase tracking-wider">Status:</span><span className={`px-2 py-0.5 rounded font-black text-[7px] tracking-widest uppercase ${orderStatus === 'RECEIVED' ? 'bg-brand/10 text-brand' : 'bg-amber-500/10 text-amber-500'}`}>{orderStatus === 'RECEIVED' ? 'AKTIV' : 'WARTE AUF BESTÄTIGUNG'}</span></div>
+                                        <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs"><span className="text-gray-500 font-bold uppercase tracking-wider">Veranstaltung:</span><span className="text-white font-black uppercase italic">{venueName}</span></div>
+                                        <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs"><span className="text-gray-500 font-bold uppercase tracking-wider">Empfänger:</span><span className="text-green-400 font-black">{guestEmail}</span></div>
+                                        <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs"><span className="text-gray-500 font-bold uppercase tracking-wider">Ticket Typ:</span><span className="text-brand font-black uppercase italic">Mobile E-Ticket</span></div>
+                                        <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs"><span className="text-gray-500 font-bold uppercase tracking-wider">Status:</span><span className={`px-2 py-0.5 rounded font-black text-[7px] tracking-widest uppercase ${orderStatus === 'RECEIVED' ? 'bg-brand/10 text-brand' : 'bg-amber-500/10 text-amber-500'}`}>{orderStatus === 'RECEIVED' ? 'AKTIV' : 'WARTE AUF BESTÄTIGUNG'}</span></div>
                                     </div>
 
                                     {orderStatus === 'TICKET_DISPATCHED' ? (
                                         <div className="pt-1">
                                             <button 
                                                 onClick={handleConfirmReceipt}
-                                                className="w-full py-3 bg-brand text-dark-900 rounded-xl text-[9px] font-black uppercase tracking-[0.25em] shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+                                                className="w-full py-3 bg-brand text-dark-900 rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.25em] shadow-xl shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
                                             >
                                                 Empfang bestätigen 🎟️
                                             </button>
@@ -775,7 +775,7 @@ const OrderTrackerPage = () => {
                                     ) : (
                                         <div className="p-3 bg-brand/5 border border-brand/20 rounded-xl flex items-center justify-center gap-3 text-brand">
                                             <CheckCircle size={16} />
-                                            <span className="text-[9px] font-black uppercase tracking-widest">Empfang am {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} Uhr bestätigt • Eintritt aktiv</span>
+                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest">Empfang am {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} Uhr bestätigt • Eintritt aktiv</span>
                                         </div>
                                     )}
                                 </div>
@@ -787,20 +787,20 @@ const OrderTrackerPage = () => {
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 blur-[50px] rounded-full -mr-10 -mt-10" />
                                 <div className="flex items-center gap-2 mb-2 relative z-10">
                                     <div className="w-1.5 h-1.5 bg-brand rounded-full" />
-                                    <h4 className="text-[10px] font-black uppercase text-brand tracking-[0.2em] leading-none">Registration Overview</h4>
+                                    <h4 className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-brand tracking-[0.2em] leading-none">Registration Overview</h4>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 relative z-10">
                                     <div className="bg-black/40 rounded-xl p-3 border border-white/5 space-y-1">
                                         <span className="text-[7px] font-black text-gray-500 uppercase tracking-widest block">Check-In</span>
-                                        <span className="text-xs font-black italic text-white block">{guestDetails.checkIn || 'N/A'}</span>
+                                        <span className="text-xs md:text-sm lg:text-base font-black italic text-white block">{guestDetails.checkIn || 'N/A'}</span>
                                     </div>
                                     <div className="bg-black/40 rounded-xl p-3 border border-white/5 space-y-1">
                                         <span className="text-[7px] font-black text-gray-500 uppercase tracking-widest block">Check-Out</span>
-                                        <span className="text-xs font-black italic text-white block">{guestDetails.checkOut || 'N/A'}</span>
+                                        <span className="text-xs md:text-sm lg:text-base font-black italic text-white block">{guestDetails.checkOut || 'N/A'}</span>
                                     </div>
                                 </div>
                                 <div className="bg-black/40 rounded-xl p-3 border border-white/5 space-y-2 relative z-10">
-                                    <div className="flex justify-between items-center text-[9px]">
+                                    <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs">
                                         <span className="text-gray-500 font-bold uppercase tracking-wider">Booking Type:</span>
                                         <span className={`font-black uppercase tracking-widest ${guestDetails.bookingType === 'business' ? 'text-brand' : 'text-white'}`}>
                                             {guestDetails.bookingType === 'business' ? 'Business' : 'Private'}
@@ -808,12 +808,12 @@ const OrderTrackerPage = () => {
                                     </div>
                                     {guestDetails.bookingType === 'business' && guestDetails.companyName && (
                                         <>
-                                            <div className="flex justify-between items-center text-[9px]">
+                                            <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs">
                                                 <span className="text-gray-500 font-bold uppercase tracking-wider">Company:</span>
                                                 <span className="text-white font-black uppercase italic truncate max-w-[150px]">{guestDetails.companyName}</span>
                                             </div>
                                             {guestDetails.companyAddress && (
-                                                <div className="flex justify-between items-center text-[9px]">
+                                                <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs">
                                                     <span className="text-gray-500 font-bold uppercase tracking-wider">Address:</span>
                                                     <span className="text-gray-300 font-black uppercase italic truncate max-w-[150px]">{guestDetails.companyAddress}</span>
                                                 </div>
@@ -826,10 +826,10 @@ const OrderTrackerPage = () => {
 
                         <div className="pt-4 border-t border-dashed border-main space-y-3 mt-2">
                             <div className="flex justify-between items-center">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">
                                     {(isStadium || hasTickets) ? 'Ticket Status' : isParking ? 'Pass Status' : isWashHub ? 'Service Status' : isBooking ? 'Booking Status' : 'Order Status'}
                                 </span>
-                                <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg flex items-center gap-2 ${
+                                <span className={`text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest px-2.5 py-1 rounded-lg flex items-center gap-2 ${
                                     orderStatus === 'GROUP ORDER'
                                         ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
                                         : orderStatus === 'PENDING_EMAIL_VERIFICATION'
@@ -849,8 +849,8 @@ const OrderTrackerPage = () => {
                                 </span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Payment Status</span>
-                                <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">Payment Status</span>
+                                <span className={`text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest px-2 py-0.5 rounded ${
                                     hasTickets || paymentStatus === 'PAID' || paymentStatus === 'BILLED TO ROOM' 
                                         ? 'bg-green-500/10 text-green-500' 
                                         : (paymentStatus === 'UNPAID' && isGroupActive)
@@ -863,7 +863,7 @@ const OrderTrackerPage = () => {
                                 </span>
                             </div>
                             <div className="flex justify-between items-center pt-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Total Charged</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">Total Charged</span>
                                 <span className="text-2xl font-black italic text-brand">€{totalCost.toFixed(2)}</span>
                             </div>
                         </div>
@@ -872,13 +872,13 @@ const OrderTrackerPage = () => {
 
                 <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-bg-primary via-bg-primary/90 to-transparent z-40">
                     <div className="max-w-lg mx-auto space-y-3">
-                        <button onClick={() => navigate(-1)} className="w-full py-4 bg-black border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all text-white flex items-center justify-center gap-2 shadow-xl hover:bg-neutral-900 active:scale-95">
+                        <button onClick={() => navigate(-1)} className="w-full py-4 bg-black border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all text-white flex items-center justify-center gap-2 shadow-xl hover:bg-neutral-900 active:scale-95">
                             Back to Menu
                         </button>
                         <button 
                             onClick={handleSettleTab} 
                             disabled={hasTickets && orderStatus !== 'RECEIVED' && orderStatus !== 'PENDING_EMAIL_VERIFICATION'}
-                            className={`w-full py-5 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all ${
+                            className={`w-full py-5 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all ${
                                 (hasTickets && orderStatus !== 'RECEIVED' && orderStatus !== 'PENDING_EMAIL_VERIFICATION')
                                     ? 'bg-dark-900/50 text-gray-700 cursor-not-allowed opacity-40'
                                     : orderStatus === 'PENDING_EMAIL_VERIFICATION'
@@ -915,8 +915,8 @@ const OrderTrackerPage = () => {
                                     <div className="space-y-6 py-10 text-center">
                                         <div className="w-20 h-20 bg-brand/10 rounded-full flex items-center justify-center text-brand mx-auto mb-4 border border-brand/20"><Banknote size={40} /></div>
                                         <h3 className="text-2xl font-black italic uppercase text-primary">Pending Staff</h3>
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed px-12">Please have €{totalCost.toFixed(2)} ready. A staff member is approaching {isHotel ? 'Room' : isWashHub ? 'Ticket' : 'Table'} {tableId} to collect your payment.</p>
-                                        <button onClick={() => setCashWaiting(false)} className="text-[10px] font-black text-red-500 uppercase tracking-widest border-b border-red-500/30 pb-1">Cancel & Pay with Card</button>
+                                        <p className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-bold uppercase tracking-widest leading-relaxed px-12">Please have €{totalCost.toFixed(2)} ready. A staff member is approaching {isHotel ? 'Room' : isWashHub ? 'Ticket' : 'Table'} {tableId} to collect your payment.</p>
+                                        <button onClick={() => setCashWaiting(false)} className="text-[10px] md:text-xs lg:text-sm font-black text-red-500 uppercase tracking-widest border-b border-red-500/30 pb-1">Cancel & Pay with Card</button>
                                     </div>
                                 ) : valetStep === 'tracking' ? (
                                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-8">
@@ -931,28 +931,28 @@ const OrderTrackerPage = () => {
                                             </div>
                                             <div>
                                                 <h3 className="text-2xl font-black italic uppercase text-primary tracking-tighter">Valet Returning</h3>
-                                                <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">Vehicle: Black Porsche 911</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em]">Vehicle: Black Porsche 911</p>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="bg-dark-900 border border-main rounded-3xl p-6 text-center space-y-1"><p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Return ETA</p><p className="text-2xl font-black italic text-primary">{valetEta}m</p></div>
-                                            <div className="bg-dark-900 border border-main rounded-3xl p-6 text-center space-y-1"><p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Valet Agent</p><p className="text-2xl font-black italic text-brand">{valetName}</p></div>
+                                            <div className="bg-dark-900 border border-main rounded-3xl p-6 text-center space-y-1"><p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Return ETA</p><p className="text-2xl font-black italic text-primary">{valetEta}m</p></div>
+                                            <div className="bg-dark-900 border border-main rounded-3xl p-6 text-center space-y-1"><p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Valet Agent</p><p className="text-2xl font-black italic text-brand">{valetName}</p></div>
                                         </div>
                                         <div className="space-y-4">
-                                            <div className="flex items-center justify-between px-2"><p className="text-[10px] font-black uppercase text-primary tracking-widest">Add a Tip for {valetName}</p><p className="text-sm font-black italic text-brand">€{tipAmount}</p></div>
+                                            <div className="flex items-center justify-between px-2"><p className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-primary tracking-widest">Add a Tip for {valetName}</p><p className="text-sm font-black italic text-brand">€{tipAmount}</p></div>
                                             <div className="flex gap-2">
                                                 {[2, 5, 10, 20].map((amt) => (
-                                                    <button key={amt} onClick={() => setTipAmount(amt)} className={`flex-1 py-4 rounded-2xl border text-xs font-black transition-all ${tipAmount === amt ? 'bg-brand border-brand text-black shadow-lg' : 'bg-dark-900 border-main text-gray-500'}`}>€{amt}</button>
+                                                    <button key={amt} onClick={() => setTipAmount(amt)} className={`flex-1 py-4 rounded-2xl border text-xs md:text-sm lg:text-base font-black transition-all ${tipAmount === amt ? 'bg-brand border-brand text-black shadow-lg' : 'bg-dark-900 border-main text-gray-500'}`}>€{amt}</button>
                                                 ))}
                                             </div>
                                         </div>
-                                        <button onClick={() => { triggerToast("Tip Confirmed! Thank you for the support. ✨"); setTimeout(() => navigate('/greens'), 2000); }} className="w-full py-6 bg-brand text-dark-900 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-brand/20 transition-all active:scale-95">Finish & Head Out</button>
+                                        <button onClick={() => { triggerToast("Tip Confirmed! Thank you for the support. ✨"); setTimeout(() => navigate('/greens'), 2000); }} className="w-full py-6 bg-brand text-dark-900 rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-brand/20 transition-all active:scale-95">Finish & Head Out</button>
                                     </div>
                                 ) : paymentStep === 'rating' ? (
                                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         <div className="text-center space-y-2">
                                             <h3 className="text-2xl font-black italic uppercase text-primary tracking-tighter">Rate Your {isWashHub ? 'Service' : 'Night'}</h3>
-                                            <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">Transaction Successful</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em]">Transaction Successful</p>
                                         </div>
                                         <div className="flex justify-center gap-4">
                                             {[1, 2, 3, 4, 5].map((star) => (
@@ -967,7 +967,7 @@ const OrderTrackerPage = () => {
                                         </div>
                                         <div className="flex flex-wrap justify-center gap-2">
                                             {feedbackOptions.map((opt) => (
-                                                <button key={opt.label} onClick={() => toggleTag(opt.label)} className={`px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest border transition-all ${feedbackTags.includes(opt.label) ? 'bg-brand border-brand text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-dark-900 border-main text-gray-500 hover:border-brand/30'}`}>{opt.emoji} {opt.label}</button>
+                                                <button key={opt.label} onClick={() => toggleTag(opt.label)} className={`px-4 py-3 rounded-2xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest border transition-all ${feedbackTags.includes(opt.label) ? 'bg-brand border-brand text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-dark-900 border-main text-gray-500 hover:border-brand/30'}`}>{opt.emoji} {opt.label}</button>
                                             ))}
                                         </div>
                                         <div className="flex flex-col gap-4">
@@ -976,13 +976,13 @@ const OrderTrackerPage = () => {
                                                     setVenueTickets(prev => prev.map(t => t.id === orderIdValue ? { ...t, paymentStatus: 'PAID', orderStatus: 'SERVED' } : t));
                                                     handleFinish();
                                                 }}
-                                                className="w-full py-6 bg-black text-white rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl transition-all active:scale-95 flex items-center justify-center gap-4 group"
+                                                className="w-full py-6 bg-black text-white rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] shadow-xl transition-all active:scale-95 flex items-center justify-center gap-4 group"
                                             >
                                                 {isWashHub ? 'Whistle Valet Now' : 'Whistle Ride Now'}
                                                 <Zap size={18} className="fill-white group-hover:scale-110 transition-transform" />
                                             </button>
                                             {!isWashHub && (
-                                                <button onClick={() => { triggerToast("Rating Saved! drivers notified. ✨"); setTimeout(() => navigate('/green-ride'), 2000); }} className="w-full py-5 bg-black border border-main rounded-[2.5rem] text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white transition-all">Whistle Later</button>
+                                                <button onClick={() => { triggerToast("Rating Saved! drivers notified. ✨"); setTimeout(() => navigate('/green-ride'), 2000); }} className="w-full py-5 bg-black border border-main rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-white/60 hover:text-white transition-all">Whistle Later</button>
                                             )}
                                         </div>
                                     </div>
@@ -990,15 +990,15 @@ const OrderTrackerPage = () => {
                                     <>
                                         <div className="text-center space-y-2">
                                             <h3 className="text-2xl font-black italic uppercase text-primary tracking-tighter">Settle Bill</h3>
-                                            <p className="text-[10px] text-brand font-black uppercase tracking-[0.3em]">Order Served • {isHotel ? 'Room' : 'Table'} {tableId}</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em]">Order Served • {isHotel ? 'Room' : 'Table'} {tableId}</p>
                                         </div>
                                         <div className="bg-dark-900 border border-main rounded-3xl p-8 text-center space-y-2">
-                                            <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Final Amount</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-gray-600 uppercase tracking-widest">Final Amount</p>
                                             <h2 className="text-5xl font-black italic text-primary">€{totalCost.toFixed(2)}</h2>
                                             <p className="text-[7px] font-black text-green-500/60 uppercase tracking-widest pt-2">Order Status: SERVED</p>
                                         </div>
                                         <div className="space-y-3">
-                                            <p className="text-[8px] font-black text-gray-600 uppercase tracking-widest ml-4">Select Method</p>
+                                            <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-600 uppercase tracking-widest ml-4">Select Method</p>
                                             {[
                                                 ...(isHotel ? [{ id: 'room_charge', name: 'Billed to Room', icon: BedDouble, color: 'text-white' }] : []),
                                                 { id: 'card', name: 'Credit / Bank Card', icon: CreditCard, color: 'text-white' },
@@ -1019,7 +1019,7 @@ const OrderTrackerPage = () => {
                                                                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${isSelected ? 'bg-white/10 text-white' : 'bg-dark-950 text-gray-600'}`}>
                                                                     <method.icon size={24} />
                                                                 </div>
-                                                                <span className={`text-xs font-black uppercase tracking-widest ${isSelected ? 'text-white' : 'text-gray-500'}`}>{method.name}</span>
+                                                                <span className={`text-xs md:text-sm lg:text-base font-black uppercase tracking-widest ${isSelected ? 'text-white' : 'text-gray-500'}`}>{method.name}</span>
                                                             </div>
                                                             {isSelected && (
                                                                 <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
@@ -1045,10 +1045,10 @@ const OrderTrackerPage = () => {
                                                                         className={`p-4 rounded-2xl border flex items-center justify-between transition-all ${selectedSavedCard === card.id ? 'bg-black border-brand text-white shadow-lg' : 'bg-dark-900 border-main text-gray-500 hover:border-brand/20'}`}
                                                                     >
                                                                         <div className="flex items-center gap-3">
-                                                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[8px] font-black ${selectedSavedCard === card.id ? 'bg-white/10 text-white' : 'bg-white/5'}`}>{card.type}</div>
+                                                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[8px] md:text-[10px] lg:text-xs font-black ${selectedSavedCard === card.id ? 'bg-white/10 text-white' : 'bg-white/5'}`}>{card.type}</div>
                                                                             <div className="text-left">
-                                                                                <p className="text-[10px] font-black uppercase tracking-widest">{card.label}</p>
-                                                                                <p className={`text-[8px] font-bold uppercase tracking-[0.2em] ${selectedSavedCard === card.id ? 'text-white/40' : 'text-gray-600'}`}>**** **** **** {card.last4}</p>
+                                                                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">{card.label}</p>
+                                                                                <p className={`text-[8px] md:text-[10px] lg:text-xs font-bold uppercase tracking-[0.2em] ${selectedSavedCard === card.id ? 'text-white/40' : 'text-gray-600'}`}>**** **** **** {card.last4}</p>
                                                                             </div>
                                                                         </div>
                                                                         {selectedSavedCard === card.id && <Check size={14} className="text-brand" />}
@@ -1061,11 +1061,11 @@ const OrderTrackerPage = () => {
                                             })}
                                         </div>
                                         <div className="flex gap-4">
-                                            <button onClick={() => setShowPaymentOptions(false)} className="flex-1 py-6 bg-dark-900 border border-main rounded-[2.5rem] text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-primary transition-all">Cancel</button>
+                                            <button onClick={() => setShowPaymentOptions(false)} className="flex-1 py-6 bg-dark-900 border border-main rounded-[2.5rem] text-[11px] md:text-sm lg:text-base font-black uppercase tracking-widest text-gray-500 hover:text-primary transition-all">Cancel</button>
                                             <button 
                                                 onClick={handleProcessPayment} 
                                                 disabled={isProcessing || !selectedMethod || (selectedMethod === 'card' && !selectedSavedCard)} 
-                                                className="flex-[2] py-6 bg-black text-white border-2 border-brand rounded-[2.5rem] text-[11px] font-black uppercase tracking-[0.3em] shadow-xl shadow-brand/20 transition-all active:scale-95 flex items-center justify-center gap-4 relative overflow-hidden disabled:opacity-30"
+                                                className="flex-[2] py-6 bg-black text-white border-2 border-brand rounded-[2.5rem] text-[11px] md:text-sm lg:text-base font-black uppercase tracking-[0.3em] shadow-xl shadow-brand/20 transition-all active:scale-95 flex items-center justify-center gap-4 relative overflow-hidden disabled:opacity-30"
                                             >
                                                 {isProcessing ? (
                                                     <><motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full" />Verifying...</>
@@ -1098,7 +1098,7 @@ const OrderTrackerPage = () => {
                         >
                             <div className="text-center space-y-2">
                                 <h2 className="text-3xl font-black italic uppercase tracking-tighter">Gate Entry</h2>
-                                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-400 italic">High-Contrast Optical Key</p>
+                                <p className="text-[10px] md:text-xs lg:text-sm font-bold uppercase tracking-[0.4em] text-gray-400 italic">High-Contrast Optical Key</p>
                             </div>
 
                             <div className="aspect-square bg-dark-900 rounded-[3rem] p-10 relative overflow-hidden flex items-center justify-center shadow-2xl">
@@ -1112,18 +1112,18 @@ const OrderTrackerPage = () => {
 
                             <div className="space-y-6 pt-4 border-t border-gray-100">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-black uppercase text-gray-400">License Plate</span>
+                                    <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-400">License Plate</span>
                                     <span className="text-sm font-black italic uppercase">{parkingPass?.plate}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-black uppercase text-gray-400">Location</span>
+                                    <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase text-gray-400">Location</span>
                                     <span className="text-sm font-black italic uppercase text-brand">P-Level 3, B-12</span>
                                 </div>
                             </div>
 
                             <button 
                                 onClick={() => setShowFullQR(false)}
-                                className="w-full py-6 bg-dark-900 text-white rounded-[2rem] text-[10px] font-black uppercase tracking-[0.4em] shadow-2xl hover:bg-black transition-all active:scale-95"
+                                className="w-full py-6 bg-dark-900 text-white rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.4em] shadow-2xl hover:bg-black transition-all active:scale-95"
                             >
                                 Exit Scan View
                             </button>

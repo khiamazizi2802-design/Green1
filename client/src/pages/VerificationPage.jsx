@@ -103,8 +103,8 @@ const VerificationPage = () => {
                             <ShieldCheck size={20} />
                         </div>
                         <div className="space-y-1">
-                            <p className="text-[10px] font-black text-brand uppercase tracking-widest leading-none">Security Dispatch</p>
-                            <p className="text-xs text-gray-300 font-bold leading-snug">
+                            <p className="text-[10px] md:text-xs lg:text-sm font-black text-brand uppercase tracking-widest leading-none">Security Dispatch</p>
+                            <p className="text-xs md:text-sm lg:text-base text-gray-300 font-bold leading-snug">
                                 A secure 2FA code has been routed to your registered device:
                             </p>
                             <div className="flex items-center gap-2 mt-2 bg-white/5 px-3 py-2 rounded-lg border border-white/5 w-fit">
@@ -113,7 +113,7 @@ const VerificationPage = () => {
                         </div>
                         <button 
                             onClick={() => setToastMessage(null)}
-                            className="text-gray-500 hover:text-white ml-auto text-xs font-bold leading-none"
+                            className="text-gray-500 hover:text-white ml-auto text-xs md:text-sm lg:text-base font-bold leading-none"
                         >
                             ✕
                         </button>
@@ -137,7 +137,7 @@ const VerificationPage = () => {
                         <Lock size={32} />
                     </div>
                     <h1 className="text-4xl font-black italic uppercase tracking-tighter">Identity <span className="text-brand">Verification</span></h1>
-                    <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.4em] leading-none">Dual-Channel Security Protocol Active</p>
+                    <p className="text-gray-500 text-[10px] md:text-xs lg:text-sm font-bold uppercase tracking-[0.4em] leading-none">Dual-Channel Security Protocol Active</p>
                 </div>
 
                 <div className="glass-panel p-10 rounded-[3rem] border border-white/10 space-y-8 backdrop-blur-3xl bg-white/[0.02]">
@@ -145,20 +145,20 @@ const VerificationPage = () => {
                         <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="p-3 bg-brand/10 rounded-xl text-brand"><Phone size={18} /></div>
                             <div>
-                                <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Phone Verification</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Phone Verification</p>
                                 <p className="text-sm font-bold text-[var(--text-primary)] italic">+49 ••• ••• ••42</p>
                             </div>
-                            <div className="ml-auto flex items-center gap-1 text-[8px] font-black text-white uppercase">
+                            <div className="ml-auto flex items-center gap-1 text-[8px] md:text-[10px] lg:text-xs font-black text-white uppercase">
                                 <ShieldCheck size={10} /> SENT
                             </div>
                         </div>
                         <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="p-3 bg-brand/10 rounded-xl text-brand"><Mail size={18} /></div>
                             <div>
-                                <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Email Verification</p>
+                                <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-500 uppercase tracking-widest">Email Verification</p>
                                 <p className="text-sm font-bold text-[var(--text-primary)] italic">{user?.email || '••••@green.com'}</p>
                             </div>
-                            <div className="ml-auto flex items-center gap-1 text-[8px] font-black text-white uppercase">
+                            <div className="ml-auto flex items-center gap-1 text-[8px] md:text-[10px] lg:text-xs font-black text-white uppercase">
                                 <ShieldCheck size={10} /> SENT
                             </div>
                         </div>
@@ -181,7 +181,7 @@ const VerificationPage = () => {
                         </div>
 
                         {error && (
-                            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-[10px] font-black uppercase text-center tracking-widest italic">{error}</motion.p>
+                            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-[10px] md:text-xs lg:text-sm font-black uppercase text-center tracking-widest italic">{error}</motion.p>
                         )}
 
                         <button 
@@ -209,7 +209,7 @@ const VerificationPage = () => {
                                 setToastMessage(`[Guardian Secure Dispatch] Your 2-Factor Authentication code is: ${newGenerated}`);
                                 setResendTimer(30);
                             }}
-                            className="text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-brand transition-colors disabled:opacity-50"
+                            className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-600 hover:text-brand transition-colors disabled:opacity-50"
                         >
                             {resendTimer > 0 ? `Resend ZAP Code in ${resendTimer}s` : 'Resend Verification Code'}
                         </button>
@@ -217,7 +217,7 @@ const VerificationPage = () => {
                 </div>
 
                 <div className="mt-12 text-center">
-                    <p className="text-[10px] font-bold text-gray-700 uppercase tracking-widest">
+                    <p className="text-[10px] md:text-xs lg:text-sm font-bold text-gray-700 uppercase tracking-widest">
                         Protected by <span className="text-brand">Guardian AI</span> Neural Shield v4.0
                     </p>
                 </div>
