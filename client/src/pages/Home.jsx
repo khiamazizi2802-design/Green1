@@ -2214,16 +2214,6 @@ const Home = () => {
                                         <div className="absolute inset-0 bg-brand translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                                         <span className="relative z-10 group-hover:text-black transition-colors">Weiter</span>
                                     </button>
-
-                                    <button 
-                                        onClick={() => {
-                                            localStorage.setItem('green_permissions_granted', 'true');
-                                            window.location.reload();
-                                        }}
-                                        className="w-full py-4 bg-transparent text-gray-500 hover:text-white rounded-2xl font-bold text-xs uppercase tracking-widest transition-colors duration-300"
-                                    >
-                                        Später fragen
-                                    </button>
                                 </div>
                             </div>
                         </div>

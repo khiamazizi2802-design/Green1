@@ -185,9 +185,9 @@ const Signup = () => {
                             <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                             <input
                                 type="text"
-                                placeholder={role === 'passenger' ? "Persönliche Adresse (Straße & Hausnr.)" : "Geschäftsadresse (Büro / Betrieb)"}
+                                placeholder={role === 'passenger' ? "Persönliche Adresse (Optional)" : "Geschäftsadresse (Optional)"}
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand/40 text-sm font-bold text-[var(--text-primary)] placeholder:text-gray-400/60 transition-colors"
-                                required
+                                
                                 value={formData.address}
                                 onChange={(e) => setFormData({...formData, address: e.target.value})}
                             />
@@ -196,9 +196,9 @@ const Signup = () => {
                             <Box className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                             <input
                                 type="text"
-                                placeholder={role === 'passenger' ? "Postleitzahl / PLZ" : "PLZ / Standort"}
+                                placeholder={role === 'passenger' ? "PLZ (Optional)" : "PLZ (Optional)"}
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand/40 text-sm font-bold text-[var(--text-primary)] placeholder:text-gray-400/60 transition-colors"
-                                required
+                                
                                 value={formData.zip}
                                 onChange={(e) => setFormData({...formData, zip: e.target.value})}
                             />
@@ -207,9 +207,9 @@ const Signup = () => {
                             <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                             <input
                                 type="tel"
-                                placeholder="Phone Number"
+                                placeholder="Phone Number (Optional)"
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand/40 text-sm font-bold text-[var(--text-primary)] placeholder:text-gray-400/60 transition-colors"
-                                required
+                                
                                 value={formData.phone}
                                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                             />
