@@ -171,7 +171,6 @@ const AccountHub = () => {
                 id="selfie-input" 
                 type="file" 
                 accept="image/*" 
-                capture="user" 
                 className="hidden" 
                 onChange={handleImageChange} 
             />

@@ -1646,7 +1646,6 @@ const DriverDashboard = () => {
                                 type="file"
                                 id="social-camera-upload"
                                 accept="image/*,video/*"
-                                capture="environment"
                                 className="hidden"
                                 onChange={(e) => {
                                     const file = e.target.files[0];
