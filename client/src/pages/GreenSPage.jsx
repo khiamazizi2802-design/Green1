@@ -401,7 +401,25 @@ const GreenSPage = () => {
                         <div className="flex items-center gap-3 bg-[var(--bg-secondary)] border border-white/5 p-1.5 rounded-full">
                             <span className={`text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest ${shareLocation ? 'text-brand' : 'text-gray-500'}`}>Share Location</span>
                             <button 
-                                onClick={() => setShareLocation(!shareLocation)}
+                                onClick={() => {
+                                    if (!shareLocation) {
+                                        if (navigator.geolocation) {
+                                            navigator.geolocation.getCurrentPosition(
+                                                (position) => {
+                                                    setShareLocation(true);
+                                                },
+                                                (error) => {
+                                                    alert("Standortzugriff verweigert oder fehlgeschlagen.");
+                                                    setShareLocation(false);
+                                                }
+                                            );
+                                        } else {
+                                            alert("Standort wird auf diesem Gerät nicht unterstützt.");
+                                        }
+                                    } else {
+                                        setShareLocation(false);
+                                    }
+                                }}
                                 className={`w-10 h-5 rounded-full relative transition-all duration-300 border ${shareLocation ? 'bg-brand/20 border-brand' : 'bg-[var(--bg-tertiary)] border-white/10'}`}
                             >
                                 <motion.div 
