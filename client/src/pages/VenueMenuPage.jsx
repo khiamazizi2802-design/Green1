@@ -211,6 +211,19 @@ const VenueMenuPage = () => {
     const isClub = passedCategory === 'club' || passedCategory === 'bar' || ((venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('disco') || venueName.toLowerCase().includes('lounge') || venueName.toLowerCase().includes('night') || venueName.toLowerCase().includes('bar') || venueName.toLowerCase().includes('festival') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('underground')) && !isDining && !isHotel && !isStadium);
 
     const isGroupActive = localStorage.getItem('green_group_state') === 'active';
+    const [commerceMode, setCommerceMode] = useState(false);
+
+    useEffect(() => {
+        const stored = localStorage.getItem('green_partners_data');
+        if (stored) {
+            try {
+                const partners = JSON.parse(stored);
+                if (partners[venueName]) {
+                    setCommerceMode(partners[venueName].commerceMode);
+                }
+            } catch (e) {}
+        }
+    }, [venueName]);
 
     const [cart, setCart] = useState(location.state?.existingCart || []);
     const { venueTickets, setVenueTickets } = useRide();
@@ -1171,16 +1184,18 @@ const VenueMenuPage = () => {
                                     <p className="text-[9px] md:text-[11px] lg:text-xs text-[var(--text-primary)] opacity-50 font-medium uppercase tracking-tight line-clamp-2 mb-4 h-6 leading-tight">{item.desc}</p>
                                     <div className="flex justify-between items-center mt-auto">
                                         <span className="text-xs md:text-sm lg:text-base font-black italic text-brand">€{item.price.toFixed(2)}</span>
-                                        <button 
-                                            onClick={() => handleOrder(item)} 
-                                            className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-all ${
-                                                !isItemTicket(item) && isRemote 
-                                                    ? 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-main)] opacity-50 cursor-not-allowed' 
-                                                    : 'bg-brand text-dark-900 shadow-brand/20'
-                                            }`}
-                                        >
-                                            <Plus size={16} />
-                                        </button>
+                                        {commerceMode && (
+                                            <button 
+                                                onClick={() => handleOrder(item)} 
+                                                className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-all ${
+                                                    !isItemTicket(item) && isRemote 
+                                                        ? 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-main)] opacity-50 cursor-not-allowed' 
+                                                        : 'bg-brand text-dark-900 shadow-brand/20'
+                                                }`}
+                                            >
+                                                <Plus size={16} />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -1189,7 +1204,7 @@ const VenueMenuPage = () => {
                 ))}
             </main>
 
-            {cart.length > 0 && (
+            {commerceMode && cart.length > 0 && (
                 <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/90 to-transparent z-50 safe-bottom-padding">
                     <div className="max-w-lg mx-auto flex gap-4">
                         <button onClick={() => setCart([])} className="px-6 py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all">Cancel</button>

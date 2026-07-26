@@ -21,6 +21,7 @@ import { db } from '../config/firebase';
 import { collection, doc, query, where, onSnapshot, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 
 import MapController from './admin/AdminMap';
+import AdminPartnerHub from '../components/AdminPartnerHub';
 
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
@@ -2320,6 +2321,7 @@ billing payouts are required.
                     {[
                         { id: 'command-deck', label: 'Command Deck', icon: ShieldCheck, badge: 'Alpha' },
                         { id: 'agents', label: 'Neural Agents', icon: Bot, badge: 'AI' },
+                        { id: 'partner-hub', label: 'Partner Hub', icon: Users, badge: 'NEW' },
                         { id: 'ticket-hub', label: 'Ticket Hub', icon: Ticket, badge: 'Hub' },
                         { id: 'angebot-hub', label: 'Angebot Hub', icon: Tag, badge: 'AI Agent' },
                         { id: 'settlements', label: 'Settlement Ledger', icon: Wallet },
@@ -2443,6 +2445,11 @@ billing payouts are required.
             <main className="flex-1 overflow-y-auto p-10 relative no-scrollbar">
                 <div className="relative z-10 max-w-[1800px] mx-auto">
                     <AnimatePresence mode="wait">
+                        {view === 'partner-hub' && (
+                            <motion.div key="partner-hub" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+                                <AdminPartnerHub />
+                            </motion.div>
+                        )}
                         {view === 'ticket-hub' && (
                             <motion.div key="ticket-hub" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-12">
                                 {/* Statistics Cards */}
