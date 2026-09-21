@@ -45,7 +45,7 @@ jobs:
 
     - name: Set dynamic build version
       run: |
-        BUILD_VER=$((60 + ${{ github.run_number }}))
+        BUILD_VER=$((100 + ${{ github.run_number }}))
         echo "Updating iOS build version in project.pbxproj to $BUILD_VER"
         sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*/CURRENT_PROJECT_VERSION = $BUILD_VER/g" ios/App/App.xcodeproj/project.pbxproj
 
