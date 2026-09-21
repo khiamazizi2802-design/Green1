@@ -107,7 +107,7 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
         {
             icon: ShieldCheck,
             title: "1. Verantwortlicher & Jugendschutz",
-            content: "Green Nightlife & Logistics GmbH ist der Hauptverantwortliche im Sinne der DSGVO. Um den Schutz von Minderjährigen zu gewährleisten, ist die Registrierung für Personen unter 16 Jahren strengstens untersagt. Minderjährige im Alter von 16-17 Jahren können die App nur nutzen, wenn sie eine verifizierte Einladung durch einen Erwachsenen erhalten."
+            content: "Grien Nightlife & Logistics GmbH ist der Hauptverantwortliche im Sinne der DSGVO. Um den Schutz von Minderjährigen zu gewährleisten, ist die Registrierung für Personen unter 16 Jahren strengstens untersagt. Minderjährige im Alter von 16-17 Jahren können die App nur nutzen, wenn sie eine verifizierte Einladung durch einen Erwachsenen erhalten."
         },
         {
             icon: MapPin,
@@ -281,7 +281,7 @@ Die Green GmbH (im Folgenden „Plattformbetreiber“) betreibt eine digitale Ve
                                 <div className="space-y-4">
                                     <h3 className="text-lg font-black text-white uppercase tracking-wider">1. Name und Anschrift des Verantwortlichen (Art. 13 Abs. 1 lit. a DSGVO)</h3>
                                     <p>Verantwortlich für die Datenverarbeitung im Green-Ecosystem ist:<br/>
-                                    <strong>Green Nightlife & Logistics GmbH</strong><br/>
+                                    <strong>Grien Nightlife & Logistics GmbH</strong><br/>
                                     Zeil 106, 60313 Frankfurt am Main, Deutschland<br/>
                                     E-Mail: ops@green-nightlife.com • Telefon: +49 69 1234567<br/>
                                     Geschäftsführung: Khiam Green</p>

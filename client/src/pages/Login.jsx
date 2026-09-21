@@ -134,7 +134,7 @@ const Login = () => {
                     </div>
 
                     <h1 className="text-4xl font-black tracking-tighter italic uppercase text-[var(--text-primary)]">
-                        Green <span className="text-brand">Portal</span>
+                        Grien <span className="text-brand">Portal</span>
                     </h1>
                     <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-[var(--text-muted)] uppercase tracking-widest mt-2 italic">
                         {isBlocked ? 'ACCESS DENIED' : successMsg ? 'DECRYPTING SHELL' : isAuthenticating ? 'HANDSHAKE ACTIVE' : 'SECURED MULTI-NODE LOG IN'}
