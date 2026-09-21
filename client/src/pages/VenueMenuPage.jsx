@@ -11,6 +11,7 @@ import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../config/firebase';
 import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
+import { safeSetItem } from '../utils/storageHelper';
 
 const TouchSwipeableContainer = ({ children, className, ...props }) => {
     const containerRef = React.useRef(null);
@@ -197,13 +198,14 @@ const VenueMenuPage = () => {
     const { user } = useAuth();
     const isDemo = user?.isDemo;
     
-    const venueName = location.state?.venueName || "Skyline Club";
-    const venueAddress = location.state?.venueAddress || "";
-    const venueOffer = location.state?.venueOffer || "FREE ENTRY + 1 DRINK";
-    const isTakeawayMode = location.state?.isTakeawayMode || false;
-    const venueEmail = location.state?.email || 'hotel@green.de';
+    const ctxState = location.state?.paymentFlowContext || location.state || {};
+    const venueName = ctxState.venueName || "Skyline Club";
+    const venueAddress = ctxState.venueAddress || "";
+    const venueOffer = ctxState.venueOffer || "FREE ENTRY + 1 DRINK";
+    const isTakeawayMode = ctxState.isTakeawayMode || false;
+    const venueEmail = ctxState.email || 'hotel@green.de';
     
-    const passedCategory = location.state?.category;
+    const passedCategory = ctxState.category;
     const isParking = false;
     const isHotel = passedCategory === 'hotel' || venueName.toLowerCase().includes('hotel') || venueName.toLowerCase().includes('luxe');
     const isStadium = passedCategory === 'stadium' || venueName.toLowerCase().includes('stadium') || venueName.toLowerCase().includes('arena');
@@ -211,14 +213,14 @@ const VenueMenuPage = () => {
     const isClub = passedCategory === 'club' || passedCategory === 'bar' || ((venueName.toLowerCase().includes('club') || venueName.toLowerCase().includes('disco') || venueName.toLowerCase().includes('lounge') || venueName.toLowerCase().includes('night') || venueName.toLowerCase().includes('bar') || venueName.toLowerCase().includes('festival') || venueName.toLowerCase().includes('event') || venueName.toLowerCase().includes('underground')) && !isDining && !isHotel && !isStadium);
 
     const isGroupActive = localStorage.getItem('green_group_state') === 'active';
-    const [commerceMode, setCommerceMode] = useState(false);
+    const [commerceMode, setCommerceMode] = useState(true);
 
     useEffect(() => {
         const stored = localStorage.getItem('green_partners_data');
         if (stored) {
             try {
                 const partners = JSON.parse(stored);
-                if (partners[venueName]) {
+                if (partners[venueName] && partners[venueName].commerceMode !== undefined) {
                     setCommerceMode(partners[venueName].commerceMode);
                 }
             } catch (e) {}
@@ -231,6 +233,7 @@ const VenueMenuPage = () => {
     const [showTicketHub, setShowTicketHub] = useState(false);
     const [showTablePicker, setShowTablePicker] = useState(false);
     const [selectedTable, setSelectedTable] = useState(location.state?.selectedTable || null);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const [activeFilter, setActiveFilter] = useState("All");
 
@@ -270,7 +273,11 @@ const VenueMenuPage = () => {
         checkIn: '',
         checkOut: '',
         stayDuration: 1,
-        bookingType: 'private'
+        bookingType: 'private',
+        hasShuttleService: false,
+        shuttlePersons: 1,
+        shuttleLuggage: 1,
+        shuttlePickupAddress: ''
     });
     const [isProcessing, setIsProcessing] = useState(false);
     const [attendees, setAttendees] = useState([]); // For stadium multi-ticket personalization
@@ -459,6 +466,7 @@ const VenueMenuPage = () => {
                         price: parseFloat(item.price) || 0.00,
                         desc: item.description || '',
                         image: item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop',
+                        gallery: Array.isArray(item.gallery) && item.gallery.length > 0 ? item.gallery : [item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop'],
                         tags: [item.category || 'General']
                     });
                 });
@@ -583,20 +591,21 @@ const VenueMenuPage = () => {
         fetchDynamicMenu();
     }, [isHotel, isStadium, location.state, venueName]);
 
-    const hasTicketsInCart = cart.some(item => 
+    const hasTicketsInCart = !isHotel && (isStadium || cart.some(item => 
         item.tags?.includes('Ticket') || 
         item.tags?.includes('Fast-Lane') || 
         item.tags?.includes('VIP') ||
         item.id.startsWith('t') || 
         item.id.startsWith('st') ||
         item.id.startsWith('dynamic')
-    );
+    ));
 
     const hasFoodOrDrinksInCart = cart.some(item => !item.tags?.includes('Ticket') && !item.tags?.includes('Fast-Lane') && !item.tags?.includes('VIP') && !item.id.startsWith('t') && !item.id.startsWith('st') && !item.id.startsWith('dynamic'));
 
     const isRemote = !isTakeawayMode && !location.state?.selectedTable && !isHotel;
 
-    const isItemTicket = (item) => item.tags?.includes('Ticket') || 
+    const isItemTicket = (item) => isStadium || 
+        item.tags?.includes('Ticket') || 
         item.tags?.includes('Fast-Lane') || 
         item.tags?.includes('VIP') ||
         item.tags?.includes('Tickets') ||
@@ -616,21 +625,21 @@ const VenueMenuPage = () => {
     const handleOrder = (item) => {
         const itemIsTicket = isItemTicket(item);
 
-        if (itemIsTicket) {
-            // Trying to add a ticket
-            if (hasFoodOrDrinksInCart) {
-                triggerToast("Tickets must be purchased separately. Please clear your food/drink cart first.");
-                return;
-            }
-        } else {
-            if (isRemote) {
-                triggerToast("Food & Drinks können nur direkt vor Ort am Tisch bestellt werden.");
-                return;
-            }
-            // Trying to add food/drinks
-            if (hasTicketsInCart) {
-                triggerToast("Food and drinks can only be ordered at the business place. Please complete your ticket purchase first.");
-                return;
+        if (!isHotel && !isStadium) {
+            if (itemIsTicket) {
+                if (hasFoodOrDrinksInCart) {
+                    triggerToast("Tickets must be purchased separately. Please clear your food/drink cart first.");
+                    return;
+                }
+            } else {
+                if (isRemote) {
+                    triggerToast("Food & Drinks können nur direkt vor Ort am Tisch bestellt werden.");
+                    return;
+                }
+                if (hasTicketsInCart) {
+                    triggerToast("Food and drinks can only be ordered at the business place. Please complete your ticket purchase first.");
+                    return;
+                }
             }
         }
         setCart([...cart, item]);
@@ -641,26 +650,27 @@ const VenueMenuPage = () => {
     // Sync states when returning from payment method page or location state changes
     useEffect(() => {
         if (location.state) {
-            if (location.state.showPaymentTerminal !== undefined) {
-                setShowPaymentTerminal(location.state.showPaymentTerminal);
+            const ctx = location.state.paymentFlowContext || location.state;
+            if (ctx.showPaymentTerminal !== undefined) {
+                setShowPaymentTerminal(ctx.showPaymentTerminal);
             }
-            if (location.state.paymentStep !== undefined) {
-                setPaymentStep(location.state.paymentStep);
+            if (ctx.paymentStep !== undefined) {
+                setPaymentStep(ctx.paymentStep);
             }
-            if (location.state.existingCart !== undefined) {
-                setCart(location.state.existingCart);
+            if (ctx.existingCart !== undefined) {
+                setCart(ctx.existingCart);
             }
-            if (location.state.selectedTable !== undefined) {
-                setSelectedTable(location.state.selectedTable);
+            if (ctx.selectedTable !== undefined) {
+                setSelectedTable(ctx.selectedTable);
             }
-            if (location.state.guestName !== undefined) {
-                setGuestName(location.state.guestName);
+            if (ctx.guestName !== undefined) {
+                setGuestName(ctx.guestName);
             }
-            if (location.state.guestDetails !== undefined) {
-                setGuestDetails(location.state.guestDetails);
+            if (ctx.guestDetails !== undefined) {
+                setGuestDetails(ctx.guestDetails);
             }
-            if (location.state.attendees !== undefined) {
-                setAttendees(location.state.attendees);
+            if (ctx.attendees !== undefined) {
+                setAttendees(ctx.attendees);
             }
         }
 
@@ -748,13 +758,13 @@ const VenueMenuPage = () => {
         return [];
     };
 
-    const isBooking = cart.some(item => 
+    const isBooking = isHotel || cart.some(item => 
         item.category?.toLowerCase().includes('room') || 
         item.category?.toLowerCase().includes('zimmer') || 
         item.name?.toLowerCase().includes('room') || 
         item.name?.toLowerCase().includes('suite') || 
         item.name?.toLowerCase().includes('zimmer')
-    ) || (isHotel && cart.some(item => item.tags?.includes('Luxury') || item.tags?.includes('Elite')));
+    );
 
     const baseHotelMethods = [
         { id: 'room_charge', label: 'Charge to Room (Folio)', icon: BedDouble },
@@ -770,7 +780,8 @@ const VenueMenuPage = () => {
         });
     }
 
-    const activePaymentMethods = (isHotel || isBooking ? [
+    // Deduplicate payment methods by ID to avoid duplicate card cards showing
+    const rawMethods = (isHotel || isBooking ? [
         ...baseHotelMethods,
         ...getPaymentMethods()
     ] : [
@@ -779,6 +790,10 @@ const VenueMenuPage = () => {
         if (isBooking && m.id === 'room_charge') return false;
         return true;
     });
+
+    const activePaymentMethods = Array.from(
+        new Map(rawMethods.map(m => [String(m.id), m])).values()
+    );
 
     useEffect(() => {
         if (showPaymentTerminal && paymentStep === 'method') {
@@ -791,35 +806,29 @@ const VenueMenuPage = () => {
         }
     }, [showPaymentTerminal, paymentStep, isBooking, paymentMethod, cart]);
 
-    // duplicate removed: const hasTicketsInCart = cart.some(item => 
-        // ticket check duplicate removed
-        // fast-lane check duplicate removed
-        // vip check duplicate removed
-        // id check duplicate removed
-        // st check duplicate removed
-    // duplicate checks ended
+    const getCheckoutLabel = () => {
+        if (isHotel || isBooking) return 'BOOK ROOM';
+        if (hasTicketsInCart) return 'BUY TICKETS';
+        return 'SEND ORDER';
+    };
 
     const handleCheckout = () => {
-        // 1. If they are booking a hotel room (B2C hotel booking):
-        // ALWAYS collect detailed guest onboarding info (First Name, Surname, address, email, phone, company invoicing) first.
-        // Bypasses table/room selector because room is assigned by hotel at check-in.
-        if (isBooking) {
+        // 1. If they are booking a hotel room or browsing hotel catalog:
+        // Skip room/table selector pop-up entirely because room is assigned at check-in / booking!
+        if (isHotel || isBooking) {
             setPaymentStep('guest');
             setShowPaymentTerminal(true);
             return;
         }
 
         // 2. If they are buying event/stadium/club tickets:
-        // ALWAYS collect ticket holder details (name, email, phone) for email delivery,
-        // even if group is active (group admin still provides ticket holder info).
         if (hasTicketsInCart) {
             setPaymentStep('guest');
             setShowPaymentTerminal(true);
             return;
         }
 
-        // 2. If group is active (and no tickets in cart):
-        // bypass guest details: just choose table, then confirm directly as UNPAID.
+        // 3. If group is active (and no tickets in cart):
         if (isGroupActive) {
             if (!selectedTable) {
                 setPaymentStep('table');
@@ -830,15 +839,13 @@ const VenueMenuPage = () => {
             return;
         }
 
-        // 3. If they chose to order food or drinks (no tickets in cart and group is not active):
-        // they only choose table and then pay! No guest name/email/phone required.
+        // 4. Food or drinks in venue:
         if (!selectedTable) {
             setPaymentStep('table');
             setShowPaymentTerminal(true);
             return;
         }
 
-        // Directly go to payment method selection, bypassing guest details entirely!
         setPaymentStep('method');
         setShowPaymentTerminal(true);
     };
@@ -974,7 +981,7 @@ const VenueMenuPage = () => {
                 
                 // Also keep local copy for backward compatibility in some views
                 const updatedOrders = [managerOrder, ...managerOrders];
-                localStorage.setItem('green_active_orders', JSON.stringify(updatedOrders));
+                safeSetItem('green_active_orders', JSON.stringify(updatedOrders));
 
                 // Sync to stadium/club events sold counts
                 const savedEvents = localStorage.getItem('green_stadium_events');
@@ -998,7 +1005,7 @@ const VenueMenuPage = () => {
                         }
                         return evt;
                     });
-                    localStorage.setItem('green_stadium_events', JSON.stringify(updatedEvents));
+                    safeSetItem('green_stadium_events', JSON.stringify(updatedEvents));
                 }
 
                 // Dispatch cross-iframe update events
@@ -1007,8 +1014,7 @@ const VenueMenuPage = () => {
                     window.parent.dispatchEvent(new CustomEvent('green-stadium-events-updated'));
                 }
             } catch (e) {
-                console.error('Failed to sync order with Manager Dashboard:', e);
-                alert(`CRITICAL ERROR SAVING ORDER: ${e.message}. Please show this to the developer.`);
+                console.warn('Failed to sync order with Manager Dashboard (non-fatal):', e);
             }
             
             // Log Simulated Dispatch
@@ -1068,13 +1074,7 @@ const VenueMenuPage = () => {
         // setTimeout duplicate removed
     // duplicate triggerToast ended
 
-    const getCheckoutLabel = () => {
-        if (isStadium) return 'GENERATE TICKETS';
-        if (isBooking) return 'BOOK ROOM';
-        if (isHotel) return 'ORDER ROOM SERVICE';
-        
-        return 'SEND ORDER';
-    };
+    // getCheckoutLabel moved above handleCheckout
 
     const totalCost = cart.reduce((sum, item) => sum + item.price, 0) * (isBooking ? (guestDetails.stayDuration || 1) : 1);
 
@@ -1174,11 +1174,25 @@ const VenueMenuPage = () => {
                         {/* Horizontale Wischbahn (Lane) */}
                         <TouchSwipeableContainer className="flex overflow-x-auto no-scrollbar gap-5 py-2 px-1 snap-x snap-mandatory">
                             {cat.items.map((item) => (
-                                <div key={item.id} className="bg-[var(--bg-secondary)]/55 border border-white/5 rounded-[2.5rem] p-4 flex flex-col hover:border-brand/30 transition-all group w-[220px] sm:w-[240px] flex-shrink-0 snap-start relative overflow-hidden"
+                                <div key={item.id} 
+                                     onClick={() => commerceMode && handleOrder(item)}
+                                     className="bg-[var(--bg-secondary)]/55 border border-white/5 rounded-[2.5rem] p-4 flex flex-col hover:border-brand/40 transition-all group w-[220px] sm:w-[240px] flex-shrink-0 snap-start relative overflow-hidden cursor-pointer active:scale-98"
                                      style={{ background: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 255, 255, 0.05)' }}>
-                                    <div className="relative h-28 w-full rounded-[2rem] overflow-hidden mb-3">
-                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                                    <div 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            const itemGallery = Array.isArray(item.gallery) && item.gallery.length > 0 ? item.gallery : [item.image];
+                                            setSelectedImage({ gallery: itemGallery, activeIndex: 0, title: item.name });
+                                        }} 
+                                        className="relative h-28 w-full rounded-[2rem] overflow-hidden mb-3 cursor-zoom-in group/img"
+                                    >
+                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform group-hover/img:scale-110" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent opacity-60" />
+                                        {Array.isArray(item.gallery) && item.gallery.length > 1 && (
+                                            <div className="absolute top-2 right-2 px-2.5 py-1 bg-black/70 backdrop-blur-md rounded-full text-[8px] md:text-[10px] font-black uppercase text-white tracking-widest border border-white/20">
+                                                📷 {item.gallery.length} Photos
+                                            </div>
+                                        )}
                                     </div>
                                     <h3 className="text-[11px] md:text-sm lg:text-base font-black italic uppercase text-[var(--text-primary)] mb-1 leading-snug truncate" title={item.name}>{item.name}</h3>
                                     <p className="text-[9px] md:text-[11px] lg:text-xs text-[var(--text-primary)] opacity-50 font-medium uppercase tracking-tight line-clamp-2 mb-4 h-6 leading-tight">{item.desc}</p>
@@ -1186,7 +1200,10 @@ const VenueMenuPage = () => {
                                         <span className="text-xs md:text-sm lg:text-base font-black italic text-brand">€{item.price.toFixed(2)}</span>
                                         {commerceMode && (
                                             <button 
-                                                onClick={() => handleOrder(item)} 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleOrder(item);
+                                                }} 
                                                 className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-all ${
                                                     !isItemTicket(item) && isRemote 
                                                         ? 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-main)] opacity-50 cursor-not-allowed' 
@@ -1291,7 +1308,7 @@ const VenueMenuPage = () => {
                                 ) : paymentStep === 'guest' ? (
                                     <motion.div key="guest" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                                         <div className="text-center space-y-2 relative">
-                                            <button onClick={() => (hasTicketsInCart || isBooking) ? setShowPaymentTerminal(false) : setPaymentStep('table')} className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[var(--text-primary)] transition-all"><ArrowLeft size={20} /></button>
+                                            <button onClick={() => setShowPaymentTerminal(false)} className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[var(--text-primary)] transition-all"><ArrowLeft size={20} /></button>
                                             
                                             {hasTicketsInCart && (
                                                 <button 
@@ -1303,15 +1320,15 @@ const VenueMenuPage = () => {
                                             )}
 
                                             <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">
-                                                {(isStadium || isClub) ? 'Ticket Hub' : isBooking ? 'Guest Registration' : 'Guest Verification'}
+                                                {(isHotel || isBooking) ? 'Guest Registration' : (isStadium || isClub) ? 'Ticket Hub' : 'Guest Verification'}
                                             </h3>
                                             <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em]">
-                                                {isStadium ? 'Stadium Mission Authorization' : isClub ? 'Club Event Admission Protocol' : isBooking ? 'Full Check-in Protocol' : `Room #${selectedTable} Security Check`}
+                                                {(isHotel || isBooking) ? 'Full Check-in Protocol' : isStadium ? 'Stadium Mission Authorization' : isClub ? 'Club Event Admission Protocol' : `Room #${selectedTable} Security Check`}
                                             </p>
                                         </div>
                                         
-                                        <div className={`space-y-4 ${ (isBooking || isStadium || isClub) ? 'max-h-[50vh] overflow-y-auto pr-2 no-scrollbar px-1' : ''}`}>
-                                            {isBooking ? (
+                                        <div className={`space-y-4 ${ (isHotel || isBooking || isStadium || isClub) ? 'max-h-[50vh] overflow-y-auto pr-2 no-scrollbar px-1' : ''}`}>
+                                            {(isHotel || isBooking || (!hasTicketsInCart && !isStadium && !isClub)) ? (
                                                 <div className="space-y-6">
                                                     <div className="flex bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-[2rem] p-1.5 relative overflow-hidden">
                                                         <div className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-brand rounded-full transition-all duration-300 ease-out ${guestDetails.bookingType === 'business' ? 'left-[calc(50%+3px)]' : 'left-1.5'}`} />
@@ -1467,6 +1484,151 @@ const VenueMenuPage = () => {
                                                             />
                                                         </div>
                                                     </div>
+
+                                                    <div className="space-y-1">
+                                                         <label className="text-[8px] md:text-[10px] lg:text-xs font-black uppercase tracking-widest text-gray-500">Anzahl Personen / Guests Count</label>
+                                                         <select 
+                                                             className="w-full py-4 px-6 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-primary)] focus:border-brand outline-none transition-all"
+                                                             value={guestDetails.guestsCount || 1}
+                                                             onChange={(e) => setGuestDetails({...guestDetails, guestsCount: Number(e.target.value)})}
+                                                         >
+                                                             <option value={1}>1 Person (Single Guest)</option>
+                                                             <option value={2}>2 Personen (Double / Pair)</option>
+                                                             <option value={3}>3 Personen (Family / Group)</option>
+                                                             <option value={4}>4+ Personen (Suite / VIP Group)</option>
+                                                         </select>
+                                                     </div>
+
+                                                      {/* OPTIONAL VIP HOTEL SHUTTLE SERVICE CARD */}
+                                                      <div className="shuttle-dark-card p-5 bg-[#0f172a] border border-brand/40 rounded-2xl space-y-4 shadow-xl">
+                                                          <div className="flex items-center justify-between">
+                                                              <div className="flex items-center gap-3">
+                                                                  <div className="w-9 h-9 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-black">
+                                                                       transfer
+                                                                  </div>
+                                                                  <div>
+                                                                      <h4 className="text-sm font-black italic uppercase text-white tracking-wider" style={{ color: '#ffffff !important' }}>Hotel Shuttle Service (Optional)</h4>
+                                                                      <p className="shuttle-text-sub text-[9px] font-bold uppercase tracking-widest" style={{ color: '#cbd5e1 !important' }}>Bequemer Transfer zum Hotel / Flughafen / Stadion</p>
+                                                                  </div>
+                                                              </div>
+                                                              <label className="relative inline-flex items-center cursor-pointer">
+                                                                  <input 
+                                                                      type="checkbox"
+                                                                      className="sr-only peer"
+                                                                      checked={guestDetails.hasShuttleService || false}
+                                                                      onChange={(e) => setGuestDetails({...guestDetails, hasShuttleService: e.target.checked})}
+                                                                  />
+                                                                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
+                                                              </label>
+                                                          </div>
+
+                                                          {guestDetails.hasShuttleService && (
+                                                              <motion.div 
+                                                                  initial={{ opacity: 0, height: 0 }}
+                                                                  animate={{ opacity: 1, height: 'auto' }}
+                                                                  exit={{ opacity: 0, height: 0 }}
+                                                                  className="space-y-4 pt-3 border-t border-gray-700"
+                                                              >
+                                                                  <div className="space-y-1">
+                                                                      <label className="shuttle-label-green text-[8px] md:text-[10px] font-black uppercase tracking-widest" style={{ color: '#21ffa5 !important' }}>Abholadresse / Pickup Address</label>
+                                                                      <input 
+                                                                          type="text"
+                                                                          placeholder="z.B. Flughafen Frankfurt Terminal 1 / Hbf"
+                                                                          className="w-full py-3.5 px-4 bg-[#1e293b] border border-brand/40 rounded-xl text-xs font-bold text-white focus:border-brand outline-none placeholder-gray-400"
+                                                                          style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}
+                                                                          value={guestDetails.shuttlePickupAddress || ''}
+                                                                          onChange={(e) => setGuestDetails({...guestDetails, shuttlePickupAddress: e.target.value})}
+                                                                      />
+                                                                  </div>
+
+                                                                  <div className="grid grid-cols-2 gap-4">
+                                                                      <div className="space-y-1">
+                                                                          <div className="flex items-center justify-between">
+                                                                              <label className="shuttle-label-green text-[8px] md:text-[10px] font-black uppercase tracking-widest" style={{ color: '#21ffa5 !important' }}>Personen Anzahl</label>
+                                                                              {guestDetails.bookingType === 'business' && (
+                                                                                  <span className="text-[8px] text-brand font-bold uppercase tracking-widest" style={{ color: '#21ffa5 !important' }}>Business Transfer</span>
+                                                                              )}
+                                                                          </div>
+                                                                          {guestDetails.bookingType === 'business' ? (
+                                                                              <input 
+                                                                                  type="number"
+                                                                                  min="1"
+                                                                                  max="100"
+                                                                                  placeholder="z.B. 10 Personen"
+                                                                                  className="w-full py-3.5 px-4 bg-[#1e293b] border border-brand/40 rounded-xl text-xs font-black uppercase tracking-widest text-white focus:border-brand outline-none"
+                                                                                  style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}
+                                                                                  value={guestDetails.shuttlePersons || 1}
+                                                                                  onChange={(e) => setGuestDetails({...guestDetails, shuttlePersons: Math.max(1, parseInt(e.target.value) || 1)})}
+                                                                              />
+                                                                          ) : (
+                                                                              <select
+                                                                                  className="w-full py-3.5 px-4 bg-[#1e293b] border border-brand/40 rounded-xl text-xs font-black uppercase tracking-widest text-white focus:border-brand outline-none"
+                                                                                  style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}
+                                                                                  value={guestDetails.shuttlePersons || 1}
+                                                                                  onChange={(e) => setGuestDetails({...guestDetails, shuttlePersons: Number(e.target.value)})}
+                                                                              >
+                                                                                  <option value={1} className="bg-[#1e293b] text-white font-bold" style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}>1 Person</option>
+                                                                                  <option value={2} className="bg-[#1e293b] text-white font-bold" style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}>2 Personen</option>
+                                                                                  <option value={3} className="bg-[#1e293b] text-white font-bold" style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}>3 Personen</option>
+                                                                                  <option value={4} className="bg-[#1e293b] text-white font-bold" style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}>4 Personen</option>
+                                                                                  <option value={5} className="bg-[#1e293b] text-white font-bold" style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}>5+ Personen (VIP Van)</option>
+                                                                              </select>
+                                                                          )}
+                                                                      </div>
+
+                                                                      <div className="space-y-1">
+                                                                          <div className="flex items-center justify-between">
+                                                                              <label className="shuttle-label-green text-[8px] md:text-[10px] font-black uppercase tracking-widest" style={{ color: '#21ffa5 !important' }}>Gepäck Anzahl</label>
+                                                                              {guestDetails.bookingType === 'business' && (
+                                                                                  <span className="text-[8px] text-brand font-bold uppercase tracking-widest" style={{ color: '#21ffa5 !important' }}>Business Transfer</span>
+                                                                              )}
+                                                                          </div>
+                                                                          {guestDetails.bookingType === 'business' ? (
+                                                                              <input 
+                                                                                  type="number"
+                                                                                  min="0"
+                                                                                  max="100"
+                                                                                  placeholder="z.B. 12 Koffer"
+                                                                                  className="w-full py-3.5 px-4 bg-[#1e293b] border border-brand/40 rounded-xl text-xs font-black uppercase tracking-widest text-white focus:border-brand outline-none"
+                                                                                  style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}
+                                                                                  value={guestDetails.shuttleLuggage !== undefined ? guestDetails.shuttleLuggage : 1}
+                                                                                  onChange={(e) => setGuestDetails({...guestDetails, shuttleLuggage: Math.max(0, parseInt(e.target.value) || 0)})}
+                                                                              />
+                                                                          ) : (
+                                                                              <select
+                                                                                  className="w-full py-3.5 px-4 bg-[#1e293b] border border-brand/40 rounded-xl text-xs font-black uppercase tracking-widest text-white focus:border-brand outline-none"
+                                                                                  style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}
+                                                                                  value={guestDetails.shuttleLuggage || 1}
+                                                                                  onChange={(e) => setGuestDetails({...guestDetails, shuttleLuggage: Number(e.target.value)})}
+                                                                              >
+                                                                                  <option value={0} className="bg-[#1e293b] text-white font-bold" style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}>Kein Gepäck (Handgepäck)</option>
+                                                                                  <option value={1} className="bg-[#1e293b] text-white font-bold" style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}>1 Koffer / Tasche</option>
+                                                                                  <option value={2} className="bg-[#1e293b] text-white font-bold" style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}>2 Koffer / Taschen</option>
+                                                                                  <option value={3} className="bg-[#1e293b] text-white font-bold" style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}>3 Koffer / Taschen</option>
+                                                                                  <option value={4} className="bg-[#1e293b] text-white font-bold" style={{ color: '#ffffff !important', backgroundColor: '#1e293b !important' }}>4+ Koffer (Großgepäck)</option>
+                                                                              </select>
+                                                                          )}
+                                                                      </div>
+                                                                  </div>
+
+                                                                  {/* Shuttle Price Telemetry Banner */}
+                                                                  <div className="p-3.5 bg-[#1e293b] border border-brand/40 rounded-xl flex items-center justify-between shadow-md">
+                                                                      <div>
+                                                                          <span className="shuttle-label-green text-[9px] font-black uppercase tracking-widest block" style={{ color: '#21ffa5 !important' }}>Shuttle Service Aufschlüsselung</span>
+                                                                          <span className="shuttle-text-sub text-[10px] font-bold" style={{ color: '#e2e8f0 !important' }}>
+                                                                              {(guestDetails.shuttlePersons || 1)}x Passagier (€10,00 / Person) • {(guestDetails.shuttleLuggage || 1)} Koffer
+                                                                          </span>
+                                                                      </div>
+                                                                      <div className="text-right">
+                                                                          <span className="shuttle-text-sub text-[8px] font-bold block uppercase" style={{ color: '#cbd5e1 !important' }}>Gesamt Shuttle</span>
+                                                                          <span className="shuttle-label-green text-base font-black italic" style={{ color: '#21ffa5 !important' }}>
+                                                                              €{((guestDetails.shuttlePersons || 1) * 10.00).toFixed(2)}
+                                                                          </span>
+                                                                      </div>
+                                                                  </div>
+                                                              </motion.div>
+                                                          )}
+                                                      </div>
 
                                                     {guestDetails.bookingType === 'business' && (
                                                         <>
@@ -1687,7 +1849,7 @@ const VenueMenuPage = () => {
 
                                         <button 
                                             onClick={() => {
-                                                if (isBooking) {
+                                                if (isHotel || isBooking) {
                                                     setPaymentStep('method');
                                                 } else {
                                                     if (hasTicketsInCart) {
@@ -1702,10 +1864,10 @@ const VenueMenuPage = () => {
                                                     }
                                                 }
                                             }}
-                                            disabled={isBooking ? (!guestDetails.firstName || !guestDetails.lastName || !guestDetails.email || !guestDetails.phone || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.idNumber || !guestDetails.dob || !guestDetails.checkIn || !guestDetails.checkOut || (guestDetails.bookingType === 'business' && (!guestDetails.companyName || !guestDetails.companyAddress || !guestDetails.ccNumber || !guestDetails.ccExpiry || !guestDetails.ccCvv))) : (hasTicketsInCart ? (!guestName || !guestDetails.email || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.dob) : !guestName)}
-                                            className={`w-full py-6 rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] transition-all shadow-xl ${(isBooking ? (guestDetails.firstName && guestDetails.lastName && guestDetails.email && guestDetails.phone && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.idNumber && guestDetails.dob && guestDetails.checkIn && guestDetails.checkOut && (guestDetails.bookingType !== 'business' || (guestDetails.companyName && guestDetails.companyAddress && guestDetails.ccNumber && guestDetails.ccExpiry && guestDetails.ccCvv))) : (hasTicketsInCart ? (guestName && guestDetails.email && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.dob) : guestName)) ? 'bg-brand text-white shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]/50'}`}
+                                            disabled={(isHotel || isBooking) ? (!guestDetails.firstName || !guestDetails.lastName || !guestDetails.email || !guestDetails.phone || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.idNumber || !guestDetails.dob || !guestDetails.checkIn || !guestDetails.checkOut || (guestDetails.bookingType === 'business' && (!guestDetails.companyName || !guestDetails.companyAddress || !guestDetails.ccNumber || !guestDetails.ccExpiry || !guestDetails.ccCvv))) : (hasTicketsInCart ? (!guestName || !guestDetails.email || !guestDetails.address || !guestDetails.zip || !guestDetails.city || !guestDetails.dob) : !guestName)}
+                                            className={`w-full py-6 rounded-[2.5rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.2em] transition-all shadow-xl ${((isHotel || isBooking) ? (guestDetails.firstName && guestDetails.lastName && guestDetails.email && guestDetails.phone && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.idNumber && guestDetails.dob && guestDetails.checkIn && guestDetails.checkOut && (guestDetails.bookingType !== 'business' || (guestDetails.companyName && guestDetails.companyAddress && guestDetails.ccNumber && guestDetails.ccExpiry && guestDetails.ccCvv))) : (hasTicketsInCart ? (guestName && guestDetails.email && guestDetails.address && guestDetails.zip && guestDetails.city && guestDetails.dob) : guestName)) ? 'bg-brand text-white shadow-brand/20' : 'bg-[var(--bg-secondary)] border border-[var(--border-main)] text-[var(--text-secondary)]/50'}`}
                                         >
-                                            {isBooking ? 'Complete Registration' : (isStadium || isClub || hasTicketsInCart) ? `Authorize Tickets` : 'Continue to Settlement'}
+                                            {(isHotel || isBooking) ? 'Complete Registration' : (isStadium || isClub || hasTicketsInCart) ? `Authorize Tickets` : 'Continue to Settlement'}
                                         </button>
                                     </motion.div>
                                 ) : (
@@ -1713,15 +1875,19 @@ const VenueMenuPage = () => {
                                         <div className="text-center space-y-2 relative">
                                             <button 
                                                 onClick={() => {
-                                                    const hasGuestStep = hasTicketsInCart || isBooking;
-                                                    setPaymentStep(hasGuestStep ? 'guest' : 'table');
+                                                    const hasGuestStep = hasTicketsInCart || isHotel || isBooking;
+                                                    if (hasGuestStep) {
+                                                        setPaymentStep('guest');
+                                                    } else {
+                                                        setShowPaymentTerminal(false);
+                                                    }
                                                 }} 
-                                                className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[var(--text-primary)] transition-colors"
+                                                className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[var(--text-primary)] transition-all"
                                             >
                                                 <ArrowLeft size={20} />
                                             </button>
                                             <h3 className="text-2xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter">Settlement Method</h3>
-                                            <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em]">{(isStadium || isClub || hasTicketsInCart) ? `E-Ticket Authorization ${guestName ? `• ${guestName}` : ''}` : isBooking ? `New Booking ${guestName ? `• ${guestName}` : ''}` : `${isHotel ? 'Room' : 'Table'} #${selectedTable}${guestName ? ` • ${guestName}` : ''}`} • €{totalCost.toFixed(2)}</p>
+                                            <p className="text-[10px] md:text-xs lg:text-sm text-brand font-black uppercase tracking-[0.3em]">{(isHotel || isBooking) ? `Hotel Room Booking ${guestDetails.firstName || guestName ? `• ${guestDetails.firstName || guestName} ${guestDetails.lastName || ''}` : ''}` : (isStadium || isClub || hasTicketsInCart) ? `E-Ticket Authorization ${guestName ? `• ${guestName}` : ''}` : `Table #${selectedTable}${guestName ? ` • ${guestName}` : ''}`} • €{totalCost.toFixed(2)}</p>
                                         </div>
                                         
                                         <div className="flex items-center justify-between px-2 mb-4">
@@ -1733,6 +1899,7 @@ const VenueMenuPage = () => {
                                                             existingCart: cart,
                                                             venueName,
                                                             venueOffer,
+                                                            category: passedCategory,
                                                             isTakeawayMode,
                                                             selectedTable,
                                                             guestName,
@@ -1996,6 +2163,98 @@ const VenueMenuPage = () => {
                             <button onClick={() => { setSelectedTable(isHotel ? 'Front Desk' : 'Bar'); setShowTablePicker(false); }} className="w-full py-5 bg-[var(--bg-secondary)] border border-[var(--border-main)] rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-[var(--text-secondary)]">
                                 {isHotel ? 'Contacting Front Desk' : 'Ordering at the Bar'}
                             </button>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Fullscreen Multi-Photo Gallery Lightbox Carousel */}
+            <AnimatePresence>
+                {selectedImage && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8">
+                        <motion.div 
+                            initial={{ opacity: 0 }} 
+                            animate={{ opacity: 1 }} 
+                            exit={{ opacity: 0 }} 
+                            onClick={() => setSelectedImage(null)} 
+                            className="absolute inset-0 bg-black/95 backdrop-blur-2xl" 
+                        />
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0 }} 
+                            animate={{ scale: 1, opacity: 1 }} 
+                            exit={{ scale: 0.9, opacity: 0 }} 
+                            className="relative z-10 max-w-4xl w-full bg-[var(--bg-primary)] border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl p-4 md:p-6 space-y-4"
+                        >
+                            <div className="flex justify-between items-center px-2">
+                                <div>
+                                    <h3 className="text-lg md:text-xl font-black italic uppercase text-[var(--text-primary)] tracking-tighter truncate">{selectedImage.title}</h3>
+                                    <p className="text-[10px] md:text-xs font-black uppercase text-brand tracking-widest mt-0.5">
+                                        Foto {(selectedImage.activeIndex || 0) + 1} von {(selectedImage.gallery || [selectedImage.url]).length}
+                                    </p>
+                                </div>
+                                <button 
+                                    onClick={() => setSelectedImage(null)}
+                                    className="px-5 py-2.5 bg-brand text-white rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest shadow-lg hover:scale-105 active:scale-95 transition-all"
+                                >
+                                    Schließen / Close ✕
+                                </button>
+                            </div>
+
+                            {/* Main Active Photo Viewport with Controls */}
+                            <div className="relative h-[55vh] md:h-[60vh] rounded-[2.5rem] overflow-hidden border border-white/5 bg-black flex items-center justify-center group/carousel">
+                                <img 
+                                    src={(selectedImage.gallery || [selectedImage.url])[selectedImage.activeIndex || 0]} 
+                                    alt={selectedImage.title} 
+                                    className="w-full h-full object-contain max-h-[60vh] transition-all duration-300" 
+                                />
+
+                                {/* Previous Arrow */}
+                                {(selectedImage.gallery || []).length > 1 && (
+                                    <button 
+                                        onClick={() => {
+                                            const total = selectedImage.gallery.length;
+                                            const prevIdx = (selectedImage.activeIndex - 1 + total) % total;
+                                            setSelectedImage({ ...selectedImage, activeIndex: prevIdx });
+                                        }}
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-black/60 border border-white/20 text-white flex items-center justify-center font-black text-xl hover:bg-brand transition-all active:scale-90 shadow-2xl backdrop-blur-md"
+                                    >
+                                        ‹
+                                    </button>
+                                )}
+
+                                {/* Next Arrow */}
+                                {(selectedImage.gallery || []).length > 1 && (
+                                    <button 
+                                        onClick={() => {
+                                            const total = selectedImage.gallery.length;
+                                            const nextIdx = (selectedImage.activeIndex + 1) % total;
+                                            setSelectedImage({ ...selectedImage, activeIndex: nextIdx });
+                                        }}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-black/60 border border-white/20 text-white flex items-center justify-center font-black text-xl hover:bg-brand transition-all active:scale-90 shadow-2xl backdrop-blur-md"
+                                    >
+                                        ›
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Bottom Thumbnail Gallery Strip */}
+                            {(selectedImage.gallery || []).length > 1 && (
+                                <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1">
+                                    {selectedImage.gallery.map((thumbUrl, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setSelectedImage({ ...selectedImage, activeIndex: idx })}
+                                            className={`relative w-16 h-16 rounded-2xl overflow-hidden border-2 transition-all shrink-0 ${
+                                                idx === (selectedImage.activeIndex || 0)
+                                                    ? 'border-brand scale-105 shadow-[0_0_15px_var(--brand-glow)]'
+                                                    : 'border-white/10 opacity-50 hover:opacity-100'
+                                            }`}
+                                        >
+                                            <img src={thumbUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </motion.div>
                     </div>
                 )}

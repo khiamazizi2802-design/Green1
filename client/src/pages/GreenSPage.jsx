@@ -233,10 +233,6 @@ const GreenSPage = () => {
     };
 
     const lifestyleEntities = [
-        { id: 'club', label: 'Clubs', icon: Zap, color: 'text-black', offer: 'Free Entry + 1 Drink' },
-        { id: 'restaurant', label: 'Dining', icon: Utensils, color: 'text-black', offer: '20% Off Bill' },
-        { id: 'bar', label: 'Bars', icon: GlassWater, color: 'text-black', offer: 'Buy 1 Get 1' },
-        { id: 'event', label: 'Events', icon: Compass, color: 'text-black', offer: 'VIP Access' },
         { id: 'hotel', label: 'Hotels', icon: BedDouble, color: 'text-black', offer: 'Late Checkout' },
         { id: 'stadium', label: 'Stadiums', icon: Trophy, color: 'text-black', offer: 'Match Day VIP' }
     ];

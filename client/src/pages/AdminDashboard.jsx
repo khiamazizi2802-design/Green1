@@ -7,7 +7,7 @@ import {
     Phone, Mail, MapPin, User as UserIcon, ExternalLink, ChevronDown, Shield, 
     ThumbsUp, ThumbsDown, Filter, FolderOpen, Quote, Bot, Sparkles, BarChart3, 
     ArrowLeft, Monitor, Radio, Target, Layers, Cpu, Database, Lock, Download, ShieldAlert,
-    Wallet, Landmark, Ticket, Tag, Percent, PlusCircle, FolderSearch, FileCheck2, FileClock, FileX2, FileWarning, CheckCircle, XCircle, AlertTriangle, LineChart
+    Wallet, Landmark, Ticket, Tag, Percent, PlusCircle, FolderSearch, FileCheck2, FileClock, FileX2, FileWarning, CheckCircle, XCircle, AlertTriangle, LineChart, Bus
 } from 'lucide-react';
 import { triggerNotification } from '../components/NotificationToast';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -38,6 +38,57 @@ const AdminDashboard = () => {
         perKmRateShared, setPerKmRateShared
     } = useRide();
     const [isGermanComplianceActive, setIsGermanComplianceActive] = useState(() => localStorage.getItem('green_german_compliance') === 'true');
+
+    // --- SMART SHUTTLE HUB TARIFF FORMULA STATES ---
+    const [shuttleBaseFare, setShuttleBaseFare] = useState(() => parseFloat(localStorage.getItem('green_shuttle_base_fare')) || 10.00);
+    const [shuttleBaseKm, setShuttleBaseKm] = useState(() => parseFloat(localStorage.getItem('green_shuttle_base_km')) || 8.0);
+    const [shuttleIncFare, setShuttleIncFare] = useState(() => parseFloat(localStorage.getItem('green_shuttle_inc_fare')) || 3.00);
+    const [shuttleIncKm, setShuttleIncKm] = useState(() => parseFloat(localStorage.getItem('green_shuttle_inc_km')) || 5.0);
+
+    // --- B2B WEBHOOK & SEPARATE LUGGAGE LOGISTICS STATES ---
+    const [flightWebhookUrl, setFlightWebhookUrl] = useState(() => localStorage.getItem('green_shuttle_flight_webhook') || 'https://developers.fraport.de/v1/live-flights/fra-t1');
+    const [luggageWebhookUrl, setLuggageWebhookUrl] = useState(() => localStorage.getItem('green_shuttle_luggage_webhook') || 'https://cargo-hub.green-logistics.de/v1/baggage/claim-tracking');
+    const [isLuggageSeparated, setIsLuggageSeparated] = useState(() => localStorage.getItem('green_shuttle_separate_luggage') === 'true');
+
+    const calculateShuttleFarePerPerson = (distanceKm) => {
+        const dist = parseFloat(distanceKm) || 0;
+        if (dist <= shuttleBaseKm) return shuttleBaseFare;
+        const extraKm = dist - shuttleBaseKm;
+        const steps = Math.ceil(extraKm / shuttleIncKm);
+        return shuttleBaseFare + (steps * shuttleIncFare);
+    };
+    const [selectedShuttleCluster, setSelectedShuttleCluster] = useState(null);
+    const [shuttleClusters, setShuttleClusters] = useState([
+        {
+            id: 'c-fra-1',
+            origin: 'Frankfurt Airport (FRA T1)',
+            targetHotel: 'Steigenberger Icon Parkhotel',
+            hotelAddress: 'Königsallee 1a, Frankfurt am Main',
+            distanceKm: 14.5,
+            estimatedTime: '18 Min',
+            driverName: 'Maximilian Schwarz',
+            driverVehicle: 'Mercedes V-Class (F-GR 8888)',
+            guests: [
+                { id: 'g1', name: 'Dr. Aris Thorne', bags: 2, status: 'accepted' },
+                { id: 'g2', name: 'Elena Rostova', bags: 1, status: 'accepted' },
+                { id: 'g3', name: 'Marcus Vance', bags: 3, status: 'pending' }
+            ]
+        },
+        {
+            id: 'c-fra-2',
+            origin: 'Frankfurt Hauptbahnhof (HBF)',
+            targetHotel: 'Grand Frankfurt Palace',
+            hotelAddress: 'Mainzer Landstraße 45, Frankfurt',
+            distanceKm: 4.2,
+            estimatedTime: '8 Min',
+            driverName: 'Sven Weber',
+            driverVehicle: 'VW Multivan EV (F-GR 7777)',
+            guests: [
+                { id: 'g4', name: 'Sarah Connor', bags: 1, status: 'accepted' },
+                { id: 'g5', name: 'Thomas Mueller', bags: 2, status: 'accepted' }
+            ]
+        }
+    ]);
 
     // Sync local pricing to the server when the admin dashboard opens
     React.useEffect(() => {
@@ -2328,6 +2379,7 @@ billing payouts are required.
                         { id: 'stripe-hub', label: 'Stripe Connect Hub', icon: Landmark, badge: 'LIVE' },
                         { id: 'feedback', label: 'Feedback Hub', icon: MessageSquare },
                         { id: 'fleet', label: 'Fleet Telemetry', icon: Car },
+                        { id: 'shuttle-hub', label: 'Smart Shuttle Hub', icon: Bus, badge: 'Smart' },
                         { id: 'hotels', label: 'Hospitality VIP', icon: Building2 },
                         { id: 'events', label: 'Partys Events', icon: Calendar },
                         { id: 'system-doors', label: 'Portal Doors', icon: Monitor },
@@ -3462,6 +3514,50 @@ billing payouts are required.
                                                 </div>
                                             ))}
                                         </div>
+                                        {/* B2B STADION TICKET & SHUTTLE ABRECHNUNG (ADMIN HUB) */}
+                                        <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-[3rem] p-10 space-y-8 relative overflow-hidden">
+                                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/10 pb-6">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/30 text-brand flex items-center justify-center">
+                                                        <Ticket size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-black italic uppercase text-white tracking-tighter">B2B Stadion Ticket & Shuttle Abrechnung</h3>
+                                                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Admin-Abrechnung: Ticket-Verkauf, Shuttle-Vergütung an Green & Stadion-Netto-Auszahlung</p>
+                                                    </div>
+                                                </div>
+                                                <span className="bg-emerald-500/20 text-emerald-400 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider border border-emerald-500/30">
+                                                    Formel: Staffeltarif + 5% Provision
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                                <div className="bg-black/40 border border-white/10 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Stadion Brutto-Umsatz</span>
+                                                    <span className="text-3xl font-black italic text-white block">€2.400,00</span>
+                                                    <span className="text-[9px] text-gray-500">12 Stadion-Tickets verkauft</span>
+                                                </div>
+
+                                                <div className="bg-black/40 border border-white/10 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest block">Shuttle-Vergütung an Green</span>
+                                                    <span className="text-3xl font-black italic text-amber-400 block">+€192,00</span>
+                                                    <span className="text-[9px] text-gray-500">12 Pax @ €16,00 Staffeltarif</span>
+                                                </div>
+
+                                                <div className="bg-black/40 border border-white/10 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest block">Green Ticket-Provision (5%)</span>
+                                                    <span className="text-3xl font-black italic text-purple-400 block">+€120,00</span>
+                                                    <span className="text-[9px] text-gray-500">5% Platform Sales Provision</span>
+                                                </div>
+
+                                                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest block">Netto-Auszahlung Stadion</span>
+                                                    <span className="text-3xl font-black italic text-emerald-400 block">€2.088,00</span>
+                                                    <span className="text-[9px] text-emerald-400/80 font-bold">Stadion-Gutschrift freigeschaltet</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-3xl border border-white/10 rounded-[3.5rem] p-10 space-y-8">
                                             <div className="flex justify-between items-center mb-4">
                                                 <div className="space-y-1">
@@ -3914,6 +4010,345 @@ billing payouts are required.
                                         </div>
                                     </div>
                                 </div>
+                            </motion.div>
+                        )}
+
+                        {view === 'shuttle-hub' && (
+                            <motion.div key="shuttle-hub" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-12">
+                                {/* HEADER HERO CARD */}
+                                <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-[3.5rem] p-10 space-y-8 relative overflow-hidden">
+                                    <div className="flex flex-col md:flex-row md:items-center gap-6">
+                                        <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0 shadow-lg">
+                                            <Bus size={32} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-4xl md:text-5xl font-black italic uppercase text-white tracking-tighter">
+                                                SMART SHUTTLE <span className="text-white">HUB</span>
+                                            </h2>
+                                            <p className="text-xs font-black tracking-widest text-gray-400 uppercase mt-1">
+                                                AI FLIGHT-TO-HOTEL GROUP POOLING · LUGGAGE SPLIT & ADVANCE PRE-FLIGHT MESSAGING
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* DYNAMIC SHUTTLE FARE FORMULA CONFIGURATOR */}
+                                    <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-6 max-w-5xl">
+                                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/10 pb-4">
+                                            <div>
+                                                <h3 className="text-sm font-black uppercase text-white tracking-widest flex items-center gap-2">
+                                                    <Calculator size={16} className="text-brand" /> Shuttle Preiskalkulation (Staffeltarif)
+                                                </h3>
+                                                <p className="text-[11px] text-gray-400 mt-0.5">
+                                                    Beispiel: Bis zu <span className="text-white font-bold">{shuttleBaseKm} km</span> = <span className="text-brand font-bold">{shuttleBaseFare} €</span> / Person, danach für jede weiteren <span className="text-white font-bold">{shuttleIncKm} km</span> +<span className="text-emerald-400 font-bold">{shuttleIncFare} €</span> / Person.
+                                                </p>
+                                            </div>
+                                            <span className="bg-brand/10 border border-brand/30 text-brand text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider whitespace-nowrap">
+                                                Formel Aktiv
+                                            </span>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            {/* Tier 1: Base KM */}
+                                            <div className="space-y-1.5 bg-dark-950/80 border border-white/10 rounded-2xl p-4">
+                                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider block">
+                                                    GRUND-DISTANZ (KM)
+                                                </label>
+                                                <div className="flex items-center gap-2">
+                                                    <input 
+                                                        type="number"
+                                                        step="0.5"
+                                                        value={shuttleBaseKm}
+                                                        onChange={e => {
+                                                            const val = parseFloat(e.target.value) || 0;
+                                                            setShuttleBaseKm(val);
+                                                            localStorage.setItem('green_shuttle_base_km', val);
+                                                        }}
+                                                        className="bg-transparent text-white font-black text-xl w-full focus:outline-none"
+                                                    />
+                                                    <span className="text-gray-400 font-bold text-xs">KM</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Tier 1: Base Fare */}
+                                            <div className="space-y-1.5 bg-dark-950/80 border border-white/10 rounded-2xl p-4">
+                                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider block">
+                                                    GRUNDTARIF / PAX (€)
+                                                </label>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-brand font-bold text-lg">€</span>
+                                                    <input 
+                                                        type="number"
+                                                        step="0.50"
+                                                        value={shuttleBaseFare}
+                                                        onChange={e => {
+                                                            const val = parseFloat(e.target.value) || 0;
+                                                            setShuttleBaseFare(val);
+                                                            localStorage.setItem('green_shuttle_base_fare', val);
+                                                        }}
+                                                        className="bg-transparent text-white font-black text-xl w-full focus:outline-none"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Tier 2: Increment KM */}
+                                            <div className="space-y-1.5 bg-dark-950/80 border border-white/10 rounded-2xl p-4">
+                                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider block">
+                                                    STAFFEL-DISTANZ (KM)
+                                                </label>
+                                                <div className="flex items-center gap-2">
+                                                    <input 
+                                                        type="number"
+                                                        step="0.5"
+                                                        value={shuttleIncKm}
+                                                        onChange={e => {
+                                                            const val = parseFloat(e.target.value) || 0;
+                                                            setShuttleIncKm(val);
+                                                            localStorage.setItem('green_shuttle_inc_km', val);
+                                                        }}
+                                                        className="bg-transparent text-white font-black text-xl w-full focus:outline-none"
+                                                    />
+                                                    <span className="text-gray-400 font-bold text-xs">KM</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Tier 2: Increment Fare */}
+                                            <div className="space-y-1.5 bg-dark-950/80 border border-white/10 rounded-2xl p-4">
+                                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider block">
+                                                    AUFPREIS / PAX (€)
+                                                </label>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-emerald-400 font-bold text-lg">+€</span>
+                                                    <input 
+                                                        type="number"
+                                                        step="0.50"
+                                                        value={shuttleIncFare}
+                                                        onChange={e => {
+                                                            const val = parseFloat(e.target.value) || 0;
+                                                            setShuttleIncFare(val);
+                                                            localStorage.setItem('green_shuttle_inc_fare', val);
+                                                        }}
+                                                        className="bg-transparent text-white font-black text-xl w-full focus:outline-none"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                                            <div className="text-xs text-gray-400 font-medium">
+                                                💡 Berechnungsbeispiel: <span className="text-white font-bold">14.5 KM</span> Fahrt = <span className="text-brand font-black">€{calculateShuttleFarePerPerson(14.5).toFixed(2)}</span> / Person
+                                            </div>
+                                            <button 
+                                                onClick={() => {
+                                                    localStorage.setItem('green_shuttle_base_fare', shuttleBaseFare);
+                                                    localStorage.setItem('green_shuttle_base_km', shuttleBaseKm);
+                                                    localStorage.setItem('green_shuttle_inc_fare', shuttleIncFare);
+                                                    localStorage.setItem('green_shuttle_inc_km', shuttleIncKm);
+                                                    triggerNotification('success', 'Shuttle Staffel-Tarif Gespeichert 🚀', `Bis zu ${shuttleBaseKm}km: €${shuttleBaseFare} | Je weitere ${shuttleIncKm}km: +€${shuttleIncFare}`);
+                                                }}
+                                                className="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
+                                            >
+                                                <CheckCircle size={16} /> SPEICHERN
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* B2B WEBHOOK URL & SEPARATE LUGGAGE LOGISTICS CARD (Weg 2 & 3) */}
+                                    <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-[2rem] p-6 space-y-6 max-w-5xl">
+                                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/10 pb-4">
+                                            <div>
+                                                <h3 className="text-sm font-black uppercase text-white tracking-widest flex items-center gap-2">
+                                                    <Globe size={16} className="text-cyan-400" /> B2B Webhook Feed & Getrennter Gepäck-Transport
+                                                </h3>
+                                                <p className="text-[11px] text-gray-400 mt-0.5">
+                                                    Live-Schnittstellen für Flughafen-Landezeiten, Cargo-Gepäckabholung und automatische Tracking-Links.
+                                                </p>
+                                            </div>
+                                            <button 
+                                                onClick={() => {
+                                                    const nextState = !isLuggageSeparated;
+                                                    setIsLuggageSeparated(nextState);
+                                                    localStorage.setItem('green_shuttle_separate_luggage', nextState ? 'true' : 'false');
+                                                    triggerNotification(
+                                                        nextState ? 'success' : 'info',
+                                                        nextState ? 'VIP Getrennter Gepäckservice Aktiv 🧳' : 'Standard Gepäck-Transport',
+                                                        nextState ? 'Gepäck wird getrennt an der Cargo-Station abgeholt und ins Hotel geliefert.' : 'Gäste und Gepäck fahren gemeinsam im Shuttle.'
+                                                    );
+                                                }}
+                                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${
+                                                    isLuggageSeparated 
+                                                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
+                                                        : 'bg-white/5 text-gray-400 border border-white/10 hover:text-white'
+                                                }`}
+                                            >
+                                                {isLuggageSeparated ? '✓ Getrennter Gepäck-Transport (Aktiv)' : '+ Getrennten Gepäck-Service Aktivieren'}
+                                            </button>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            {/* Webhook 1: Live Flight Feed */}
+                                            <div className="space-y-2 bg-dark-950/80 border border-white/10 rounded-2xl p-4">
+                                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                                                    <Globe size={14} className="text-cyan-400" /> FLUGDATEN & ANKUNFTS-API WEBHOOK URL (WEG 2)
+                                                </label>
+                                                <div className="flex items-center gap-2 bg-black/50 border border-white/10 rounded-xl px-3 py-2">
+                                                    <input 
+                                                        type="text"
+                                                        value={flightWebhookUrl}
+                                                        onChange={e => {
+                                                            setFlightWebhookUrl(e.target.value);
+                                                            localStorage.setItem('green_shuttle_flight_webhook', e.target.value);
+                                                        }}
+                                                        placeholder="https://api.airport.com/v1/flights/live-sync"
+                                                        className="bg-transparent text-xs font-mono text-cyan-300 w-full focus:outline-none"
+                                                    />
+                                                </div>
+                                                <p className="text-[9px] text-gray-500">
+                                                    Live-Flugstatus, Verspätungen und Lande-Windows direkt vom Flughafen-Portal.
+                                                </p>
+                                            </div>
+
+                                            {/* Webhook 2: Luggage & Cargo Hub Feed */}
+                                            <div className="space-y-2 bg-dark-950/80 border border-white/10 rounded-2xl p-4">
+                                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider flex items-center gap-2">
+                                                    <Briefcase size={14} className="text-amber-400" /> GEPÄCK-LOGISTIK & CARGO-HUB LINK (WEG 3)
+                                                </label>
+                                                <div className="flex items-center gap-2 bg-black/50 border border-white/10 rounded-xl px-3 py-2">
+                                                    <input 
+                                                        type="text"
+                                                        value={luggageWebhookUrl}
+                                                        onChange={e => {
+                                                            setLuggageWebhookUrl(e.target.value);
+                                                            localStorage.setItem('green_shuttle_luggage_webhook', e.target.value);
+                                                        }}
+                                                        placeholder="https://cargo-hub.green-logistics.de/v1/baggage/claim-tracking"
+                                                        className="bg-transparent text-xs font-mono text-amber-300 w-full focus:outline-none"
+                                                    />
+                                                </div>
+                                                <p className="text-[9px] text-gray-500">
+                                                    Abhol-Koordinaten für Gepäckbänder, Cargo-Hallen und Hotel-Gepäckräume.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-end pt-1">
+                                            <button 
+                                                onClick={() => {
+                                                    localStorage.setItem('green_shuttle_flight_webhook', flightWebhookUrl);
+                                                    localStorage.setItem('green_shuttle_luggage_webhook', luggageWebhookUrl);
+                                                    triggerNotification('success', 'B2B Webhooks Gespeichert 🚀', 'Schnittstellen-Links für Flugzeiten und Gepäck-Abholung aktualisiert.');
+                                                }}
+                                                className="px-6 py-2.5 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-2"
+                                            >
+                                                <CheckCircle size={14} /> WEBHOOK-LINKS SPEICHERN
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 4 METRICS CARDS */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-[2.5rem] p-8 space-y-2">
+                                        <p className="text-xs font-black text-gray-400 uppercase tracking-wider">ACTIVE HOTEL CLUSTERS</p>
+                                        <p className="text-3xl font-black italic text-white">{shuttleClusters.length} Active Groups</p>
+                                    </div>
+
+                                    <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-[2.5rem] p-8 space-y-2">
+                                        <p className="text-xs font-black text-gray-400 uppercase tracking-wider">TOTAL CONFIRMED GUESTS</p>
+                                        <p className="text-3xl font-black italic text-white">10 / 14 Confirmed</p>
+                                    </div>
+
+                                    <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-[2.5rem] p-8 space-y-2">
+                                        <p className="text-xs font-black text-gray-400 uppercase tracking-wider">ESTIMATED REVENUE</p>
+                                        <p className="text-3xl font-black italic text-cyan-400">
+                                            €{shuttleClusters.reduce((sum, c) => sum + (c.guests.filter(g => g.status === 'accepted').length * calculateShuttleFarePerPerson(c.distanceKm)), 0).toFixed(2)}
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-[2.5rem] p-8 space-y-2">
+                                        <p className="text-xs font-black text-gray-400 uppercase tracking-wider">TOTAL LUGGAGE VOLUME</p>
+                                        <p className="text-3xl font-black italic text-amber-400">23 Suitcases</p>
+                                    </div>
+                                </div>
+
+                                {/* SECTION HEADER */}
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <h3 className="text-2xl font-black italic uppercase text-white tracking-tighter">
+                                        LIVE FLIGHT-TO-HOTEL GROUP CLUSTERS
+                                    </h3>
+                                    <span className="text-xs font-black uppercase text-gray-400 tracking-widest">
+                                        PRE-FLIGHT MESSAGES SENT 1-2 DAYS PRIOR
+                                    </span>
+                                </div>
+
+                                {/* GROUP CLUSTERS CARDS */}
+                                <div className="space-y-6">
+                                    {shuttleClusters.map((cluster) => {
+                                        const acceptedGuests = cluster.guests.filter(g => g.status === 'accepted');
+                                        const totalBags = cluster.guests.reduce((acc, g) => acc + (g.bags || 0), 0);
+
+                                        return (
+                                            <div key={cluster.id} className="bg-gradient-to-b from-white/[0.05] to-transparent backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(0,229,255,0.08)] hover:border-white/20 transition-all duration-500 rounded-[3rem] p-8 space-y-6 relative overflow-hidden">
+                                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+                                                    <div className="space-y-2">
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="bg-white/10 text-white font-black text-xs px-4 py-1.5 rounded-full uppercase tracking-wider">
+                                                                {cluster.origin}
+                                                            </span>
+                                                            <span className="text-gray-400 font-bold">➔</span>
+                                                            <span className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-black text-xs px-4 py-1.5 rounded-full uppercase tracking-wider">
+                                                                {cluster.targetHotel}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs font-black uppercase text-gray-400 tracking-widest pt-1">
+                                                            {cluster.hotelAddress}
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="text-right">
+                                                        <span className="text-[10px] font-black uppercase text-gray-500 block tracking-widest">LANDING WINDOW</span>
+                                                        <span className="text-sm font-black italic text-white">14:00 - 14:30</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-dark-950/60 rounded-2xl p-6 border border-white/5">
+                                                    <div>
+                                                        <span className="text-[10px] font-black uppercase text-gray-500 block tracking-widest">PASSENGERS</span>
+                                                        <span className="text-lg font-black italic text-white">{acceptedGuests.length} / {cluster.guests.length} Confirmed</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[10px] font-black uppercase text-gray-500 block tracking-widest">LUGGAGE COUNT</span>
+                                                        <span className="text-lg font-black italic text-amber-400">{totalBags || 14} Bags</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[10px] font-black uppercase text-gray-500 block tracking-widest">VEHICLE SPLIT</span>
+                                                        <span className="text-lg font-black italic text-brand">2x VIP Vans</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-xs text-gray-400 font-bold">Driver: {cluster.driverName} ({cluster.driverVehicle})</span>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => setSelectedShuttleCluster(cluster)}
+                                                        className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all flex items-center gap-2"
+                                                    >
+                                                        <MessageSquare size={16} className="text-brand" /> Broadcast Message
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {selectedShuttleCluster && (
+                                    <ShuttleMessagingModal 
+                                        isOpen={!!selectedShuttleCluster}
+                                        cluster={selectedShuttleCluster} 
+                                        shuttleFare={calculateShuttleFarePerPerson(selectedShuttleCluster.distanceKm)} 
+                                        onClose={() => setSelectedShuttleCluster(null)} 
+                                    />
+                                )}
                             </motion.div>
                         )}
 

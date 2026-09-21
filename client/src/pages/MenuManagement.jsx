@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     Plus, Trash2, ArrowLeft, Loader2, ChevronRight,
-    Utensils, PlusCircle, Sparkles, Upload
+    Utensils, PlusCircle, Sparkles, Upload, BedDouble, Ticket
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../config/firebase';
@@ -12,26 +12,24 @@ import { useAuth } from '../context/AuthContext';
 const getCategoryOptionsForContext = (ctx) => {
     if (ctx === 'HM') {
         return [
-            { value: 'Rooms', label: 'Suite / Room Service' },
-            { value: 'Spa & Wellness', label: 'Spa & Wellness' },
-            { value: 'Concierge', label: 'Concierge & Transport' },
-            { value: 'Breakfast', label: 'Breakfast / Frühstück' },
-            { value: 'Drinks', label: 'Drinks & Beverages' },
-            { value: 'Food', label: 'Food / Dining' },
-            { value: 'Coffee', label: 'Coffee & Hot Drinks' },
-            { value: 'Dessert', label: 'Dessert & Sweets' }
+            { value: 'Doppelzimmer', label: 'Doppelzimmer / Comfort Suite' },
+            { value: 'Einzelzimmer', label: 'Einzelzimmer' },
+            { value: 'Deluxe Suite', label: 'Deluxe Suite' },
+            { value: 'Executive Suite', label: 'Executive Suite' },
+            { value: 'Penthouse', label: 'Presidential Penthouse' },
+            { value: 'Family Suite', label: 'Familien Suite' },
+            { value: 'Standard Room', label: 'Standard / Comfort Zimmer' },
+            { value: 'Spa Suite', label: 'Spa & Wellness Suite' },
+            { value: 'Shuttle Package', label: 'Zimmer + VIP Shuttle Package' }
         ];
     }
     if (ctx === 'SM') {
         return [
-            { value: 'Access', label: 'Entry Tickets / Passes' },
-            { value: 'Premium', label: 'VIP Suite / Premium Catering' },
-            { value: 'Food', label: 'Concession / Food' },
-            { value: 'Drinks', label: 'Concession / Drinks' },
-            { value: 'Coffee', label: 'Coffee & Hot Drinks' },
-            { value: 'Breakfast', label: 'Breakfast / Frühstück' },
-            { value: 'Dessert', label: 'Dessert & Sweets' },
-            { value: 'Logistics', label: 'Logistics / Fast-Pass' }
+            { value: 'VIP Box', label: 'VIP Box / Loge' },
+            { value: 'Main Stand', label: 'Pitch-Side / Main Stand' },
+            { value: 'Executive Lounge', label: 'Executive Lounge Pass' },
+            { value: 'Standard Pass', label: 'Standard E-Ticket' },
+            { value: 'Valet Package', label: 'Valet Parking + Ticket Package' }
         ];
     }
     if (ctx === 'VM') {
@@ -179,6 +177,7 @@ const MenuManagement = () => {
     const navigate = useNavigate();
     const { user, loading } = useAuth();
     const [manualItems, setManualItems] = useState([]);
+    const [hotelReservationEmail, setHotelReservationEmail] = useState('');
     const [isPublishing, setIsPublishing] = useState(false);
     
     const userEmailKey = user?.email ? user.email.replace(/[^a-zA-Z0-9]/g, '_') : 'default';
@@ -198,6 +197,7 @@ const MenuManagement = () => {
             const defaultCat = categories.length > 0 ? categories[0].value : 'Food';
 
             let loadedItems = [];
+            let savedEmail = localStorage.getItem(`green_hotel_reservation_email_${userEmailKey}`) || '';
 
             // 1. Fetch from Firestore
             try {
@@ -207,6 +207,9 @@ const MenuManagement = () => {
                     const data = docSnap.data();
                     if (data && Array.isArray(data.items)) {
                         loadedItems = data.items;
+                    }
+                    if (data?.hotelReservationEmail) {
+                        savedEmail = data.hotelReservationEmail;
                     }
                 }
             } catch (err) {
@@ -225,9 +228,19 @@ const MenuManagement = () => {
                 }
             }
 
+            if (!savedEmail && loadedItems.length > 0) {
+                savedEmail = loadedItems.find(i => i.reservationEmail)?.reservationEmail || '';
+            }
+            setHotelReservationEmail(savedEmail);
+
             // Set state. If empty, push a default row to start editing instantly.
             if (loadedItems.length > 0) {
-                setManualItems(loadedItems);
+                const validCatValues = categories.map(c => c.value);
+                const sanitizedItems = loadedItems.map(item => ({
+                    ...item,
+                    category: validCatValues.includes(item.category) ? item.category : defaultCat
+                }));
+                setManualItems(sanitizedItems);
             } else {
                 setManualItems([{
                     id: Date.now(),
@@ -264,27 +277,41 @@ const MenuManagement = () => {
 
         setIsPublishing(true);
         try {
-            const formattedItems = validItems.map((item, idx) => ({
-                id: item.id || (Date.now() + idx),
-                name: item.name.trim(),
-                price: item.price.trim(),
-                category: item.category || 'Food',
-                description: (item.description || '').trim(),
-                image: (item.image || '').trim() || getAIAssignedImage(item.name, item.category || 'Food', managerContext),
-                status: 'verified'
-            }));
+            const categories = getCategoryOptionsForContext(managerContext);
+            const defaultCat = categories.length > 0 ? categories[0].value : 'Standard Room';
+            const validCatValues = categories.map(c => c.value);
+
+            const formattedItems = validItems.map((item, idx) => {
+                const galleryUrls = item.gallery && item.gallery.length > 0 ? item.gallery : (item.image ? [item.image] : []);
+                const finalCategory = validCatValues.includes(item.category) ? item.category : defaultCat;
+                return {
+                    id: item.id || (Date.now() + idx),
+                    name: item.name.trim(),
+                    price: item.price.trim(),
+                    category: finalCategory,
+                    description: (item.description || '').trim(),
+                    image: (item.image || galleryUrls[0] || '').trim() || getAIAssignedImage(item.name, finalCategory, managerContext),
+                    gallery: galleryUrls,
+                    stadiumQrCode: item.stadiumQrCode || '',
+                    stadiumTicketLink: item.stadiumTicketLink || '',
+                    status: 'verified'
+                };
+            });
 
             await setDoc(doc(db, 'business_menus', user?.email?.toLowerCase() || userEmailKey), {
                 items: formattedItems,
+                hotelReservationEmail: hotelReservationEmail.trim(),
                 updatedAt: new Date().toISOString()
             });
 
             localStorage.setItem(`green_published_menu_${managerContext}_${userEmailKey}`, JSON.stringify(formattedItems));
+            localStorage.setItem(`green_hotel_reservation_email_${userEmailKey}`, hotelReservationEmail.trim());
             alert(`Catalog finalized! ${formattedItems.length} items published live to the Green Grid.`);
             navigate(`/manager${window.location.search}`);
         } catch (err) {
             console.error('Failed to publish manual catalog:', err);
             localStorage.setItem(`green_published_menu_${managerContext}_${userEmailKey}`, JSON.stringify(validItems));
+            localStorage.setItem(`green_hotel_reservation_email_${userEmailKey}`, hotelReservationEmail.trim());
             alert(`Catalog finalized locally (${validItems.length} items).`);
             navigate(`/manager${window.location.search}`);
         } finally {
@@ -349,40 +376,47 @@ const MenuManagement = () => {
         <div className="space-y-10 pb-20 w-full">
             <div className="flex justify-between items-end">
                 <div className="space-y-2">
-                    <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none text-[#ffffff]">Catalog <span className="text-[#00e5ff]">Manager</span></h1>
-                    <p className="text-[#9ca3af] text-sm font-bold uppercase tracking-widest leading-none">Precision Manual Item Mapping</p>
+                    <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none text-[#ffffff]">
+                        {managerContext === 'HM' ? 'Zimmer Angebote' : managerContext === 'SM' ? 'Ticket Angebote' : 'Angebote'} <span className="text-[#00e5ff]">Hub</span>
+                    </h1>
+                    <p className="text-[#9ca3af] text-sm font-bold uppercase tracking-widest leading-none">
+                        {managerContext === 'HM' ? 'Zimmer, Suiten, Fotos & Preise verwalten' : managerContext === 'SM' ? 'Event-Tickets, Sektoren & Preise verwalten' : 'Produkte & Angebote verwalten'}
+                    </p>
                 </div>
             </div>
 
             <div className="space-y-6">
                     {/* Bulk Spreadsheet Editor Grid */}
-                    <div className="bg-[#0a0f1c80] backdrop-blur-xl border border-[#ffffff1a] rounded-[2rem] p-0.5 shadow-2xl relative overflow-hidden">
-                        <div className="bg-[#0a0f1c] rounded-[1.9rem] p-4 md:p-6 overflow-hidden space-y-4">
+                    <div className="dark-catalog-card bg-[#0a0f1c80] backdrop-blur-xl border border-[#ffffff1a] rounded-[2rem] p-0.5 shadow-2xl relative overflow-hidden">
+                        <div className="dark-catalog-card bg-[#0a0f1c] rounded-[1.9rem] p-4 md:p-6 overflow-hidden space-y-4">
                             <div className="flex justify-between items-center px-2">
                                 <div className="flex items-center gap-3">
                                     <div className="w-9 h-9 bg-[#00e5ff1a] border border-[#00e5ff33] rounded-xl flex items-center justify-center text-[#00e5ff] shadow-md">
-                                        <Utensils size={18} />
+                                        {managerContext === 'HM' ? <BedDouble size={18} /> : managerContext === 'SM' ? <Ticket size={18} /> : <Utensils size={18} />}
                                     </div>
-                                    <h3 className="text-lg font-black italic uppercase text-[#ffffff] tracking-tighter">Bulk Catalog <span className="text-[#00e5ff]">Definitions</span></h3>
+                                     <h3 className="text-lg font-black italic uppercase text-white tracking-tighter drop-shadow" style={{ color: '#ffffff' }}>
+                                        {managerContext === 'HM' ? 'Zimmer & Suiten' : managerContext === 'SM' ? 'Tickets & Sektoren' : 'Angebote'} <span className="text-[#00e5ff]" style={{ color: '#00e5ff' }}>Katalog</span>
+                                    </h3>
                                 </div>
                                 <button 
                                     onClick={addNewRow}
                                     className="px-4 py-2 bg-[#00e5ff1a] border border-[#00e5ff33] hover:border-[#00e5ff80] rounded-xl text-[9px] md:text-[11px] lg:text-xs font-black uppercase text-[#00e5ff] tracking-widest flex items-center gap-2 hover:scale-[1.03] transition-all"
                                 >
-                                    <Plus size={12} /> Add New Row
+                                    <Plus size={12} /> {managerContext === 'HM' ? '+ Neues Zimmer' : managerContext === 'SM' ? '+ Neues Ticket' : '+ Neues Angebot'}
                                 </button>
                             </div>
 
                             <div className="overflow-x-auto no-scrollbar rounded-2xl border border-[#ffffff1a]">
                                 <table className="w-full text-left border-collapse min-w-[850px]">
                                     <thead>
-                                        <tr className="border-b border-[#ffffff1a] bg-[#ffffff05] text-[8px] md:text-[10px] lg:text-xs font-black text-[#9ca3af] uppercase tracking-[0.2em]">
-                                            <th className="p-3 pl-4 w-[25%]">Product Nomenclature</th>
-                                            <th className="p-3 w-[20%]">Catalog Category</th>
-                                            <th className="p-3 w-[12%] text-center">Price (€)</th>
-                                            <th className="p-3 w-[28%]">Operational Description</th>
-                                            <th className="p-3 w-[12%]">Visual Asset</th>
-                                            <th className="p-3 pr-4 w-[3%] text-right"></th>
+                                         <tr className="border-b border-[#ffffff1a] bg-[#ffffff14] text-[8px] md:text-[10px] lg:text-xs font-black text-white uppercase tracking-[0.2em]">
+                                            <th className="p-3 pl-4 w-[20%] text-white font-black" style={{ color: '#ffffff' }}>{managerContext === 'HM' ? 'Zimmer / Suite Name' : managerContext === 'SM' ? 'Ticket / Sektor Name' : 'Bezeichnung'}</th>
+                                            <th className="p-3 w-[15%] text-white font-black" style={{ color: '#ffffff' }}>Kategorie</th>
+                                            <th className="p-3 w-[10%] text-center text-white font-black" style={{ color: '#ffffff' }}>{managerContext === 'HM' ? 'Preis / Nacht (€)' : 'Preis (€)'}</th>
+                                            {managerContext === 'SM' && <th className="p-3 w-[18%] text-white font-black" style={{ color: '#ffffff' }}>Stadion QR-Code / Link</th>}
+                                            <th className="p-3 w-[22%] text-white font-black" style={{ color: '#ffffff' }}>Beschreibung & Ausstattung</th>
+                                            <th className="p-3 w-[12%] text-white font-black" style={{ color: '#ffffff' }}>Fotos (Galerie)</th>
+                                            <th className="p-3 pr-4 w-[3%] text-right text-white font-black" style={{ color: '#ffffff' }}></th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[#ffffff1a]">
@@ -392,8 +426,9 @@ const MenuManagement = () => {
                                                 <td className="p-2.5 pl-4">
                                                         <input 
                                                             type="text" 
-                                                            placeholder="e.g. Premium Lager"
-                                                            className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[10px] md:text-xs lg:text-sm font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
+                                                            placeholder={managerContext === 'HM' ? 'z.B. Deluxe Ocean Suite' : managerContext === 'SM' ? 'z.B. VIP Loge Sektor A' : 'Bezeichnung'}
+                                                            className="w-full bg-[#ffffff0d] border border-[#ffffff26] rounded-lg p-2 text-[10px] md:text-xs lg:text-sm font-bold text-white focus:border-[#00e5ff] outline-none placeholder-gray-400"
+                                                            style={{ color: '#ffffff' }}
                                                             value={item.name}
                                                             onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
                                                         />
@@ -405,6 +440,7 @@ const MenuManagement = () => {
                                                         value={item.category}
                                                         onChange={(e) => handleFieldChange(index, 'category', e.target.value)}
                                                         style={{
+                                                            color: '#00e5ff',
                                                             backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
                                                             backgroundRepeat: 'no-repeat',
                                                             backgroundPosition: 'right 12px center',
@@ -413,7 +449,7 @@ const MenuManagement = () => {
                                                         }}
                                                     >
                                                         {getCategoryOptions().map(option => (
-                                                            <option key={option.value} value={option.value}>{option.label}</option>
+                                                            <option key={option.value} value={option.value} className="bg-[#0a0f1c] text-white font-bold" style={{ color: '#ffffff', backgroundColor: '#0a0f1c' }}>{option.label}</option>
                                                         ))}
                                                     </select>
                                                 </td>
@@ -422,57 +458,114 @@ const MenuManagement = () => {
                                                     <input 
                                                         type="text" 
                                                         placeholder="0.00"
-                                                        className="w-full bg-btn-sec/50 border border-main rounded-xl p-2.5 text-xs md:text-sm lg:text-base font-black text-brand focus:border-brand/40 outline-none transition-all placeholder:opacity-20 text-center"
+                                                        className="w-full bg-[#ffffff0d] border border-[#00e5ff44] rounded-xl p-2.5 text-xs md:text-sm lg:text-base font-black text-white focus:border-[#00e5ff] outline-none transition-all placeholder:text-gray-400 text-center"
+                                                        style={{ color: '#ffffff' }}
                                                         value={item.price}
                                                         onChange={(e) => handleFieldChange(index, 'price', e.target.value)}
                                                     />
                                                 </td>
+                                                {/* Stadion QR-Code / Link Column */}
+                                                {managerContext === 'SM' && (
+                                                    <td className="p-2.5">
+                                                        <div className="flex flex-col gap-1.5">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <label className="cursor-pointer px-2 py-1 bg-[#ffffff0d] border border-[#00e5ff4d] hover:bg-[#00e5ff1a] rounded-lg text-[8px] font-black uppercase text-[#00e5ff] tracking-widest flex items-center gap-1 shrink-0">
+                                                                    <span>🖼️ QR Upload</span>
+                                                                    <input 
+                                                                        type="file" 
+                                                                        accept="image/*" 
+                                                                        className="hidden" 
+                                                                        onChange={(e) => {
+                                                                            const file = e.target.files?.[0];
+                                                                            if (file) {
+                                                                                const reader = new FileReader();
+                                                                                reader.onloadend = () => {
+                                                                                    handleFieldChange(index, 'stadiumQrCode', reader.result);
+                                                                                    alert(`✅ Stadion QR-Code Bild für "${item.name || 'Ticket'}" hochgeladen!`);
+                                                                                };
+                                                                                reader.readAsDataURL(file);
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </label>
+                                                                 {item.stadiumQrCode && (
+                                                                    <span className="text-[7px] text-green-400 font-bold bg-green-500/10 px-1 py-0.5 rounded border border-green-500/20">
+                                                                        QR Bild ✓
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="🔗 Ticket-Link URL..."
+                                                                className="w-full bg-[#ffffff0d] border border-[#ffffff26] rounded-lg p-1.5 text-[8px] font-bold text-white focus:border-[#00e5ff] outline-none placeholder-gray-500"
+                                                                style={{ color: '#ffffff' }}
+                                                                value={item.stadiumTicketLink || ''}
+                                                                onChange={(e) => handleFieldChange(index, 'stadiumTicketLink', e.target.value)}
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                )}
                                                 {/* Description */}
                                                 <td className="p-2.5">
                                                         <input 
                                                             type="text" 
-                                                            placeholder="Internal notes..."
-                                                            className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[9px] md:text-[11px] lg:text-xs font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
+                                                            placeholder={managerContext === 'HM' ? 'z.B. King Bed, Balkon, Spa Zugang' : 'z.B. Fast-Lane Einlass, Catering'}
+                                                            className="w-full bg-[#ffffff0d] border border-[#ffffff26] rounded-lg p-2 text-[9px] md:text-[11px] lg:text-xs font-bold text-white focus:border-[#00e5ff] outline-none placeholder-gray-400"
+                                                            style={{ color: '#ffffff' }}
                                                             value={item.description || ''}
                                                             onChange={(e) => handleFieldChange(index, 'description', e.target.value)}
                                                         />
                                                 </td>
-                                                {/* Visual Asset Upload/URL */}
+                                                {/* Visual Asset Upload/URL Gallery */}
                                                 <td className="p-2.5">
-                                                    <div className="flex items-center gap-2">
-                                                        {item.image ? (
-                                                            <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-[#ffffff1a] shrink-0 group/rowthumb">
-                                                                <img src={item.image} alt="Thumb" className="w-full h-full object-cover" />
+                                                    <div className="flex items-center gap-2 flex-wrap max-w-xs">
+                                                        {/* Thumbnail gallery list */}
+                                                        {(item.gallery && item.gallery.length > 0 ? item.gallery : (item.image ? [item.image] : [])).map((imgUrl, imgIdx) => (
+                                                            <div key={imgIdx} className="relative w-8 h-8 rounded-lg overflow-hidden border border-[#ffffff1a] shrink-0 group/rowthumb shadow-md">
+                                                                <img src={imgUrl} alt="Thumb" className="w-full h-full object-cover" />
                                                                 <button 
                                                                     type="button"
-                                                                    onClick={() => handleFieldChange(index, 'image', '')}
-                                                                    className="absolute inset-0 bg-black/80 opacity-0 group-hover/rowthumb:opacity-100 flex items-center justify-center text-red-500 text-[8px] md:text-[10px] lg:text-xs font-black uppercase transition-opacity"
+                                                                    onClick={() => {
+                                                                        const currentGallery = item.gallery && item.gallery.length > 0 ? item.gallery : (item.image ? [item.image] : []);
+                                                                        const updatedGallery = currentGallery.filter((_, idx) => idx !== imgIdx);
+                                                                        handleFieldChange(index, 'gallery', updatedGallery);
+                                                                        handleFieldChange(index, 'image', updatedGallery[0] || '');
+                                                                    }}
+                                                                    className="absolute inset-0 bg-black/80 opacity-0 group-hover/rowthumb:opacity-100 flex items-center justify-center text-red-500 text-[8px] font-black uppercase transition-opacity"
                                                                 >
-                                                                    Clear
+                                                                    X
                                                                 </button>
                                                             </div>
-                                                        ) : (
-                                                            <div className="flex gap-2 items-center w-full">
-                                                                <label htmlFor={`file-upload-${item.id}`} className="cursor-pointer px-2 py-2 bg-[#ffffff0d] border border-[#ffffff1a] rounded-lg hover:text-[#00e5ff] hover:border-[#00e5ff4d] transition-all flex items-center justify-center gap-1 shrink-0">
-                                                                    <Upload size={10} className="text-[#9ca3af]" />
-                                                                    <span className="text-[7px] font-black uppercase text-[#9ca3af] tracking-widest text-left">File</span>
-                                                                </label>
-                                                                <input 
-                                                                    id={`file-upload-${item.id}`}
-                                                                    type="file" 
-                                                                    accept="image/*" 
-                                                                    className="hidden" 
-                                                                    onChange={(e) => handleRowImageUpload(index, e)} 
-                                                                />
-                                                                <input 
-                                                                    type="text" 
-                                                                    placeholder="Or URL"
-                                                                    className="w-full bg-btn-sec border border-[#ffffff26] rounded-lg p-2 text-[9px] md:text-[11px] lg:text-xs font-bold text-[#ffffff] focus:border-[#00e5ff] outline-none placeholder-[#4b5563]"
-                                                                    value={item.image || ''}
-                                                                    onChange={(e) => handleFieldChange(index, 'image', e.target.value)}
-                                                                />
-                                                            </div>
-                                                        )}
+                                                        ))}
+
+                                                        {/* Add More Photos Upload Trigger */}
+                                                        <label htmlFor={`file-upload-multi-${item.id}`} className="cursor-pointer px-2.5 py-1.5 bg-[#ffffff0d] border border-[#00e5ff4d] rounded-lg hover:bg-[#00e5ff1a] hover:text-[#00e5ff] transition-all flex items-center gap-1 shrink-0">
+                                                            <Upload size={11} className="text-[#00e5ff]" />
+                                                            <span className="text-[8px] font-black uppercase text-[#00e5ff] tracking-widest">+ Upload</span>
+                                                        </label>
+                                                        <input 
+                                                            id={`file-upload-multi-${item.id}`}
+                                                            type="file" 
+                                                            accept="image/*" 
+                                                            multiple
+                                                            className="hidden" 
+                                                            onChange={(e) => {
+                                                                const files = Array.from(e.target.files);
+                                                                if (!files.length) return;
+                                                                files.forEach(file => {
+                                                                    if (file.size > 800000) return alert('File size must be < 800KB');
+                                                                    const reader = new FileReader();
+                                                                    reader.onloadend = () => {
+                                                                        const currentGallery = item.gallery && item.gallery.length > 0 ? item.gallery : (item.image ? [item.image] : []);
+                                                                        const updatedGallery = [...currentGallery, reader.result];
+                                                                        handleFieldChange(index, 'gallery', updatedGallery);
+                                                                        if (!item.image) handleFieldChange(index, 'image', reader.result);
+                                                                    };
+                                                                    reader.readAsDataURL(file);
+                                                                });
+                                                            }} 
+                                                        />
                                                     </div>
                                                 </td>
                                                 {/* Delete button */}
@@ -489,6 +582,31 @@ const MenuManagement = () => {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {/* Hotel Reception Email Input Box */}
+                            {managerContext === 'HM' && (
+                                <div className="mt-4 p-4 md:p-5 bg-[#ffffff05] border border-[#00e5ff33] rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2 text-[#00e5ff] font-black text-xs md:text-sm uppercase tracking-wider">
+                                            <span className="text-base">📧</span>
+                                            <span>Hotel Rezeption E-Mail (Automatischer Reservierungsversand)</span>
+                                        </div>
+                                        <p className="text-[10px] md:text-xs text-[#9ca3af]">
+                                            Unser System sendet jede Kunden-Zimmerbuchung automatisch an diese zentral hinterlegte E-Mail-Adresse.
+                                        </p>
+                                    </div>
+                                    <div className="w-full md:w-80">
+                                        <input 
+                                            type="email"
+                                            placeholder="z.B. rezeption@hotel.de"
+                                            className="w-full bg-[#ffffff0d] border border-[#00e5ff66] rounded-xl p-3 text-xs md:text-sm font-bold text-white focus:border-[#00e5ff] outline-none transition-all placeholder:text-gray-500 shadow-inner"
+                                            style={{ color: '#ffffff' }}
+                                            value={hotelReservationEmail}
+                                            onChange={(e) => setHotelReservationEmail(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -501,16 +619,16 @@ const MenuManagement = () => {
                         >
                             {isPublishing ? (
                                 <>
-                                    <Loader2 className="animate-spin" size={18} /> Saving Menu Catalog...
+                                    <Loader2 className="animate-spin" size={18} /> Speichere Angebote...
                                 </>
                             ) : (
                                 <>
-                                    Finalize & Save Menu Catalog ({manualItems.filter(item => item.name.trim() !== '').length} Items) <ChevronRight size={18} />
+                                    {managerContext === 'HM' ? `ZIMMER-ANGEBOTE SPEICHERN & LIVE SCHALTEN (${manualItems.length})` : managerContext === 'SM' ? `TICKET-ANGEBOTE SPEICHERN & LIVE SCHALTEN (${manualItems.length})` : `ANGEBOTE SPEICHERN & LIVE SCHALTEN (${manualItems.length})`} <ChevronRight size={18} />
                                 </>
                             )}
                         </button>
                     </div>
-                </div>
+            </div>
         </div>
     );
 };

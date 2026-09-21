@@ -87,11 +87,9 @@ const PartnerOnboarding = () => {
                                 <div className="p-6 bg-white/5 rounded-3xl border border-white/10 space-y-4">
                                     <input placeholder="LEGAL BUSINESS NAME" className="w-full bg-dark-950 border border-white/5 p-4 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase outline-none focus:border-brand/50 transition-all" />
                                     <select className="w-full bg-dark-950 border border-white/5 p-4 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase outline-none focus:border-brand/50 transition-all">
-                                        <option>Business Type: Nightlife / Club</option>
-                                        <option>Business Type: Restaurant / Bar</option>
                                         <option>Business Type: Hotel / Resort</option>
+                                        <option>Business Type: Stadium / Arena</option>
                                     </select>
-                                    <input placeholder="COMMERCIAL VAT ID" className="w-full bg-dark-950 border border-white/5 p-4 rounded-xl text-[10px] md:text-xs lg:text-sm font-black uppercase outline-none focus:border-brand/50 transition-all" />
                                 </div>
                             </div>
                         )}

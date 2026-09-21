@@ -306,7 +306,7 @@ const PostsFeed = ({ isOpen, onClose }) => {
                             const isLiked = likedPosts[post.id];
                             return (
                                 <div key={post.id} className="relative h-screen w-full snap-start overflow-hidden">
-                                    {post.type === 'video' ? (
+                                    {post.type === 'video' || post.url.startsWith('data:video') || post.url.endsWith('.mp4') || post.url.includes('mixkit') ? (
                                         <video
                                             src={post.url}
                                             className="w-full h-full object-cover"

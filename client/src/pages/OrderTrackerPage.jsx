@@ -22,12 +22,21 @@ import {
     ShoppingBag,
     Check,
     BedDouble,
-    Download
+    Download,
+    Mail,
+    Building2,
+    Calendar,
+    Users,
+    Key,
+    X,
+    Send
 } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const OrderTrackerPage = () => {
+    const { t } = useLanguage();
     const location = useLocation();
     const navigate = useNavigate();
     const cart = location.state?.cart || [];
@@ -57,11 +66,8 @@ const OrderTrackerPage = () => {
         item.id?.startsWith('st') ||
         item.id?.startsWith('dynamic')
     );
-    const hasTicketsDummyPlaceholderIgnoreThis = false;
-                       // venueName.toLowerCase().includes('club') || 
-                       // venueName.toLowerCase().includes('festival') || 
-                       // venueName.toLowerCase().includes('event') || 
-                       // cart.some(item => item.tags?.includes('Ticket') || item.name.toLowerCase().includes('ticket') || item.name.toLowerCase().includes('eintritt') || item.name.toLowerCase().includes('pass'));
+
+    const isStadiumTicket = isStadium || location.state?.isStadiumTicket || location.state?.orderType === 'stadium' || hasTickets || (!isBooking && !isHotel && !isWashHub);
 
     const tableId = location.state?.tableId || "Unknown";
     const orderIdValue = location.state?.orderId || Date.now();
@@ -73,10 +79,44 @@ const OrderTrackerPage = () => {
     const [isEditingEmail, setIsEditingEmail] = useState(false);
     const [tempEmail, setTempEmail] = useState(guestEmail);
     const guestPhone = location.state?.guestPhone || (user?.phone ? user.phone : "+49 176 12345678");
+
+    const [showEmailModal, setShowEmailModal] = useState(false);
+    const [emailSent, setEmailSent] = useState(false);
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
+
+    const [customQrCode, setCustomQrCode] = useState(() => {
+        return location.state?.stadiumQrCode || 
+               localStorage.getItem(`green_order_qr_${orderIdValue}`) || 
+               null;
+    });
+
+    useEffect(() => {
+        const syncQr = () => {
+            const stored = localStorage.getItem(`green_order_qr_${orderIdValue}`);
+            if (stored) setCustomQrCode(stored);
+        };
+        syncQr();
+        window.addEventListener('storage', syncQr);
+        return () => window.removeEventListener('storage', syncQr);
+    }, [orderIdValue]);
+
+    const handleOpenEmailModal = () => {
+        setShowEmailModal(true);
+    };
+
+    const handleSendEmailConfirmation = () => {
+        if (isSendingEmail) return;
+        setIsSendingEmail(true);
+        setTimeout(() => {
+            setIsSendingEmail(false);
+            setEmailSent(true);
+            triggerToast(`📧 Reservierungsbestätigung an ${guestEmail} gesendet! ✨`);
+        }, 1200);
+    };
     
-    const [progress, setProgress] = useState(10);
-    const [eta, setEta] = useState(7);
-    const [statusText, setStatusText] = useState(hasTickets ? "E-Mail-Verifizierung ausstehend" : "Received by Bar");
+    const [progress, setProgress] = useState(100);
+    const [eta, setEta] = useState(0);
+    const [statusText, setStatusText] = useState(hasTickets ? "E-Tickets & Bestätigung Bereit 🎟️" : "Bestätigt");
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const [showPaymentOptions, setShowPaymentOptions] = useState(false);
@@ -104,14 +144,7 @@ const OrderTrackerPage = () => {
     };
 
     const [orderStatus, setOrderStatus] = useState(() => {
-        const initial = location.state?.orderStatus || 'PENDING';
-        if (initial === 'PENDING' && hasTickets) {
-            return 'TICKET_GENERATING';
-        }
-        if (!hasTickets && (initial === 'PENDING' || initial === 'GROUP ORDER')) {
-            return 'ORDER RECEIVED';
-        }
-        return initial;
+        return location.state?.orderStatus || 'CONFIRMED';
     });
     
     const [secondsLeft, setSecondsLeft] = useState(10);
@@ -308,12 +341,9 @@ const OrderTrackerPage = () => {
                 } else if (hasTickets || currentOrder.type === 'Stadium E-Ticket' || currentOrder.type === 'Club Event Ticket') {
                     // For ticket/event purchases
                     if (b2bStatus === 'Received' || b2bStatus === 'Preparing') {
-                        // Keep PENDING_EMAIL_VERIFICATION as the active step until verified
-                        if (orderStatus !== 'TICKET_DISPATCHED' && orderStatus !== 'RECEIVED') {
-                            setOrderStatus('PENDING_EMAIL_VERIFICATION');
-                            setStatusText("E-Mail-Verifizierung ausstehend 📧");
-                            setProgress(30);
-                        }
+                        setOrderStatus('CONFIRMED');
+                        setStatusText("E-Tickets & Bestätigung Bereit! 🎟️");
+                        setProgress(60);
                     } else if (b2bStatus === 'Ready') {
                         if (orderStatus !== 'RECEIVED') {
                             setOrderStatus('TICKET_DISPATCHED');
@@ -827,7 +857,7 @@ const OrderTrackerPage = () => {
                         <div className="pt-4 border-t border-dashed border-main space-y-3 mt-2">
                             <div className="flex justify-between items-center">
                                 <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">
-                                    {(isStadium || hasTickets) ? 'Ticket Status' : isParking ? 'Pass Status' : isWashHub ? 'Service Status' : isBooking ? 'Booking Status' : 'Order Status'}
+                                    {(isStadium || hasTickets) ? t('ticketStatus') : isParking ? 'Pass Status' : isWashHub ? 'Service Status' : isBooking ? t('bookingStatus') : t('orderStatus')}
                                 </span>
                                 <span className={`text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest px-2.5 py-1 rounded-lg flex items-center gap-2 ${
                                     orderStatus === 'GROUP ORDER'
@@ -845,11 +875,11 @@ const OrderTrackerPage = () => {
                                             ? (hasTickets ? 'SMS DELIVERED' : 'READY') 
                                             : (orderStatus === 'SERVED' && isBooking) 
                                                 ? 'CHECKED IN' 
-                                                : orderStatus} {['PENDING', 'PENDING_EMAIL_VERIFICATION'].includes(orderStatus) && `| 00:${secondsLeft < 10 ? '0'+secondsLeft : secondsLeft}`}
+                                                : (orderStatus === 'CONFIRMED' ? t('confirmed') : orderStatus)} {['PENDING', 'PENDING_EMAIL_VERIFICATION'].includes(orderStatus) && `| 00:${secondsLeft < 10 ? '0'+secondsLeft : secondsLeft}`}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">Payment Status</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">{t('paymentStatus')}</span>
                                 <span className={`text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest px-2 py-0.5 rounded ${
                                     hasTickets || paymentStatus === 'PAID' || paymentStatus === 'BILLED TO ROOM' 
                                         ? 'bg-green-500/10 text-green-500' 
@@ -859,12 +889,35 @@ const OrderTrackerPage = () => {
                                                 ? 'bg-red-500/20 text-red-400 border border-red-500/20 font-black'
                                                 : 'bg-red-500/10 text-red-500'
                                 }`}>
-                                    {hasTickets ? 'PAID' : (paymentStatus === 'UNPAID' && isGroupActive ? 'PAYMENTS PENDING' : paymentStatus)}
+                                    {hasTickets ? t('paid') : paymentStatus === 'PAID' ? t('paid') : (paymentStatus === 'UNPAID' && isGroupActive ? 'PAYMENTS PENDING' : paymentStatus)}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center pt-2">
-                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">Total Charged</span>
+                                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-gray-500">{t('totalCharged')}</span>
                                 <span className="text-2xl font-black italic text-brand">€{totalCost.toFixed(2)}</span>
+                            </div>
+
+                            <div className="pt-3 border-t border-dashed border-main/40 mt-3">
+                                <button
+                                    onClick={handleOpenEmailModal}
+                                    className={`w-full py-3.5 px-4 rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2.5 transition-all shadow-md active:scale-95 ${
+                                        emailSent
+                                            ? 'bg-green-500/15 text-green-400 border border-green-500/30'
+                                            : 'bg-brand text-black hover:bg-brand/90 shadow-brand/20'
+                                    }`}
+                                >
+                                    {emailSent ? (
+                                        <>
+                                            <CheckCircle size={14} className="text-green-400" />
+                                            <span>{t('emailConfirmationSent')}</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Mail size={14} />
+                                            <span>{t('sendEmailConfirmation')}</span>
+                                        </>
+                                    )}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -873,32 +926,17 @@ const OrderTrackerPage = () => {
                 <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-bg-primary via-bg-primary/90 to-transparent z-40">
                     <div className="max-w-lg mx-auto space-y-3">
                         <button onClick={() => navigate(-1)} className="w-full py-4 bg-black border border-white/10 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all text-white flex items-center justify-center gap-2 shadow-xl hover:bg-neutral-900 active:scale-95">
-                            Back to Menu
+                            {t('backToMenu')}
                         </button>
                         <button 
                             onClick={handleSettleTab} 
-                            disabled={hasTickets && orderStatus !== 'RECEIVED' && orderStatus !== 'PENDING_EMAIL_VERIFICATION'}
-                            className={`w-full py-5 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all ${
-                                (hasTickets && orderStatus !== 'RECEIVED' && orderStatus !== 'PENDING_EMAIL_VERIFICATION')
-                                    ? 'bg-dark-900/50 text-gray-700 cursor-not-allowed opacity-40'
-                                    : orderStatus === 'PENDING_EMAIL_VERIFICATION'
-                                        ? 'bg-amber-500 text-black shadow-amber-500/20 font-black'
-                                        : (orderStatus === 'GROUP ORDER' || isGroupActive || location.state?.paymentMethod === 'group_tab' || location.state?.paymentStatus === 'UNPAID')
-                                            ? 'bg-brand text-dark-950 font-black shadow-brand/20 shadow-xl'
-                                            : paymentStatus === 'PAID' 
-                                                ? 'bg-black text-white border border-white/20' 
-                                                : (orderStatus === 'SERVED' || orderStatus === 'DISPATCHED' || orderStatus === 'TICKET_DISPATCHED' || orderStatus === 'RECEIVED') 
-                                                    ? 'bg-black text-white border border-white/20' 
-                                                    : 'bg-dark-900/50 text-gray-700'
-                            }`}
+                            className="w-full py-5 rounded-[2rem] text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all bg-black text-white border border-white/20"
                         >
-                            {orderStatus === 'PENDING_EMAIL_VERIFICATION'
-                                ? 'Verifizieren per E-Mail Link'
-                                : (orderStatus === 'GROUP ORDER' || isGroupActive || location.state?.paymentMethod === 'group_tab' || location.state?.paymentStatus === 'UNPAID')
-                                    ? 'Go to Group Tab Ledger'
-                                    : paymentStatus === 'PAID' 
-                                        ? (isHotel ? 'Close Folio' : (isStadium || isParking || hasTickets) ? 'Close Mission' : 'Close Table') 
-                                        : (orderStatus === 'SERVED' || orderStatus === 'DISPATCHED' || orderStatus === 'TICKET_DISPATCHED' || orderStatus === 'RECEIVED') ? 'Settle Tab' : 'Service Pending'}
+                            {(orderStatus === 'GROUP ORDER' || isGroupActive || location.state?.paymentMethod === 'group_tab' || location.state?.paymentStatus === 'UNPAID')
+                                ? 'Go to Group Tab Ledger'
+                                : paymentStatus === 'PAID' 
+                                    ? (isHotel ? t('closeFolio') : (isStadium || isParking || hasTickets) ? t('closeMission') : t('closeTable')) 
+                                    : t('settleTab')}
                         </button>
                     </div>
                 </div>
@@ -1127,6 +1165,248 @@ const OrderTrackerPage = () => {
                             >
                                 Exit Scan View
                             </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            {/* E-Mail Reservation Confirmation Voucher Modal */}
+            <AnimatePresence>
+                {showEmailModal && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 md:p-6 overflow-y-auto"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.95, y: 30 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.95, y: 30 }}
+                            className="w-full max-w-lg bg-dark-950 border border-main/60 rounded-[2.5rem] shadow-2xl overflow-hidden text-white my-auto"
+                        >
+                            {/* Header */}
+                            <div className="bg-dark-900 px-6 py-5 border-b border-main flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-2xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand">
+                                        <Mail size={20} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm md:text-base font-black uppercase tracking-wider text-white">
+                                            {isStadiumTicket ? t('emailStadiumVoucherTitle') : t('emailVoucherTitle')}
+                                        </h3>
+                                        <p className="text-[10px] md:text-xs text-brand font-bold uppercase tracking-widest">
+                                            {isStadiumTicket ? t('officialStadiumVoucher') : t('officialVoucher')}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => setShowEmailModal(false)}
+                                    className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            {/* Email Container / Body */}
+                            <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto no-scrollbar">
+                                {/* Email Meta Header */}
+                                <div className="bg-dark-900/80 border border-white/10 rounded-2xl p-4 space-y-2 text-xs">
+                                    <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                                        <span className="text-gray-500 font-bold uppercase text-[9px] md:text-[10px]">{t('recipient')}:</span>
+                                        <span className="font-mono font-bold text-brand">{guestEmail}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                                        <span className="text-gray-500 font-bold uppercase text-[9px] md:text-[10px]">{t('sender')}:</span>
+                                        <span className="font-mono text-gray-300">
+                                            {isStadiumTicket ? 'tickets@khiam-green.de' : 'reservierung@green-hotels.de'}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-500 font-bold uppercase text-[9px] md:text-[10px]">{t('subject')}:</span>
+                                        <span className="font-bold text-white text-[11px] truncate max-w-[240px]">
+                                            {isStadiumTicket ? t('emailStadiumVoucherTitle') : t('emailVoucherTitle')} #{String(orderIdValue).slice(-6)} - {venueName}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Email Voucher Preview Card */}
+                                <div className="bg-white text-dark-950 rounded-3xl p-6 space-y-5 shadow-xl relative overflow-hidden">
+                                    <div className="border-b-2 border-dashed border-gray-200 pb-4 text-center space-y-1">
+                                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-600">
+                                            {isStadiumTicket ? 'GREEN STADIUM & ARENA • E-TICKET' : 'GREEN HOTELS & RESORTS'}
+                                        </p>
+                                        <h4 className="text-lg font-black uppercase italic tracking-tight text-dark-950">{venueName || (isStadiumTicket ? 'Olympiastadion Berlin' : 'Grand Hotel & Resort')}</h4>
+                                        <p className="text-[10px] font-bold text-gray-500 flex items-center justify-center gap-1">
+                                            <MapPin size={12} className="text-emerald-600" />
+                                            {location.state?.venueAddress || (isStadiumTicket ? 'Olympischer Platz 3, 14053 Berlin' : 'Kurfürstendamm 100, 10709 Berlin')}
+                                        </p>
+                                    </div>
+
+                                    {/* Confirmation Badge */}
+                                    <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircle size={18} className="text-emerald-600" />
+                                            <span className="text-xs font-black uppercase tracking-wider text-emerald-900">
+                                                {isStadiumTicket ? t('stadiumTicketConfirmed') : t('reservationConfirmed')}
+                                            </span>
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-600 text-white px-2 py-0.5 rounded-md">{t('paid')} ✓</span>
+                                    </div>
+
+                                    {/* Conditional Grid: Stadium Event Times OR Hotel Check-in */}
+                                    {isStadiumTicket ? (
+                                        <div className="grid grid-cols-2 gap-3 text-xs">
+                                            <div className="bg-gray-50 rounded-2xl p-3 space-y-1">
+                                                <p className="text-[9px] font-black uppercase tracking-wider text-gray-400 flex items-center gap-1">
+                                                    <Clock size={11} className="text-emerald-600" /> Spiel- / Eventzeit
+                                                </p>
+                                                <p className="font-black text-dark-950">24. Mai 2026</p>
+                                                <p className="text-[10px] font-bold text-emerald-700">Anpfiff: 20:30 Uhr</p>
+                                            </div>
+                                            <div className="bg-gray-50 rounded-2xl p-3 space-y-1">
+                                                <p className="text-[9px] font-black uppercase tracking-wider text-gray-400 flex items-center gap-1">
+                                                    <Zap size={11} className="text-emerald-600" /> Stadion Einlass
+                                                </p>
+                                                <p className="font-black text-dark-950">Gate B / Block 4</p>
+                                                <p className="text-[10px] font-bold text-gray-500">ab 18:30 Uhr</p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-2 gap-3 text-xs">
+                                            <div className="bg-gray-50 rounded-2xl p-3 space-y-1">
+                                                <p className="text-[9px] font-black uppercase tracking-wider text-gray-400 flex items-center gap-1">
+                                                    <Calendar size={11} className="text-emerald-600" /> {t('checkIn')}
+                                                </p>
+                                                <p className="font-black text-dark-950">19. Mai 2026</p>
+                                                <p className="text-[10px] font-bold text-gray-500">ab 15:00 Uhr</p>
+                                            </div>
+                                            <div className="bg-gray-50 rounded-2xl p-3 space-y-1">
+                                                <p className="text-[9px] font-black uppercase tracking-wider text-gray-400 flex items-center gap-1">
+                                                    <Calendar size={11} className="text-emerald-600" /> {t('checkOut')}
+                                                </p>
+                                                <p className="font-black text-dark-950">21. Mai 2026</p>
+                                                <p className="text-[10px] font-bold text-gray-500">bis 11:00 Uhr</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Ticket Holder & Details */}
+                                    <div className="space-y-3 pt-1 border-t border-gray-100 text-xs">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] flex items-center gap-1.5">
+                                                <Ticket size={13} className="text-emerald-600" /> {isStadiumTicket ? 'Sitzplatz / Kategorie:' : `${t('roomQuantity')}:`}
+                                            </span>
+                                            <span className="font-black text-dark-950">
+                                                {cart.map(i => `${i.quantity || 1}x ${i.name}`).join(', ') || (isStadiumTicket ? '1x VIP Lounge Ticket (Block B, Reihe 12)' : '1x Delux (Single Bed)')}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] flex items-center gap-1.5">
+                                                <Users size={13} className="text-emerald-600" /> Ticket-Inhaber:
+                                            </span>
+                                            <span className="font-black text-dark-950">
+                                                {guestName || user?.displayName || 'Azizi Khiam'}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-400 font-bold uppercase text-[10px] flex items-center gap-1.5">
+                                                <CreditCard size={13} className="text-emerald-600" /> {t('billing')}:
+                                            </span>
+                                            <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md text-[10px] uppercase">
+                                                {t('paid')} (Online Card)
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* High-Contrast Optical Scan QR-Code inside E-Mail Confirmation Voucher */}
+                                    {isStadiumTicket && (
+                                        <div className="pt-3 border-t border-gray-100 text-center space-y-2">
+                                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">{t('opticalScanKey')}</p>
+                                            
+                                            {customQrCode ? (
+                                                <div className="space-y-2">
+                                                    <div className="w-32 h-32 bg-white rounded-2xl mx-auto p-2 flex items-center justify-center shadow-lg border-2 border-emerald-500 overflow-hidden">
+                                                        {customQrCode.startsWith('http://') || customQrCode.startsWith('https://') ? (
+                                                            <QrCode size={96} className="text-dark-950" />
+                                                        ) : (
+                                                            <img src={customQrCode} alt="Stadion E-Ticket QR Code" className="w-full h-full object-contain" />
+                                                        )}
+                                                    </div>
+                                                    {(customQrCode.startsWith('http://') || customQrCode.startsWith('https://')) && (
+                                                        <a 
+                                                            href={customQrCode} 
+                                                            target="_blank" 
+                                                            rel="noreferrer" 
+                                                            className="inline-flex items-center gap-1 text-[9px] font-black uppercase text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 hover:bg-emerald-100 transition-all"
+                                                        >
+                                                            🎟️ In Wallet / Stadion-Link öffnen
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="w-28 h-28 bg-dark-950 rounded-2xl mx-auto p-3 flex items-center justify-center relative overflow-hidden shadow-lg border-2 border-emerald-500">
+                                                    <QrCode size={84} className="text-white" />
+                                                    <motion.div 
+                                                        animate={{ y: [-40, 40, -40] }}
+                                                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                                        className="absolute left-0 right-0 h-0.5 bg-emerald-400 shadow-[0_0_10px_#10b981]"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            <p className="text-[9px] font-mono font-bold text-emerald-700">
+                                                {customQrCode ? `STADION-SCAN KEY (#TK-${String(orderIdValue).slice(-6)})` : `CODE: ST-${String(orderIdValue).slice(-5)}-OPTICAL-KEY`}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <div className="pt-3 border-t-2 border-dashed border-gray-200 flex justify-between items-center">
+                                        <div>
+                                            <p className="text-[9px] font-black uppercase text-gray-400 tracking-wider">{t('totalCharged')}</p>
+                                            <p className="text-xl font-black text-dark-950 italic">€{totalCost.toFixed(2)}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[9px] font-black uppercase text-gray-400 tracking-wider">Ticket / {t('bookingId')}</p>
+                                            <p className="text-xs font-mono font-bold text-emerald-700">#TK-{String(orderIdValue).slice(-6)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Modal Footer Actions */}
+                            <div className="p-6 bg-dark-900 border-t border-main flex flex-col gap-3">
+                                <button
+                                    onClick={() => {
+                                        handleSendEmailConfirmation();
+                                        setTimeout(() => setShowEmailModal(false), 1500);
+                                    }}
+                                    disabled={isSendingEmail}
+                                    className="w-full py-4 bg-brand text-black rounded-2xl text-xs md:text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2.5 shadow-xl shadow-brand/20 hover:bg-brand-bright transition-all active:scale-95 disabled:opacity-50"
+                                >
+                                    {isSendingEmail ? (
+                                        <>
+                                            <Loader2 size={16} className="animate-spin text-black" />
+                                            <span>{t('sendingEmail')}</span>
+                                        </>
+                                    ) : emailSent ? (
+                                        <>
+                                            <CheckCircle size={16} className="text-black" />
+                                            <span>{t('resendEmail')}</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Send size={16} />
+                                            <span>{t('sendEmailNow')}</span>
+                                        </>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setShowEmailModal(false)}
+                                    className="w-full py-3 bg-dark-950 border border-main/50 text-gray-400 hover:text-white rounded-2xl text-xs font-bold uppercase tracking-widest transition-all"
+                                >
+                                    {t('close')}
+                                </button>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { safeSetItem } from '../utils/storageHelper';
 import { db as fbDb, storage } from '../config/firebase';
 import { doc, getDoc, updateDoc, setDoc, deleteDoc, collection, query, where, getDocs, onSnapshot, orderBy } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -27,7 +28,7 @@ import {
     Calendar,
     ChevronRight,
     Clock,
-    CheckCircle,
+    CheckCircle, Bus,
     Droplets,
     Handshake,
     ArrowDownRight,
@@ -72,7 +73,9 @@ import {
     DoorOpen,
     Undo,
     Mail,
-    Camera
+    Camera,
+    Key,
+    Copy
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -270,6 +273,184 @@ const ManagerDashboard = () => {
         return ctx;
     });
 
+    // Fleet Manager Drivers State (NUR FÜR FLOTTEN MANAGER)
+    const [driversList, setDriversList] = useState(() => {
+        const saved = localStorage.getItem(`green_fleet_drivers_${userEmailKey}`);
+        if (saved) {
+            try { return JSON.parse(saved); } catch (e) {}
+        }
+        return [
+            {
+                id: 'drv_1',
+                name: 'Sami Rahimi',
+                phone: '+49 176 8829 1029',
+                email: 'sami.rahimi@green-fleet.de',
+                licenseNumber: 'B0892019382',
+                vehicleAssigned: 'Tesla Model S Plaid (F-GR 777E)',
+                status: 'Aktiv',
+                approvalStatus: 'Approved',
+                accessCode: 'DRV-7771-FM',
+                pScheinDoc: { name: 'PSchein_Sami.pdf' },
+                fuehrerscheinDoc: { name: 'Fuehrerschein_Sami.pdf' },
+                ausweisDoc: { name: 'Pass_Sami.pdf' },
+                rating: 4.95,
+                tripsCompleted: 342,
+                photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&fit=crop'
+            },
+            {
+                id: 'drv_2',
+                name: 'Darius Meier',
+                phone: '+49 172 4432 9911',
+                email: 'darius.m@green-fleet.de',
+                licenseNumber: 'B0441920311',
+                vehicleAssigned: 'Mercedes-Benz EQS (F-GR 888E)',
+                status: 'Aktiv',
+                approvalStatus: 'Approved',
+                accessCode: 'DRV-8882-FM',
+                pScheinDoc: { name: 'PSchein_Darius.pdf' },
+                fuehrerscheinDoc: { name: 'Fuehrerschein_Darius.pdf' },
+                ausweisDoc: { name: 'Pass_Darius.pdf' },
+                rating: 4.88,
+                tripsCompleted: 218,
+                photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&fit=crop'
+            },
+            {
+                id: 'drv_3',
+                name: 'Elena Rostova',
+                phone: '+49 151 8877 6655',
+                email: 'elena.r@green-fleet.de',
+                licenseNumber: 'B0993021948',
+                vehicleAssigned: 'Porsche Taycan (F-GR 999E)',
+                status: 'Pause',
+                approvalStatus: 'Approved',
+                accessCode: 'DRV-9993-FM',
+                pScheinDoc: { name: 'PSchein_Elena.pdf' },
+                fuehrerscheinDoc: { name: 'Fuehrerschein_Elena.pdf' },
+                ausweisDoc: { name: 'Pass_Elena.pdf' },
+                rating: 5.0,
+                tripsCompleted: 189,
+                photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&fit=crop'
+            }
+        ];
+    });
+
+    // Fleet Manager Vehicles State (NUR FÜR FLOTTEN MANAGER)
+    const [vehiclesList, setVehiclesList] = useState(() => {
+        const saved = localStorage.getItem(`green_fleet_vehicles_${userEmailKey}`);
+        if (saved) {
+            try { return JSON.parse(saved); } catch (e) {}
+        }
+        return [
+            {
+                id: 'veh_1',
+                make: 'Tesla',
+                model: 'Model S Plaid',
+                licensePlate: 'F-GR 777E',
+                year: '2024',
+                category: 'VIP Executive',
+                batteryLevel: 94,
+                assignedDriver: 'Sami Rahimi',
+                status: 'Bereit',
+                ratePerHour: '85 € / Std.',
+                images: [
+                    'https://images.unsplash.com/photo-1617788138017-80ad40651399?w=800&fit=crop',
+                    'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&fit=crop'
+                ]
+            },
+            {
+                id: 'veh_2',
+                make: 'Mercedes-Benz',
+                model: 'EQS 450+ AMG Line',
+                licensePlate: 'F-GR 888E',
+                year: '2024',
+                category: 'First Class Luxury',
+                batteryLevel: 88,
+                assignedDriver: 'Darius Meier',
+                status: 'In Fahrt',
+                ratePerHour: '95 € / Std.',
+                images: [
+                    'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&fit=crop',
+                    'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&fit=crop'
+                ]
+            },
+            {
+                id: 'veh_3',
+                make: 'Porsche',
+                model: 'Taycan 4S Cross Turismo',
+                licensePlate: 'F-GR 999E',
+                year: '2024',
+                category: 'Sport VIP Shuttle',
+                batteryLevel: 100,
+                assignedDriver: 'Elena Rostova',
+                status: 'Bereit',
+                ratePerHour: '110 € / Std.',
+                images: [
+                    'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=800&fit=crop'
+                ]
+            }
+        ];
+    });
+
+    // Modals for Driver & Vehicle registration
+    const [isAddDriverOpen, setIsAddDriverOpen] = useState(false);
+    const [newDriverForm, setNewDriverForm] = useState({
+        name: '',
+        phone: '',
+        email: '',
+        licenseNumber: '',
+        vehicleAssigned: 'Kein Fahrzeug',
+        status: 'Aktiv',
+        photoUrl: ''
+    });
+
+    const [isAddVehicleOpen, setIsAddVehicleOpen] = useState(false);
+    const [newVehicleForm, setNewVehicleForm] = useState({
+        make: '',
+        model: '',
+        licensePlate: '',
+        year: '2024',
+        category: 'VIP Executive',
+        batteryLevel: 100,
+        assignedDriver: 'Kein Fahrer',
+        status: 'Wartend auf Admin-Freigabe',
+        approvalStatus: 'Pending Admin Verification',
+        ratePerHour: '90 € / Std.',
+        images: [],
+        konzessionDoc: null,
+        tuevDoc: null,
+        fahrzeugscheinDoc: null,
+        versicherungsDoc: null
+    });
+
+    useEffect(() => {
+        localStorage.setItem(`green_fleet_drivers_${userEmailKey}`, JSON.stringify(driversList));
+    }, [driversList, userEmailKey]);
+
+    useEffect(() => {
+        localStorage.setItem(`green_fleet_vehicles_${userEmailKey}`, JSON.stringify(vehiclesList));
+    }, [vehiclesList, userEmailKey]);
+
+
+    const [profileForm, setProfileForm] = useState(() => {
+        const saved = localStorage.getItem(`green_manager_profile_${userEmailKey}`);
+        if (saved) {
+            try { return JSON.parse(saved); } catch (e) {}
+        }
+        return {
+            firstName: user?.firstName || user?.name?.split(' ')[0] || 'Khiam',
+            lastName: user?.lastName || user?.name?.split(' ').slice(1).join(' ') || 'Azizi',
+            email: user?.email || 'manager@hotel.de',
+            phone: user?.phone || '+49 176 12345678',
+            businessName: user?.businessName || (managerContext === 'HM' ? 'Green Palace & Spa Hotel' : 'Green Stadium Arena'),
+            address: user?.address || 'Königsallee 42',
+            zip: user?.zip || '40212',
+            city: user?.city || 'Düsseldorf',
+            country: user?.country || 'Deutschland',
+            avatarUrl: user?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&fit=crop'
+        };
+    });
+    const [profileSaveSuccess, setProfileSaveSuccess] = useState(false);
+
     // Compliance Document States
     const [complianceDocs, setComplianceDocs] = useState({});
 
@@ -313,7 +494,7 @@ const ManagerDashboard = () => {
             fetchedOrders.reverse();
             setOrders(fetchedOrders);
             // Also keep local storage in sync
-            localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(fetchedOrders));
+            safeSetItem(`green_active_orders_${userEmailKey}`, JSON.stringify(fetchedOrders));
         }, (error) => {
             console.error("Error syncing orders from Firestore:", error);
         });
@@ -1945,7 +2126,7 @@ const ManagerDashboard = () => {
             setOrders(prev => {
                 if (prev.some(o => o.id === ticket.id)) return prev;
                 const updated = [managerOrder, ...prev];
-                localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
+                safeSetItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
                 return updated;
             });
 
@@ -2009,7 +2190,7 @@ const ManagerDashboard = () => {
         }
         const updated = orders.map(o => o.id === id ? { ...o, status: newStatus } : o);
         setOrders(updated);
-        localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
+        safeSetItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
         setSessionTransitioned(prev => ({ ...prev, [id]: true }));
     };
 
@@ -2019,7 +2200,7 @@ const ManagerDashboard = () => {
 
         const updated = orders.map(o => o.id === id ? { ...o, status: prevStatus } : o);
         setOrders(updated);
-        localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
+        safeSetItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
 
         setPreviousStatuses(prev => {
             const next = { ...prev };
@@ -2077,7 +2258,7 @@ const ManagerDashboard = () => {
         if (!orders.find(o => o.id === demoBooking.id)) {
             const updated = [demoBooking, ...orders];
             setOrders(updated);
-            localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
+            safeSetItem(`green_active_orders_${userEmailKey}`, JSON.stringify(updated));
         }
     }, [orders, isDemo, userEmailKey]);
 
@@ -2100,7 +2281,7 @@ const ManagerDashboard = () => {
             });
             setOrders(liveOrders);
             // Also update local storage for backward compatibility with other views
-            localStorage.setItem(`green_active_orders_${userEmailKey}`, JSON.stringify(liveOrders));
+            safeSetItem(`green_active_orders_${userEmailKey}`, JSON.stringify(liveOrders));
         }, (error) => {
             console.error('Error fetching live orders from Firestore:', error);
         });
@@ -2181,9 +2362,9 @@ const ManagerDashboard = () => {
             { label: 'VIP Capacity', value: '85%', icon: Star, color: 'text-white', trend: 'Peak' }
         ];
         if (managerContext === 'HM') return [
-            { label: 'Current Guests', value: '128', icon: Users, color: 'text-white', trend: 'Stable' },
-            { label: 'Nightlife Out', value: '14', icon: Car, color: 'text-brand', trend: 'Expected 03:00' },
-            { label: 'Concierge Tasks', value: '8', icon: Activity, color: 'text-brand', trend: 'Active' },
+            { label: 'Occupancy Rate', value: '32/40 (80%)', icon: Users, color: 'text-white', trend: '80% Full' },
+            { label: 'Check-ins Today', value: '12', icon: Activity, color: 'text-brand', trend: 'Active' },
+            { label: 'Room Revenue', value: '€7,450', icon: DollarSign, color: 'text-brand', trend: '+18%' },
             { label: 'Service Rating', value: '4.98', icon: Star, color: 'text-white', trend: 'Green' }
         ];
         if (managerContext === 'RM') return [
@@ -2272,38 +2453,39 @@ const ManagerDashboard = () => {
             </div>
 
             <nav className="flex-1 px-4 space-y-2 overflow-x-hidden">
-                {[
-                    { id: 'overview', label: t('Dashboard'), icon: LayoutDashboard },
+                {(managerContext === 'FM' ? [
+                    { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
+                    { id: 'drivers', label: 'Fahrer Hub', icon: Users, badge: 'Team' },
+                    { id: 'vehicles', label: 'Auto Hub', icon: Car, badge: 'Flotte' },
+                    { id: 'feed', label: 'Social Hub', icon: Activity, badge: 'Promo' },
+                    { id: 'shuttle', label: 'Shuttle Service', icon: Bus, badge: 'Transfer' },
+                    { id: 'finance', label: 'Umsatz Hub', icon: Receipt },
+                    { id: 'profile', label: 'Mein Profil', icon: User }
+                ] : [
+                    { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
                     { 
-                        id: 'orders', 
-                        label: managerContext === 'HM' ? t('Room Service') : managerContext === 'CM' ? t('Bottle Service') : managerContext === 'SM' ? t('Ticket Orders') : t('Live Orders'), 
-                        icon: managerContext === 'HM' ? BedDouble : managerContext === 'CM' ? GlassWater : managerContext === 'SM' ? Ticket : ShoppingBag, 
-                        badge: '3', 
-                        hidden: (managerContext === 'FM') 
+                        id: 'menu', 
+                        label: managerContext === 'HM' ? 'Zimmer Angebote Hub' : managerContext === 'SM' ? 'Ticket Angebote Hub' : 'Angebote Hub', 
+                        icon: managerContext === 'SM' ? Ticket : BedDouble, 
+                        badge: 'Live'
                     },
-                    { id: 'stadium-seats', label: t('Ticket Hub'), icon: Ticket, visible: managerContext === 'CM' || managerContext === 'SM' || managerContext === 'VM' },
-
                     { 
-                        id: 'hotel-rooms', 
-                        label: t('Room Hub'), 
-                        icon: DoorOpen, 
-                        visible: managerContext === 'HM' 
+                        id: 'feed', 
+                        label: 'Social Hub', 
+                        icon: Activity, 
+                        badge: 'Promo' 
                     },
-                    { id: 'staff', label: t('Team Hub'), icon: Users },
-
                     { 
                         id: 'finance', 
-                        label: managerContext === 'HM' ? t('Nightly Audit') : managerContext === 'CM' ? t('Cover Revenue') : t('Financials'), 
+                        label: 'Umsatz Hub', 
                         icon: Receipt 
                     },
-                    { id: 'documents', label: t('Compliance'), icon: ShieldCheck },
-                    { id: 'feed', label: t('Marketing Hub'), icon: Activity, badge: '4K' },
-                    { id: 'reputation', label: t('Reputation Hub'), icon: ShieldAlert, badge: user?.redFlags > 0 ? user.redFlags.toString() : null },
-                    { id: 'strategic-hub', label: t('AI Strategic Hub'), icon: Sparkles, badge: 'Insight' },
-                    { id: 'fleet-control', label: t('Fleet Control Hub'), icon: Car, visible: managerContext === 'FM', badge: 'Alert' },
-                    { id: 'sitting', label: t('Sitting'), icon: Settings },
-                    { id: 'menu', label: t('Menu Catalog'), icon: managerContext === 'SM' ? Trophy : Utensils, badge: 'New', hidden: (managerContext === 'FM') }
-                ].filter(item => {
+                    { 
+                        id: 'profile', 
+                        label: 'Mein Profil', 
+                        icon: User 
+                    }
+                ]).filter(item => {
                     if (item.hidden) return false;
                     if (item.visible !== undefined && !item.visible) return false;
                     return hasPermission(item.id);
@@ -2318,89 +2500,78 @@ const ManagerDashboard = () => {
                         }}
                         className={`w-full flex ${isMobile ? 'flex-row items-center justify-start px-5 gap-4 py-3.5' : 'flex-col items-center justify-center p-3'} rounded-2xl transition-all duration-300 group relative mb-2 ${
                             view === item.id 
-                            ? 'bg-brand/10 text-brand shadow-[0_0_15px_rgba(52,211,153,0.2)] border border-brand/50' 
-                            : 'text-secondary hover:text-primary hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'
+                            ? 'bg-cyan-500/20 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.3)] border border-cyan-400/50' 
+                            : 'text-gray-200 hover:text-white hover:bg-white/10 border border-transparent font-bold'
                         }`}
                     >
-                        <item.icon size={22} className={`${isMobile ? '' : 'mb-1.5'} ${view === item.id ? 'text-brand' : 'text-secondary group-hover:text-brand transition-colors'}`} />
-                        <span className={`font-black uppercase tracking-widest leading-tight ${isMobile ? 'text-[10px] md:text-xs lg:text-sm text-left' : 'text-[9px] md:text-[11px] lg:text-xs text-center'}`}>{item.label}</span>
+                        <item.icon size={22} className={`${isMobile ? '' : 'mb-1.5'} ${view === item.id ? 'text-cyan-400' : 'text-gray-300 group-hover:text-cyan-300 transition-colors'}`} />
+                        <span className={`font-black uppercase tracking-widest leading-tight ${isMobile ? 'text-[11px] md:text-xs lg:text-sm text-left' : 'text-[10px] md:text-xs lg:text-xs text-center'}`}>{item.label}</span>
                         {item.badge && (
-                            <span className={`absolute px-1.5 py-0.5 bg-brand text-dark-900 text-[7px] font-black rounded-md ${isMobile ? 'right-4 top-1/2 -translate-y-1/2' : '-top-1 -right-1'}`}>{item.badge}</span>
+                            <span className={`absolute px-1.5 py-0.5 bg-cyan-400 text-dark-950 text-[8px] font-black rounded-md ${isMobile ? 'right-4 top-1/2 -translate-y-1/2' : '-top-1 -right-1'}`}>{item.badge}</span>
                         )}
                     </button>
                 ))}
             </nav>
 
-            <div className="p-4 mt-auto space-y-4">
-                {/* Language Hub */}
-                <div className="space-y-2">
-                    {(!isInternalSidebarCollapsed || isMobile) && (
-                        <div className="flex items-center justify-between px-2 mb-1">
-                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand/60 italic">Language Hub</span>
-                            <Languages size={12} className="text-brand/40" />
-                        </div>
-                    )}
-                    <div className="relative">
-                        <SearchIcon size={14} className={`absolute ${isInternalSidebarCollapsed && !isMobile ? 'left-1/2 -translate-x-1/2' : 'left-4'} top-1/2 -translate-y-1/2 text-secondary`} />
-                        {(!isInternalSidebarCollapsed || isMobile) && (
-                            <input 
-                                type="text"
-                                placeholder="Search..."
-                                value={langSearch}
-                                onChange={(e) => {
-                                    setLangSearch(e.target.value);
-                                    setIsLangExpanded(true);
-                                }}
-                                onFocus={() => setIsLangExpanded(true)}
-                                className="w-full bg-btn-sec border border-main rounded-2xl p-4 pl-10 text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest focus:border-brand/40 outline-none text-primary"
-                            />
-                        )}
-                        {isInternalSidebarCollapsed && !isMobile && (
-                            <div className="w-10 h-10 bg-btn-sec rounded-xl border border-main flex items-center justify-center cursor-pointer hover:border-brand/40" onClick={() => setIsInternalSidebarCollapsed(false)}>
-                                <Languages size={16} className="text-secondary" />
+            <div className="p-2 md:p-3 mt-auto space-y-2">
+                {/* Language Dropdown Button */}
+                <div className="relative">
+                    <button 
+                        onClick={() => setIsLangExpanded(!isLangExpanded)}
+                        className="w-full flex flex-col items-center justify-center p-2.5 rounded-xl bg-btn-sec text-secondary hover:text-brand hover:bg-brand/10 transition-all border border-main"
+                    >
+                        <Languages size={18} className="text-brand mb-1" />
+                        <span className="text-[8px] font-black uppercase tracking-wider">{lang.toUpperCase()}</span>
+                    </button>
+                    {isLangExpanded && (
+                        <div className={`absolute bottom-0 ${lang === 'fa' || lang === 'ar' ? 'right-full mr-4' : 'left-full ml-4'} w-60 max-h-72 overflow-y-auto no-scrollbar bg-[#060911] border-2 border-brand/60 rounded-2xl p-2.5 space-y-1.5 shadow-[0_25px_60px_rgba(0,0,0,0.95)] z-[300]`}>
+                            <div className="px-3 py-2 border-b border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-brand flex items-center justify-between">
+                                <span>🌍 Sprache Wählen</span>
+                                <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
                             </div>
-                        )}
-                    </div>
-                    {isLangExpanded && (!isInternalSidebarCollapsed || isMobile) && (
-                        <div className="max-h-40 overflow-y-auto no-scrollbar bg-glass backdrop-blur-xl border border-main rounded-2xl p-2 space-y-1 shadow-2xl">
-                            {filteredLangs.map((l) => (
+                            {allLanguages.map((l) => (
                                 <button
                                     key={l.code}
                                     onClick={() => {
                                         setLang(l.code);
                                         setIsLangExpanded(false);
-                                        setLangSearch('');
                                     }}
-                                    className={`w-full p-2.5 rounded-xl flex items-center justify-between transition-all ${lang === l.code ? 'bg-brand/10 text-brand border border-brand/20' : 'hover:bg-btn-sec text-secondary'}`}
+                                    className={`w-full p-3 rounded-xl flex items-center justify-between text-xs font-black uppercase transition-all ${
+                                        lang === l.code 
+                                        ? 'bg-brand text-dark-950 font-black shadow-xl shadow-brand/30 border border-brand' 
+                                        : 'bg-white/5 hover:bg-brand/20 text-white hover:text-brand border border-white/5 hover:border-brand/40'
+                                    }`}
                                 >
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase">{l.name}</span>
-                                        <span className="text-[7px] font-bold opacity-30">{l.native}</span>
+                                        <span className="font-extrabold">{l.name}</span>
+                                        <span className="text-[10px] font-bold opacity-60">({l.native})</span>
                                     </div>
-                                    {lang === l.code && <CheckCircle size={10} />}
+                                    {lang === l.code && <CheckCircle size={14} className="shrink-0 text-dark-950" />}
                                 </button>
                             ))}
                         </div>
                     )}
                 </div>
 
+                {/* Theme Toggle Button */}
                 <button 
                     onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                    className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl bg-btn-sec text-secondary hover:text-brand hover:bg-brand/10 transition-all border border-main cursor-pointer"
+                    className="w-full flex flex-col items-center justify-center p-2.5 rounded-xl bg-btn-sec text-secondary hover:text-brand hover:bg-brand/10 transition-all border border-main cursor-pointer"
                 >
-                    {theme === 'light' ? <Moon size={18} className="shrink-0 text-brand" /> : <Sun size={18} className="shrink-0 text-brand" />}
-                    {(!isInternalSidebarCollapsed || isMobile) && <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">Theme: {theme === 'light' ? 'Light' : 'Dark'}</span>}
+                    {theme === 'light' ? <Moon size={18} className="text-brand mb-1" /> : <Sun size={18} className="text-brand mb-1" />}
+                    <span className="text-[8px] font-black uppercase tracking-wider">{theme === 'light' ? 'Light' : 'Dark'}</span>
                 </button>
 
+                {/* Exit Portal Button */}
                 <button 
                     onClick={() => {
                         logout();
                         navigate('/login');
                     }}
-                    className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl bg-btn-sec text-secondary hover:text-red-400 hover:bg-red-500/10 transition-all border border-main"
+                    className="w-full flex flex-col items-center justify-center p-2.5 rounded-xl bg-btn-sec text-secondary hover:text-red-400 hover:bg-red-500/10 transition-all border border-main cursor-pointer"
                 >
-                    <X size={18} className="shrink-0" />
-                    {(!isInternalSidebarCollapsed || isMobile) && <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest">Exit Portal</span>}
+                    <X size={18} className="mb-1" />
+                    <span className="text-[8px] font-black uppercase tracking-wider">Exit</span>
                 </button>
             </div>
         </>
@@ -2517,7 +2688,7 @@ const ManagerDashboard = () => {
 
                         {/* Profile */}
                         <div className="flex items-center gap-3">
-                            <img src={user?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-white/10" />
+                            <img src={profileForm?.avatarUrl || user?.profilePicture || user?.avatarUrl || user?.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-white/10 object-cover" />
                             <div className="hidden md:block text-left">
                                 <p className="text-sm font-bold text-white">{user?.name || 'Alex P.'}</p>
                                 <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">{simRole === 'staff' ? 'Staff Member' : 'Manager'}</p>
@@ -2534,74 +2705,6 @@ const ManagerDashboard = () => {
                     <div className="relative z-10 max-w-7xl mx-auto py-6">
                         {!hasPermission(view) ? (
                             <AccessDenied feature={view} />
-                        ) : !getComplianceStatus().isApproved && view !== 'documents' ? (
-                            <div className="bg-glass border border-red-500/30 rounded-[3rem] p-10 space-y-8 shadow-2xl relative overflow-hidden max-w-3xl mx-auto text-center backdrop-blur-2xl">
-                                <div className="absolute top-0 left-0 right-0 h-1 bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]" />
-                                <div className="flex flex-col items-center gap-6 py-6">
-                                    <div className="w-20 h-20 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500 shadow-[0_0_30px_rgba(239,68,68,0.2)] animate-pulse">
-                                        <ShieldAlert size={40} />
-                                    </div>
-                                    <div className="space-y-3">
-                                        <h2 className="text-3xl font-black italic uppercase tracking-tighter text-red-500 text-glow-red">Operational Suspension</h2>
-                                        <p className="text-xs md:text-sm lg:text-base font-bold text-secondary uppercase tracking-[0.25em]">Access Restricted • PBefG §49 / GwG Art. 12</p>
-                                    </div>
-                                    <p className="text-sm text-gray-300 max-w-xl leading-relaxed">
-                                        Under federal regulatory frameworks, your organization's operational dispatch privileges are currently suspended. 
-                                        All live orders, team terminals, and fleet controls remain inactive until your legal compliance vault is verified and approved by system administration.
-                                    </p>
-                                    
-                                    {/* Document status summary in the lock screen */}
-                                    <div className="w-full max-w-md bg-black/40 border border-white/5 rounded-2xl p-6 text-left space-y-3 font-mono text-[10px] md:text-xs lg:text-sm">
-                                        <div className="flex justify-between border-b border-white/5 pb-2 text-[10px] md:text-xs lg:text-sm font-bold text-gray-400">
-                                            <span>REQUIRED CREDENTIALS</span>
-                                            <span>STATUS</span>
-                                        </div>
-                                        {requiredDocIds.map(id => {
-                                            const docState = complianceDocs[id];
-                                            const name = simRole === 'staff'
-                                                ? (id === 'passport_id' ? 'Passport / ID Card' : id === 'work_permit' ? 'Work Permit' : 'Bank Details (for tips)')
-                                                : (managerContext === 'FM' 
-                                                    ? (id === 'tl' ? 'Transport License' : id === 'fip' ? 'Fleet Insurance' : id === 'cc' ? 'Chauffeur Cert' : id === 'vr' ? 'Vehicle Reg' : id === 'tuv' ? 'TÜV Certification' : id === 'es' ? 'Emissions standard' : id === 'sepa' ? 'SEPA Mandate' : id === 'vatc' ? 'VAT Certification' : 'Bank Validation')
-                                                    : (id === 'reg' ? 'Commercial Register' : id === 'mid' ? 'Manager ID' : id === 'tax' ? 'Tax Registration' : id === 'gast' ? 'Gastronomy License' : id === 'liq' ? 'Liquor License' : id === 'fire' ? 'Fire Safety' : id === 'sepa' ? 'SEPA Mandate' : id === 'vatc' ? 'VAT Certification' : 'Bank Validation'));
-                                            
-                                            let statusColor = 'text-red-400';
-                                            let statusText = 'MISSING';
-                                            if (docState?.status === 'pending') {
-                                                statusColor = 'text-amber-500';
-                                                statusText = 'AWAITING ADMIN';
-                                            } else if (docState?.status === 'approved') {
-                                                statusColor = 'text-brand';
-                                                statusText = 'APPROVED';
-                                            } else if (docState?.status === 'rejected') {
-                                                statusColor = 'text-red-500';
-                                                statusText = 'REJECTED';
-                                            }
-                                            
-                                            return (
-                                                <div key={id} className="flex justify-between">
-                                                    <span className="text-gray-400">{name}</span>
-                                                    <span className={`font-black ${statusColor}`}>{statusText}</span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                    
-                                    <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-                                        <button 
-                                            onClick={() => setView('documents')}
-                                            className="flex-1 py-4 bg-brand text-dark-900 font-black uppercase tracking-widest text-[10px] md:text-xs lg:text-sm rounded-xl shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                                        >
-                                            Go to Compliance Vault
-                                        </button>
-                                        <button 
-                                            onClick={handleDevAutoApprove}
-                                            className="flex-1 py-4 bg-white/5 border border-white/10 hover:border-brand/40 text-gray-400 hover:text-white font-black uppercase tracking-widest text-[8px] md:text-[10px] lg:text-xs rounded-xl transition-all"
-                                        >
-                                            [DEV BYPASS] Auto-Approve All
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
                         ) : (
                             <AnimatePresence mode="wait">
                                 {view === 'overview' && (
@@ -2683,123 +2786,123 @@ const ManagerDashboard = () => {
                                     {/* MOCKUP 3-COLUMN HUBS */}
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                         
-                                        {/* COL 1: Table Reservations */}
+                                        {/* COL 1: Room & Suite Status */}
                                         <div className="glass-panel-subtle border border-white/5 rounded-3xl p-5 relative shadow-xl">
                                             <div className="flex justify-between items-center mb-4">
-                                                <h3 className="text-[13px] font-bold text-white">Table Reservations</h3>
+                                                <h3 className="text-[13px] font-bold text-white">Room & Suite Status</h3>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 cursor-pointer"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                             </div>
                                             <div className="flex items-center gap-2 mb-4">
-                                                <span className="text-[10px] md:text-xs lg:text-sm text-gray-400">Floor-time</span>
-                                                <span className="text-[10px] md:text-xs lg:text-sm text-gray-500">Floor 1 & 2</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm text-gray-400">Wing A & B</span>
+                                                <span className="text-[10px] md:text-xs lg:text-sm text-gray-500">Floors 1 - 4</span>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3 mb-6">
                                                 <div className="bg-[#0B121E]/50 border border-brand/50 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(52,211,153,0.15)] relative overflow-hidden">
                                                     <div className="absolute top-0 left-0 w-full h-full bg-brand/5"></div>
-                                                    <span className="text-xl font-bold text-white relative z-10">101</span>
+                                                    <span className="text-xl font-bold text-white relative z-10">Suite 101</span>
                                                     <span className="text-[9px] md:text-[11px] lg:text-xs font-bold text-brand relative z-10">Reserved</span>
-                                                    <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 mt-1 relative z-10">8 PM</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 mt-1 relative z-10">8 PM Arrival</span>
                                                 </div>
                                                 <div className="bg-[#0B121E]/50 border border-white/10 rounded-xl p-3 flex flex-col items-center justify-center text-center">
-                                                    <span className="text-xl font-bold text-white">102</span>
-                                                    <span className="text-[9px] md:text-[11px] lg:text-xs text-gray-400 mt-1">4 Guest</span>
-                                                    <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-500">Detail</span>
+                                                    <span className="text-xl font-bold text-white">Room 102</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs text-gray-400 mt-1">Superior</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs text-emerald-400">Available</span>
                                                 </div>
                                                 <div className="bg-[#0B121E]/50 border border-brand/50 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(52,211,153,0.15)] relative overflow-hidden">
                                                     <div className="absolute top-0 left-0 w-full h-full bg-brand/5"></div>
-                                                    <span className="text-xl font-bold text-white relative z-10">103</span>
-                                                    <span className="text-[9px] md:text-[11px] lg:text-xs text-gray-400 relative z-10">4 Guest</span>
-                                                    <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 mt-1 relative z-10">8 PM</span>
+                                                    <span className="text-xl font-bold text-white relative z-10">Suite 103</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-bold text-brand relative z-10">Checked In</span>
+                                                    <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 mt-1 relative z-10">2 Guests</span>
                                                 </div>
                                                 <div className="bg-[#0B121E]/50 border border-purple-500/50 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(168,85,247,0.15)] relative overflow-hidden">
                                                     <div className="absolute top-0 left-0 w-full h-full bg-purple-500/5"></div>
-                                                    <span className="text-xl font-bold text-white relative z-10">104</span>
-                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-bold text-purple-400 relative z-10">Reserved</span>
+                                                    <span className="text-xl font-bold text-white relative z-10">Suite 104</span>
+                                                    <span className="text-[9px] md:text-[11px] lg:text-xs font-bold text-purple-400 relative z-10">VIP Suite</span>
                                                     <span className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 mt-1 relative z-10">8:30 PM</span>
                                                 </div>
                                             </div>
                                             <div>
-                                                <h4 className="text-[11px] md:text-sm lg:text-base font-bold text-white mb-2">Upcoming:</h4>
-                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 mb-1">8:00 PM - Davis (4)</p>
-                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">8:15 PM - Chen (2)</p>
+                                                <h4 className="text-[11px] md:text-sm lg:text-base font-bold text-white mb-2">Upcoming Arrivals:</h4>
+                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 mb-1">8:00 PM - Davis (Suite 101)</p>
+                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">8:15 PM - Chen (Room 102)</p>
                                             </div>
                                         </div>
 
-                                        {/* COL 2: Kitchen Command */}
+                                        {/* COL 2: Front Desk & Service Control */}
                                         <div className="glass-panel-subtle border border-white/5 rounded-3xl p-5 relative shadow-xl">
                                             <div className="flex justify-between items-center mb-6">
-                                                <h3 className="text-[13px] font-bold text-white">Kitchen Command</h3>
+                                                <h3 className="text-[13px] font-bold text-white">Front Desk & Service Control</h3>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 cursor-pointer"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                             </div>
                                             
                                             <div className="space-y-4">
-                                                {/* Ticket 1 */}
+                                                {/* Request 1 */}
                                                 <div className="bg-[#0B121E]/50 border border-purple-500/30 rounded-xl p-4 shadow-[0_0_15px_rgba(168,85,247,0.1)] relative">
                                                     <div className="flex justify-between items-start mb-2">
-                                                        <h4 className="text-[11px] md:text-sm lg:text-base text-white">Ticket #142 <span className="text-gray-400">(Table 103)</span></h4>
+                                                        <h4 className="text-[11px] md:text-sm lg:text-base text-white">Booking #142 <span className="text-gray-400">(Suite 103)</span></h4>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                                     </div>
                                                     <div className="flex justify-between items-start mb-4">
                                                         <div className="text-[10px] md:text-xs lg:text-sm text-gray-400 leading-relaxed">
-                                                            <p>Steak Frites</p>
-                                                            <p>Salmon</p>
+                                                            <p>Airport VIP Shuttle</p>
+                                                            <p>Late Check-out (14:00)</p>
                                                         </div>
-                                                        <span className="text-[9px] md:text-[11px] lg:text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30">In Prep</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30">In Progress</span>
                                                     </div>
                                                     <div className="h-1 w-full bg-white/5 rounded-full mb-3 overflow-hidden">
                                                         <div className="h-full w-[60%] bg-purple-500"></div>
                                                     </div>
                                                     <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs text-gray-500">
-                                                        <span>Order at 7:45 PM</span>
-                                                        <span className="flex items-center gap-1"><Users size={10} /> 2</span>
+                                                        <span>Booked at 7:45 PM</span>
+                                                        <span className="flex items-center gap-1"><Users size={10} /> 2 Guests</span>
                                                     </div>
                                                 </div>
 
-                                                {/* Ticket 2 */}
+                                                {/* Request 2 */}
                                                 <div className="bg-[#0B121E]/50 border border-brand/30 rounded-xl p-4 shadow-[0_0_15px_rgba(52,211,153,0.1)] relative">
                                                     <div className="flex justify-between items-start mb-2">
-                                                        <h4 className="text-[11px] md:text-sm lg:text-base text-white">Ticket #143 <span className="text-gray-400">(Table 105)</span></h4>
+                                                        <h4 className="text-[11px] md:text-sm lg:text-base text-white">Booking #143 <span className="text-gray-400">(Room 105)</span></h4>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                                     </div>
                                                     <div className="flex justify-between items-start mb-4">
                                                         <div className="text-[10px] md:text-xs lg:text-sm text-gray-400 leading-relaxed">
-                                                            <p>Lobster Risotto</p>
-                                                            <p>Duck Breast</p>
+                                                            <p>Breakfast in Room</p>
+                                                            <p>Extra Pillow Set</p>
                                                         </div>
-                                                        <span className="text-[9px] md:text-[11px] lg:text-xs bg-brand/20 text-brand px-2 py-0.5 rounded-full border border-brand/30">Pending</span>
+                                                        <span className="text-[9px] md:text-[11px] lg:text-xs bg-brand/20 text-brand px-2 py-0.5 rounded-full border border-brand/30">Confirmed</span>
                                                     </div>
                                                     <div className="h-1 w-full bg-white/5 rounded-full mb-3 overflow-hidden">
-                                                        <div className="h-full w-[15%] bg-brand"></div>
+                                                        <div className="h-full w-[100%] bg-brand"></div>
                                                     </div>
                                                     <div className="flex justify-between items-center text-[9px] md:text-[11px] lg:text-xs text-gray-500">
-                                                        <span>Order at 7:35 PM</span>
-                                                        <span className="flex items-center gap-1"><Users size={10} /> 3</span>
+                                                        <span>Booked at 7:35 PM</span>
+                                                        <span className="flex items-center gap-1"><Users size={10} /> 3 Guests</span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* COL 3: Menu Catalog */}
+                                        {/* COL 3: Suite & Room Catalog */}
                                         <div className="glass-panel-subtle border border-white/5 rounded-3xl p-5 relative shadow-xl">
                                             <div className="flex justify-between items-center mb-6">
-                                                <h3 className="text-[13px] font-bold text-white">Menu Catalog</h3>
+                                                <h3 className="text-[13px] font-bold text-white">Suite & Room Catalog</h3>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 cursor-pointer"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                             </div>
 
                                             <div className="space-y-3">
                                                 {/* Item 1 */}
                                                 <div className="bg-[#0B121E]/50 border border-white/5 rounded-xl p-3 flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
-                                                        <Utensils size={16} className="text-orange-500" />
+                                                    <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                                                        <BedDouble size={16} className="text-emerald-400" />
                                                     </div>
                                                     <div className="flex-1">
                                                         <div className="flex justify-between items-start">
                                                             <div>
-                                                                <h4 className="text-[11px] md:text-sm lg:text-base text-white">Wagyu Ribeye</h4>
-                                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">($140)</p>
+                                                                <h4 className="text-[11px] md:text-sm lg:text-base text-white">Deluxe Ocean Suite</h4>
+                                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">(€180 / Night)</p>
                                                             </div>
                                                         </div>
-                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 mt-1 line-clamp-1">Description with seal and aircon glow.</p>
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 mt-1 line-clamp-1">King Bed, Balcony, Spa Access</p>
                                                         <div className="flex justify-between items-center mt-2">
                                                             <span className="text-[9px] md:text-[11px] lg:text-xs text-brand">Active</span>
                                                             <div className="w-7 h-4 bg-brand rounded-full relative">
@@ -2810,39 +2913,19 @@ const ManagerDashboard = () => {
                                                 </div>
 
                                                 {/* Item 2 */}
-                                                <div className="bg-[#0B121E]/50 border border-white/5 rounded-xl p-3 flex items-center gap-3 opacity-60">
-                                                    <div className="w-10 h-10 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
-                                                        <Utensils size={16} className="text-orange-500" />
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="flex justify-between items-start">
-                                                            <div>
-                                                                <h4 className="text-[11px] md:text-sm lg:text-base text-white">Lobster Bisque</h4>
-                                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">($35)</p>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex justify-between items-center mt-4">
-                                                            <span className="text-[9px] md:text-[11px] lg:text-xs text-gray-500">Sold Out</span>
-                                                            <div className="w-7 h-4 bg-white/20 rounded-full relative">
-                                                                <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-gray-400 rounded-full"></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Item 3 */}
                                                 <div className="bg-[#0B121E]/50 border border-white/5 rounded-xl p-3 flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
-                                                        <Utensils size={16} className="text-orange-500" />
+                                                    <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                                                        <BedDouble size={16} className="text-emerald-400" />
                                                     </div>
                                                     <div className="flex-1">
                                                         <div className="flex justify-between items-start">
                                                             <div>
-                                                                <h4 className="text-[11px] md:text-sm lg:text-base text-white">Truffle Pasta</h4>
-                                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">($45)</p>
+                                                                <h4 className="text-[11px] md:text-sm lg:text-base text-white">Executive Panorama</h4>
+                                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">(€350 / Night)</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex justify-between items-center mt-4">
+                                                        <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-500 mt-1 line-clamp-1">2 Bedrooms, Lounge & VIP Transfer</p>
+                                                        <div className="flex justify-between items-center mt-2">
                                                             <span className="text-[9px] md:text-[11px] lg:text-xs text-brand">Active</span>
                                                             <div className="w-7 h-4 bg-brand rounded-full relative">
                                                                 <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full"></div>
@@ -2850,6 +2933,648 @@ const ManagerDashboard = () => {
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                {/* Item 3 */}
+                                                <div className="bg-[#0B121E]/50 border border-white/5 rounded-xl p-3 flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                                                        <BedDouble size={16} className="text-emerald-400" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex justify-between items-start">
+                                                            <div>
+                                                                <h4 className="text-[11px] md:text-sm lg:text-base text-white">Presidential Penthouse</h4>
+                                                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400">(€750 / Night)</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex justify-between items-center mt-2">
+                                                            <span className="text-[9px] md:text-[11px] lg:text-xs text-brand">Active</span>
+                                                            <div className="w-7 h-4 bg-brand rounded-full relative">
+                                                                <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {view === 'profile' && (
+                                <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8 max-w-4xl mx-auto pb-12">
+                                    {/* Page Header */}
+                                    <div className="flex justify-between items-center bg-glass p-8 rounded-[2.5rem] border border-white/10 shadow-2xl">
+                                        <div className="space-y-1">
+                                            <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-brand">Mein Profil & Stammdaten</h1>
+                                            <p className="text-gray-400 text-xs md:text-sm font-bold uppercase tracking-widest">
+                                                Manager Kontaktdaten & Adresse von {managerContext === 'HM' ? 'Hotel / Resort' : 'Stadion / Arena'}
+                                            </p>
+                                        </div>
+                                        <div className="w-14 h-14 rounded-2xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand">
+                                            <User size={28} />
+                                        </div>
+                                    </div>
+
+                                    {/* Success Alert */}
+                                    {profileSaveSuccess && (
+                                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="p-4 bg-brand/10 border border-brand/40 rounded-2xl text-brand text-xs font-black uppercase tracking-widest flex items-center gap-3">
+                                            <CheckCircle size={18} /> Profil & Hotel-Adresse erfolgreich gespeichert!
+                                        </motion.div>
+                                    )}
+
+                                    {/* Main Profile Form */}
+                                    <div className="bg-glass rounded-[2.5rem] p-8 md:p-10 border border-white/10 space-y-8 shadow-2xl backdrop-blur-2xl">
+                                        {/* Profile Photo Upload */}
+                                        <div className="flex flex-col sm:flex-row items-center gap-6 pb-8 border-b border-white/10">
+                                            <div className="relative group cursor-pointer">
+                                                <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-brand/50 shadow-[0_0_25px_rgba(52,211,153,0.3)] bg-dark-900 flex items-center justify-center">
+                                                    {profileForm.avatarUrl ? (
+                                                        <img src={profileForm.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <User size={48} className="text-gray-500" />
+                                                    )}
+                                                </div>
+                                                <label className="absolute bottom-0 right-0 w-9 h-9 bg-brand text-dark-950 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-transform">
+                                                    <Camera size={16} />
+                                                    <input 
+                                                        type="file" 
+                                                        accept="image/*" 
+                                                        className="hidden" 
+                                                        onChange={(e) => {
+                                                            if (e.target.files && e.target.files[0]) {
+                                                                const url = URL.createObjectURL(e.target.files[0]);
+                                                                setProfileForm(prev => ({ ...prev, avatarUrl: url }));
+                                                            }
+                                                        }} 
+                                                    />
+                                                </label>
+                                            </div>
+                                            <div className="space-y-1 text-center sm:text-left">
+                                                <h3 className="text-xl font-black text-white italic uppercase">{profileForm.firstName} {profileForm.lastName}</h3>
+                                                <p className="text-xs text-brand font-bold uppercase tracking-widest">{profileForm.businessName}</p>
+                                                <p className="text-[10px] text-gray-400">Manager-Konto • Verifiziertes VIP Mitglied</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Personal Info Grid */}
+                                        <div className="space-y-4">
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand/80">Persönliche Angaben</h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">Vorname</label>
+                                                    <input 
+                                                        type="text"
+                                                        value={profileForm.firstName}
+                                                        onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })}
+                                                        placeholder="Vorname eingeben"
+                                                        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-bold text-white focus:outline-none focus:border-brand/40"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">Nachname</label>
+                                                    <input 
+                                                        type="text"
+                                                        value={profileForm.lastName}
+                                                        onChange={(e) => setProfileForm({ ...profileForm, lastName: e.target.value })}
+                                                        placeholder="Nachname eingeben"
+                                                        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-bold text-white focus:outline-none focus:border-brand/40"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">E-Mail Adresse</label>
+                                                    <input 
+                                                        type="email"
+                                                        value={profileForm.email}
+                                                        onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                                                        placeholder="manager@hotel.de"
+                                                        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-bold text-white focus:outline-none focus:border-brand/40"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">Handynummer / Telefon</label>
+                                                    <input 
+                                                        type="text"
+                                                        value={profileForm.phone}
+                                                        onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                                                        placeholder="+49 176 12345678"
+                                                        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-bold text-white focus:outline-none focus:border-brand/40"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Business / Location Address Grid */}
+                                        <div className="space-y-4 pt-4 border-t border-white/10">
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand/80">
+                                                {managerContext === 'FM' ? 'Adresse des Flottenbetriebs / Firma' : managerContext === 'HM' ? 'Adresse des Hotels / Resorts' : managerContext === 'SM' ? 'Adresse des Stadions / der Arena' : 'Adresse des Standorts / Unternehmens'}
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="md:col-span-2 space-y-2">
+                                                    <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">
+                                                        {managerContext === 'FM' ? 'Name der Firma / Flottenbetriebs' : managerContext === 'HM' ? 'Name des Hotels / Resorts' : managerContext === 'SM' ? 'Name des Stadions / der Arena' : 'Name des Unternehmens / Standorts'}
+                                                    </label>
+                                                    <input 
+                                                        type="text"
+                                                        value={profileForm.businessName}
+                                                        onChange={(e) => setProfileForm({ ...profileForm, businessName: e.target.value })}
+                                                        placeholder={managerContext === 'FM' ? 'z.B. Green Fleet GmbH' : managerContext === 'HM' ? 'z.B. Grand Hyatt & Spa' : 'z.B. Green Stadium Arena'}
+                                                        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-bold text-white focus:outline-none focus:border-brand/40"
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-2 space-y-2">
+                                                    <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">Straße & Hausnummer</label>
+                                                    <input 
+                                                        type="text"
+                                                        value={profileForm.address}
+                                                        onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
+                                                        placeholder="z.B. Königsallee 42"
+                                                        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-bold text-white focus:outline-none focus:border-brand/40"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">Postleitzahl (PLZ)</label>
+                                                    <input 
+                                                        type="text"
+                                                        value={profileForm.zip}
+                                                        onChange={(e) => setProfileForm({ ...profileForm, zip: e.target.value })}
+                                                        placeholder="40212"
+                                                        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-bold text-white focus:outline-none focus:border-brand/40"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">Stadt / Ort</label>
+                                                    <input 
+                                                        type="text"
+                                                        value={profileForm.city}
+                                                        onChange={(e) => setProfileForm({ ...profileForm, city: e.target.value })}
+                                                        placeholder="Düsseldorf"
+                                                        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-bold text-white focus:outline-none focus:border-brand/40"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        {/* Save Action Button */}
+                                        <div className="pt-6 border-t border-white/10 flex justify-end">
+                                            <button 
+                                                type="button"
+                                                onClick={() => {
+                                                    localStorage.setItem(`green_manager_profile_${userEmailKey}`, JSON.stringify(profileForm));
+                                                    if (user && setUser) {
+                                                        setUser({ ...user, ...profileForm, name: `${profileForm.firstName} ${profileForm.lastName}` });
+                                                    }
+                                                    setProfileSaveSuccess(true);
+                                                    setTimeout(() => setProfileSaveSuccess(false), 4000);
+                                                }}
+                                                className="w-full md:w-auto px-10 py-5 bg-brand text-dark-950 font-black uppercase tracking-[0.2em] text-xs md:text-sm rounded-2xl shadow-xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all"
+                                            >
+                                                Profil Speichern
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                             {/* FAHRER HUB - EXCLUSIVELY FOR FLEET MANAGERS */}
+                             {view === 'drivers' && (
+                                 <motion.div key="drivers" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8 max-w-6xl mx-auto pb-12">
+                                     {/* Header Banner */}
+                                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-glass p-8 rounded-[2.5rem] border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.15)] gap-6">
+                                         <div className="space-y-2">
+                                             <div className="flex items-center gap-3">
+                                                 <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest rounded-full border border-cyan-500/40">Electric Fleet Studio</span>
+                                                 <span className="text-xs font-bold text-gray-400">• Team & Fahrer-Verwaltung</span>
+                                             </div>
+                                             <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-cyan-400 flex items-center gap-3">
+                                                 <Users size={32} /> Fahrer Hub
+                                             </h1>
+                                             <p className="text-gray-300 text-xs md:text-sm font-bold uppercase tracking-widest">
+                                                 Registrieren & Verwalten Sie Ihre Flottenfahrer, Führerscheine & Fahrzeugzuweisungen
+                                             </p>
+                                         </div>
+                                         <button 
+                                             onClick={() => setIsAddDriverOpen(true)}
+                                             className="px-8 py-4 bg-cyan-400 text-dark-950 font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-xl shadow-cyan-500/30 hover:bg-cyan-300 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 shrink-0 cursor-pointer"
+                                         >
+                                             <PlusCircle size={18} /> Fahrer Anmelden
+                                         </button>
+                                     </div>
+
+                                     {/* Stats Summary Row */}
+                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                         <div className="bg-glass p-5 rounded-2xl border border-white/15 flex flex-col justify-between h-[100px]">
+                                             <span className="text-xs font-extrabold uppercase text-gray-200 tracking-wider">Gesamt Fahrer</span>
+                                             <span className="text-3xl font-black text-white">{driversList.length}</span>
+                                         </div>
+                                         <div className="bg-glass p-5 rounded-2xl border border-cyan-500/40 bg-cyan-500/10 flex flex-col justify-between h-[100px]">
+                                             <span className="text-xs font-extrabold uppercase text-cyan-300 tracking-wider">Aktive Fahrer</span>
+                                             <span className="text-3xl font-black text-cyan-300">{driversList.filter(d => d.status === 'Aktiv').length}</span>
+                                         </div>
+                                         <div className="bg-glass p-5 rounded-2xl border border-white/15 flex flex-col justify-between h-[100px]">
+                                             <span className="text-xs font-extrabold uppercase text-gray-200 tracking-wider">Absolvierte Fahrten</span>
+                                             <span className="text-3xl font-black text-white">{driversList.reduce((acc, d) => acc + (d.tripsCompleted || 0), 0)}</span>
+                                         </div>
+                                         <div className="bg-glass p-5 rounded-2xl border border-white/15 flex flex-col justify-between h-[100px]">
+                                             <span className="text-xs font-extrabold uppercase text-gray-200 tracking-wider">Flotten-Rating</span>
+                                             <span className="text-3xl font-black text-amber-400 flex items-center gap-2">⭐ 4.94</span>
+                                         </div>
+                                     </div>
+
+                                     {/* Drivers Cards Grid */}
+                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                         {driversList.map((drv) => (
+                                             <div key={drv.id} className="bg-glass rounded-[2rem] p-6 border border-white/15 space-y-4 hover:border-cyan-500/50 transition-all shadow-xl relative overflow-hidden group">
+                                                 <div className="flex items-center justify-between">
+                                                     <div className="flex items-center gap-4">
+                                                         <img src={drv.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${drv.name}`} alt={drv.name} className="w-14 h-14 rounded-2xl object-cover border-2 border-cyan-400/50" />
+                                                         <div>
+                                                             <h3 className="text-lg font-black text-white uppercase italic">{drv.name}</h3>
+                                                             <p className="text-xs font-extrabold text-cyan-300 uppercase tracking-widest">⭐ {drv.rating || '5.0'} • {drv.tripsCompleted || 0} Fahrten</p>
+                                                         </div>
+                                                     </div>
+                                                     <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${
+                                                         drv.status === 'Aktiv' ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-400/50' : 'bg-amber-500/30 text-amber-300 border border-amber-400/50'
+                                                     }`}>
+                                                         {drv.status}
+                                                     </span>
+                                                 </div>
+
+                                                  {/* FAHRER KOPPLUNGS-CODE BADGE */}
+                                                  <div 
+                                                      className="p-3 rounded-2xl border flex items-center justify-between shadow-sm transition-all"
+                                                      style={{
+                                                          backgroundColor: theme === 'light' ? '#e0f2fe' : 'rgba(6, 182, 212, 0.15)',
+                                                          borderColor: 'rgba(6, 182, 212, 0.4)'
+                                                      }}
+                                                  >
+                                                      <div className="flex items-center gap-2">
+                                                          <Key size={16} className={theme === 'light' ? 'text-cyan-700' : 'text-cyan-300'} />
+                                                          <span className="text-xs font-black uppercase tracking-wider" style={{ color: theme === 'light' ? '#0369a1' : '#22d3ee' }}>
+                                                              Fahrer-Code:
+                                                          </span>
+                                                      </div>
+                                                      {drv.accessCode ? (
+                                                          <div className="flex items-center gap-2">
+                                                              <span className="text-xs font-mono font-black tracking-widest px-2.5 py-1 rounded-lg border shadow-sm" style={{ color: theme === 'light' ? '#0e7490' : '#67e8f9', backgroundColor: theme === 'light' ? '#ffffff' : '#060911', borderColor: 'rgba(6, 182, 212, 0.5)' }}>
+                                                                  {drv.accessCode}
+                                                              </span>
+                                                              <button 
+                                                                  onClick={() => {
+                                                                      navigator.clipboard.writeText(drv.accessCode);
+                                                                      alert(`📋 Fahrer-Code "${drv.accessCode}" in Zwischenablage kopiert!`);
+                                                                  }}
+                                                                  className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-cyan-600 dark:text-cyan-300 transition-all cursor-pointer"
+                                                                  title="Code kopieren"
+                                                              >
+                                                                  <Copy size={14} />
+                                                              </button>
+                                                          </div>
+                                                      ) : (
+                                                          <span className="text-[10px] font-black uppercase text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/30 animate-pulse">
+                                                              ⏳ Wartend auf Admin
+                                                          </span>
+                                                      )}
+                                                  </div>
+
+                                                  {/* Driver Contact & Info Box - Inline Styles Guaranteed Contrast */}
+                                                  <div 
+                                                      className="p-3.5 rounded-2xl border space-y-2 text-xs transition-all shadow-sm"
+                                                      style={{
+                                                          backgroundColor: theme === 'light' ? '#f1f5f9' : '#060911',
+                                                          borderColor: 'rgba(6, 182, 212, 0.4)'
+                                                      }}
+                                                  >
+                                                      <div className="flex items-center gap-2">
+                                                          <Mail size={14} className={theme === 'light' ? 'text-cyan-700 shrink-0' : 'text-cyan-400 shrink-0'} />
+                                                          <span className="truncate font-black" style={{ color: theme === 'light' ? '#0f172a' : '#ffffff' }}>{drv.email}</span>
+                                                      </div>
+                                                      <div className="flex items-center gap-2">
+                                                          <Smartphone size={14} className={theme === 'light' ? 'text-cyan-700 shrink-0' : 'text-cyan-400 shrink-0'} />
+                                                          <span className="font-black" style={{ color: theme === 'light' ? '#0f172a' : '#ffffff' }}>{drv.phone}</span>
+                                                      </div>
+                                                      <div className="flex items-center gap-2">
+                                                          <FileText size={14} className={theme === 'light' ? 'text-cyan-700 shrink-0' : 'text-cyan-400 shrink-0'} />
+                                                          <span className="font-extrabold" style={{ color: theme === 'light' ? '#334155' : '#cbd5e1' }}>
+                                                              Führerschein: <strong className="font-black" style={{ color: theme === 'light' ? '#0e7490' : '#67e8f9' }}>{drv.licenseNumber}</strong>
+                                                          </span>
+                                                      </div>
+                                                      <div className="flex items-center gap-2 pt-1.5 border-t" style={{ borderColor: theme === 'light' ? '#cbd5e1' : 'rgba(255, 255, 255, 0.1)' }}>
+                                                          <Car size={14} className={theme === 'light' ? 'text-cyan-700 shrink-0' : 'text-cyan-400 shrink-0'} />
+                                                          <span className="font-black truncate" style={{ color: theme === 'light' ? '#0e7490' : '#67e8f9' }}>{drv.vehicleAssigned || 'Kein Fahrzeug'}</span>
+                                                      </div>
+
+                                                      {/* 3 Documents checklist for driver */}
+                                                      <div className="pt-2 border-t flex items-center justify-between gap-1 text-[10px] font-extrabold" style={{ borderColor: theme === 'light' ? '#cbd5e1' : 'rgba(255, 255, 255, 0.1)' }}>
+                                                          <span className="flex items-center gap-1" style={{ color: theme === 'light' ? '#334155' : '#cbd5e1' }}><FileText size={11} className="text-cyan-500" /> P-Schein: <strong className="text-cyan-600 dark:text-cyan-300">{drv.pScheinDoc ? '✓ PDF' : '✓ OK'}</strong></span>
+                                                          <span className="flex items-center gap-1" style={{ color: theme === 'light' ? '#334155' : '#cbd5e1' }}><ShieldCheck size={11} className="text-cyan-500" /> Führerschein: <strong className="text-cyan-600 dark:text-cyan-300">{drv.fuehrerscheinDoc ? '✓ PDF' : '✓ OK'}</strong></span>
+                                                          <span className="flex items-center gap-1" style={{ color: theme === 'light' ? '#334155' : '#cbd5e1' }}><FileText size={11} className="text-cyan-500" /> Ausweis: <strong className="text-cyan-600 dark:text-cyan-300">{drv.ausweisDoc ? '✓ PDF' : '✓ OK'}</strong></span>
+                                                      </div>
+                                                  </div>
+
+                                                  <div className="pt-3 border-t border-white/10 flex flex-col gap-2">
+                                                      {drv.approvalStatus !== 'Approved' && drv.status === 'Wartend auf Admin-Freigabe' && (
+                                                          <button 
+                                                              onClick={() => {
+                                                                  const newCode = `DRV-${Math.floor(1000 + Math.random() * 9000)}-FM`;
+                                                                  const updated = driversList.map(d => d.id === drv.id ? { ...d, approvalStatus: 'Approved', status: 'Aktiv', accessCode: newCode } : d);
+                                                                  setDriversList(updated);
+                                                                  alert(`✅ Fahrer "${drv.name}" wurde vom Admin verifiziert und freigegeben!\n🔑 Generierter Fahrer-Zugangscode: ${newCode}`);
+                                                              }}
+                                                              className="w-full py-2.5 bg-emerald-500 text-dark-950 font-black uppercase tracking-wider text-[10px] rounded-xl shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                                                          >
+                                                              <CheckCircle size={14} /> Admin: Fahrer Prüfen & Freigeben
+                                                          </button>
+                                                      )}
+
+                                                      <div className="flex items-center justify-between">
+                                                          <button 
+                                                              onClick={() => {
+                                                                  const updated = driversList.map(d => d.id === drv.id ? { ...d, status: d.status === 'Aktiv' ? 'Pause' : 'Aktiv' } : d);
+                                                                  setDriversList(updated);
+                                                              }}
+                                                              className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-300 border border-white/10 transition-all cursor-pointer"
+                                                          >
+                                                              Status: {drv.status === 'Aktiv' ? 'Auf Pause' : 'Aktivieren'}
+                                                          </button>
+                                                          <button 
+                                                              onClick={() => {
+                                                                  if (confirm(`Fahrzeug "${drv.name}" wirklich entfernen?`)) {
+                                                                      setDriversList(driversList.filter(d => d.id !== drv.id));
+                                                                  }
+                                                              }}
+                                                              className="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl transition-all cursor-pointer"
+                                                          >
+                                                              <Trash2 size={16} />
+                                                          </button>
+                                                      </div>
+                                                  </div>
+                                             </div>
+                                         ))}
+                                     </div>
+                                 </motion.div>
+                             )}
+
+                             {/* AUTO HUB - EXCLUSIVELY FOR FLEET MANAGERS */}
+                             {view === 'vehicles' && (
+                                 <motion.div key="vehicles" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8 max-w-6xl mx-auto pb-12">
+                                     {/* Header Banner */}
+                                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-glass p-8 rounded-[2.5rem] border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.15)] gap-6">
+                                         <div className="space-y-2">
+                                             <div className="flex items-center gap-3">
+                                                 <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest rounded-full border border-cyan-500/40">Electric Fleet Studio</span>
+                                                 <span className="text-xs font-bold text-gray-400">• Fahrzeuge & Galerie</span>
+                                             </div>
+                                             <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-cyan-400 flex items-center gap-3">
+                                                 <Car size={32} /> Auto & Flotten Hub
+                                             </h1>
+                                             <p className="text-gray-300 text-xs md:text-sm font-bold uppercase tracking-widest">
+                                                 Registrieren Sie Fahrzeuge, pflegen Sie Fahrzeuggallerien & verwalten Sie Ladestände
+                                             </p>
+                                         </div>
+                                         <button 
+                                             onClick={() => setIsAddVehicleOpen(true)}
+                                             className="px-8 py-4 bg-cyan-400 text-dark-950 font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-xl shadow-cyan-500/30 hover:bg-cyan-300 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 shrink-0 cursor-pointer"
+                                         >
+                                             <PlusCircle size={18} /> Auto Anmelden
+                                         </button>
+                                     </div>
+
+                                     {/* Stats Summary Row */}
+                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                         <div className="bg-glass p-5 rounded-2xl border border-white/10 flex flex-col justify-between h-[100px]">
+                                             <span className="text-[10px] md:text-xs font-black uppercase text-gray-400 tracking-wider">Gesamt Fahrzeuge</span>
+                                             <span className="text-3xl font-black text-white">{vehiclesList.length}</span>
+                                         </div>
+                                         <div className="bg-glass p-5 rounded-2xl border border-cyan-500/40 bg-cyan-500/10 flex flex-col justify-between h-[100px]">
+                                             <span className="text-[10px] md:text-xs font-black uppercase text-cyan-400 tracking-wider">Bereit & Verfügbar</span>
+                                             <span className="text-3xl font-black text-cyan-400">{vehiclesList.filter(v => v.status === 'Bereit').length}</span>
+                                         </div>
+                                         <div className="bg-glass p-5 rounded-2xl border border-white/10 flex flex-col justify-between h-[100px]">
+                                             <span className="text-[10px] md:text-xs font-black uppercase text-gray-400 tracking-wider">In Fahrt</span>
+                                             <span className="text-3xl font-black text-white">{vehiclesList.filter(v => v.status === 'In Fahrt').length}</span>
+                                         </div>
+                                         <div className="bg-glass p-5 rounded-2xl border border-white/10 flex flex-col justify-between h-[100px]">
+                                             <span className="text-[10px] md:text-xs font-black uppercase text-gray-400 tracking-wider">Flotten Ladezustand</span>
+                                             <span className="text-3xl font-black text-cyan-400 flex items-center gap-2">⚡ 94%</span>
+                                         </div>
+                                     </div>
+
+                                     {/* Vehicles Grid */}
+                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                         {vehiclesList.map((veh) => (
+                                             <div key={veh.id} className="bg-glass rounded-[2rem] p-6 border border-white/10 space-y-4 hover:border-cyan-500/50 transition-all shadow-xl relative overflow-hidden group flex flex-col justify-between">
+                                                 <div className="space-y-4">
+                                                     {/* Cover & Gallery Strip */}
+                                                     <div className="relative h-44 rounded-2xl overflow-hidden border border-white/10">
+                                                         <img src={veh.images?.[0] || 'https://images.unsplash.com/photo-1617788138017-80ad40651399?w=800&fit=crop'} alt={`${veh.make} ${veh.model}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                         <div className="absolute top-3 right-3 px-3 py-1 bg-dark-950/80 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider text-cyan-400 border border-cyan-500/40">
+                                                             {veh.category}
+                                                         </div>
+                                                         <div className="absolute bottom-3 left-3 px-3 py-1 bg-black/80 backdrop-blur-md rounded-xl text-xs font-mono font-black tracking-widest text-white border border-white/20">
+                                                             🇩🇪 {veh.licensePlate}
+                                                         </div>
+                                                     </div>
+
+                                                     {/* Multi-Photo Thumbnails */}
+                                                     {veh.images && veh.images.length > 1 && (
+                                                         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                                                             {veh.images.map((imgUrl, i) => (
+                                                                 <img key={i} src={imgUrl} alt={`Thumbnail ${i}`} className="w-12 h-10 rounded-lg object-cover border border-cyan-500/30 shrink-0" />
+                                                             ))}
+                                                         </div>
+                                                     )}
+
+                                                      {/* Title (No price) */}
+                                                      <div className="space-y-1">
+                                                          <div className="flex items-center justify-between">
+                                                              <h3 className="text-xl font-black text-white uppercase italic">{veh.make} {veh.model}</h3>
+                                                              <span className="text-xs font-bold text-gray-400">{veh.year}</span>
+                                                          </div>
+                                                      </div>
+
+                                                      {/* Legal Compliance Documents & TÜV Status */}
+                                                      <div className="space-y-3 pt-3 border-t border-white/10 text-xs">
+                                                          {/* TÜV Status Header Bar */}
+                                                          <div className="flex items-center justify-between p-2.5 rounded-xl bg-black/40 border border-cyan-500/30">
+                                                              <span className="text-xs font-black uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
+                                                                  <ShieldCheck size={15} className="text-cyan-400" /> TÜV / HU Status:
+                                                              </span>
+                                                              <span className="font-black text-emerald-300 bg-emerald-500/20 border border-emerald-400/50 px-2.5 py-1 rounded-lg text-xs tracking-wide">
+                                                                  ✓ TÜV bis {veh.tuevDate || '10/2026'}
+                                                              </span>
+                                                          </div>
+
+                                                          {/* Zugewiesener Fahrer */}
+                                                          <div className="flex items-center justify-between px-1">
+                                                              <span className="text-xs font-black uppercase tracking-wider text-gray-400 dark:text-gray-300">Zugewiesener Fahrer:</span>
+                                                              <span className="font-black text-white text-xs bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">{veh.assignedDriver || 'Keiner'}</span>
+                                                          </div>
+
+                                                          {/* Legal Compliance Badge */}
+                                                          <div className="pt-2 border-t border-white/10 space-y-2">
+                                                              <div className="flex items-center justify-between text-xs font-black uppercase">
+                                                                  <span className="text-gray-400 dark:text-gray-300">Gesetzlicher Status:</span>
+                                                                  <span className={`px-3 py-1 rounded-xl text-xs font-black tracking-wider ${
+                                                                      veh.approvalStatus === 'Approved' || veh.status === 'Bereit' || veh.status === 'In Fahrt'
+                                                                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm' 
+                                                                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm animate-pulse'
+                                                                  }`}>
+                                                                      {veh.approvalStatus === 'Approved' || veh.status === 'Bereit' || veh.status === 'In Fahrt' ? '✓ Vollständig Angemeldet' : '⏳ Wartend auf Admin'}
+                                                                  </span>
+                                                              </div>
+
+                                                                {/* 3 Documents checklist in dynamic theme high-contrast box */}
+                                                                <div 
+                                                                    className="p-3 rounded-2xl border space-y-2 text-xs transition-all shadow-sm"
+                                                                    style={{
+                                                                        backgroundColor: theme === 'light' ? '#f1f5f9' : '#060911',
+                                                                        borderColor: 'rgba(6, 182, 212, 0.4)'
+                                                                    }}
+                                                                >
+                                                                    <div className="flex items-center justify-between">
+                                                                        <span className="flex items-center gap-1.5 font-extrabold" style={{ color: theme === 'light' ? '#0f172a' : '#e2e8f0' }}>
+                                                                            <FileText size={13} className={theme === 'light' ? 'text-cyan-700 shrink-0' : 'text-cyan-400 shrink-0'} /> Konzessionsschein:
+                                                                        </span>
+                                                                        <span className="font-black px-2 py-0.5 rounded-md border" style={{ color: theme === 'light' ? '#0e7490' : '#67e8f9', backgroundColor: theme === 'light' ? 'rgba(6, 182, 212, 0.15)' : 'rgba(6, 182, 212, 0.1)', borderColor: 'rgba(6, 182, 212, 0.4)' }}>
+                                                                            {veh.konzessionDoc ? '✓ PDF' : '✓ OK'}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="flex items-center justify-between">
+                                                                        <span className="flex items-center gap-1.5 font-extrabold" style={{ color: theme === 'light' ? '#0f172a' : '#e2e8f0' }}>
+                                                                            <ShieldCheck size={13} className={theme === 'light' ? 'text-cyan-700 shrink-0' : 'text-cyan-400 shrink-0'} /> TÜV / HU Prüfbericht:
+                                                                        </span>
+                                                                        <span className="font-black px-2 py-0.5 rounded-md border" style={{ color: theme === 'light' ? '#0e7490' : '#67e8f9', backgroundColor: theme === 'light' ? 'rgba(6, 182, 212, 0.15)' : 'rgba(6, 182, 212, 0.1)', borderColor: 'rgba(6, 182, 212, 0.4)' }}>
+                                                                            {veh.tuevDoc ? '✓ PDF' : '✓ OK'}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="flex items-center justify-between">
+                                                                        <span className="flex items-center gap-1.5 font-extrabold" style={{ color: theme === 'light' ? '#0f172a' : '#e2e8f0' }}>
+                                                                            <FileText size={13} className={theme === 'light' ? 'text-cyan-700 shrink-0' : 'text-cyan-400 shrink-0'} /> Fahrzeugschein (Teil I):
+                                                                        </span>
+                                                                        <span className="font-black px-2 py-0.5 rounded-md border" style={{ color: theme === 'light' ? '#0e7490' : '#67e8f9', backgroundColor: theme === 'light' ? 'rgba(6, 182, 212, 0.15)' : 'rgba(6, 182, 212, 0.1)', borderColor: 'rgba(6, 182, 212, 0.4)' }}>
+                                                                            {veh.fahrzeugscheinDoc ? '✓ PDF' : '✓ OK'}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                          </div>
+                                                      </div>
+                                                 </div>
+
+                                                 <div className="pt-4 border-t border-white/10 flex flex-col gap-2">
+                                                     {veh.approvalStatus !== 'Approved' && veh.status === 'Wartend auf Admin-Freigabe' && (
+                                                         <button 
+                                                             onClick={() => {
+                                                                 const updated = vehiclesList.map(v => v.id === veh.id ? { ...v, approvalStatus: 'Approved', status: 'Bereit' } : v);
+                                                                 setVehiclesList(updated);
+                                                                 alert(`✅ Auto "${veh.make} ${veh.model}" (${veh.licensePlate}) wurde vom Admin geprüft und vollständig freigegeben!`);
+                                                             }}
+                                                             className="w-full py-2.5 bg-emerald-500 text-dark-950 font-black uppercase tracking-wider text-[10px] rounded-xl shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                                                         >
+                                                             <CheckCircle size={14} /> Admin: Auto Prüfen & Freigeben
+                                                         </button>
+                                                     )}
+
+                                                     <div className="flex items-center justify-between">
+                                                         <button 
+                                                             onClick={() => {
+                                                                 const updated = vehiclesList.map(v => v.id === veh.id ? { ...v, status: v.status === 'Bereit' ? 'In Fahrt' : 'Bereit' } : v);
+                                                                 setVehiclesList(updated);
+                                                             }}
+                                                             className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all cursor-pointer ${
+                                                                 veh.status === 'Bereit' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40' : veh.status === 'In Fahrt' ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' : 'bg-gray-500/20 text-gray-300 border-gray-500/40'
+                                                             }`}
+                                                         >
+                                                             Status: {veh.status}
+                                                         </button>
+                                                         <button 
+                                                             onClick={() => {
+                                                                 if (confirm(`Fahrzeug "${veh.make} ${veh.model}" wirklich entfernen?`)) {
+                                                                     setVehiclesList(vehiclesList.filter(v => v.id !== veh.id));
+                                                                 }
+                                                             }}
+                                                             className="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl transition-all cursor-pointer"
+                                                         >
+                                                             <Trash2 size={16} />
+                                                         </button>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         ))}
+                                     </div>
+                                 </motion.div>
+                             )}
+
+                            {/* SOCIAL HUB VIEW FOR IN-APP MARKETING & PROMOTIONS */}
+                            {view === 'feed' && (
+                                <motion.div key="feed" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8 max-w-5xl mx-auto pb-12">
+                                    {/* Header Banner */}
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-glass p-8 rounded-[2.5rem] border border-white/10 shadow-2xl gap-6">
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-3">
+                                                <span className="px-3 py-1 bg-brand/20 text-brand text-[10px] font-black uppercase tracking-widest rounded-full border border-brand/30">Marketing Studio</span>
+                                                <span className="text-xs font-bold text-gray-400">• App-Weite Werbung</span>
+                                            </div>
+                                            <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-brand">Social & Promo Hub</h1>
+                                            <p className="text-gray-300 text-xs md:text-sm font-bold uppercase tracking-widest">
+                                                Erstellen Sie In-App Werbebeiträge, Storys & Sonderangebote für Ihr {managerContext === 'HM' ? 'Hotel' : 'Stadion'}
+                                            </p>
+                                        </div>
+                                        <button 
+                                            onClick={() => setIsFeedOpen(true)}
+                                            className="px-8 py-4 bg-brand text-dark-950 font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 shrink-0"
+                                        >
+                                            <Sparkles size={18} /> Werbe-Beitrag Erstellen
+                                        </button>
+                                    </div>
+
+                                    {/* Campaign Cards Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {/* Card 1 */}
+                                        <div className="bg-glass rounded-[2rem] p-6 border border-white/10 space-y-4 hover:border-brand/40 transition-all shadow-xl">
+                                            <div className="w-12 h-12 rounded-2xl bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center">
+                                                <Sparkles size={24} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <h3 className="text-lg font-black text-white italic uppercase">VIP Special Deals</h3>
+                                                <p className="text-xs text-gray-400">Bewerben Sie exklusive Zimmer-Pakete & VIP Tickets direkt im Feed.</p>
+                                            </div>
+                                            <button 
+                                                onClick={() => setIsFeedOpen(true)}
+                                                className="w-full py-3 bg-white/5 hover:bg-brand hover:text-dark-950 text-brand border border-brand/30 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+                                            >
+                                                Deal Veröffentlichen
+                                            </button>
+                                        </div>
+
+                                        {/* Card 2 */}
+                                        <div className="bg-glass rounded-[2rem] p-6 border border-white/10 space-y-4 hover:border-brand/40 transition-all shadow-xl">
+                                            <div className="w-12 h-12 rounded-2xl bg-brand/20 text-brand border border-brand/30 flex items-center justify-center">
+                                                <ImageIcon size={24} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <h3 className="text-lg font-black text-white italic uppercase">Foto & Video Storys</h3>
+                                                <p className="text-xs text-gray-400">Teilen Sie Impressionen Ihrer Zimmer, Suiten oder Stadion-Logen.</p>
+                                            </div>
+                                            <button 
+                                                onClick={() => setIsFeedOpen(true)}
+                                                className="w-full py-3 bg-white/5 hover:bg-brand hover:text-dark-950 text-brand border border-brand/30 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+                                            >
+                                                Story Hochladen
+                                            </button>
+                                        </div>
+
+                                        {/* Card 3 */}
+                                        <div className="bg-glass rounded-[2rem] p-6 border border-white/10 space-y-4 hover:border-brand/40 transition-all shadow-xl">
+                                            <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center">
+                                                <TrendingUp size={24} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <h3 className="text-lg font-black text-white italic uppercase">App-Reichweite</h3>
+                                                <p className="text-xs text-gray-400">Erreichen Sie tausende aktive Kunden & VIP Shuttle Passagiere.</p>
+                                            </div>
+                                            <div className="p-3 bg-white/5 rounded-xl border border-white/5 text-[10px] text-gray-300 font-bold uppercase tracking-widest text-center">
+                                                Status: 100% Aktiv auf Green Grid
                                             </div>
                                         </div>
                                     </div>
@@ -3147,6 +3872,72 @@ const ManagerDashboard = () => {
                                                         </div>
                                                     </div>
 
+                                                    {/* STADIUM TICKET QR-CODE MANAGER WIDGET */}
+                                                    {(order.type === 'Stadium E-Ticket' || order.type === 'Club Event Ticket' || order.type?.includes('Ticket')) && (
+                                                        <div className="mt-2 p-3 bg-dark-900/80 rounded-2xl border border-brand/30 space-y-2 relative z-10 shadow-lg">
+                                                            <div className="flex justify-between items-center">
+                                                                <span className="text-[9px] md:text-[10px] font-black text-brand uppercase tracking-wider flex items-center gap-1.5">
+                                                                    <Receipt size={13} className="text-brand" /> Stadion QR-Code / Ticket-Link
+                                                                </span>
+                                                                {localStorage.getItem(`green_order_qr_${order.id}`) ? (
+                                                                    <span className="text-[7px] md:text-[8px] font-black uppercase text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
+                                                                        Hinterlegt ✓
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-[7px] md:text-[8px] font-black uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                                                                        Ausstehend ⏳
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="grid grid-cols-2 gap-2 pt-1">
+                                                                <label className="px-3 py-2 bg-black/60 hover:bg-black/90 text-white rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider border border-white/10 cursor-pointer flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95">
+                                                                    <span>🖼️ Bild Upload</span>
+                                                                    <input 
+                                                                        type="file" 
+                                                                        accept="image/*" 
+                                                                        className="hidden" 
+                                                                        onChange={(e) => {
+                                                                            const file = e.target.files?.[0];
+                                                                            if (file) {
+                                                                                const reader = new FileReader();
+                                                                                reader.onload = (event) => {
+                                                                                    const dataUrl = event.target.result;
+                                                                                    safeSetItem(`green_order_qr_${order.id}`, dataUrl);
+                                                                                    window.dispatchEvent(new Event('storage'));
+                                                                                    if (window.parent) {
+                                                                                        try { window.parent.dispatchEvent(new Event('storage')); } catch (_) {}
+                                                                                    }
+                                                                                    alert(`✅ Stadion QR-Code Bild für Bestellung #${String(order.id).slice(-6)} gespeichert!`);
+                                                                                };
+                                                                                reader.readAsDataURL(file);
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </label>
+
+                                                                <button 
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const current = localStorage.getItem(`green_order_qr_${order.id}`) || '';
+                                                                        const link = prompt("🔗 Stadion Ticket-Link oder QR-Code Text eingeben:", current.startsWith('data:') ? '' : current);
+                                                                        if (link !== null && link.trim() !== '') {
+                                                                            safeSetItem(`green_order_qr_${order.id}`, link.trim());
+                                                                            window.dispatchEvent(new Event('storage'));
+                                                                            if (window.parent) {
+                                                                                try { window.parent.dispatchEvent(new Event('storage')); } catch (_) {}
+                                                                            }
+                                                                            alert(`✅ Ticket-Link für Bestellung #${String(order.id).slice(-6)} hinterlegt!`);
+                                                                        }
+                                                                    }}
+                                                                    className="px-3 py-2 bg-brand/10 hover:bg-brand/20 text-brand rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-wider border border-brand/30 flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95"
+                                                                >
+                                                                    <span>🔗 Link / Text</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
                                                     {/* YELLOW MARKED AREA (Bottom Half: Items & Pipeline Progress) */}
                                                     <div className="flex flex-col gap-3 mt-1 border-t border-main pt-3 relative z-10">
                                                         <div className="space-y-2">
@@ -3313,7 +4104,55 @@ const ManagerDashboard = () => {
                             )}
 
 
-                            {view === 'finance' && (
+                            {view === 'shuttle' && (
+    <motion.div key="shuttle" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-btn-sec to-brand/5 p-8 rounded-[3rem] border border-main">
+            <div>
+                <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none text-primary">Shuttle <span className="text-brand">Service</span></h1>
+                <p className="text-secondary text-xs md:text-sm font-bold uppercase tracking-[0.3em] mt-1">Incoming Hotel Guest Group Transfers & Acceptance Tracker</p>
+            </div>
+            <div className="flex items-center gap-3">
+                <span className="text-xs font-black text-secondary uppercase">Current Fare:</span>
+                <span className="px-4 py-2 bg-brand/10 border border-brand/30 text-brand text-sm font-black rounded-xl">€10.00 / Person</span>
+            </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 bg-glass border border-main rounded-[2rem] space-y-2">
+                <p className="text-[9px] md:text-xs font-black text-secondary uppercase tracking-widest">Expected Guests Today</p>
+                <p className="text-3xl font-black italic text-brand">10 Guests (8 Confirmed)</p>
+            </div>
+            <div className="p-6 bg-glass border border-main rounded-[2rem] space-y-2">
+                <p className="text-[9px] md:text-xs font-black text-secondary uppercase tracking-widest">Assigned Shuttle Fleet</p>
+                <p className="text-3xl font-black italic text-cyan-400">2x VIP Sprinters (Auto-Split)</p>
+            </div>
+            <div className="p-6 bg-glass border border-main rounded-[2rem] space-y-2">
+                <p className="text-[9px] md:text-xs font-black text-secondary uppercase tracking-widest">Total Group Revenue</p>
+                <p className="text-3xl font-black italic text-primary">€80.00 (€10/pax)</p>
+            </div>
+        </div>
+
+        <div className="bg-glass border border-main rounded-[3rem] p-8 space-y-6">
+            <h3 className="text-lg font-black italic uppercase tracking-tighter text-primary">Incoming Guest Manifest (Steigenberger Icon Parkhotel)</h3>
+            <div className="space-y-4">
+                {[
+                    { title: 'Airport FRA T1 Group Transfer (8 Guests Confirmed)', time: '14:00 - 14:30 Arrival', vehicle: '2x VIP Sprinter Vans', bags: '14 Luggage Bags', status: 'Accepted & Confirmed' },
+                    { title: 'Airport MUC T2 Group Transfer (2 Guests Confirmed)', time: '16:15 - 16:45 Arrival', vehicle: '1x Executive Van', bags: '3 Luggage Bags', status: 'Pending 24h Offer' }
+                ].map((s, idx) => (
+                    <div key={idx} className="p-5 bg-btn-sec border border-main rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <p className="text-base font-black italic uppercase text-primary">{s.title}</p>
+                            <p className="text-xs font-bold text-secondary uppercase tracking-wider">{s.time} • {s.vehicle} • {s.bags}</p>
+                        </div>
+                        <span className="px-4 py-2 bg-brand/20 text-brand border border-brand/30 rounded-xl text-xs font-black uppercase">{s.status}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </motion.div>
+)}
+
+                        {view === 'finance' && (
                                 <motion.div key="finance" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-10">
                                     <div className="flex flex-col md:flex-row gap-4 md:justify-between md:items-end">
                                         <div className="space-y-2">
@@ -3331,6 +4170,98 @@ const ManagerDashboard = () => {
                                         )}
                                     </div>
                                     
+                                    {/* B2B STADION TICKET & SHUTTLE ABRECHNUNG (UMSATZ HUB) */}
+                                    {managerContext === 'SM' && (
+                                        <div className="bg-dark-900 border border-brand/30 rounded-[3rem] p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/10 pb-6">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/30 text-brand flex items-center justify-center font-black">
+                                                        <Ticket size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-black italic uppercase text-white tracking-tighter">B2B Ticket & Shuttle Abrechnung</h3>
+                                                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Automatische Aufschlüsselung: Ticket-Verkauf, Shuttle-Service & Green Provision</p>
+                                                    </div>
+                                                </div>
+                                                <span className="bg-emerald-500/20 text-emerald-400 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider border border-emerald-500/30">
+                                                    Abrechnungs-Status: Aktiv
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                                <div className="bg-black/50 border border-white/10 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Brutto Ticket-Umsatz</span>
+                                                    <span className="text-2xl font-black italic text-white block">€2.400,00</span>
+                                                    <span className="text-[9px] text-gray-500">12 VIP & Sektor Tickets verkauft</span>
+                                                </div>
+
+                                                <div className="bg-black/50 border border-white/10 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest block">- Shuttle-Service an Green</span>
+                                                    <span className="text-2xl font-black italic text-amber-400 block">-€192,00</span>
+                                                    <span className="text-[9px] text-gray-500">12 Passagiere @ €16,00 Staffeltarif</span>
+                                                </div>
+
+                                                <div className="bg-black/50 border border-white/10 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest block">- Green Ticket-Provision</span>
+                                                    <span className="text-2xl font-black italic text-purple-400 block">-€120,00</span>
+                                                    <span className="text-[9px] text-gray-500">5% Verkaufs-Provision an Plattform</span>
+                                                </div>
+
+                                                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest block">= Netto-Auszahlung an Stadion</span>
+                                                    <span className="text-2xl font-black italic text-emerald-400 block">€2.088,00</span>
+                                                    <span className="text-[9px] text-emerald-400/80 font-bold">Auszahlungskonto DE77...9922</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* B2B HOTEL ZIMMER & SHUTTLE ABRECHNUNG (UMSATZ HUB) */}
+                                    {managerContext === 'HM' && (
+                                        <div className="bg-dark-900 border border-brand/30 rounded-[3rem] p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/10 pb-6">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/30 text-brand flex items-center justify-center font-black">
+                                                        <BedDouble size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-2xl font-black italic uppercase text-white tracking-tighter">B2B Hotel Zimmer & Shuttle Abrechnung</h3>
+                                                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Automatische Aufschlüsselung: Zimmer-Umsatz, Shuttle-Service & Green Provision</p>
+                                                    </div>
+                                                </div>
+                                                <span className="bg-emerald-500/20 text-emerald-400 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider border border-emerald-500/30">
+                                                    Abrechnungs-Status: Aktiv
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                                <div className="bg-black/50 border border-white/10 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Brutto Zimmer-Umsatz</span>
+                                                    <span className="text-2xl font-black italic text-white block">€3.500,00</span>
+                                                    <span className="text-[9px] text-gray-500">14 Zimmer-Nächte gebucht</span>
+                                                </div>
+
+                                                <div className="bg-black/50 border border-white/10 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest block">- Hotel Shuttle-Service</span>
+                                                    <span className="text-2xl font-black italic text-amber-400 block">-€224,00</span>
+                                                    <span className="text-[9px] text-gray-500">14 Shuttle-Fahrten @ €16,00 Staffeltarif</span>
+                                                </div>
+
+                                                <div className="bg-black/50 border border-white/10 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest block">- Green Hotel-Provision</span>
+                                                    <span className="text-2xl font-black italic text-purple-400 block">-€175,00</span>
+                                                    <span className="text-[9px] text-gray-500">5% Verkaufs-Provision an Plattform</span>
+                                                </div>
+
+                                                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 space-y-2">
+                                                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest block">= Netto-Auszahlung an Hotel</span>
+                                                    <span className="text-2xl font-black italic text-emerald-400 block">€3.101,00</span>
+                                                    <span className="text-[9px] text-emerald-400/80 font-bold">Auszahlungskonto DE89...4411</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                         <div className="lg:col-span-2 bg-dark-900 border border-main rounded-[3rem] p-6 md:p-10 space-y-8 shadow-2xl relative overflow-hidden">
                                             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)] opacity-30"></div>
@@ -3484,17 +4415,7 @@ const ManagerDashboard = () => {
                                                                  />
                                                              </div>
                                                          </div>
-                                                         <div className="grid grid-cols-2 gap-3">
-                                                             <div className="space-y-1">
-                                                                 <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">VAT ID (EU/DE)</label>
-                                                                 <input 
-                                                                     type="text" 
-                                                                     value={businessInfo.vatId}
-                                                                     onChange={(e) => setBusinessInfo({...businessInfo, vatId: e.target.value})}
-                                                                     className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
-                                                                 />
-                                                             </div>
-                                                             <div className="space-y-1">
+                                                         <div className="space-y-1">
                                                                  <label className="text-[8px] md:text-[10px] lg:text-xs font-black text-secondary uppercase tracking-widest ml-1">Settlement IBAN</label>
                                                                  <input 
                                                                      type="text" 
@@ -3503,7 +4424,6 @@ const ManagerDashboard = () => {
                                                                      className="w-full bg-btn-sec border border-main rounded-xl px-4 py-3 text-xs md:text-sm lg:text-base font-bold text-primary focus:border-brand outline-none transition-all placeholder:text-gray-800" 
                                                                  />
                                                              </div>
-                                                         </div>
                                                      </div>
 
                                                      <button 
@@ -3628,8 +4548,12 @@ const ManagerDashboard = () => {
                                             >
                                                 {previewUrl ? (
                                                     <div className="absolute inset-0">
-                                                        <img src={previewUrl} className="w-full h-full object-cover opacity-60" alt="Preview" />
-                                                        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-8 text-center">
+                                                        {(previewUrl.startsWith('data:video') || previewUrl.endsWith('.mp4') || previewUrl.includes('video')) ? (
+                                                            <video src={previewUrl} autoPlay loop muted playsInline className="w-full h-full object-cover opacity-80" />
+                                                        ) : (
+                                                            <img src={previewUrl} className="w-full h-full object-cover opacity-60" alt="Preview" />
+                                                        )}
+                                                        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-8 text-center pointer-events-none">
                                                             <div className="w-12 h-12 rounded-full bg-brand/20 border border-brand/40 flex items-center justify-center text-brand mb-4">
                                                                 <CheckCircle2 size={24} />
                                                             </div>
@@ -3672,15 +4596,20 @@ const ManagerDashboard = () => {
                                                         if (file) {
                                                             setUploadStatus('processing');
                                                             setUploadProgress(0);
+                                                            const reader = new FileReader();
+                                                            reader.onloadend = () => {
+                                                                setUploadStatus('complete');
+                                                                setPreviewUrl(reader.result);
+                                                            };
+                                                            reader.readAsDataURL(file);
+
                                                             const interval = setInterval(() => {
                                                                 setUploadProgress(prev => {
                                                                     if (prev >= 100) {
                                                                         clearInterval(interval);
-                                                                        setUploadStatus('complete');
-                                                                        setPreviewUrl(URL.createObjectURL(file));
                                                                         return 100;
                                                                     }
-                                                                    return prev + 5;
+                                                                    return prev + 20;
                                                                 });
                                                             }, 100);
                                                         }
@@ -3769,47 +4698,47 @@ const ManagerDashboard = () => {
                                                         <Activity size={12} /> View Live Feed
                                                     </button>
                                                 </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                                                    {isDemo ? (
-                                                        [
-                                                            { title: 'Summer Spritz 4K', views: '45K', img: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop' },
-                                                            { title: 'Golden Hour Beats', views: '28K', img: 'https://images.unsplash.com/photo-1551024601-8f230c6c64b9?q=80&w=800&auto=format&fit=crop' }
-                                                        ].map((post, i) => (
-                                                            <div key={i} className="aspect-video bg-dark-900 rounded-[2.5rem] border border-main relative overflow-hidden group">
-                                                                <img src={post.img} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" alt="Post" />
-                                                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-6 flex flex-col justify-end text-left">
-                                                                    <div className="flex items-center gap-2 mb-1">
-                                                                        <Play size={12} className="text-brand" fill="currentColor" />
-                                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black italic text-primary">{post.title}</p>
-                                                                    </div>
-                                                                    <div className="flex items-center justify-between mt-2">
-                                                                        <div className="flex gap-3">
-                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase">{post.views} Views</span>
-                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-400 uppercase">15.0s</span>
-                                                                        </div>
-                                                                        <button className="p-2 bg-white/10 rounded-lg text-primary hover:bg-brand hover:text-dark-900 transition-all"><Settings size={12} /></button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ))
-                                                    ) : globalPosts.length > 0 ? (
+                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                                                    {globalPosts.length > 0 ? (
                                                         globalPosts.map((post, i) => (
-                                                            <div key={post.id || i} className="aspect-video bg-dark-900 rounded-[2.5rem] border border-main relative overflow-hidden group">
+                                                            <div key={post.id || i} className="aspect-video bg-dark-900 rounded-[2.5rem] border border-main relative overflow-hidden group shadow-xl">
                                                                 {post.url ? (
-                                                                    <video src={post.url} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" controls />
+                                                                    <video 
+                                                                        src={post.url} 
+                                                                        autoPlay 
+                                                                        loop 
+                                                                        muted 
+                                                                        playsInline 
+                                                                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" 
+                                                                    />
                                                                 ) : (
                                                                     <div className="w-full h-full bg-btn-sec flex items-center justify-center text-secondary"><Video size={32} /></div>
                                                                 )}
-                                                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black to-transparent p-6 flex flex-col justify-end text-left pointer-events-none">
-                                                                    <div className="flex items-center gap-2 mb-1">
-                                                                        <Play size={12} className="text-brand" fill="currentColor" />
-                                                                        <p className="text-[10px] md:text-xs lg:text-sm font-black italic text-primary">{post.caption || 'Partner Broadcast'}</p>
-                                                                    </div>
-                                                                    <div className="flex items-center justify-between mt-2">
-                                                                        <div className="flex gap-3">
-                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-brand uppercase">0 Views</span>
-                                                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-black text-gray-400 uppercase">15.0s</span>
+                                                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/80 to-transparent p-5 flex flex-col justify-end text-left">
+                                                                    <div className="flex items-center justify-between mb-1">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <Play size={12} className="text-brand fill-brand" />
+                                                                            <p className="text-[10px] md:text-xs font-black italic text-primary truncate max-w-[140px]">{post.caption || 'Partner Broadcast'}</p>
                                                                         </div>
+                                                                        <button 
+                                                                            onClick={() => {
+                                                                                const updated = globalPosts.filter(p => p.id !== post.id);
+                                                                                localStorage.setItem('green_global_posts', JSON.stringify(updated));
+                                                                                setGlobalPosts(updated);
+                                                                                alert("REEL REMOVED: Post deleted from live feed.");
+                                                                            }}
+                                                                            className="p-1.5 bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white rounded-lg transition-all text-[9px] font-black uppercase flex items-center gap-1 cursor-pointer"
+                                                                            title="Delete Post"
+                                                                        >
+                                                                            <Trash2 size={12} />
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
+                                                                        <div className="flex gap-3">
+                                                                            <span className="text-[8px] md:text-[10px] font-black text-brand uppercase">{post.likes || '0'} Likes</span>
+                                                                            <span className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase">15.0s 4K</span>
+                                                                        </div>
+                                                                        <span className="text-[8px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 uppercase">LIVE FEED</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -6542,6 +7471,318 @@ const ManagerDashboard = () => {
                     ))}
                 </AnimatePresence>
             </div>
+            {/* ADD DRIVER MODAL */}
+            <AnimatePresence>
+                {isAddDriverOpen && (
+                    <div className="fixed inset-0 z-[650] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-[#0b0f19] border-2 border-cyan-500/40 rounded-[2.5rem] p-6 md:p-8 max-w-lg w-full space-y-6 shadow-2xl text-white">
+                            <div className="flex items-center justify-between border-b border-cyan-500/30 pb-4">
+                                <h2 className="text-xl md:text-2xl font-black uppercase text-white tracking-wider flex items-center gap-2.5 drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]">
+                                    <Users size={26} className="text-cyan-400" />
+                                    <span>Neuen Fahrer Anmelden</span>
+                                </h2>
+                                <button onClick={() => setIsAddDriverOpen(false)} className="p-2 bg-white/10 hover:bg-cyan-500/20 rounded-xl text-gray-200 hover:text-white transition-all cursor-pointer border border-white/10">
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-xs font-black uppercase text-cyan-200 block mb-1">Vollständiger Name *</label>
+                                    <input type="text" value={newDriverForm.name} onChange={(e) => setNewDriverForm({ ...newDriverForm, name: e.target.value })} placeholder="z.B. Alex Neumann" className="w-full bg-white/10 border border-cyan-500/30 rounded-xl p-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-black uppercase text-cyan-200 block mb-1">E-Mail Adresse *</label>
+                                        <input type="email" value={newDriverForm.email} onChange={(e) => setNewDriverForm({ ...newDriverForm, email: e.target.value })} placeholder="alex@green-fleet.de" className="w-full bg-white/10 border border-cyan-500/30 rounded-xl p-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-black uppercase text-cyan-200 block mb-1">Handynummer *</label>
+                                        <input type="text" value={newDriverForm.phone} onChange={(e) => setNewDriverForm({ ...newDriverForm, phone: e.target.value })} placeholder="+49 176 1234567" className="w-full bg-white/10 border border-cyan-500/30 rounded-xl p-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400" />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-black uppercase text-cyan-200 block mb-1">Führerschein-Nr. *</label>
+                                        <input type="text" value={newDriverForm.licenseNumber} onChange={(e) => setNewDriverForm({ ...newDriverForm, licenseNumber: e.target.value })} placeholder="B092182019" className="w-full bg-white/10 border border-cyan-500/30 rounded-xl p-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-black uppercase text-cyan-200 block mb-1">Fahrzeug Zuweisung</label>
+                                        <select value={newDriverForm.vehicleAssigned} onChange={(e) => setNewDriverForm({ ...newDriverForm, vehicleAssigned: e.target.value })} className="w-full bg-dark-900 border border-cyan-500/30 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-400">
+                                            <option value="Kein Fahrzeug">Kein Fahrzeug</option>
+                                            {vehiclesList.map(v => (
+                                                <option key={v.id} value={`${v.make} ${v.model} (${v.licensePlate})`}>{v.make} {v.model} ({v.licensePlate})</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-xs font-black uppercase text-cyan-200 block mb-1">Fahrer Foto (URL oder Upload)</label>
+                                    <div className="flex gap-2">
+                                        <input type="text" value={newDriverForm.photoUrl} onChange={(e) => setNewDriverForm({ ...newDriverForm, photoUrl: e.target.value })} placeholder="https://..." className="flex-1 bg-white/10 border border-cyan-500/30 rounded-xl p-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400" />
+                                        <label className="px-4 py-3 bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 text-xs font-black uppercase rounded-xl cursor-pointer hover:bg-cyan-500/30 transition-all flex items-center gap-1 shrink-0">
+                                            + Upload
+                                            <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    const url = URL.createObjectURL(file);
+                                                    setNewDriverForm({ ...newDriverForm, photoUrl: url });
+                                                }
+                                            }} />
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* GESETZLICHE PFLICHT-DOKUMENTE FÜR FAHRER ANMELDUNG */}
+                                <div className="pt-3 border-t border-cyan-500/30 space-y-3">
+                                    <div className="bg-cyan-950/70 border border-cyan-500/50 p-2.5 rounded-xl flex items-center gap-2 text-cyan-300 shadow-md">
+                                        <ShieldCheck size={18} className="text-cyan-400 shrink-0" />
+                                        <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-cyan-200">
+                                            Gesetzliche Pflicht-Nachweise (Fahrer)
+                                        </h4>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                                        {/* P-Schein */}
+                                        <div className="p-3 bg-white/10 border border-cyan-500/30 rounded-xl space-y-1.5">
+                                            <span className="text-xs font-black uppercase text-white block">1. P-Schein (§ 48 FeV) *</span>
+                                            <label className="flex items-center justify-between p-2.5 bg-cyan-500/20 border border-cyan-400/50 rounded-lg text-cyan-200 text-xs font-black uppercase cursor-pointer hover:bg-cyan-500/30 transition-all shadow-sm">
+                                                <span className="truncate">{newDriverForm.pScheinDoc?.name || '+ Upload PDF/Bild'}</span>
+                                                <Upload size={14} className="shrink-0 text-cyan-300" />
+                                                <input type="file" accept="image/*,.pdf" className="hidden" onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        setNewDriverForm(prev => ({ ...prev, pScheinDoc: { name: file.name, fileData: URL.createObjectURL(file) } }));
+                                                    }
+                                                }} />
+                                            </label>
+                                        </div>
+
+                                        {/* Führerschein */}
+                                        <div className="p-3 bg-white/10 border border-cyan-500/30 rounded-xl space-y-1.5">
+                                            <span className="text-xs font-black uppercase text-white block">2. Führerschein (Klasse B) *</span>
+                                            <label className="flex items-center justify-between p-2.5 bg-cyan-500/20 border border-cyan-400/50 rounded-lg text-cyan-200 text-xs font-black uppercase cursor-pointer hover:bg-cyan-500/30 transition-all shadow-sm">
+                                                <span className="truncate">{newDriverForm.fuehrerscheinDoc?.name || '+ Upload PDF/Bild'}</span>
+                                                <Upload size={14} className="shrink-0 text-cyan-300" />
+                                                <input type="file" accept="image/*,.pdf" className="hidden" onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        setNewDriverForm(prev => ({ ...prev, fuehrerscheinDoc: { name: file.name, fileData: URL.createObjectURL(file) } }));
+                                                    }
+                                                }} />
+                                            </label>
+                                        </div>
+
+                                        {/* Ausweis / Pass */}
+                                        <div className="p-3 bg-white/10 border border-cyan-500/30 rounded-xl space-y-1.5">
+                                            <span className="text-xs font-black uppercase text-white block">3. Personalausweis / Pass *</span>
+                                            <label className="flex items-center justify-between p-2.5 bg-cyan-500/20 border border-cyan-400/50 rounded-lg text-cyan-200 text-xs font-black uppercase cursor-pointer hover:bg-cyan-500/30 transition-all shadow-sm">
+                                                <span className="truncate">{newDriverForm.ausweisDoc?.name || '+ Upload PDF/Bild'}</span>
+                                                <Upload size={14} className="shrink-0 text-cyan-300" />
+                                                <input type="file" accept="image/*,.pdf" className="hidden" onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        setNewDriverForm(prev => ({ ...prev, ausweisDoc: { name: file.name, fileData: URL.createObjectURL(file) } }));
+                                                    }
+                                                }} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+                                <button onClick={() => setIsAddDriverOpen(false)} className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-black uppercase text-gray-400 cursor-pointer">
+                                    Abbrechen
+                                </button>
+                                <button onClick={() => {
+                                    if (!newDriverForm.name || !newDriverForm.email) {
+                                        alert("Bitte Name und E-Mail des Fahrers eingeben.");
+                                        return;
+                                    }
+                                    const created = {
+                                        id: `drv_${Date.now()}`,
+                                        ...newDriverForm,
+                                        status: 'Wartend auf Admin-Freigabe',
+                                        approvalStatus: 'Pending Admin Verification',
+                                        accessCode: null,
+                                        rating: 5.0,
+                                        tripsCompleted: 0
+                                    };
+                                    setDriversList([...driversList, created]);
+                                    setIsAddDriverOpen(false);
+                                    setNewDriverForm({ name: '', phone: '', email: '', licenseNumber: '', vehicleAssigned: 'Kein Fahrzeug', status: 'Wartend auf Admin-Freigabe', approvalStatus: 'Pending Admin Verification', accessCode: null, photoUrl: '', pScheinDoc: null, fuehrerscheinDoc: null, ausweisDoc: null });
+                                    alert(`⏳ Fahrer "${created.name}" wurde eingereicht!\nStatus: Wartend auf Admin-Freigabe.`);
+                                }} className="px-8 py-3 bg-cyan-400 text-dark-950 font-black uppercase tracking-wider text-xs rounded-xl shadow-lg hover:bg-cyan-300 hover:scale-105 transition-all cursor-pointer">
+                                    Fahrer Anmelden
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* ADD VEHICLE MODAL */}
+            <AnimatePresence>
+                {isAddVehicleOpen && (
+                    <div className="fixed inset-0 z-[650] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-[#0b0f19] border-2 border-cyan-500/40 rounded-[2.5rem] p-6 md:p-8 max-w-lg w-full space-y-6 shadow-2xl text-white">
+                            <div className="flex items-center justify-between border-b border-cyan-500/30 pb-4">
+                                <h2 className="text-xl md:text-2xl font-black uppercase text-white tracking-wider flex items-center gap-2.5 drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]">
+                                    <Car size={26} className="text-cyan-400" />
+                                    <span>Neues Auto Anmelden</span>
+                                </h2>
+                                <button onClick={() => setIsAddVehicleOpen(false)} className="p-2 bg-white/10 hover:bg-cyan-500/20 rounded-xl text-gray-200 hover:text-white transition-all cursor-pointer border border-white/10">
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-black uppercase text-cyan-200 block mb-1">Marke *</label>
+                                        <input type="text" value={newVehicleForm.make} onChange={(e) => setNewVehicleForm({ ...newVehicleForm, make: e.target.value })} placeholder="z.B. Tesla, Mercedes" className="w-full bg-white/10 border border-cyan-500/30 rounded-xl p-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-black uppercase text-cyan-200 block mb-1">Modell *</label>
+                                        <input type="text" value={newVehicleForm.model} onChange={(e) => setNewVehicleForm({ ...newVehicleForm, model: e.target.value })} placeholder="z.B. Model 3, EQS" className="w-full bg-white/10 border border-cyan-500/30 rounded-xl p-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400" />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-black uppercase text-cyan-200 block mb-1">Amtliches Kennzeichen *</label>
+                                        <input type="text" value={newVehicleForm.licensePlate} onChange={(e) => setNewVehicleForm({ ...newVehicleForm, licensePlate: e.target.value })} placeholder="F-GR 777E" className="w-full bg-white/10 border border-cyan-500/30 rounded-xl p-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 font-mono uppercase" />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-black uppercase text-cyan-200 block mb-1">Kategorie</label>
+                                        <input type="text" value={newVehicleForm.category} onChange={(e) => setNewVehicleForm({ ...newVehicleForm, category: e.target.value })} placeholder="VIP Executive" className="w-full bg-white/10 border border-cyan-500/30 rounded-xl p-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-xs font-black uppercase text-cyan-200 block mb-1">Fahrzeug-Zuweisung Fahrer</label>
+                                    <select value={newVehicleForm.assignedDriver} onChange={(e) => setNewVehicleForm({ ...newVehicleForm, assignedDriver: e.target.value })} className="w-full bg-dark-900 border border-cyan-500/30 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-400">
+                                        <option value="Kein Fahrer">Kein Fahrer</option>
+                                        {driversList.map(d => (
+                                            <option key={d.id} value={d.name}>{d.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-black uppercase text-cyan-300 block mb-1.5 flex items-center gap-1.5">
+                                        <Camera size={14} className="text-cyan-400" /> Multi-Bilder Galerie Upload
+                                    </label>
+                                    <label className="w-full p-4 border-2 border-dashed border-cyan-400/50 rounded-xl bg-cyan-950/40 hover:bg-cyan-900/50 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer shadow-inner">
+                                        <Camera className="text-cyan-300" size={26} />
+                                        <span className="text-xs font-black uppercase tracking-wider text-cyan-200">+ Upload Fahrzeug-Bilder</span>
+                                        <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
+                                            const files = Array.from(e.target.files);
+                                            if (files.length > 0) {
+                                                const newUrls = files.map(f => URL.createObjectURL(f));
+                                                setNewVehicleForm(prev => ({ ...prev, images: [...prev.images, ...newUrls] }));
+                                            }
+                                        }} />
+                                    </label>
+
+                                    {newVehicleForm.images.length > 0 && (
+                                        <div className="flex items-center gap-2 mt-3 overflow-x-auto no-scrollbar">
+                                            {newVehicleForm.images.map((img, i) => (
+                                                <div key={i} className="relative w-16 h-12 rounded-lg overflow-hidden border border-cyan-500/30 shrink-0">
+                                                    <img src={img} alt={`Preview ${i}`} className="w-full h-full object-cover" />
+                                                    <button type="button" onClick={() => setNewVehicleForm(prev => ({ ...prev, images: prev.images.filter((_, idx) => idx !== i) }))} className="absolute top-0 right-0 p-0.5 bg-red-500 text-white rounded-bl-md">
+                                                        <X size={10} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* GESETZLICHE PFLICHT-DOKUMENTE FÜR DEUTSCHE AUTO ANMELDUNG */}
+                                <div className="pt-3 border-t border-cyan-500/30 space-y-3">
+                                    <div className="bg-cyan-950/70 border border-cyan-500/50 p-2.5 rounded-xl flex items-center gap-2 text-cyan-300 shadow-md">
+                                        <ShieldCheck size={18} className="text-cyan-400 shrink-0" />
+                                        <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-cyan-200">
+                                            Gesetzliche Pflicht-Nachweise
+                                        </h4>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                                        {/* Konzessionsschein */}
+                                        <div className="p-3 bg-white/10 border border-cyan-500/30 rounded-xl space-y-1.5">
+                                            <span className="text-xs font-black uppercase text-white block">1. Konzessionsschein (§ 49 PBefG) *</span>
+                                            <label className="flex items-center justify-between p-2.5 bg-cyan-500/20 border border-cyan-400/50 rounded-lg text-cyan-200 text-xs font-black uppercase cursor-pointer hover:bg-cyan-500/30 transition-all shadow-sm">
+                                                <span className="truncate">{newVehicleForm.konzessionDoc?.name || '+ Upload PDF/Bild'}</span>
+                                                <Upload size={14} className="shrink-0 text-cyan-300" />
+                                                <input type="file" accept="image/*,.pdf" className="hidden" onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        setNewVehicleForm(prev => ({ ...prev, konzessionDoc: { name: file.name, fileData: URL.createObjectURL(file) } }));
+                                                    }
+                                                }} />
+                                            </label>
+                                        </div>
+
+                                        {/* TÜV / HU */}
+                                        <div className="p-3 bg-white/10 border border-cyan-500/30 rounded-xl space-y-1.5">
+                                            <span className="text-xs font-black uppercase text-white block">2. TÜV / HU Prüfbericht *</span>
+                                            <label className="flex items-center justify-between p-2.5 bg-cyan-500/20 border border-cyan-400/50 rounded-lg text-cyan-200 text-xs font-black uppercase cursor-pointer hover:bg-cyan-500/30 transition-all shadow-sm">
+                                                <span className="truncate">{newVehicleForm.tuevDoc?.name || '+ Upload PDF/Bild'}</span>
+                                                <Upload size={14} className="shrink-0 text-cyan-300" />
+                                                <input type="file" accept="image/*,.pdf" className="hidden" onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        setNewVehicleForm(prev => ({ ...prev, tuevDoc: { name: file.name, fileData: URL.createObjectURL(file) } }));
+                                                    }
+                                                }} />
+                                            </label>
+                                        </div>
+
+                                        {/* Fahrzeugschein */}
+                                        <div className="p-3 bg-white/10 border border-cyan-500/30 rounded-xl space-y-1.5">
+                                            <span className="text-xs font-black uppercase text-white block">3. Fahrzeugschein (Teil I) *</span>
+                                            <label className="flex items-center justify-between p-2.5 bg-cyan-500/20 border border-cyan-400/50 rounded-lg text-cyan-200 text-xs font-black uppercase cursor-pointer hover:bg-cyan-500/30 transition-all shadow-sm">
+                                                <span className="truncate">{newVehicleForm.fahrzeugscheinDoc?.name || '+ Upload PDF/Bild'}</span>
+                                                <Upload size={14} className="shrink-0 text-cyan-300" />
+                                                <input type="file" accept="image/*,.pdf" className="hidden" onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        setNewVehicleForm(prev => ({ ...prev, fahrzeugscheinDoc: { name: file.name, fileData: URL.createObjectURL(file) } }));
+                                                    }
+                                                }} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+                                <button onClick={() => setIsAddVehicleOpen(false)} className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-black uppercase text-gray-400 cursor-pointer">
+                                    Abbrechen
+                                </button>
+                                <button onClick={() => {
+                                    if (!newVehicleForm.make || !newVehicleForm.model || !newVehicleForm.licensePlate) {
+                                        alert("Bitte Marke, Modell und Kennzeichen eingeben.");
+                                        return;
+                                    }
+                                    const created = {
+                                        id: `veh_${Date.now()}`,
+                                        ...newVehicleForm,
+                                        status: 'Wartend auf Admin-Freigabe',
+                                        approvalStatus: 'Pending Admin Verification',
+                                        images: newVehicleForm.images.length > 0 ? newVehicleForm.images : ['https://images.unsplash.com/photo-1617788138017-80ad40651399?w=800&fit=crop']
+                                    };
+                                    setVehiclesList([...vehiclesList, created]);
+                                    setIsAddVehicleOpen(false);
+                                    setNewVehicleForm({ make: '', model: '', licensePlate: '', year: '2024', category: 'VIP Executive', batteryLevel: 100, assignedDriver: 'Kein Fahrer', status: 'Wartend auf Admin-Freigabe', approvalStatus: 'Pending Admin Verification', ratePerHour: '90 € / Std.', images: [], konzessionDoc: null, tuevDoc: null, fahrzeugscheinDoc: null, versicherungsDoc: null });
+                                    alert(`⏳ Auto "${created.make} ${created.model}" (${created.licensePlate}) wurde eingereicht!\nStatus: Wartend auf Admin-Freigabe.`);
+                                }} className="px-8 py-3 bg-cyan-400 text-dark-950 font-black uppercase tracking-wider text-xs rounded-xl shadow-lg hover:bg-cyan-300 hover:scale-105 transition-all cursor-pointer">
+                                    Auto Anmelden
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
             </div> {/* END FLOATING GLASS TABLET WRAPPER */}
         </div>
     );

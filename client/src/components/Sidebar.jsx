@@ -30,7 +30,7 @@ import {
     Users,
     Utensils,
     Languages,
-    Search, Calendar, Monitor
+    Search, Calendar, Monitor, Trophy, Activity, Bus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -76,14 +76,12 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
         if (currentRole === 'manager') {
             switch(id) {
                 case 'overview':
-                    if (managerContext === 'HM') return "Palace Mission Control";
+                    if (managerContext === 'HM') return "Hotel Mission Control";
                     if (managerContext === 'SM') return "Arena Mission Control";
-                    if (managerContext === 'BM' || managerContext === 'CM') return "Venue Mission Control";
                     return "Service Mission Control";
                 case 'menu':
-                    if (managerContext === 'HM') return "In-Suite Catalog";
-                    if (managerContext === 'SM') return "Arena Catalog";
-                    if (managerContext === 'BM' || managerContext === 'CM') return "Nightlife Catalog";
+                    if (managerContext === 'HM') return "Room & Suite Catalog";
+                    if (managerContext === 'SM') return "Arena Ticket Catalog";
                     return "Intelligence & Catalog";
                 case 'compliance':
                     return "Compliance Vault";
@@ -126,70 +124,64 @@ const Sidebar = ({ isOpen, onClose, currentRole = 'driver', onItemClick }) => {
                 { id: 'feedback', icon: MessageSquare, label: "Feedback Hub" },
                 { id: 'fleet', icon: Car, label: "Fleet Telemetry" },
                 { id: 'hotels', icon: Building2, label: "Hospitality VIP" },
-                { id: 'clubs', icon: Zap, label: "Nightlife Heatmap" },
-                { id: 'events', icon: Calendar, label: "Strategic Events" },
+                { id: 'stadiums', icon: Trophy, label: "Stadium & Arenas" },
                 { id: 'system-doors', icon: Monitor, label: "Portal Doors" },
                 { id: 'app-settings', icon: Settings, label: "System Config" }
             ]
         },
         {
-            title: "Night Life",
+            title: "Destinations",
             role: ['passenger'],
             items: [
-                { id: 'night-crew', icon: Zap, label: "Night Crew", badge: "Social" },
-                { id: 'nearby-partners', icon: Map, label: "Hotspots", subtext: "Hotels & Clubs" }
+                { id: 'nearby-partners', icon: Map, label: "Hotspots", subtext: "Hotels & Stadiums" }
+            ]
+        },
+        {
+            title: "Manager Hub",
+            role: ['manager'],
+            items: [
+                { id: 'overview', icon: LayoutDashboard, label: "Dashboard", badge: "Live" },
+                { id: 'menu', icon: managerContext === 'SM' ? Trophy : Building2, label: managerContext === 'HM' ? "Zimmer Angebote Hub" : managerContext === 'SM' ? "Ticket Angebote Hub" : "Angebote Hub" },
+                { id: 'feed', icon: Activity, label: "Social Hub", badge: "Promo" },
+                { id: 'financials', icon: CreditCard, label: "Umsatz Hub" },
+                { id: 'profile-pic', icon: User, label: "Mein Profil" }
             ]
         },
         {
             title: "My Dashboard",
-            role: ['manager', 'admin', 'staff'],
+            role: ['admin'],
             items: [
                 { id: 'overview', icon: ToggleRight, label: getAdaptiveLabel('overview', "Live Operations"), badge: "Active" },
                 { id: 'qr-dispatcher', icon: Zap, label: getAdaptiveLabel('terminal', "Scanning Terminal") },
                 { id: 'financials', icon: TrendingUp, label: "Net Sales", value: "€142.50" },
-                { id: 'stats', icon: History, label: "Business Pulse", subtext: "Real-time" },
-                { id: 'demand', icon: Map, label: "Network Map", badge: "Live" }
+                { id: 'stats', icon: History, label: "Business Pulse", subtext: "Real-time" }
+            ]
+        },
+        {
+            title: "SHUTTLE OPERATIONS",
+            role: ['driver'],
+            items: [
+                { id: 'shuttle-hub', icon: Bus, label: "Shuttle Service Hub", badge: "24h Börse" }
             ]
         },
         {
             title: "My Profile",
-            role: ['driver', 'manager', 'admin', 'super_admin', 'staff'],
+            role: ['driver', 'admin', 'super_admin'],
             items: [
-                { id: 'profile-pic', icon: User, label: "My Profile" },
-                { id: 'verification', icon: CheckCircle, label: "Verification" },
-                { id: 'vehicle-hub', icon: Car, label: "Vehicle Hub", role: ['driver'] }
-            ]
-        },
-        {
-            title: "Company",
-            role: ['manager', 'admin', 'staff'],
-            items: [
-                { id: 'compliance', icon: Building2, label: getAdaptiveLabel('compliance', "Company Documents") },
-                { id: 'menu', icon: Utensils, label: getAdaptiveLabel('menu', "Manage Menu"), badge: "AI Scan" },
-                { id: 'fleet', icon: Briefcase, label: "My Fleet" },
-                { id: 'financials', icon: CreditCard, label: "Money Earned" },
-                { id: 'staff', icon: Handshake, label: "Staff Hub", badge: "New" }
+                { id: 'profile-pic', icon: User, label: "My Profile" }
             ]
         },
         {
             title: "Payments",
-            role: ['driver', 'manager', 'admin', 'staff'],
+            role: ['driver', 'admin'],
             items: [
                 { id: 'history', icon: History, label: "Past Earnings" },
-                { id: 'payouts', icon: Wallet, label: "Payouts", role: ['manager', 'admin'] }
-            ]
-        },
-        {
-            title: "MESSAGES & SUPPORT",
-            role: ['driver', 'manager', 'admin', 'staff'],
-            items: [
-                { id: 'inbox', icon: Bell, label: "Inbox", badge: "2" },
-                { id: 'support', icon: MessageSquare, label: "Help & Support" }
+                { id: 'payouts', icon: Wallet, label: "Payouts", role: ['admin'] }
             ]
         },
         {
             title: "SETTINGS",
-            role: ['driver', 'manager', 'admin', 'super_admin', 'staff'],
+            role: ['driver', 'admin', 'super_admin'],
             items: [
                 ...(currentRole === 'driver' ? [{ id: 'navigation-settings', icon: Map, label: "Map Preference", subtext: "Google / Apple Maps" }] : []),
                 { id: 'settings', icon: Settings, label: "App Settings" }

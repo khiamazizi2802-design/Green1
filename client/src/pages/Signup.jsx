@@ -13,7 +13,7 @@ const Signup = () => {
     
     // Define available roles based on mode (restrict to staff/driver if invited)
     const availableRoles = mode === 'partner' 
-        ? (inviteEmail ? ['driver', 'staff'] : ['staff', 'driver', 'manager']) 
+        ? (inviteEmail ? ['driver'] : ['driver', 'manager']) 
         : ['passenger'];
     
     const [role, setRole] = useState(availableRoles[0]);
@@ -38,19 +38,12 @@ const Signup = () => {
 
     const businessCategories = [
         { id: 'FM', label: 'Fleet' },
-        { id: 'CM', label: 'Club' },
-        { id: 'BM', label: 'Bar' },
-        { id: 'RM', label: 'Restaurant' },
         { id: 'HM', label: 'Hotel' },
         { id: 'SM', label: 'Stadium' },
-        { id: 'VM', label: 'Event' },
     ];
 
     const verifiedCompanies = [
-        { id: 'BM', name: 'Blue Velvet Bar', industry: 'Nightlife' },
-        { id: 'RM', name: 'Saffron Fine Dining', industry: 'Restaurant' },
         { id: 'HM', name: 'Green Palace & Spa', industry: 'Hotel' },
-        { id: 'CM', name: 'Midnight Club', industry: 'Club' },
         { id: 'FM', name: 'Green Fleet Ops', industry: 'Logistics' },
         { id: 'SM', name: 'Green Stadium Arena', industry: 'Events' }
     ];
@@ -89,8 +82,13 @@ const Signup = () => {
                 return;
             }
 
-            sessionStorage.setItem('registration_pending_verification', 'true');
-            navigate('/verify');
+            if (finalRole === 'manager') {
+                navigate('/manager');
+            } else if (finalRole === 'driver') {
+                navigate('/driver');
+            } else {
+                navigate('/home');
+            }
         } catch (err) {
             console.error('Signup error:', err);
             setSignupError('Registration failed. Please check network connectivity.');
@@ -249,12 +247,11 @@ const Signup = () => {
 
                     {role === 'manager' && (
                         <div className="space-y-3">
-                            {/* Row 1: Fleet + Restaurant + Hotel */}
                             <div className="grid grid-cols-3 gap-3">
                                 {[
                                     { id: 'FM', label: 'Fleet' },
-                                    { id: 'RM', label: 'Restaurant' },
                                     { id: 'HM', label: 'Hotel' },
+                                    { id: 'SM', label: 'Stadium' },
                                 ].map((type) => (
                                     <button
                                         key={type.id}
@@ -266,31 +263,6 @@ const Signup = () => {
                                     </button>
                                 ))}
                             </div>
-                            {/* Row 2: Club + Bar + Event */}
-                            <div className="grid grid-cols-3 gap-3">
-                                {[
-                                    { id: 'CM', label: 'Club' },
-                                    { id: 'BM', label: 'Bar' },
-                                    { id: 'VM', label: 'Event' },
-                                ].map((type) => (
-                                    <button
-                                        key={type.id}
-                                        type="button"
-                                        onClick={() => setFormData({...formData, businessType: type.id})}
-                                        className={`p-4 rounded-2xl border text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${formData.businessType === type.id ? 'bg-brand/10 border-brand text-brand shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-white/5 border-white/5 text-[var(--text-muted)] hover:border-white/10'}`}
-                                    >
-                                        {type.label}
-                                    </button>
-                                ))}
-                            </div>
-                            {/* Row 3: Stadium — alone, full width */}
-                            <button
-                                type="button"
-                                onClick={() => setFormData({...formData, businessType: 'SM'})}
-                                className={`w-full p-4 rounded-2xl border text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${formData.businessType === 'SM' ? 'bg-brand/10 border-brand text-brand shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-white/5 border-white/5 text-[var(--text-muted)] hover:border-white/10'}`}
-                            >
-                                Stadium
-                            </button>
 
                             <div className="p-6 bg-brand/5 border border-brand/20 rounded-[2.5rem] relative mt-4 shadow-xl">
                                 <div className="absolute -top-3 left-8 px-3 py-1 bg-brand text-black rounded-full text-[7px] font-black uppercase tracking-widest shadow-lg">Network Protocol 🛰️</div>

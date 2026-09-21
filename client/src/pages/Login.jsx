@@ -220,9 +220,20 @@ const Login = () => {
 
                 </form>
 
+                {/* Quick Demo Access Bar */}
+                <div className="mt-8 pt-6 border-t border-white/10 space-y-3">
+                    <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-center text-brand">⚡ 1-Klick Testzugang (1-Click Login)</p>
+                    <div className="grid grid-cols-2 gap-2 text-[10px] font-black uppercase">
+                        <button onClick={() => { setEmail('admin@green.de'); setPassword('green2026'); }} className="p-2.5 bg-brand/10 border border-brand/30 rounded-xl text-brand hover:bg-brand/20 transition-all">👑 Admin</button>
+                        <button onClick={() => { setEmail('manager@green.de'); setPassword('green2026'); }} className="p-2.5 bg-blue-500/10 border border-blue-500/30 rounded-xl text-blue-400 hover:bg-blue-500/20 transition-all">🏎️ Flotten-Manager</button>
+                        <button onClick={() => { setEmail('hotel@green.de'); setPassword('green2026'); }} className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400 hover:bg-amber-500/20 transition-all">🏨 Hotel-Manager</button>
+                        <button onClick={() => { setEmail('stadium@green.de'); setPassword('green2026'); }} className="p-2.5 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 hover:bg-purple-500/20 transition-all">🏟️ Stadion-Manager</button>
+                        <button onClick={() => { setEmail('driver@green.de'); setPassword('green2026'); }} className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 hover:bg-emerald-500/20 transition-all">🚕 Fahrer</button>
+                        <button onClick={() => { setEmail('passenger@green.de'); setPassword('green2026'); }} className="p-2.5 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all">👤 Kunde / Passagier</button>
+                    </div>
+                </div>
 
-
-                <p className="mt-8 text-center text-[var(--text-muted)] text-[11px] md:text-sm lg:text-base font-black uppercase tracking-widest">
+                <p className="mt-6 text-center text-[var(--text-muted)] text-[11px] md:text-sm lg:text-base font-black uppercase tracking-widest">
                     New Signal Detected? <Link to="/signup" className="text-brand hover:underline">Create Account</Link>
                 </p>
 

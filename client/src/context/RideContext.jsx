@@ -4,6 +4,23 @@ import { useSocket } from './SocketContext';
 import { db as fbDb } from '../config/firebase';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 
+const safeSetItem = (key, value) => {
+    try {
+        localStorage.setItem(key, value);
+    } catch (e) {
+        console.warn(`[Storage Quota Exceeded] Clearing heavy cache to save '${key}'...`, e);
+        try {
+            const heavyKeys = ['green_global_posts', 'driver_compliance_docs', 'driver_vehicle_docs', 'green_admin_stripe_docs'];
+            heavyKeys.forEach(k => {
+                if (k !== key) localStorage.removeItem(k);
+            });
+            localStorage.setItem(key, value);
+        } catch (retryErr) {
+            console.error(`[Storage Quota Exceeded] Unable to save '${key}':`, retryErr);
+        }
+    }
+};
+
 const RideContext = createContext();
 
 export const RideProvider = ({ children }) => {
@@ -55,7 +72,7 @@ export const RideProvider = ({ children }) => {
                 { id: 'u5', name: 'Alex M.', username: '@alex_m', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AlexM', status: 'Offline', mutuals: 21, rank: 'Legend' }
             ];
             setMutualFriends(demoFriends);
-            localStorage.setItem(`green_mutual_friends_${emailKey}`, JSON.stringify(demoFriends));
+            safeSetItem(`green_mutual_friends_${emailKey}`, JSON.stringify(demoFriends));
         } else {
             setMutualFriends([]);
         }
@@ -64,7 +81,7 @@ export const RideProvider = ({ children }) => {
     useEffect(() => {
         if (user?.email) {
             const emailKey = user.email.replace(/[^a-zA-Z0-9]/g, '_');
-            localStorage.setItem(`green_mutual_friends_${emailKey}`, JSON.stringify(mutualFriends));
+            safeSetItem(`green_mutual_friends_${emailKey}`, JSON.stringify(mutualFriends));
         }
     }, [mutualFriends, user]);
     
@@ -98,7 +115,7 @@ export const RideProvider = ({ children }) => {
     useEffect(() => {
         if (user?.email) {
             const emailKey = user.email.replace(/[^a-zA-Z0-9]/g, '_');
-            localStorage.setItem(`green_venue_tickets_${emailKey}`, JSON.stringify(venueTickets));
+            safeSetItem(`green_venue_tickets_${emailKey}`, JSON.stringify(venueTickets));
         }
     }, [venueTickets, user]);
 

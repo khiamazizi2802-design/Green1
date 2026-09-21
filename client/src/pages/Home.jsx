@@ -854,7 +854,7 @@ const Home = () => {
                                     <div>
                                         <h3 className="text-2xl font-black italic tracking-tighter uppercase">{userInfo.firstName} <span className="text-[10px] md:text-xs lg:text-sm ml-2 opacity-50 font-bold tracking-widest leading-none align-middle border border-white/10 px-2 py-0.5 rounded-md">#{user?.id || '482X'}</span></h3>
                                         <div className="flex items-center gap-2">
-                                            <p className="font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm italic" style={{ color: 'var(--accent-primary)' }}>Premium Status</p>
+                                            <p className="font-black uppercase tracking-[0.2em] text-[10px] md:text-xs lg:text-sm italic" style={{ color: 'var(--accent-primary)' }}>{t('premiumStatus')}</p>
                                             <div className="w-1 h-1 rounded-full bg-[var(--accent-primary)]" />
                                         </div>
                                     </div>
@@ -890,7 +890,7 @@ const Home = () => {
                                         <div className="p-3 rounded-2xl group-hover:rotate-12 transition-transform bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-main)]">
                                             <Wallet size={24} />
                                         </div>
-                                        <h4 className="text-xl font-black italic tracking-tighter text-[var(--text-primary)] uppercase">Bank Hub</h4>
+                                        <h4 className="text-xl font-black italic tracking-tighter text-[var(--text-primary)] uppercase">{t('bankHub')}</h4>
                                     </div>
                                 </div>
                             </button>
@@ -900,7 +900,7 @@ const Home = () => {
                                 <button onClick={() => setProfileSubView('language')} className="w-full p-5 rounded-2xl flex items-center justify-between group transition-all" style={{ background: 'var(--bg-btn-sec)', border: '1px solid var(--border-main)' }} onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-main)'}>
                                     <div className="flex items-center gap-4">
                                         <Globe size={20} className="group-hover:scale-110 transition-transform" style={{ color: 'var(--accent-primary)' }} />
-                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">Language Preferences</span>
+                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">{t('languagePreferences')}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <span className="text-[10px] md:text-xs lg:text-sm font-black text-gray-500 uppercase">{lang}</span>
@@ -910,10 +910,10 @@ const Home = () => {
                                 <button onClick={() => setProfileSubView('favorites')} className="w-full p-5 rounded-2xl flex items-center justify-between group transition-all" style={{ background: 'var(--bg-btn-sec)', border: '1px solid var(--border-main)' }} onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-main)'}>
                                     <div className="flex items-center gap-4">
                                         <Heart size={20} className="group-hover:scale-110 transition-transform" style={{ color: 'var(--danger)' }} />
-                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">Favorite Drivers (FTD)</span>
+                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">{t('favoriteDrivers')}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[7px] font-black bg-danger/10 text-danger px-2 py-0.5 rounded-full uppercase">{favoriteDrivers.length} Saved</span>
+                                        <span className="text-[7px] font-black bg-danger/10 text-danger px-2 py-0.5 rounded-full uppercase">{favoriteDrivers.length} {t('saved')}</span>
                                         <ChevronRight size={18} className="text-gray-600 group-hover:translate-x-1 transition-transform" />
                                     </div>
                                 </button>
@@ -921,7 +921,7 @@ const Home = () => {
                                 <button onClick={() => navigate('/ride/history')} className="w-full p-5 rounded-2xl flex items-center justify-between group transition-all" style={{ background: 'var(--bg-btn-sec)', border: '1px solid var(--border-main)' }} onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-main)'}>
                                     <div className="flex items-center gap-4">
                                         <Clock size={20} className="group-hover:scale-110 transition-transform" style={{ color: 'var(--accent-primary)' }} />
-                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">Ride History</span>
+                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">{t('rideHistory')}</span>
                                     </div>
                                     <ChevronRight size={18} className="text-gray-600 group-hover:translate-x-1 transition-transform" />
                                 </button>
@@ -929,7 +929,7 @@ const Home = () => {
                                 <button onClick={() => navigate('/account/settings')} className="w-full p-5 rounded-2xl flex items-center justify-between group transition-all" style={{ background: 'var(--bg-btn-sec)', border: '1px solid var(--border-main)' }} onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-main)'}>
                                     <div className="flex items-center gap-4">
                                         <Lock size={20} className="group-hover:scale-110 transition-transform" style={{ color: 'var(--accent-primary)' }} />
-                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">Account & Security</span>
+                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">{t('accountSecurity')}</span>
                                     </div>
                                     <ChevronRight size={18} className="text-gray-600 group-hover:translate-x-1 transition-transform" />
                                 </button>
@@ -937,10 +937,10 @@ const Home = () => {
                                 <button onClick={() => navigate('/family-hub')} className="w-full p-5 rounded-2xl flex items-center justify-between group transition-all" style={{ background: 'var(--bg-btn-sec)', border: '1px solid var(--border-main)' }} onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-main)'}>
                                     <div className="flex items-center gap-4">
                                         <Users size={20} className="group-hover:scale-110 transition-transform" style={{ color: 'var(--brand)' }} />
-                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">Family Hub</span>
+                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">{t('familyHub')}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[7px] font-black bg-brand/10 text-brand px-2 py-0.5 rounded-full uppercase">Parent Portal</span>
+                                        <span className="text-[7px] font-black bg-brand/10 text-brand px-2 py-0.5 rounded-full uppercase">{t('parentPortal')}</span>
                                         <ChevronRight size={18} className="text-gray-600 group-hover:translate-x-1 transition-transform" />
                                     </div>
                                 </button>
@@ -948,7 +948,7 @@ const Home = () => {
                                 <button onClick={() => { setProfileSubView('help'); setHelpSubView(null); }} className="w-full p-5 rounded-2xl flex items-center justify-between group transition-all" style={{ background: 'var(--bg-btn-sec)', border: '1px solid var(--border-main)' }} onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-main)'}>
                                     <div className="flex items-center gap-4">
                                         <LifeBuoy size={20} className="group-hover:scale-110 transition-transform" style={{ color: 'var(--accent-primary)' }} />
-                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">Help & Support</span>
+                                        <span className="font-black italic tracking-tight uppercase text-base text-[var(--text-primary)]">{t('helpSupport')}</span>
                                     </div>
                                     <ChevronRight size={18} className="text-gray-600 group-hover:translate-x-1 transition-transform" />
                                 </button>
@@ -957,7 +957,7 @@ const Home = () => {
                             {/* Secondary Actions */}
                             <div className="pt-4 space-y-4">
                                 <button onClick={() => { logout(); navigate("/"); }} className="w-full p-5 bg-red-500/5 border border-red-500/20 text-red-500 font-black uppercase tracking-widest rounded-2xl flex items-center justify-between hover:bg-red-500/10 transition-all group">
-                                    Logout
+                                    {t('logout')}
                                     <LogOut size={20} className="group-hover:translate-x-1 transition-transform" />
                                 </button>
 
@@ -973,7 +973,7 @@ const Home = () => {
                                 >
                                     <ArrowLeft size={20} />
                                 </button>
-                                <h3 className="text-xl font-black italic tracking-tighter uppercase" style={{ color: 'var(--brand)' }}>Language Hub</h3>
+                                <h3 className="text-xl font-black italic tracking-tighter uppercase" style={{ color: 'var(--brand)' }}>{t('languageHub')}</h3>
                             </div>
 
                             <div className="relative mb-4">
@@ -1174,10 +1174,8 @@ const Home = () => {
                                 <h4 className="text-[10px] md:text-xs lg:text-sm text-gray-500 font-black uppercase tracking-[0.3em] px-2 italic">Active Founder Offers</h4>
                                 <div className="space-y-3">
                                     {[
-                                        { shop: 'The Blue Velvet Bar', offer: '50% OFF ALL DRINKS', icon: GlassWater, category: 'Bar & Lounge', color: 'text-brand' },
-                                        { shop: 'Saffron Fine Dining', offer: 'FREE STARTER + VIP TABLE', icon: Utensils, category: 'Restaurant', color: 'text-amber-400' },
-                                        { shop: 'Green Palace & Spa', offer: 'FREE SPA ACCESS', icon: BedDouble, category: 'Luxury Hotel', color: 'text-violet-400' },
-                                        { shop: 'Green Stadium Arena', offer: 'FREE VIP TICKET UPGRADE', icon: Star, category: 'Entertainment', color: 'text-amber-400' }
+                                        { shop: 'Grand Luxury Hotel & Spa', offer: 'FREE SPA ACCESS & LATE CHECKOUT', icon: BedDouble, category: 'Luxury Hotel', color: 'text-emerald-400' },
+                                        { shop: 'Green Stadium Arena', offer: 'FREE VIP TICKET UPGRADE', icon: Trophy, category: 'Stadium VIP', color: 'text-amber-400' }
                                     ].map((perk, i) => (
                                         <div key={i} className="bg-[var(--bg-secondary)] border border-[var(--border-main)] p-5 rounded-3xl group hover:border-amber-400/20 transition-all relative overflow-hidden">
                                             <div className="flex justify-between items-start mb-4">

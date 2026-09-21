@@ -509,8 +509,21 @@ h1, h2, h3, h4, h5, h6, strong, b {
 
 
 /* Force high contrast white and emerald text on explicitly dark cards inside sheets in Light Mode only */
-[data-theme='light'] .bg-neutral-900, [data-theme='light'] .bg-neutral-900 *, [data-theme='light'] .bg-neutral-950, [data-theme='light'] .bg-neutral-950 *, [data-theme='light'] .bg-black, [data-theme='light'] .bg-black * {
+[data-theme='light'] .bg-neutral-900, [data-theme='light'] .bg-neutral-900 *, 
+[data-theme='light'] .bg-neutral-950, [data-theme='light'] .bg-neutral-950 *, 
+[data-theme='light'] .bg-black, [data-theme='light'] .bg-black *,
+[data-theme='light'] .bg-\[\#0a0f1c\], [data-theme='light'] .bg-\[\#0a0f1c\] *,
+[data-theme='light'] .bg-\[\#0a0f1c80\], [data-theme='light'] .bg-\[\#0a0f1c80\] *,
+[data-theme='light'] .dark-catalog-card, [data-theme='light'] .dark-catalog-card * {
     color: #FFFFFF !important;
+}
+[data-theme='light'] .bg-neutral-900 .text-\[\#00e5ff\], [data-theme='light'] .bg-neutral-900 .text-\[\#00e5ff\] *,
+[data-theme='light'] .bg-neutral-950 .text-\[\#00e5ff\], [data-theme='light'] .bg-neutral-950 .text-\[\#00e5ff\] *,
+[data-theme='light'] .bg-black .text-\[\#00e5ff\], [data-theme='light'] .bg-black .text-\[\#00e5ff\] *,
+[data-theme='light'] .bg-\[\#0a0f1c\] .text-\[\#00e5ff\], [data-theme='light'] .bg-\[\#0a0f1c\] .text-\[\#00e5ff\] *,
+[data-theme='light'] .bg-\[\#0a0f1c80\] .text-\[\#00e5ff\], [data-theme='light'] .bg-\[\#0a0f1c80\] .text-\[\#00e5ff\] *,
+[data-theme='light'] .dark-catalog-card .text-\[\#00e5ff\], [data-theme='light'] .dark-catalog-card .text-\[\#00e5ff\] * {
+    color: #00e5ff !important;
 }
 [data-theme='light'] .bg-neutral-900 .text-brand, [data-theme='light'] .bg-neutral-900 .text-brand *, [data-theme='light'] .bg-neutral-950 .text-brand, [data-theme='light'] .bg-neutral-950 .text-brand *, [data-theme='light'] .bg-black .text-brand, [data-theme='light'] .bg-black .text-brand * {
     color: #10B981 !important; /* Emerald green */
@@ -520,6 +533,54 @@ h1, h2, h3, h4, h5, h6, strong, b {
 }
 [data-theme='light'] .bg-neutral-900 .text-neutral-500, [data-theme='light'] .bg-neutral-900 .text-neutral-500 *, [data-theme='light'] .bg-neutral-950 .text-neutral-500, [data-theme='light'] .bg-neutral-950 .text-neutral-500 * {
     color: #737373 !important; /* Secondary muted gray */
+}
+
+/* Shuttle Dark Card Contrast Fix for Light & Dark Mode */
+.shuttle-dark-card,
+.shuttle-dark-card *,
+.shuttle-dark-card h4,
+.shuttle-dark-card p,
+.shuttle-dark-card label,
+.shuttle-dark-card span,
+.shuttle-dark-card div,
+[data-theme='light'] .shuttle-dark-card,
+[data-theme='light'] .shuttle-dark-card *,
+[data-theme='light'] .shuttle-dark-card h4,
+[data-theme='light'] .shuttle-dark-card p,
+[data-theme='light'] .shuttle-dark-card label,
+[data-theme='light'] .shuttle-dark-card span,
+[data-theme='light'] .shuttle-dark-card div {
+    color: #ffffff !important;
+}
+
+.shuttle-dark-card .shuttle-label-green,
+.shuttle-dark-card .shuttle-label-green *,
+.shuttle-dark-card label.shuttle-label-green,
+[data-theme='light'] .shuttle-dark-card .shuttle-label-green,
+[data-theme='light'] .shuttle-dark-card .shuttle-label-green *,
+[data-theme='light'] .shuttle-dark-card label.shuttle-label-green {
+    color: #21ffa5 !important;
+}
+
+.shuttle-dark-card .shuttle-text-sub,
+.shuttle-dark-card .shuttle-text-sub *,
+[data-theme='light'] .shuttle-dark-card .shuttle-text-sub,
+[data-theme='light'] .shuttle-dark-card .shuttle-text-sub * {
+    color: #cbd5e1 !important;
+}
+
+.shuttle-dark-card input,
+.shuttle-dark-card select,
+[data-theme='light'] .shuttle-dark-card input,
+[data-theme='light'] .shuttle-dark-card select {
+    color: #ffffff !important;
+    background-color: #1e293b !important;
+}
+
+.shuttle-dark-card select option,
+[data-theme='light'] .shuttle-dark-card select option {
+    color: #ffffff !important;
+    background-color: #1e293b !important;
 }
 
 /* Light mode styles for the Sidebar */
@@ -583,15 +644,15 @@ h1, h2, h3, h4, h5, h6, strong, b {
 
 /* Force high-contrast dark text color for all text-white elements in Light Mode,
    EXCEPT inside explicitly dark panels (like floating assistant, modals, etc.) */
-[data-theme='light'] .text-white:not([data-theme='dark'] *):not(.fixed *):not(.bg-\[\#0D1421\] *):not(.accent-white):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *):not(.greens-equal-share):not(.greens-equal-share *):not(.greens-friend-name):not(.greens-friend-name *) {
+[data-theme='light'] .text-white:not([data-theme='dark'] *):not(.fixed *):not(.bg-\[\#0D1421\] *):not(.accent-white):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *):not(.greens-equal-share):not(.greens-equal-share *):not(.greens-friend-name):not(.greens-friend-name *):not(.bg-\[\#0a0f1c\]):not(.bg-\[\#0a0f1c\] *):not(.bg-\[\#0a0f1c80\]):not(.bg-\[\#0a0f1c80\] *):not(.dark-catalog-card):not(.dark-catalog-card *) {
     color: var(--text-primary) !important;
 }
 
 /* Force gray and text-gray elements to be deep black/charcoal in Light Mode for high contrast */
-[data-theme='light'] .text-gray-300:not([data-theme='dark'] *):not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *),
-[data-theme='light'] .text-gray-400:not([data-theme='dark'] *):not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *),
-[data-theme='light'] .text-slate-300:not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *),
-[data-theme='light'] .text-slate-400:not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *) {
+[data-theme='light'] .text-gray-300:not([data-theme='dark'] *):not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *):not(.bg-\[\#0a0f1c\] *):not(.bg-\[\#0a0f1c80\] *):not(.dark-catalog-card *),
+[data-theme='light'] .text-gray-400:not([data-theme='dark'] *):not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *):not(.bg-\[\#0a0f1c\] *):not(.bg-\[\#0a0f1c80\] *):not(.dark-catalog-card *),
+[data-theme='light'] .text-slate-300:not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *):not(.bg-\[\#0a0f1c\] *):not(.bg-\[\#0a0f1c80\] *):not(.dark-catalog-card *),
+[data-theme='light'] .text-slate-400:not(.fixed *):not(.bg-\[\#0D1421\] *):not(.bg-black):not(.bg-black *):not(.bg-\[\#1A1A1A\]):not(.bg-\[\#1A1A1A\] *):not(.bg-neutral-800):not(.bg-neutral-800 *):not(.bg-neutral-900):not(.bg-neutral-900 *):not(.bg-neutral-950):not(.bg-neutral-950 *):not(.bg-\[\#0a0f1c\] *):not(.bg-\[\#0a0f1c80\] *):not(.dark-catalog-card *) {
     color: #111827 !important; /* Deep black-gray */
 }
 
@@ -973,15 +1034,210 @@ input:-webkit-autofill:active {
 [data-theme='light'] .glass-bg-wrapper .bg-white\/10 {
     background-color: rgba(255, 255, 255, 0.65) !important;
     backdrop-filter: blur(24px) !important;
+}
+
+/* ── Tactical High Contrast Visibility Hardening for GreenS Ledger Cards ── */
+/* Explicit Custom High Contrast Visibility Overrides for GreenS Ledger Screen */
+.greens-ledger-card,
+[data-theme='light'] .greens-ledger-card {
+    background-color: #111111 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.greens-friend-card,
+[data-theme='light'] .greens-friend-card {
+    background-color: #161616 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.greens-equal-share,
+.greens-friend-name,
+[data-theme='light'] .greens-equal-share,
+[data-theme='light'] .greens-friend-name {
+    color: #FFFFFF !important;
+}
+
+
+
+/* ── Intro Overlay ── */
+.intro {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  gap: 20px;
+  opacity: 1;
+  transition: opacity 0.6s ease, pointer-events 0.6s ease;
+}
+.intro.exit-fade {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Brand - Black Text */
+.intro .brand {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 56px;
+  color: #000000;
+  letter-spacing: -1.5px;
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+  animation: brandReveal .8s cubic-bezier(.175,.885,.32,1.275) forwards;
+}
+
+/* Loading Bar Wrapper */
+.intro .bar-wrap {
+  width: 180px;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: barReveal .6s ease-out .4s forwards;
+}
+
+.intro .bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #555555, #000000, #000000);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  animation: fillBar 2.5s cubic-bezier(.1, .8, .25, 1) .6s forwards;
+}
+
+.intro .bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+  animation: shine 1.4s infinite;
+}
+
+@keyframes brandReveal {
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes barReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fillBar {
+  to {
+    width: 100%;
+  }
+}
+@keyframes shine {
+  0% { left: -80%; }
+  100% { left: 120%; }
+}
+
+/* Smooth Leaflet Marker Animations for debounced GPS */
+.leaflet-marker-icon {
+  transition: transform 10s linear, opacity 0.3s ease-in-out;
+}
+
+
+/* Fix Chrome Autofill in Dark Theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #171717 inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* --- PREMIUM GLASSMORPHISM UI --- */
+.glass-panel {
+    background-color: rgba(10, 10, 10, 0.45);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.glass-panel-subtle {
+    background-color: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='light'] .glass-panel {
+    background-color: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+[data-theme='light'] .glass-panel-subtle {
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.glass-bg-wrapper {
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    transition: background-image 0.5s ease-in-out;
+}
+
+/* Scoped Overrides to auto-convert existing cards to glass */
+.glass-bg-wrapper .bg-dark-950 {
+    background-color: transparent !important;
+}
+
+.glass-bg-wrapper .bg-dark-900,
+.glass-bg-wrapper .bg-glass,
+.glass-bg-wrapper .bg-dark-800,
+.glass-bg-wrapper .bg-black,
+.glass-bg-wrapper .bg-btn-sec,
+.glass-bg-wrapper .bg-white\/5,
+.glass-bg-wrapper .bg-white\/10 {
+    background-color: rgba(10, 10, 10, 0.45) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme='light'] .glass-bg-wrapper .bg-dark-900,
+[data-theme='light'] .glass-bg-wrapper .bg-glass,
+[data-theme='light'] .glass-bg-wrapper .bg-dark-800,
+[data-theme='light'] .glass-bg-wrapper .bg-black,
+[data-theme='light'] .glass-bg-wrapper .bg-btn-sec,
+[data-theme='light'] .glass-bg-wrapper .bg-white\/5,
+[data-theme='light'] .glass-bg-wrapper .bg-white\/10 {
+    background-color: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(24px) !important;
     -webkit-backdrop-filter: blur(24px) !important;
     border-color: rgba(255, 255, 255, 0.8) !important;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important;
 }
 
-/* Ensure text is readable in light mode */
-[data-theme='light'] .glass-bg-wrapper .text-white,
-[data-theme='light'] .glass-bg-wrapper .text-gray-300,
-[data-theme='light'] .glass-bg-wrapper .text-gray-400 {
+/* Ensure text is readable in light mode, EXCEPT inside dark catalog cards */
+[data-theme='light'] .glass-bg-wrapper .text-white:not(.dark-catalog-card *):not(.bg-\[\#0a0f1c\] *):not(.bg-\[\#0a0f1c80\] *),
+[data-theme='light'] .glass-bg-wrapper .text-gray-300:not(.dark-catalog-card *):not(.bg-\[\#0a0f1c\] *):not(.bg-\[\#0a0f1c80\] *),
+[data-theme='light'] .glass-bg-wrapper .text-gray-400:not(.dark-catalog-card *):not(.bg-\[\#0a0f1c\] *):not(.bg-\[\#0a0f1c80\] *) {
     color: #1a1a1a !important;
 }
 
@@ -990,6 +1246,23 @@ input:-webkit-autofill:active {
     border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
+/* Force dark catalog cards in Manager Dashboard to always render pure white and cyan text in ALL themes */
+.dark-catalog-card,
+.dark-catalog-card *,
+.dark-catalog-card h1, .dark-catalog-card h2, .dark-catalog-card h3, .dark-catalog-card h4, .dark-catalog-card h5, .dark-catalog-card h6,
+.dark-catalog-card th, .dark-catalog-card td, .dark-catalog-card input, .dark-catalog-card p, .dark-catalog-card label, .dark-catalog-card span {
+    color: #FFFFFF !important;
+}
+
+.dark-catalog-card .text-\[\#00e5ff\],
+.dark-catalog-card .text-\[\#00e5ff\] *,
+.dark-catalog-card select {
+    color: #00e5ff !important;
+}
+
+.dark-catalog-card input::placeholder {
+    color: #9CA3AF !important;
+}
 
 [data-theme='dark'] {
     --text-primary: #FFFFFF;

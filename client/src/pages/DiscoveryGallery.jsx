@@ -14,17 +14,13 @@ const DiscoveryGallery = () => {
     const location = useLocation();
     const { user } = useAuth();
     
-    // Default to 'club' if no state passed
-    const initialCategory = location.state?.category || 'club';
+    // Default to 'hotel' if no state passed
+    const initialCategory = location.state?.category || 'hotel';
     const [activeCategory, setActiveCategory] = useState(initialCategory);
     const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'active'
     const [searchQuery, setSearchQuery] = useState('');
 
     const categories = [
-        { id: 'club', label: 'Clubs', icon: Zap, color: 'text-brand' },
-        { id: 'restaurant', label: 'Dining', icon: Utensils, color: 'text-amber-400' },
-        { id: 'bar', label: 'Bars', icon: GlassWater, color: 'text-blue-400' },
-        { id: 'event', label: 'Events', icon: Compass, color: 'text-violet-400' },
         { id: 'stadium', label: 'Stadium', icon: Trophy, color: 'text-amber-500' },
         { id: 'hotel', label: 'Hotels', icon: BedDouble, color: 'text-emerald-400' }
     ];

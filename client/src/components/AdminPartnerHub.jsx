@@ -4,36 +4,36 @@ import { Building2, Eye, ShoppingCart, Star, MessageSquare, ChevronRight, Store,
 import { triggerNotification } from './NotificationToast';
 
 const defaultPartners = {
-    "Skyline Club": { 
-        visibilityMode: true, 
-        commerceMode: false, 
-        followers: 1240, 
-        rating: 4.8,
-        type: 'Club',
-        feedbacks: [
-            { type: 'highlight', text: 'Amazing sound system and VIP service.', user: 'Anna K.' },
-            { type: 'complaint', text: 'Cloakroom took too long.', user: 'Tom B.' }
-        ]
-    },
-    "The Grid Bar": { 
-        visibilityMode: true, 
-        commerceMode: false, 
-        followers: 850, 
-        rating: 4.5,
-        type: 'Bar',
-        feedbacks: [
-            { type: 'highlight', text: 'Best cocktails in the city.', user: 'Sarah M.' }
-        ]
-    },
-    "Stadium Zone": { 
+    "Black Forest Fleet VIP": { 
         visibilityMode: true, 
         commerceMode: true, 
-        followers: 3200, 
+        followers: 4800, 
         rating: 4.9,
-        type: 'Stadium',
+        type: 'Flotte',
         feedbacks: [
-            { type: 'highlight', text: 'Great view from the VIP lounge.', user: 'Max R.' },
-            { type: 'idea', text: 'Would love to see more vegan options.', user: 'Julia V.' }
+            { type: 'highlight', text: 'Erstklassige Mercedes Maybach Flotte & pünktliche Fahrer.', user: 'Dr. Michael S.' },
+            { type: 'highlight', text: 'Nahtloser PBefG Transfer zum Flughafen.', user: 'Elena V.' }
+        ]
+    },
+    "Grand Hotel Europäischer Hof": { 
+        visibilityMode: true, 
+        commerceMode: true, 
+        followers: 2150, 
+        rating: 4.8,
+        type: 'Hotel',
+        feedbacks: [
+            { type: 'highlight', text: 'Exzellenter Valet & Chauffeur-Service direkt von der Lobbylounge.', user: 'Concierge Jean' }
+        ]
+    },
+    "Signal Iduna Stadium VIP Hub": { 
+        visibilityMode: true, 
+        commerceMode: true, 
+        followers: 5300, 
+        rating: 4.9,
+        type: 'Stadion',
+        feedbacks: [
+            { type: 'highlight', text: 'Schneller Shuttle-Transfer nach dem Spielende direkt zur VIP-Lounge.', user: 'Max R.' },
+            { type: 'idea', text: 'Mehr E-Ladesäulen im VIP Bereich wünschenswert.', user: 'Julia V.' }
         ]
     }
 };
@@ -47,7 +47,13 @@ const AdminPartnerHub = () => {
         const stored = localStorage.getItem('green_partners_data');
         if (stored) {
             try {
-                setPartners(JSON.parse(stored));
+                const parsed = JSON.parse(stored);
+                if (parsed["Skyline Club"] || parsed["The Grid Bar"]) {
+                    setPartners(defaultPartners);
+                    localStorage.setItem('green_partners_data', JSON.stringify(defaultPartners));
+                } else {
+                    setPartners(parsed);
+                }
             } catch (e) {
                 setPartners(defaultPartners);
             }

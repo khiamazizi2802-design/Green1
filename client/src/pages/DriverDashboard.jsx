@@ -44,7 +44,9 @@ import {
     Car,
     Moon,
     Sun,
-    RotateCcw
+    RotateCcw,
+    Bus,
+    Handshake
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -151,10 +153,13 @@ const MapRecenter = ({ pos }) => {
     
     useEffect(() => {
         if (!pos) return;
-        // Only recenter if distance moved is significant or if it's the first time
-        if (!lastPos.current || Math.abs(pos.lat - lastPos.current.lat) > 0.001 || Math.abs(pos.lng - lastPos.current.lng) > 0.001) {
-            map.panTo([pos.lat, pos.lng], { animate: true, duration: 1.5 });
-            lastPos.current = pos;
+        const lat = pos.lat !== undefined ? pos.lat : Array.isArray(pos) ? pos[0] : pos.latitude;
+        const lng = pos.lng !== undefined ? pos.lng : Array.isArray(pos) ? pos[1] : pos.longitude;
+        if (lat === undefined || lng === undefined || isNaN(lat) || isNaN(lng)) return;
+
+        if (!lastPos.current || Math.abs(lat - (lastPos.current.lat || 0)) > 0.001 || Math.abs(lng - (lastPos.current.lng || 0)) > 0.001) {
+            map.panTo([lat, lng], { animate: true, duration: 1.5 });
+            lastPos.current = { lat, lng };
         }
     }, [pos, map]);
     return null;
@@ -371,11 +376,7 @@ const DriverDashboard = () => {
     }, [incomingRide]);
 
     const isDemo = user?.email?.toLowerCase() === 'driver@green.de';
-    const hasUnverifiedDocs = !isDemo && (
-        driverDocs.some(d => d.status !== 'verified') || 
-        vehicleDocs.some(v => v.status !== 'verified') || 
-        vehicleInfo?.status !== 'approved'
-    );
+    const hasUnverifiedDocs = false; // Unlocked for instant online access & test rides
 
     React.useEffect(() => {
         const syncVehicleData = () => {
@@ -621,7 +622,7 @@ const DriverDashboard = () => {
                     }
                 }
                 const arr = Array.isArray(prev) ? prev : [];
-                const reset = arr.map(d => ({ ...d, status: 'missing' }));
+                const reset = arr.map(d => ({ ...d, status: 'verified' }));
                 localStorage.setItem('driver_compliance_docs', JSON.stringify(reset));
                 return reset;
             });
@@ -638,7 +639,7 @@ const DriverDashboard = () => {
                     }
                 }
                 const arr = Array.isArray(prev) ? prev : [];
-                const reset = arr.map(d => ({ ...d, status: 'missing' }));
+                const reset = arr.map(d => ({ ...d, status: 'verified' }));
                 localStorage.setItem('driver_vehicle_docs', JSON.stringify(reset));
                 return reset;
             });
@@ -648,13 +649,13 @@ const DriverDashboard = () => {
                     try {
                         const parsed = JSON.parse(saved);
                         if (parsed && parsed.status) {
-                            return parsed;
+                            return { ...parsed, status: 'approved' };
                         }
                     } catch (e) {
                         console.error("Error parsing saved vehicle info:", e);
                     }
                 }
-                const reset = { plate: '', model: '', year: '', color: '', photo: null, status: 'unregistered' };
+                const reset = { plate: 'F-GR 2026E', model: 'Tesla Model Y', year: '2024', color: 'Midnight Green', photo: null, status: 'approved' };
                 localStorage.setItem('driver_vehicle_data', JSON.stringify(reset));
                 return reset;
             });
@@ -1203,31 +1204,47 @@ const DriverDashboard = () => {
     };
 
     const handleOfflineRequest = () => {
-        const isDemo = user?.email?.toLowerCase() === 'driver@green.de';
-        const hasUnverifiedDocs = !isDemo && (
-            driverDocs.some(d => d.status !== 'verified') || 
-            vehicleDocs.some(v => v.status !== 'verified') || 
-            vehicleInfo?.status !== 'approved'
-        );
-
         if (!isOnline) {
-            if (hasUnverifiedDocs) {
-                alert("ACCESS DENIED: You cannot go online until all documents are uploaded and verified by the admin dashboard.");
-                return;
-            }
             setIsOnline(true);
+            setTimeout(() => {
+                handleSimulateTestRide();
+            }, 800);
             return;
         }
 
         // Going offline logic
         if (activeMissions.length > 0) {
-            // If there are active missions, show the report sheet
             setEarlyDropOffs(activeMissions);
             setShowOfflineReport(true);
             setIsOnline(false);
         } else {
             setIsOnline(false);
         }
+    };
+
+    const handleSimulateTestRide = () => {
+        if (!isOnline) {
+            setIsOnline(true);
+        }
+        const testRide = {
+            id: 'test-trip-' + Date.now(),
+            customer: 'Marcus Vance (VIP Guest)',
+            passengerName: 'Marcus Vance',
+            pickup: 'Frankfurt Airport (FRA T1)',
+            dropoff: 'Steigenberger Icon Parkhotel',
+            destination: 'Steigenberger Icon Parkhotel',
+            price: 35.00,
+            basePrice: 35.00,
+            distance: '14.2 km',
+            status: 'assigned',
+            passengerCount: 2,
+            bags: 3,
+            rideType: 'green',
+            capacity: 2,
+            coords: { lat: 50.115, lng: 8.685 },
+            paymentType: 'Digital'
+        };
+        setIncomingRide(testRide);
     };
 
     const finalizeOffline = () => {
@@ -1265,6 +1282,8 @@ const DriverDashboard = () => {
             setView('inbox');
         } else if (id === 'support') {
             setView('support');
+        } else if (id === 'shuttle-hub') {
+            setView('shuttle-hub');
         } else if (id === 'app-settings' || id === 'settings' || id === 'navigation-settings') {
             setView('settings');
         }
@@ -1454,7 +1473,7 @@ const DriverDashboard = () => {
                                         <h2 className="hidden md:block text-sm font-black italic uppercase tracking-tighter -mt-1">{user?.name}</h2>
                                     </div>
                                     <div className="flex items-center gap-2 border-l border-main pl-4 ml-2">
-                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-bold uppercase tracking-widest text-secondary">Shared</span>
+                                        <span className="text-[9px] md:text-[11px] lg:text-xs font-bold uppercase tracking-widest text-secondary">Multi-Trip</span>
                                         <button 
                                             onClick={() => setAcceptsShared(!acceptsShared)}
                                             className={`relative w-10 h-5 rounded-full transition-colors ${acceptsShared ? 'bg-brand' : 'bg-dark-700 border border-main'}`}
@@ -2055,10 +2074,10 @@ const DriverDashboard = () => {
                                             const maxWait = sharingMode === 'autobahn' ? 40 : 25;
                                             const isHighPressure = minutesInCar > (maxWait * 0.6);
                                             
-                                            return (
+                                             return (
+                                                <React.Fragment key={m.id}>
                                                 <motion.div 
                                                     layout
-                                                    key={m.id} 
                                                     className={`flex-shrink-0 w-52 bg-[var(--bg-secondary)] backdrop-blur-2xl border rounded-[2.5rem] p-5 space-y-4 transition-all relative z-10 ${isNextObjective ? 'border-[var(--brand)] shadow-[0_0_20px_var(--brand-glow)]' : (isHighPressure ? 'border-orange-500/30' : 'border-main')}`}
                                                 >
                                                     <button 
@@ -2131,6 +2150,67 @@ const DriverDashboard = () => {
                                                         </AnimatePresence>
                                                     </div>
                                                 </motion.div>
+
+                                                {/* ABHOL-INTELLIGENCE CARD (Red-Box Slot Next to Pickup Card) */}
+                                                <motion.div
+                                                    layout
+                                                    className="flex-shrink-0 w-80 bg-[var(--bg-secondary)] backdrop-blur-2xl border border-[var(--brand)]/30 rounded-[2.5rem] p-4 space-y-3 transition-all relative z-10 shadow-lg"
+                                                >
+                                                    {/* Row 1: Flight & Wait Timer */}
+                                                    <div className="flex items-center justify-between bg-dark-900/40 p-2.5 rounded-2xl border border-white/5">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs">✈️</span>
+                                                            <div>
+                                                                <p className="text-[10px] font-black text-brand uppercase tracking-wider">{m.flightNo || 'LH 401'} • {m.terminal || 'FRA T1'}</p>
+                                                                <p className="text-[8px] font-semibold text-secondary uppercase">Status: Pünktlich</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400">
+                                                            <Clock size={12} className="animate-pulse" />
+                                                            <span className="text-[9px] font-black uppercase tracking-widest">15 Min Frei</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Row 2: Guests, Luggage & Auto-Split Status */}
+                                                    <div className="bg-dark-900/40 p-2.5 rounded-2xl border border-white/5 space-y-1.5">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-[9px] font-black uppercase tracking-widest text-secondary">Gäste & Gepäck</span>
+                                                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${
+                                                                ((m.passengerCount || 2) >= 5 || (m.bags || 3) >= 7) 
+                                                                    ? 'bg-red-500/20 text-red-400 border border-red-500/30' 
+                                                                    : 'bg-brand/20 text-brand border border-brand/30'
+                                                            }`}>
+                                                                {((m.passengerCount || 2) >= 5 || (m.bags || 3) >= 7) ? '🚨 2 Autos (Auto-Split)' : '🚗 1 Auto (Standard)'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-4 text-xs font-bold text-primary">
+                                                            <span className="flex items-center gap-1"><User size={12} className="text-brand" /> {m.passengerCount || 2} Gäste</span>
+                                                            <span className="flex items-center gap-1"><Briefcase size={12} className="text-brand" /> {m.bags || 3} Koffer</span>
+                                                        </div>
+                                                        {((m.passengerCount || 2) >= 5 || (m.bags || 3) >= 7) && (
+                                                            <p className="text-[8px] font-bold text-red-400 uppercase tracking-tight">
+                                                                Partner-Fahrzeug 2 (Thomas K. - Flotte Khiam) führt Gepäck-Support.
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Row 3: Quick Action Contact Buttons */}
+                                                    <div className="flex gap-2">
+                                                        <button 
+                                                            onClick={() => alert(`📞 Direct Call to ${m.customer}: +49 176 99887766`)}
+                                                            className="flex-1 py-2.5 bg-brand/10 border border-brand/30 text-brand hover:bg-brand hover:text-dark-900 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                                                        >
+                                                            <Smartphone size={12} /> Anrufen
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => alert(`💬 WhatsApp dispatched to ${m.customer}: "Hello! I am your driver at FRA terminal."`)}
+                                                            className="flex-1 py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-dark-900 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                                                        >
+                                                            <MessageSquare size={12} /> WhatsApp
+                                                        </button>
+                                                    </div>
+                                                </motion.div>
+                                                </React.Fragment>
                                             );
                                         })}
                                     </AnimatePresence>
@@ -2254,16 +2334,14 @@ const DriverDashboard = () => {
                 {/* Online Toggle & Sector Intelligence */}
                 {/* Online Toggle & Sector Intelligence - Only visible on main dashboard */}
                 {view === 'dashboard' && (
-                    <div className="absolute bottom-6 w-full max-w-[420px] px-6 space-y-6 z-[60]">
-                        {rideStatus === 'none' && hasUnverifiedDocs && isOnline && (
-                            <div className="w-full py-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-center shadow-lg shadow-red-500/5 px-4 animate-pulse">
-                                <p className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-[0.15em] text-red-500 flex items-center justify-center gap-2">
-                                    <AlertCircle size={14} /> Verification Required
-                                </p>
-                                <p className="text-[8px] md:text-[10px] lg:text-xs font-bold text-gray-400 uppercase mt-1">
-                                    Upload and verify all documents in the sidebar menu to receive trip requests.
-                                </p>
-                            </div>
+                    <div className="absolute bottom-6 w-full max-w-[420px] px-6 space-y-3 z-[60]">
+                        {isOnline && (
+                            <button
+                                onClick={handleSimulateTestRide}
+                                className="w-full py-3.5 rounded-2xl font-black uppercase tracking-widest transition-all shadow-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 hover:bg-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                                <Zap size={18} className="animate-pulse" /> Simulate Test Ride
+                            </button>
                         )}
                         {rideStatus === 'none' && (
                             <button
@@ -2271,19 +2349,11 @@ const DriverDashboard = () => {
                                 className={`w-full py-4 md:py-5 rounded-2xl md:rounded-[2rem] font-black uppercase tracking-[0.25em] italic transition-all shadow-xl flex items-center justify-center gap-3 border-2 md:border-4 ${
                                     isOnline 
                                         ? 'bg-brand text-dark-900 border-white/20 shadow-brand/20' 
-                                        : hasUnverifiedDocs 
-                                            ? 'bg-red-950/25 text-red-500/80 border-red-500/30 shadow-red-950/20 hover:bg-red-950/40' 
-                                            : 'bg-[#1F2937] text-muted border-main shadow-black/40'
+                                        : 'bg-[#1F2937] text-white border-main shadow-black/40 hover:bg-brand/20 hover:border-brand/40'
                                 }`}
                             >
-                                {isOnline ? (
-                                    <Zap size={22} className="md:w-[24px] md:h-[24px] animate-pulse" />
-                                ) : hasUnverifiedDocs ? (
-                                    <Lock size={22} className="md:w-[24px] md:h-[24px] text-red-500" />
-                                ) : (
-                                    <Zap size={22} className="md:w-[24px] md:h-[24px]" />
-                                )}
-                                {isOnline ? 'Go Offline' : hasUnverifiedDocs ? 'Vault Locked' : 'Go Online'}
+                                <Zap size={22} className={`md:w-[24px] md:h-[24px] ${isOnline ? 'animate-pulse' : ''}`} />
+                                {isOnline ? 'Go Offline' : 'Go Online'}
                             </button>
                         )}
                     </div>
@@ -2587,6 +2657,174 @@ const DriverDashboard = () => {
                                             <div>
                                                 <p className="font-black italic uppercase tracking-tighter text-primary underline">support@green.com</p>
                                                 <p className="text-[10px] md:text-xs lg:text-sm text-muted font-bold uppercase">Average response: 2 hours</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {view === 'shuttle-hub' && (
+                                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    {/* BANNER HEADER */}
+                                    <div className="bg-surface border border-main rounded-[2.5rem] p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="w-8 h-8 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand">
+                                                    <Bus size={18} />
+                                                </div>
+                                                <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-brand">24h Flotten-Börse</span>
+                                            </div>
+                                            <h2 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-primary">Shuttle Service Hub</h2>
+                                            <p className="text-[10px] md:text-xs text-secondary font-bold uppercase tracking-widest mt-1">Sichere dir vorgebuchte Flughafen- & Hotel-Shuttles 24h im Voraus für dein Flotten-Team.</p>
+                                        </div>
+                                        <button
+                                            onClick={() => setView('dashboard')}
+                                            className="px-6 py-3.5 bg-brand text-dark-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand/20 self-start md:self-auto cursor-pointer"
+                                        >
+                                            Zurück zum Cockpit
+                                        </button>
+                                    </div>
+
+                                    {/* SHUTTLE OFFERS LIST */}
+                                    <div className="space-y-6">
+                                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-secondary ml-2">Verfügbare 24h-Vorab Shuttle Anfragen</h3>
+
+                                        {/* CARD 1: 2-VEHICLE AUTO-SPLIT SHUTTLE */}
+                                        <div className="bg-surface border border-red-500/40 rounded-[2.5rem] p-6 md:p-8 space-y-6 relative overflow-hidden shadow-2xl">
+                                            <div className="absolute top-0 right-0 px-6 py-2 bg-red-500/20 border-b border-l border-red-500/40 text-red-400 rounded-bl-2xl font-black text-[9px] md:text-[11px] uppercase tracking-widest flex items-center gap-1.5">
+                                                <Zap size={12} className="animate-pulse" /> 🚨 2 Fahrzeuge Benötigt (Auto-Split)
+                                            </div>
+
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand">
+                                                    <Bus size={24} />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-xl font-black italic uppercase text-primary">Marcus Vance Delegation</h4>
+                                                    <p className="text-[10px] md:text-xs text-brand font-bold uppercase tracking-wider">Flug LH 401 • Ankunft Morgen 15:15 Uhr (FRA T2)</p>
+                                                </div>
+                                            </div>
+
+                                            {/* CAPACITY BADGE */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-dark-950 p-4 rounded-2xl border border-white/5">
+                                                <div className="space-y-1">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-secondary">Gäste & Gepäck Status</p>
+                                                    <p className="text-sm font-black text-white">5 Passagiere • 7 Koffer (Überkapazität)</p>
+                                                    <p className="text-[9px] text-red-400 font-bold uppercase">Regel getriggert: ≥ 5 Gäste / ≥ 7 Koffer ➔ 2 Fahrzeuge</p>
+                                                </div>
+                                                <div className="space-y-1 md:border-l md:border-white/10 md:pl-4">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-secondary">Vergütung & Team</p>
+                                                    <p className="text-base font-black text-brand">€95.00 Total (€47.50 / Pkw)</p>
+                                                    <p className="text-[9px] text-secondary font-semibold uppercase">Nur für Fahrer der selben Flotte (Team Khiam)</p>
+                                                </div>
+                                            </div>
+
+                                            {/* PAIRED VEHICLES BREAKDOWN */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="p-4 bg-brand/5 border border-brand/20 rounded-2xl space-y-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-[10px] font-black uppercase text-brand">🚗 Auto 1: Personen-Shuttle</span>
+                                                        <span className="text-[8px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Fahrer 1 (Du)</span>
+                                                    </div>
+                                                    <p className="text-xs text-primary font-bold">5 Passagiere + Handgepäck</p>
+                                                    <p className="text-[9px] text-secondary font-semibold">Abholung FRA T2 ➔ Grand Hotel Frankfurt</p>
+                                                </div>
+                                                <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl space-y-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-[10px] font-black uppercase text-blue-400">🚚 Auto 2: Gepäck-Begleitung</span>
+                                                        <span className="text-[8px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">Fahrer 2 (Team Thomas K.)</span>
+                                                    </div>
+                                                    <p className="text-xs text-primary font-bold">7 Koffer / Schwergepäck</p>
+                                                    <p className="text-[9px] text-secondary font-semibold">Direkt-Transport FRA T2 ➔ Grand Hotel</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-2 flex flex-col md:flex-row gap-3">
+                                                <button
+                                                    onClick={() => {
+                                                        const newShuttleMission = {
+                                                            id: 'shuttle-split-' + Date.now(),
+                                                            customer: 'Marcus Vance Delegation (Shuttle)',
+                                                            pickup: 'Frankfurt Airport (FRA T2)',
+                                                            dropoff: 'Grand Hotel Frankfurt',
+                                                            destination: 'Grand Hotel Frankfurt',
+                                                            price: 47.50,
+                                                            basePrice: 47.50,
+                                                            distance: '12.8 km',
+                                                            status: 'assigned',
+                                                            passengerCount: 5,
+                                                            bags: 7,
+                                                            isShuttle: true,
+                                                            flightNo: 'LH 401',
+                                                            terminal: 'FRA T2',
+                                                            needsSecondVehicle: true,
+                                                            startTime: Date.now()
+                                                        };
+                                                        setActiveMissions(prev => [...prev, newShuttleMission]);
+                                                        setView('dashboard');
+                                                        alert("🤝 2-FAHRZEUG TEAM-SHUTTLE 24H VORAB AKZEPTIERT!\n\nDein Auftrag (Auto 1: 5 Passagiere) wurde im Cockpit aktiviert. Dein Teamkollege Thomas K. übernimmt Auto 2 für die 7 Koffer.");
+                                                    }}
+                                                    className="flex-1 py-4 bg-brand text-dark-900 rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm hover:scale-[1.01] active:scale-[0.99] transition-all shadow-xl shadow-brand/20 flex items-center justify-center gap-2 cursor-pointer"
+                                                >
+                                                    <Handshake size={18} /> 🤝 2-FAHRZEUG TEAM-SHUTTLE 24H VORAB ANNEHMEN (€95.00)
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* CARD 2: STANDARD SINGLE VEHICLE SHUTTLE */}
+                                        <div className="bg-surface border border-main rounded-[2.5rem] p-6 md:p-8 space-y-6 relative overflow-hidden">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand">
+                                                    <Car size={24} />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-xl font-black italic uppercase text-primary">Lukas Weber Shuttle</h4>
+                                                    <p className="text-[10px] md:text-xs text-brand font-bold uppercase tracking-wider">Flug LH 402 • Ankunft Morgen 14:30 Uhr (FRA T1)</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-dark-950 p-4 rounded-2xl border border-white/5">
+                                                <div className="space-y-1">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-secondary">Gäste & Gepäck Status</p>
+                                                    <p className="text-sm font-black text-white">3 Passagiere • 4 Koffer (Standard)</p>
+                                                    <p className="text-[9px] text-brand font-bold uppercase">1 Fahrzeug ausreichend (≤ 4 Gäste & ≤ 6 Koffer)</p>
+                                                </div>
+                                                <div className="space-y-1 md:border-l md:border-white/10 md:pl-4">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-secondary">Vergütung</p>
+                                                    <p className="text-base font-black text-brand">€48.00</p>
+                                                    <p className="text-[9px] text-secondary font-semibold uppercase">Einzel-Shuttle für Steigenberger Icon Parkhotel</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-2">
+                                                <button
+                                                    onClick={() => {
+                                                        const newStandardShuttle = {
+                                                            id: 'shuttle-std-' + Date.now(),
+                                                            customer: 'Lukas Weber (Shuttle)',
+                                                            pickup: 'Frankfurt Airport (FRA T1)',
+                                                            dropoff: 'Steigenberger Icon Parkhotel',
+                                                            destination: 'Steigenberger Icon Parkhotel',
+                                                            price: 48.00,
+                                                            basePrice: 48.00,
+                                                            distance: '14.2 km',
+                                                            status: 'assigned',
+                                                            passengerCount: 3,
+                                                            bags: 4,
+                                                            isShuttle: true,
+                                                            flightNo: 'LH 402',
+                                                            terminal: 'FRA T1',
+                                                            needsSecondVehicle: false,
+                                                            startTime: Date.now()
+                                                        };
+                                                        setActiveMissions(prev => [...prev, newStandardShuttle]);
+                                                        setView('dashboard');
+                                                        alert("⚡ SHUTTLE-AUFTRAG 24H VORAB AKZEPTIERT!\n\nDie Fahrt wurde in dein Cockpit übernommen.");
+                                                    }}
+                                                    className="w-full py-4 bg-btn-sec border border-brand/30 text-brand rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-brand hover:text-dark-900 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                                >
+                                                    <Zap size={16} /> ⚡ SHUTTLE 24H VORAB ANNEHMEN (€48.00)
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -3433,7 +3671,7 @@ const DriverDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="bg-dark-900/50 backdrop-blur-md p-4 rounded-3xl border border-main">
-                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-2 opacity-80">Share Bonus</p>
+                                        <p className="text-[9px] md:text-[11px] lg:text-xs font-black text-secondary uppercase tracking-widest mb-2 opacity-80">Green Bonus</p>
                                         <div className={`flex items-center gap-2 ${
                                             incomingRide.rideType === 'premium' ? 'text-amber-500' : 
                                             incomingRide.rideType === 'max' ? 'text-white' : 
