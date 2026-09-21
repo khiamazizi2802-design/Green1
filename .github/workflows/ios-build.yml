@@ -127,24 +127,10 @@ jobs:
                    -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist \
                    -exportPath $RUNNER_TEMP/build
 
-    - name: Prepare App Store API Key
-      env:
-        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-        APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-      run: |
-        mkdir -p ~/private_keys
-        CLEAN_KEY_ID=$(echo -n "$APP_STORE_CONNECT_KEY_ID" | tr -d '\r' | tr -d '\n' | tr -d ' ')
-        echo -n "$APP_STORE_CONNECT_API_KEY" | tr -d '\r' > ~/private_keys/AuthKey_$CLEAN_KEY_ID.p8
-
     - name: Upload to TestFlight
-      env:
-        APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-        APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-      run: |
-        CLEAN_KEY_ID=$(echo -n "$APP_STORE_CONNECT_KEY_ID" | tr -d '\r' | tr -d '\n' | tr -d ' ')
-        CLEAN_ISSUER_ID=$(echo -n "$APP_STORE_CONNECT_ISSUER_ID" | tr -d '\r' | tr -d '\n' | tr -d ' ')
-        xcrun altool --upload-app \
-                     --type ios \
-                     --file $RUNNER_TEMP/build/App.ipa \
-                     --apiKey $CLEAN_KEY_ID \
-                     --apiIssuer $CLEAN_ISSUER_ID
+      uses: apple-actions/upload-testflight-build@v1
+      with:
+        app-path: ${{ runner.temp }}/build/App.ipa
+        issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+        api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
