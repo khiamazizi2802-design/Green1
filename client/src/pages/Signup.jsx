@@ -113,7 +113,7 @@ const Signup = () => {
             <div className="w-full max-w-lg relative z-10 bg-[var(--bg-secondary)]/50 backdrop-blur-2xl border border-white/5 p-8 md:p-10 rounded-[40px] shadow-2xl">
                 <div className="mb-8 text-center">
                     <h1 className="text-4xl font-black tracking-tighter italic uppercase mb-2" style={{ color: 'var(--text-primary)' }}>Create <span className="text-brand">Account</span></h1>
-                    <p className="text-[var(--text-muted)] font-black uppercase tracking-widest text-[11px] md:text-sm lg:text-base">Become a Green Member</p>
+                    <p className="text-[var(--text-muted)] font-black uppercase tracking-widest text-[11px] md:text-sm lg:text-base">Become a Grien Member</p>
                 </div>
 
                 <form onSubmit={handleSignup} className="space-y-5">
@@ -212,26 +212,7 @@ const Signup = () => {
                                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                             />
                         </div>
-                        {role === 'passenger' && (
-                            <div className="relative md:col-span-2">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                                <input
-                                    type="number"
-                                    placeholder="Age / Alter (z. B. 16, 17, 18+)"
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand/40 text-sm font-bold text-[var(--text-primary)] placeholder:text-gray-400/60 transition-colors"
-                                    required
-                                    min="1"
-                                    max="120"
-                                    value={formData.age}
-                                    onChange={(e) => setFormData({...formData, age: e.target.value})}
-                                />
-                            </div>
-                        )}
-                        {role === 'passenger' && (formData.age === '16' || formData.age === '17') && (
-                            <div className="p-4 bg-brand/10 border border-brand/20 rounded-2xl text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-widest text-brand md:col-span-2 flex items-center gap-2 animate-pulse">
-                                <ShieldCheck size={14} /> Einladung erforderlich: Sie benötigen eine aktive elterliche Einladung per E-Mail!
-                            </div>
-                        )}
+
                         <div className="relative md:col-span-2">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                             <input
@@ -289,7 +270,7 @@ const Signup = () => {
                                 </div>
                             </div>
                             <p className="text-[9px] md:text-[11px] lg:text-xs text-[var(--text-muted)] font-medium leading-relaxed">
-                                After registering, you will receive a unique <strong className="text-white">Green ID</strong>. Share it with your Manager — they will link you to your business from their dashboard.
+                                After registering, you will receive a unique <strong className="text-white">Grien ID</strong>. Share it with your Manager — they will link you to your business from their dashboard.
                             </p>
                         </motion.div>
                     )}
@@ -304,7 +285,7 @@ const Signup = () => {
                         type="submit"
                         className="neon-button w-full py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 mt-4"
                     >
-                        Access Green <ChevronRight size={18} />
+                        Access Grien <ChevronRight size={18} />
                     </button>
                 </form>
 
