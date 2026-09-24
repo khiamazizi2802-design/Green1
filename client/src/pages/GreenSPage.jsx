@@ -450,61 +450,7 @@ const GreenSPage = ({ embedMode = false, onCloseEmbed }) => {
                     </div>
                 </section>
 
-                {/* --- LIFESTYLE HUB SLIDER (Gateway to Discovery) --- */}
-                {groupState !== 'active' && (
-                    <section className="mb-10 animate-in fade-in duration-500">
-                        <div className="flex items-center justify-between mb-8 px-2">
-                            <div />
-                            <span className="text-[10px] md:text-xs lg:text-sm font-black text-black uppercase tracking-[0.4em] italic">Hub Select</span>
-                        </div>
-                        
-                        <div 
-                            className="px-2 overflow-x-auto no-scrollbar scroll-smooth cursor-grab" 
-                            ref={containerRef}
-                            onMouseDown={(e) => {
-                                const ele = e.currentTarget;
-                                ele.style.cursor = 'grabbing';
-                                ele.style.userSelect = 'none';
-                                const startX = e.pageX - ele.offsetLeft;
-                                const scrollLeft = ele.scrollLeft;
-                                
-                                const handleMouseMove = (moveEvent) => {
-                                    const x = moveEvent.pageX - ele.offsetLeft;
-                                    const walk = (x - startX) * 1.5;
-                                    ele.scrollLeft = scrollLeft - walk;
-                                };
-                                
-                                const handleMouseUp = () => {
-                                    ele.style.cursor = 'grab';
-                                    ele.style.removeProperty('user-select');
-                                    document.removeEventListener('mousemove', handleMouseMove);
-                                    document.removeEventListener('mouseup', handleMouseUp);
-                                };
-                                
-                                document.addEventListener('mousemove', handleMouseMove);
-                                document.addEventListener('mouseup', handleMouseUp);
-                            }}
-                        >
-                            <div className="flex gap-4 pb-6 w-fit pr-20">
-                                {lifestyleEntities.map((entity) => (
-                                    <button
-                                        key={entity.id}
-                                        onClick={() => {
-                                            navigate('/discovery', { state: { category: entity.id } });
-                                        }}
-                                        className="flex-shrink-0 flex flex-col items-center gap-4 group"
-                                    >
-                                        <div className="w-20 h-20 rounded-3xl bg-white border-2 border-black/10 flex items-center justify-center group-hover:border-black transition-all shadow-xl relative overflow-hidden">
-                                            <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                            <entity.icon size={32} strokeWidth={2.5} className={`group-hover:scale-110 group-hover:rotate-6 transition-transform ${entity.color}`} />
-                                        </div>
-                                        <span className="text-xs md:text-sm lg:text-base font-black uppercase tracking-widest text-black transition-colors">{entity.label}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-                )}
+
 
                 {/* --- PREMIUM FAIR-SPLIT ENGINE & GROUP FORMATION --- */}
                 <section className="mb-10">
