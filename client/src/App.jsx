@@ -82,7 +82,7 @@ function App() {
                             <Route element={<ProtectedRoute roles={['passenger']} />}>
                                 <Route path="/home" element={<Home />} />
                                 <Route path="/green-ride" element={<GreenRidePage />} />
-                                <Route path="/greens" element={<GreenSPage />} />
+                                <Route path="/greens" element={<DiscoveryGallery />} />
                                 <Route path="/venue/menu" element={<VenueMenuPage />} />
                                 <Route path="/partner/details" element={<PartnerDetailsPage />} />
                                 <Route path="/discovery" element={<DiscoveryGallery />} />

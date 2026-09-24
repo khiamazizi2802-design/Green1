@@ -2,18 +2,22 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ArrowLeft, Search, Sparkles, Star, MapPin, Navigation, ArrowRight,
-    Zap, Utensils, BedDouble, GlassWater, Trophy, Compass, ShieldCheck
+    Zap, Utensils, BedDouble, GlassWater, Trophy, Compass, ShieldCheck, Users, X
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { db } from '../config/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
+import Sheet from '../components/Sheet';
+import GreenSPage from './GreenSPage';
 
 const DiscoveryGallery = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
     
+    const [isToolsOpen, setIsToolsOpen] = useState(false);
+
     // Default to 'hotel' if no state passed
     const initialCategory = location.state?.category || 'hotel';
     const [activeCategory, setActiveCategory] = useState(initialCategory);
@@ -120,18 +124,28 @@ const DiscoveryGallery = () => {
                 <header className="flex items-center justify-between mb-8 pt-6">
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={() => navigate('/greens')}
+                            onClick={() => navigate('/home')}
                             className="w-12 h-12 bg-[var(--bg-secondary)] border border-white/10 rounded-2xl flex items-center justify-center text-brand hover:border-brand/40 transition-all shadow-lg active:scale-90"
                         >
                             <ArrowLeft size={24} />
                         </button>
                         <div>
-                            <h1 className="text-2xl font-black italic tracking-tighter uppercase leading-none">Discover</h1>
-                            <p className="text-brand font-black uppercase tracking-[0.2em] text-[8px] md:text-[10px] lg:text-xs italic mt-1">Exclusive Network</p>
+                            <h1 className="text-2xl font-black italic tracking-tighter uppercase leading-none">Grien S</h1>
+                            <p className="text-brand font-black uppercase tracking-[0.2em] text-[8px] md:text-[10px] lg:text-xs italic mt-1">Exclusive Venues & Stadiums</p>
                         </div>
                     </div>
-                    <div className="p-3 bg-brand/10 border border-brand/20 rounded-2xl text-brand animate-pulse">
-                        <Sparkles size={20} />
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsToolsOpen(true)}
+                            className="p-3 bg-brand/10 border border-brand/30 rounded-2xl text-brand hover:bg-brand/20 active:scale-95 transition-all flex items-center gap-2 shadow-lg"
+                            title="Grien Circle & Social Hub"
+                        >
+                            <Users size={20} />
+                            <span className="text-[10px] font-black uppercase tracking-wider hidden sm:inline">Circle & Tools</span>
+                        </button>
+                        <div className="p-3 bg-brand/10 border border-brand/20 rounded-2xl text-brand animate-pulse">
+                            <Sparkles size={20} />
+                        </div>
                     </div>
                 </header>
 
@@ -297,6 +311,30 @@ const DiscoveryGallery = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Grien Circle & Social Tools Modal Sheet */}
+            <Sheet isOpen={isToolsOpen} onClose={() => setIsToolsOpen(false)} position="bottom" className="bg-[#0b0c10] text-white max-w-lg mx-auto border-brand/20">
+                <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand">
+                            <Users size={20} />
+                        </div>
+                        <div>
+                            <h3 className="text-base font-black italic uppercase text-white">Grien Circle & Social Hub</h3>
+                            <p className="text-[9px] text-brand font-bold uppercase tracking-widest">Manage Circle • Fair Split • Location • Support</p>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={() => setIsToolsOpen(false)}
+                        className="p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-all active:scale-95"
+                    >
+                        <X size={18} />
+                    </button>
+                </div>
+                <div className="max-h-[75vh] overflow-y-auto no-scrollbar">
+                    <GreenSPage embedMode={true} onCloseEmbed={() => setIsToolsOpen(false)} />
+                </div>
+            </Sheet>
         </div>
     );
 };

@@ -13,7 +13,7 @@ import { useRide } from '../context/RideContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query, limit } from 'firebase/firestore';
 
-const GreenSPage = () => {
+const GreenSPage = ({ embedMode = false, onCloseEmbed }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { venueTickets, mutualFriends } = useRide();
@@ -317,45 +317,47 @@ const GreenSPage = () => {
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand/5 blur-[100px] rounded-full pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" />
 
-            <div className="relative z-10 p-6 pb-24 max-w-lg mx-auto min-h-[100dvh] overflow-y-auto no-scrollbar">
+            <div className={embedMode ? "relative z-10 p-1 pb-6 max-w-lg mx-auto" : "relative z-10 p-6 pb-24 max-w-lg mx-auto min-h-[100dvh] overflow-y-auto no-scrollbar"}>
                 {/* Header */}
-                <header className="flex items-center justify-between mb-8 safe-top-padding">
-                    <div className="flex items-center gap-4">
-                        <button
-                            onClick={() => navigate('/home')}
-                            className="w-12 h-12 bg-[var(--bg-secondary)] border border-white/10 rounded-2xl flex items-center justify-center text-brand hover:border-brand/40 transition-all shadow-lg active:scale-90"
-                        >
-                            <ArrowLeft size={24} />
-                        </button>
-                        <div>
-                            <h1 className="text-3xl font-black italic tracking-tighter uppercase leading-none text-white">GreenS</h1>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        {venueTickets.length > 0 && (
-                            <motion.button 
-                                animate={{ 
-                                    opacity: [0.7, 1, 0.7], 
-                                    scale: [1, 1.1, 1],
-                                    boxShadow: ['0 0 20px rgba(255,255,255,0.1)', '0 0 40px rgba(255,255,255,0.2)', '0 0 20px rgba(255,255,255,0.1)']
-                                }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                                onClick={() => {
-                                    setShowTicketHub(true);
-                                }}
-                                className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/30 text-brand flex items-center justify-center relative transition-all shadow-lg active:scale-90"
+                {!embedMode && (
+                    <header className="flex items-center justify-between mb-8 safe-top-padding">
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => navigate('/home')}
+                                className="w-12 h-12 bg-[var(--bg-secondary)] border border-white/10 rounded-2xl flex items-center justify-center text-brand hover:border-brand/40 transition-all shadow-lg active:scale-90"
                             >
-                                <Ticket size={22} />
-                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-white text-dark-900 text-[9px] md:text-[11px] lg:text-xs font-black rounded-full flex items-center justify-center border-2 border-brand shadow-lg">
-                                    {venueTickets.length}
-                                </span>
-                            </motion.button>
-                        )}
-                        <div className="w-12 h-12 rounded-full border-2 border-brand/20 p-1 overflow-hidden">
-                             <img src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`} className="w-full h-full rounded-full" alt="profile" />
+                                <ArrowLeft size={24} />
+                            </button>
+                            <div>
+                                <h1 className="text-3xl font-black italic tracking-tighter uppercase leading-none text-white">GreenS</h1>
+                            </div>
                         </div>
-                    </div>
-                </header>
+                        <div className="flex items-center gap-4">
+                            {venueTickets.length > 0 && (
+                                <motion.button 
+                                    animate={{ 
+                                        opacity: [0.7, 1, 0.7], 
+                                        scale: [1, 1.1, 1],
+                                        boxShadow: ['0 0 20px rgba(255,255,255,0.1)', '0 0 40px rgba(255,255,255,0.2)', '0 0 20px rgba(255,255,255,0.1)']
+                                    }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                    onClick={() => {
+                                        setShowTicketHub(true);
+                                    }}
+                                    className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/30 text-brand flex items-center justify-center relative transition-all shadow-lg active:scale-90"
+                                >
+                                    <Ticket size={22} />
+                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-white text-dark-900 text-[9px] md:text-[11px] lg:text-xs font-black rounded-full flex items-center justify-center border-2 border-brand shadow-lg">
+                                        {venueTickets.length}
+                                    </span>
+                                </motion.button>
+                            )}
+                            <div className="w-12 h-12 rounded-full border-2 border-brand/20 p-1 overflow-hidden">
+                                 <img src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Alex'}`} className="w-full h-full rounded-full" alt="profile" />
+                            </div>
+                        </div>
+                    </header>
+                )}
                 {/* Promoted Stadium Event Banner */}
                 {promotedEvent && (
                     <section className="mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
