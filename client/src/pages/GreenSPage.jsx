@@ -631,34 +631,6 @@ const GreenSPage = ({ embedMode = false, onCloseEmbed }) => {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="space-y-8"
                                 >
-                                    {/* EMBEDDED HUB SELECT (When active) */}
-                                    <div className="space-y-4 bg-black/5 p-6 rounded-[2.5rem] border border-black/10 relative overflow-hidden">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[10px] md:text-xs lg:text-sm font-black text-black uppercase tracking-[0.3em] italic">Hub Select</span>
-                                            <span className="text-[8px] md:text-[10px] lg:text-xs font-bold text-black/60 uppercase tracking-widest">Active Group Link ⚡</span>
-                                        </div>
-                                        
-                                        <div className="overflow-x-auto no-scrollbar scroll-smooth px-1" ref={embeddedContainerRef}>
-                                            <div className="flex gap-4 pb-2 w-fit pr-16">
-                                                {lifestyleEntities.map((entity) => {
-                                                    const isActive = isCategoryActive(entity.id);
-                                                    return (
-                                                        <button
-                                                            key={entity.id}
-                                                            onClick={() => navigate('/discovery', { state: { category: entity.id } })}
-                                                            className="flex-shrink-0 flex flex-col items-center gap-2 group"
-                                                        >
-                                                            <div className={`w-14 h-14 rounded-2xl bg-white border-2 flex items-center justify-center group-hover:border-black transition-all shadow-md relative overflow-hidden ${isActive ? 'border-brand shadow-[0_0_15px_rgba(16,185,129,0.5)] animate-pulse' : 'border-black/10'}`}>
-                                                                <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                                <entity.icon size={22} strokeWidth={2.5} className={`group-hover:scale-110 group-hover:rotate-6 transition-transform ${isActive ? 'text-brand' : 'text-black'}`} />
-                                                            </div>
-                                                            <span className="text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest text-black/80 group-hover:text-black transition-colors">{entity.label}</span>
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     {/* Role Selection Badge */}
                                     <div className="flex items-center bg-black/5 p-4 rounded-3xl border border-black/10 gap-3">
