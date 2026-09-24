@@ -26,6 +26,7 @@ import {
     Heart,
     Car,
     ShieldCheck,
+    Lock,
     GripHorizontal,
     Smartphone
 } from 'lucide-react';
@@ -1163,8 +1164,8 @@ const GreenRidePage = () => {
                     <div className="flex gap-2.5 mb-3">
                         {[
                             { id: 'standard', label: 'Green', icon: Car, desc: 'Premium', activeColor: '#000000', textColor: '#FFFFFF', glow: 'rgba(255,255,255,0.1)' },
-                            { id: 'shared', label: 'Shared', icon: Users, desc: 'Save 20%', activeColor: '#00A2FF', textColor: '#FFFFFF', glow: 'rgba(0,162,255,0.6)', 
-                              locked: showPremiumBrands || selectedBrand !== null },
+                            { id: 'shared', label: 'Shared', icon: Users, desc: 'COMING SOON', activeColor: '#00A2FF', textColor: '#FFFFFF', glow: 'rgba(0,162,255,0.6)', 
+                              locked: true },
                             { id: 'max', label: 'Max', icon: Car, desc: '6+ Seats', activeColor: '#1A1A1A', textColor: '#FFFFFF', glow: 'rgba(0,0,0,0.6)' }
                         ].map((type) => {
                             const isSelected = serviceType === type.id;
@@ -1179,8 +1180,8 @@ const GreenRidePage = () => {
                                 finalPrice = (parseFloat(finalPrice) * 1.5).toFixed(2);
                             }
                             
-                            const displayPrice = destination ? `€${finalPrice}` : (type.id === 'shared' ? `-${pricing.discountPercent}%` : '');
- 
+                            const displayPrice = type.id === 'shared' ? 'COMING SOON' : (destination ? `€${finalPrice}` : '');
+
                             return (
                                 <button
                                     key={type.id}
@@ -1188,13 +1189,13 @@ const GreenRidePage = () => {
                                     onClick={() => {
                                         if (isLocked) return;
                                         setServiceType(type.id);
-                                        setIsPoolingEnabled(type.id === 'shared');
+                                        setIsPoolingEnabled(false);
                                         if (type.id !== 'standard') {
                                             setShowPremiumBrands(false);
                                             setSelectedBrand(null);
                                         }
                                     }}
-                                    className={`flex-1 py-3 px-2 rounded-xl border transition-all flex flex-col items-center gap-1 group relative overflow-hidden ${isSelected ? 'scale-105 shadow-[0_15px_40px_rgba(0,0,0,0.15)]' : 'bg-black/5 border-black/5'} ${isLocked ? 'grayscale opacity-40 cursor-not-allowed' : ''}`}
+                                    className={`flex-1 py-3 px-2 rounded-xl border transition-all flex flex-col items-center gap-1 group relative overflow-hidden ${isSelected ? 'scale-105 shadow-[0_15px_40px_rgba(0,0,0,0.15)]' : 'bg-black/5 border-black/5'} ${isLocked ? 'opacity-60 cursor-not-allowed bg-black/5' : ''}`}
                                     style={{ 
                                         background: isSelected ? type.activeColor : 'rgba(0,0,0,0.04)',
                                         borderColor: isSelected ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.05)',
@@ -1202,17 +1203,17 @@ const GreenRidePage = () => {
                                     }}
                                 >
                                     {isLocked && (
-                                        <div className="absolute top-1 right-1">
-                                            <ShieldCheck size={8} className="text-black/40" />
+                                        <div className="absolute top-1.5 right-1.5 bg-black/40 text-white p-1 rounded-full flex items-center justify-center shadow-sm">
+                                            <Lock size={10} />
                                         </div>
                                     )}
                                     <type.icon size={16} className={isSelected ? 'text-white' : 'text-black/40'} />
                                     <div className="text-center">
                                         <p className={`text-[9px] md:text-[11px] lg:text-xs font-black uppercase tracking-widest ${isSelected ? 'text-white' : 'text-black/60'}`}>{type.label}</p>
-                                        <p className={`text-[6px] font-bold uppercase tracking-tighter mt-0.5 ${isSelected ? 'text-white/70' : 'text-black/30'}`}>{type.desc}</p>
+                                        <p className={`text-[6px] font-black uppercase tracking-tighter mt-0.5 ${type.id === 'shared' ? 'text-amber-600 font-black' : (isSelected ? 'text-white/70' : 'text-black/30')}`}>{type.desc}</p>
                                     </div>
                                     <div className="mt-1">
-                                        <span className={`text-[8px] md:text-[10px] lg:text-xs font-black ${isSelected ? 'text-white' : 'text-black/40'}`}>
+                                        <span className={`text-[7px] md:text-[9px] font-black uppercase tracking-widest ${type.id === 'shared' ? 'text-amber-600' : (isSelected ? 'text-white' : 'text-black/40')}`}>
                                             {displayPrice}
                                         </span>
                                     </div>
